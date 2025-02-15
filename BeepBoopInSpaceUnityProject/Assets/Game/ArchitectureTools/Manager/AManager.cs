@@ -10,7 +10,7 @@ namespace Game.ArchitectureTools.Manager
         public bool IsInitialized { get; private set; } 
         private void Awake()
         {
-            if (Instance == null)
+            if (Instance != null)
             {
                 Destroy(gameObject);
                 return;

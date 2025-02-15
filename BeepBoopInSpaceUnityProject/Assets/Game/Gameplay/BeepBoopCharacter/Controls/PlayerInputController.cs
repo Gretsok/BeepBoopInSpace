@@ -17,14 +17,21 @@ namespace Game.Gameplay.BeepBoopCharacter.Controls
             m_controls.Enable();
 
             m_controls.Mobility.Jump.started += HandleJumpStarted;
+            m_controls.Interaction.Interact.started += HandleInteractStarted;
             
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
 
+        private void HandleInteractStarted(InputAction.CallbackContext obj)
+        {
+            Character.Interactor.Interact();
+        }
+
         private void OnDestroy()
         {
             m_controls.Mobility.Jump.started -= HandleJumpStarted;
+            m_controls.Interaction.Interact.started -= HandleInteractStarted;
             
             m_controls.Disable();
             m_controls.Dispose();

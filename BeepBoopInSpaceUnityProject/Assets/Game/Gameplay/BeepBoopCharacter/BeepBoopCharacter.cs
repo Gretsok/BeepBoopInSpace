@@ -1,5 +1,6 @@
 using Game.ArchitectureTools.ActivatableSystem;
 using Game.Gameplay.BeepBoopCharacter.Movement;
+using Game.Gameplay.InteractionSystem;
 using UnityEngine;
 
 namespace Game.Gameplay.BeepBoopCharacter
@@ -20,6 +21,8 @@ namespace Game.Gameplay.BeepBoopCharacter
         public CharacterMovementController MovementController { get; private set; }
         [field: SerializeField]
         public CharacterRotationController RotationController { get; private set; }
+        [field: SerializeField]
+        public Interactor Interactor { get; private set; }
 
 
         private void Awake()
@@ -28,6 +31,7 @@ namespace Game.Gameplay.BeepBoopCharacter
             GroundDetector.SetDependencies(transform);
             MovementController.SetDependencies(Rigidbody, GroundDetector);
             RotationController.SetDependencies(transform, Camera);
+            Interactor.SetDependencies(Camera.transform, () => GroundDetector.IsGrounded);
         }
 
         protected override void HandleActivation()
@@ -37,6 +41,7 @@ namespace Game.Gameplay.BeepBoopCharacter
             GroundDetector.Activate();
             MovementController.Activate();
             RotationController.Activate();
+            Interactor.Activate();
         }
 
         protected override void HandleDeactivation()
@@ -46,6 +51,7 @@ namespace Game.Gameplay.BeepBoopCharacter
             GroundDetector.Deactivate();
             MovementController.Deactivate();
             RotationController.Deactivate();
+            Interactor.Deactivate();
         }
     }
 }
