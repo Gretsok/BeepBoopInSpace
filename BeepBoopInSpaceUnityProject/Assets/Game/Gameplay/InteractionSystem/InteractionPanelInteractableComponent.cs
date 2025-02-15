@@ -17,12 +17,12 @@ namespace Game.Gameplay.InteractionSystem
 
         private void HandleStartBeingLookedAt(Interactable obj)
         {
-            InteractionPanel.Instance.RegisterComponent(this);
+            InteractionPanel.Instance?.RegisterComponent(this);
         }
 
         private void HandleStopBeingLookedAt(Interactable obj)
         {
-            InteractionPanel.Instance.UnregisterComponent(this);
+            InteractionPanel.Instance?.UnregisterComponent(this);
         }
     }
 }
