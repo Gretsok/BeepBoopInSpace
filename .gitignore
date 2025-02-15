@@ -71,3 +71,4 @@ BeepBoopInSpaceUnityProject/crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /BeepBoopInSpaceUnityProject/[Aa]ssets/[Ss]treamingAssets/aa.meta
 /BeepBoopInSpaceUnityProject/[Aa]ssets/[Ss]treamingAssets/aa/*
+BeepBoopInSpaceUnityProject/.idea
