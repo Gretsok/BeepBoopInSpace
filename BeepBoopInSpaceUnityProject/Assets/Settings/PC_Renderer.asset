@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GlobalOutlines
   m_EditorClassIdentifier: 
   m_Active: 1
-  injectionPoint: 600
+  injectionPoint: 450
   fetchColorBuffer: 1
   requirements: 0
   passMaterial: {fileID: 2100000, guid: 2486d755a0f8ab54094ca5531feeff12, type: 2}

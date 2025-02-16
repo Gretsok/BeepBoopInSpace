@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_Outline
-  m_Shader: {fileID: -6465566751694194690, guid: 5e4e0e1be6f142342afba0b3ff7fff49, type: 3}
+  m_Name: M_MiloEyes
+  m_Shader: {fileID: -6465566751694194690, guid: 4e8c1af0d5dfb424b85ab0934deb464f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -24,6 +24,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _Expressions:
+        m_Texture: {fileID: 18700000, guid: a5f957de3fcb27843b29b6a3bec1c3b0, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -38,12 +42,13 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Float: 1
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &7401035691938834182
+--- !u!114 &1673772537710653395
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
