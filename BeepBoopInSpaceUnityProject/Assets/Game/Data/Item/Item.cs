@@ -28,5 +28,10 @@ namespace Game.Data.Item
         {
             instanceId = ItemsManager.Instance.GetNextItemInstanceId();
         }
+
+        public void Destroy()
+        {
+            Destroy(gameObject);
+        }
     }
 }

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: bcd6ad3274c6b8443b02a12626292e7a
+guid: 4dcd521430d43a14f8ce4ca9aee0b0fd
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,8 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: ClayColor
-    second: {fileID: 2100000, guid: 2c5310a221e80ed4b8cc296a0e3a3939, type: 2}
+      name: TextureGradient_03
+    second: {fileID: 2100000, guid: a4625f4437bc78e429e4d1da121bc1b2, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

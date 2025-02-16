@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ToonAero
+  m_Name: M_ToonAero
   m_Shader: {fileID: -6465566751694194690, guid: 8ad4f01c64247df42b84968ee42a25e4, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -60,6 +60,6 @@ Material:
     - _Shades: 0.5
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 0}
-    - _MinMax: {r: 0.45, g: 1, b: 0, a: 0}
+    - _MinMax: {r: 0.45, g: 2.47, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

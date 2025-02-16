@@ -90,7 +90,7 @@ namespace Game.Gameplay.InteractionSystem
             {
                 var interactable = hit.collider.GetComponent<Interactable>();
                 if (!interactable)
-                    interactable = hit.collider.GetComponent<InteractableCollider>().Interactable;
+                    interactable = hit.collider.GetComponent<InteractableCollider>()?.Interactable;
                 return interactable;
             }
             else

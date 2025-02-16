@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 9b02d79d09a9dfb448736664559d3cf4
+guid: c1b5605008579604facd4dc1f1c0d0fe
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,8 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: standardSurface1
-    second: {fileID: 2100000, guid: 6ca1beb86d763274c8f147642c82a9cf, type: 2}
+      name: TextureGradient_03
+    second: {fileID: 2100000, guid: a4625f4437bc78e429e4d1da121bc1b2, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
