@@ -30,7 +30,7 @@ namespace Game.Gameplay.HoldingSystem
             if (!m_panelInteractableComponent)
                 return;
 
-            m_panelInteractableComponent.InteractionText = arg2 != null ? "Grab" : "Store";
+            m_panelInteractableComponent.InteractionText = arg2 != null ? "Récupérer" : "Poser";
             m_panelInteractableComponent.ForceRefresh();
         }
 

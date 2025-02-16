@@ -13,7 +13,7 @@ namespace Game.Gameplay.BeepBoopCharacter.Controls
         private void Awake()
         {
             m_controls = new PlayerControls();
-            m_controls.Enable();
+            Enable();
 
             m_controls.Mobility.Jump.started += HandleJumpStarted;
             m_controls.Interaction.Interact.started += HandleInteractStarted;
@@ -22,21 +22,31 @@ namespace Game.Gameplay.BeepBoopCharacter.Controls
             Cursor.lockState = CursorLockMode.Locked;
         }
 
+        private void OnDestroy()
+        {
+            m_controls.Mobility.Jump.started -= HandleJumpStarted;
+            m_controls.Interaction.Interact.started -= HandleInteractStarted;
+            
+            Disable();
+            m_controls.Dispose();
+        }
+
+        public void Enable()
+        {
+            m_controls.Enable();
+        }
+
+        public void Disable()
+        {
+            m_controls.Disable();
+        }
+
         private void HandleInteractStarted(InputAction.CallbackContext obj)
         {
             if (Character.Interactor.CurrentInteractableInSight)
                 Character.Interactor.Interact();
             else if (Character.Holder.CurrentHoldable)
                 Character.Holder.TryToReleaseCurrentHoldable();
-        }
-
-        private void OnDestroy()
-        {
-            m_controls.Mobility.Jump.started -= HandleJumpStarted;
-            m_controls.Interaction.Interact.started -= HandleInteractStarted;
-            
-            m_controls.Disable();
-            m_controls.Dispose();
         }
 
         private void HandleJumpStarted(InputAction.CallbackContext obj)
