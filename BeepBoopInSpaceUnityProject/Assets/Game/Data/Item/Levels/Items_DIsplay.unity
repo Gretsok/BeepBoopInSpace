@@ -148,10 +148,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83123614d089b45419ae762625efe814, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemSpacing: 2
   items:
   - {fileID: 8602699502746197052, guid: 91b963685da104d4686c388fe88b635a, type: 3}
   - {fileID: 8602699502746197052, guid: 22cbb33ea647e7e41be965662699f079, type: 3}
-  itemSpacing: 2
 --- !u!4 &311273345
 Transform:
   m_ObjectHideFlags: 0
