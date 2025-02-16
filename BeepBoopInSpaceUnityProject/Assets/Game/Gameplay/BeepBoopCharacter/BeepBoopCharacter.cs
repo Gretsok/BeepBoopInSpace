@@ -35,7 +35,17 @@ namespace Game.Gameplay.BeepBoopCharacter
             MovementController.SetDependencies(Rigidbody, GroundDetector);
             RotationController.SetDependencies(transform, Camera);
             Interactor.SetDependencies(Camera.transform, () => GroundDetector.IsGrounded,
-                (interactable) => interactable && interactable.TryGetComponent(out Holdable holdable) && Holder.CanHold(holdable));
+                (interactable) =>
+                {
+                     if (interactable.TryGetComponent(out Holdable holdable))
+                         return Holder.CanHold(holdable);
+
+                     if (interactable.TryGetComponent(out Holder holder))
+                         return (!holder.CurrentHoldable && Holder.CurrentHoldable) 
+                                || (holder.CurrentHoldable && !Holder.CurrentHoldable);
+
+                     return true;
+                });
         }
 
         protected override void HandleActivation()

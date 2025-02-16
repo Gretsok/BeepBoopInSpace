@@ -58,30 +58,43 @@ namespace Game.Gameplay.InteractionSystem
                 return;
             }
             
+            
+            
             var oldInteractableInSight = CurrentInteractableInSight;
-            if (Physics.Raycast(InteractionSource.position, InteractionSource.forward, out RaycastHit hit,
-                    SightDistance, SightLayerMask))
+
+            CurrentInteractableInSight = GetCurrentInteractableInSight();
+
+            if (CurrentInteractableInSight != null)
             {
-                var detectedInteractable = hit.collider.GetComponent<Interactable>();
-                var canInteractWithThisInteractable = m_additionalInteractionConditionOnSpecificInteractable?.Invoke(detectedInteractable);
-                if (canInteractWithThisInteractable.HasValue && !canInteractWithThisInteractable.Value)
+                var canInteractWithThisInteractable = m_additionalInteractionConditionOnSpecificInteractable?.Invoke(CurrentInteractableInSight);
+                if ((canInteractWithThisInteractable.HasValue && !canInteractWithThisInteractable.Value)
+                    || !CurrentInteractableInSight.CanBeInteractedWith())
                 {
                     CurrentInteractableInSight = null;
                 }
                 else
                 {
-                    CurrentInteractableInSight = detectedInteractable;
+                    CurrentInteractableInSight = CurrentInteractableInSight;
                 }
             }
-            else
-            {
-                CurrentInteractableInSight = null;
-            }
-
+            
             if (oldInteractableInSight != CurrentInteractableInSight)
             {
                 oldInteractableInSight?.NotifyEndBeingLookedAt(this);
                 CurrentInteractableInSight?.NotifyStartBeingLookedAt(this);
+            }
+        }
+
+        private Interactable GetCurrentInteractableInSight()
+        {
+            if (Physics.Raycast(InteractionSource.position, InteractionSource.forward, out RaycastHit hit,
+                    SightDistance, SightLayerMask))
+            {
+                return hit.collider.GetComponent<Interactable>();
+            }
+            else
+            {
+                return null;
             }
         }
     }

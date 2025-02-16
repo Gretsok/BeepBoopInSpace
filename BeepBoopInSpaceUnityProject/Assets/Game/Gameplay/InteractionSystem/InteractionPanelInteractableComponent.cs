@@ -5,7 +5,7 @@ namespace Game.Gameplay.InteractionSystem
     public class InteractionPanelInteractableComponent : MonoBehaviour
     {
         [field: SerializeField]
-        public string InteractionText { get; private set; }
+        public string InteractionText { get; set; }
         
         private Interactable m_interactable;
         private void Awake()
@@ -23,6 +23,11 @@ namespace Game.Gameplay.InteractionSystem
         private void HandleStopBeingLookedAt(Interactable obj, Interactor interactor)
         {
             InteractionPanel.Instance?.UnregisterComponent(this);
+        }
+
+        public void ForceRefresh()
+        {
+            InteractionPanel.Instance?.RegisterComponent(this);
         }
     }
 }
