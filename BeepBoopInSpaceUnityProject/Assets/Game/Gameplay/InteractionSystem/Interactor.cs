@@ -58,8 +58,6 @@ namespace Game.Gameplay.InteractionSystem
                 return;
             }
             
-            
-            
             var oldInteractableInSight = CurrentInteractableInSight;
 
             CurrentInteractableInSight = GetCurrentInteractableInSight();
@@ -90,7 +88,10 @@ namespace Game.Gameplay.InteractionSystem
             if (Physics.Raycast(InteractionSource.position, InteractionSource.forward, out RaycastHit hit,
                     SightDistance, SightLayerMask))
             {
-                return hit.collider.GetComponent<Interactable>();
+                var interactable = hit.collider.GetComponent<Interactable>();
+                if (!interactable)
+                    interactable = hit.collider.GetComponent<InteractableCollider>().Interactable;
+                return interactable;
             }
             else
             {
