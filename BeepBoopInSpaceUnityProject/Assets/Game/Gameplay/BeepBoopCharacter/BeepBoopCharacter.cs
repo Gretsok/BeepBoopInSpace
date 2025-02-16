@@ -1,5 +1,6 @@
 using Game.ArchitectureTools.ActivatableSystem;
 using Game.Gameplay.BeepBoopCharacter.Movement;
+using Game.Gameplay.HoldingSystem;
 using Game.Gameplay.InteractionSystem;
 using UnityEngine;
 
@@ -22,6 +23,8 @@ namespace Game.Gameplay.BeepBoopCharacter
         [field: SerializeField]
         public CharacterRotationController RotationController { get; private set; }
         [field: SerializeField]
+        public Holder Holder { get; private set; }
+        [field: SerializeField]
         public Interactor Interactor { get; private set; }
 
 
@@ -31,7 +34,8 @@ namespace Game.Gameplay.BeepBoopCharacter
             GroundDetector.SetDependencies(transform);
             MovementController.SetDependencies(Rigidbody, GroundDetector);
             RotationController.SetDependencies(transform, Camera);
-            Interactor.SetDependencies(Camera.transform, () => GroundDetector.IsGrounded);
+            Interactor.SetDependencies(Camera.transform, () => GroundDetector.IsGrounded,
+                (interactable) => interactable && interactable.TryGetComponent(out Holdable holdable) && Holder.CanHold(holdable));
         }
 
         protected override void HandleActivation()
@@ -41,6 +45,7 @@ namespace Game.Gameplay.BeepBoopCharacter
             GroundDetector.Activate();
             MovementController.Activate();
             RotationController.Activate();
+            Holder.Activate();
             Interactor.Activate();
         }
 
@@ -51,6 +56,7 @@ namespace Game.Gameplay.BeepBoopCharacter
             GroundDetector.Deactivate();
             MovementController.Deactivate();
             RotationController.Deactivate();
+            Holder.Deactivate();
             Interactor.Deactivate();
         }
     }

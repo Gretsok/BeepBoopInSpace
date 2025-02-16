@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -25,7 +24,10 @@ namespace Game.Gameplay.BeepBoopCharacter.Controls
 
         private void HandleInteractStarted(InputAction.CallbackContext obj)
         {
-            Character.Interactor.Interact();
+            if (Character.Interactor.CurrentInteractableInSight)
+                Character.Interactor.Interact();
+            else if (Character.Holder.CurrentHoldable)
+                Character.Holder.TryToReleaseCurrentHoldable();
         }
 
         private void OnDestroy()

@@ -1,4 +1,3 @@
-using System;
 using Game.ArchitectureTools.ActivatableSystem;
 using UnityEngine;
 
@@ -15,10 +14,17 @@ namespace Game.Gameplay.InteractionSystem
 
         public delegate bool AdditionalInteractionCondition();
         private AdditionalInteractionCondition m_additionalInteractionCondition;
-        public void SetDependencies(Transform interactionSource, AdditionalInteractionCondition additionalInteractionCondition)
+        
+        public delegate bool AdditionalInteractionConditionOnSpecificInteractable(Interactable interactable);
+        private AdditionalInteractionConditionOnSpecificInteractable m_additionalInteractionConditionOnSpecificInteractable;
+        
+        public void SetDependencies(Transform interactionSource, 
+            AdditionalInteractionCondition additionalInteractionCondition = null, 
+            AdditionalInteractionConditionOnSpecificInteractable additionalInteractionConditionOnSpecificInteractable = null)
         {
             InteractionSource = interactionSource;
             m_additionalInteractionCondition = additionalInteractionCondition;
+            m_additionalInteractionConditionOnSpecificInteractable = additionalInteractionConditionOnSpecificInteractable;
         }
         
         public Interactable CurrentInteractableInSight { get; private set; }
@@ -28,7 +34,7 @@ namespace Game.Gameplay.InteractionSystem
             if (!IsActivated)
                 return;
             
-            CurrentInteractableInSight?.TriggerInteraction();
+            CurrentInteractableInSight?.TriggerInteraction(this);
         }
 
         protected override void HandleDeactivation()
@@ -46,7 +52,7 @@ namespace Game.Gameplay.InteractionSystem
 
             if (canInteract.HasValue && !canInteract.Value)
             {
-                CurrentInteractableInSight?.NotifyEndBeingLookedAt();
+                CurrentInteractableInSight?.NotifyEndBeingLookedAt(this);
                 CurrentInteractableInSight = null;
                 
                 return;
@@ -56,7 +62,16 @@ namespace Game.Gameplay.InteractionSystem
             if (Physics.Raycast(InteractionSource.position, InteractionSource.forward, out RaycastHit hit,
                     SightDistance, SightLayerMask))
             {
-                CurrentInteractableInSight = hit.collider.GetComponent<Interactable>();
+                var detectedInteractable = hit.collider.GetComponent<Interactable>();
+                var canInteractWithThisInteractable = m_additionalInteractionConditionOnSpecificInteractable?.Invoke(detectedInteractable);
+                if (canInteractWithThisInteractable.HasValue && !canInteractWithThisInteractable.Value)
+                {
+                    CurrentInteractableInSight = null;
+                }
+                else
+                {
+                    CurrentInteractableInSight = detectedInteractable;
+                }
             }
             else
             {
@@ -65,8 +80,8 @@ namespace Game.Gameplay.InteractionSystem
 
             if (oldInteractableInSight != CurrentInteractableInSight)
             {
-                oldInteractableInSight?.NotifyEndBeingLookedAt();
-                CurrentInteractableInSight?.NotifyStartBeingLookedAt();
+                oldInteractableInSight?.NotifyEndBeingLookedAt(this);
+                CurrentInteractableInSight?.NotifyStartBeingLookedAt(this);
             }
         }
     }

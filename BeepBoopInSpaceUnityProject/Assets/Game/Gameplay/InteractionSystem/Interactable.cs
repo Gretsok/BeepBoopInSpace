@@ -8,29 +8,29 @@ namespace Game.Gameplay.InteractionSystem
     {
         [SerializeField] 
         private UnityEvent m_onStartBeingLookedAt;
-        public Action<Interactable> OnStartBeingLookedAt;
-        public void NotifyStartBeingLookedAt()
+        public Action<Interactable, Interactor> OnStartBeingLookedAt;
+        public void NotifyStartBeingLookedAt(Interactor interactor)
         {
             m_onStartBeingLookedAt?.Invoke();
-            OnStartBeingLookedAt?.Invoke(this);
+            OnStartBeingLookedAt?.Invoke(this, interactor);
         }
 
         [SerializeField]
         private UnityEvent m_onStopBeingLookedAt;
-        public Action<Interactable> OnStopBeingLookedAt;
-        public void NotifyEndBeingLookedAt()
+        public Action<Interactable, Interactor> OnStopBeingLookedAt;
+        public void NotifyEndBeingLookedAt(Interactor interactor)
         {
             m_onStopBeingLookedAt?.Invoke();
-            OnStopBeingLookedAt?.Invoke(this);
+            OnStopBeingLookedAt?.Invoke(this, interactor);
         }
 
         [SerializeField]
         private UnityEvent m_onInteract;
-        public Action<Interactable> OnInteract;
-        public void TriggerInteraction()
+        public Action<Interactable, Interactor> OnInteract;
+        public void TriggerInteraction(Interactor interactor)
         {
             m_onInteract?.Invoke();
-            OnInteract?.Invoke(this);
+            OnInteract?.Invoke(this, interactor);
         }
     }
 }

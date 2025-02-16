@@ -15,12 +15,12 @@ namespace Game.Gameplay.InteractionSystem
             m_interactable.OnStopBeingLookedAt += HandleStopBeingLookedAt;
         }
 
-        private void HandleStartBeingLookedAt(Interactable obj)
+        private void HandleStartBeingLookedAt(Interactable obj, Interactor interactor)
         {
             InteractionPanel.Instance?.RegisterComponent(this);
         }
 
-        private void HandleStopBeingLookedAt(Interactable obj)
+        private void HandleStopBeingLookedAt(Interactable obj, Interactor interactor)
         {
             InteractionPanel.Instance?.UnregisterComponent(this);
         }

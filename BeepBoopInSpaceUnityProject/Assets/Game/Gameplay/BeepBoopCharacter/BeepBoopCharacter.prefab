@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &464642861069942848
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2349435520758563240}
+  m_Layer: 8
+  m_Name: HolderAttachPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2349435520758563240
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 464642861069942848}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.372, y: -0.319, z: 0.519}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 5044118768694547514}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &919974957005786343
 GameObject:
   m_ObjectHideFlags: 0
@@ -31,6 +62,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7437668602185993636}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1343402140655779698
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9020469432694747502}
+  - component: {fileID: 2652883650847286936}
+  m_Layer: 8
+  m_Name: Holder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9020469432694747502
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1343402140655779698}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1804618202966482373}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2652883650847286936
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1343402140655779698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f75df3f88065ef4091f782ba72cc536, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <CanTakeHoldableFromOtherHolder>k__BackingField: 1
+  <AttachPoint>k__BackingField: {fileID: 2349435520758563240}
 --- !u!1 &1867812966405640866
 GameObject:
   m_ObjectHideFlags: 0
@@ -64,6 +141,7 @@ Transform:
   - {fileID: 343236066855433496}
   - {fileID: 6545302688235193335}
   - {fileID: 6090046363613174650}
+  - {fileID: 9020469432694747502}
   - {fileID: 1626163528427055371}
   m_Father: {fileID: 7437668602185993636}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -144,7 +222,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2349435520758563240}
   m_Father: {fileID: 7437668602185993636}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &2370444950881695344
@@ -350,6 +429,7 @@ MonoBehaviour:
   <GroundDetector>k__BackingField: {fileID: 8527596054950734081}
   <MovementController>k__BackingField: {fileID: 35325583527687047}
   <RotationController>k__BackingField: {fileID: 4250136441183217631}
+  <Holder>k__BackingField: {fileID: 2652883650847286936}
   <Interactor>k__BackingField: {fileID: 4911251964517359289}
 --- !u!136 &3011817762632399548
 CapsuleCollider:
@@ -411,6 +491,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1626163528427055371}
   - component: {fileID: 4911251964517359289}
+  - component: {fileID: 7329881837130720842}
   m_Layer: 8
   m_Name: Interactor
   m_TagString: Untagged
@@ -449,6 +530,19 @@ MonoBehaviour:
   <SightLayerMask>k__BackingField:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &7329881837130720842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5787923115816702931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3762badae17376647a9ab801369463a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Holder>k__BackingField: {fileID: 2652883650847286936}
 --- !u!1 &6827150577086127473
 GameObject:
   m_ObjectHideFlags: 0
