@@ -11,6 +11,7 @@ namespace Game.Gameplay.ExchangeSystem
     public class ExchangeSystem : MonoBehaviour
     {
         [SerializeField] private List<Holder> inputHolders = new ();
+        [SerializeField] private Holder outputHolder;
         [SerializeField] private List<Item> testItems = new ();
         [SerializeField] private List<SORecipe> recipes = new ();
         private List<Item> inputItems = new ();
@@ -58,10 +59,29 @@ namespace Game.Gameplay.ExchangeSystem
                     });
                 });
             });
+            DestroyComponents(matchingRecipe);
             if (matchingRecipe == null) 
                 FailedExchange();
             else
                 SuccessfulExchange(matchingRecipe);
+        }
+
+        private void DestroyComponents(SORecipe recipe)
+        {
+            List<Item> itemsToDestroy = new();
+            foreach (var component in recipe.components)
+            {
+                Item item = inputItems.FirstOrDefault(i => i.id == component.id && itemsToDestroy.All(itd => itd.instanceId != i.instanceId));
+                if(item != null)
+                    itemsToDestroy.Add(item);
+                else
+                    Debug.LogError("Cannot find item to destroy");
+            }
+
+            foreach (var item in itemsToDestroy)
+            {
+                item.Destroy();
+            }
         }
 
         private void UpdateInputItems()
@@ -69,7 +89,7 @@ namespace Game.Gameplay.ExchangeSystem
             inputItems.Clear();
             foreach (var holder in inputHolders)
             {
-                if (holder.TryGetComponent(out Item item))
+                if (holder.CurrentHoldable != null && holder.CurrentHoldable.TryGetComponent(out Item item))
                 {
                     inputItems.Add(item);
                 }
@@ -78,12 +98,15 @@ namespace Game.Gameplay.ExchangeSystem
 
         private void FailedExchange()
         {
-            Debug.Log("Failed");
+            Debug.Log("Exchange Failed");
         }
 
         private void SuccessfulExchange(SORecipe matchingRecipe)
         {
-            Debug.Log("Successful");
+            Debug.Log("Exchange Successful");
+            Item reward = Instantiate(matchingRecipe.reward, outputHolder.transform);
+            //TODO: replace below with a transform instead of the output holder and just make the object "pop" out with a little random
+            outputHolder.TryToHoldHoldable(reward.GetComponent<Holdable>());
         }
     }
 }
