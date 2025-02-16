@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using Game.ArchitectureTools.ActivatableSystem;
 using UnityEngine;
@@ -7,12 +8,13 @@ namespace Game.Gameplay.HoldingSystem
     public class Holder : AActivatableSystem
     {
         [field: SerializeField]
-        public bool CanTakeHoldableFromOtherHolder { get; set; } = false;
+        public bool CanTakeHoldableFromOtherHolder { get; set; }
         [field: SerializeField]
-        public Transform AttachPoint { get; private set; } = null;
+        public Transform AttachPoint { get; private set; }
         
         public Holdable CurrentHoldable { get; private set; }
 
+        public Action<Holder, Holdable> OnCurrentHoldableChanged;
 
         protected override void HandleDeactivation()
         {
@@ -37,6 +39,8 @@ namespace Game.Gameplay.HoldingSystem
         private void HoldHoldable_Internal(Holdable holdable)
         {
             CurrentHoldable = holdable;
+            OnCurrentHoldableChanged?.Invoke(this, CurrentHoldable);
+            
             holdable.NotifyStartBeingHeld();
             holdable.transform.parent = AttachPoint;
             holdable.transform.DOKill();
@@ -55,6 +59,7 @@ namespace Game.Gameplay.HoldingSystem
             CurrentHoldable.transform.parent = null;
             CurrentHoldable.transform.DOKill();
             CurrentHoldable = null;
+            OnCurrentHoldableChanged?.Invoke(this, CurrentHoldable);
         }
 
         public void TryToReleaseCurrentHoldable()
@@ -68,6 +73,7 @@ namespace Game.Gameplay.HoldingSystem
             CurrentHoldable.NotifyStopBeingHeld();
             CurrentHoldable.transform.DOKill();
             CurrentHoldable = null;
+            OnCurrentHoldableChanged?.Invoke(this, CurrentHoldable);
         }
     }
 }
