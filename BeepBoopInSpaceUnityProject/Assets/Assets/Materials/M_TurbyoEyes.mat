@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_AeroEyes
+  m_Name: M_TurbyoEyes
   m_Shader: {fileID: -6465566751694194690, guid: 4e8c1af0d5dfb424b85ab0934deb464f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -42,14 +42,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Float: 1.75
+    - _Float: 0
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
     - _Color: {r: 0.24056596, g: 1, b: 0.9418168, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &1673772537710653395
+--- !u!114 &5125560682114231852
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
