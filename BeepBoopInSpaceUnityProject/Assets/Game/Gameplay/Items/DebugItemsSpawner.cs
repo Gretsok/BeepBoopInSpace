@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine;
 
-namespace Game.Data.Item
+namespace Game.Gameplay.Items
 {
     public class DebugItemsSpawner : MonoBehaviour
     {

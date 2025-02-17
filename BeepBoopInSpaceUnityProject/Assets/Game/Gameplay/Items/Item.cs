@@ -1,10 +1,9 @@
 using Game.ArchitectureTools.Manager;
 using Game.Data.Enums;
 using NaughtyAttributes;
-using UnityEditor;
 using UnityEngine;
 
-namespace Game.Data.Item
+namespace Game.Gameplay.Items
 {
     public class Item : MonoBehaviour
     {
@@ -16,13 +15,15 @@ namespace Game.Data.Item
         public ESoundMaterial soundMaterial;
         public EItemSource source;
 
+        #if UNITY_EDITOR
         [Button("Generate ID")]
         private void GenerateID()
         {
-            EditorUtility.SetDirty(gameObject);
-            PrefabUtility.RecordPrefabInstancePropertyModifications(gameObject);
+            UnityEditor.EditorUtility.SetDirty(gameObject);
+            UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(gameObject);
             id = System.Guid.NewGuid().ToString();
         }
+        #endif
         
         public void Start()
         {

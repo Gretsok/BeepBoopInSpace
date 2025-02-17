@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Game.Data.Item;
-using Game.Data.Recipe;
 using Game.Gameplay.HoldingSystem;
+using Game.Gameplay.Items;
+using Game.Gameplay.Recipe;
 using NaughtyAttributes;
 using UnityEngine;
 
@@ -104,7 +104,7 @@ namespace Game.Gameplay.ExchangeSystem
         private void SuccessfulExchange(SORecipe matchingRecipe)
         {
             Debug.Log("Exchange Successful");
-            Item reward = Instantiate(matchingRecipe.reward, outputHolder.transform);
+            var reward = Instantiate(matchingRecipe.reward, outputHolder.transform);
             //TODO: replace below with a transform instead of the output holder and just make the object "pop" out with a little random
             outputHolder.TryToHoldHoldable(reward.GetComponent<Holdable>());
         }

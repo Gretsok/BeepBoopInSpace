@@ -1,12 +1,13 @@
 using System.Collections.Generic;
+using Game.Gameplay.Items;
 using UnityEngine;
 
-namespace Game.Data.Recipe
+namespace Game.Gameplay.Recipe
 {
     [CreateAssetMenu(fileName = "Recipe", menuName = "Recipe")]
     public class SORecipe : ScriptableObject
     {
-        public List<Item.Item> components = new List<Item.Item>();
-        public Item.Item reward;
+        public List<Item> components = new List<Item>();
+        public Item reward;
     }
 }
