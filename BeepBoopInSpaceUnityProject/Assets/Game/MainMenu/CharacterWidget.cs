@@ -1,4 +1,6 @@
 using DG.Tweening;
+using Game.Characters;
+using TMPro;
 using UnityEngine;
 
 namespace Game.MainMenu
@@ -7,10 +9,15 @@ namespace Game.MainMenu
     {
         [field: SerializeField]
         public GameObject AssociatedCharacter { get; private set; }
-
+        [field: SerializeField]
+        public CharacterData CharacterData { get; private set; }
+        
         [SerializeField] 
         private CanvasGroup m_container;
 
+        [field: SerializeField]
+        public TMP_Text NameText { get; private set; }
+        
         private void Awake()
         {
             Deactivate();
@@ -21,6 +28,8 @@ namespace Game.MainMenu
             m_container.alpha = 1;
             
             AssociatedCharacter.SetActive(true);
+            
+            NameText.text = CharacterData.Name;
         }
 
         public void Deactivate()

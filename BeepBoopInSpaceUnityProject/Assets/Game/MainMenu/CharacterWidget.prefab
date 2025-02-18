@@ -65,7 +65,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <AssociatedCharacter>k__BackingField: {fileID: 0}
+  <CharacterData>k__BackingField: {fileID: 0}
   m_container: {fileID: 8097544665737922902}
+  <NameText>k__BackingField: {fileID: 7569779506095273476}
 --- !u!1 &3974532692593994654
 GameObject:
   m_ObjectHideFlags: 0

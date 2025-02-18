@@ -13,6 +13,8 @@ namespace Game.MainMenu
         {
             m_player = player;
             m_widget = widget;
+            
+            m_player.SetCharacterData(widget.CharacterData);
         }
 
         public void Activate()
