@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using DG.Tweening;
 using Game.ArchitectureTools.Manager;
-using Game.Gameplay.BeepBoopCharacter.Controls;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,8 +9,8 @@ namespace Game.Gameplay.PauseMenu
 {
     public class PauseMenuManager : AManager<PauseMenuManager>
     {
-        [field: SerializeField]
-        public PlayerInputController PlayerInputController { get; private set; }
+        /*[field: SerializeField]
+        public PlayerInputController PlayerInputController { get; private set; }*/
         
         public bool IsPaused { get; private set; }
         
@@ -42,7 +41,7 @@ namespace Game.Gameplay.PauseMenu
             Time.timeScale = 0;
             DOTween.defaultTimeScaleIndependent = true;
             
-            PlayerInputController.Disable();
+            //PlayerInputController.Disable();
             OnPause?.Invoke(this);
             
             IsPaused = true;
@@ -58,7 +57,7 @@ namespace Game.Gameplay.PauseMenu
             DOTween.defaultTimeScaleIndependent = false;
             
             OnResume?.Invoke(this);
-            PlayerInputController.Enable();
+            //PlayerInputController.Enable();
             
             IsPaused = false;
         }
