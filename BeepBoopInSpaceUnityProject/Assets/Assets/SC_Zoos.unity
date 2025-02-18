@@ -15528,6 +15528,34 @@ PrefabInstance:
       propertyPath: m_Name
       value: Dynamo
       objectReference: {fileID: 0}
+    - target: {fileID: 6068696259659924184, guid: 24963b147d895464bb08d9c62fc3f30e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6068696259659924184, guid: 24963b147d895464bb08d9c62fc3f30e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6068696259659924184, guid: 24963b147d895464bb08d9c62fc3f30e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6068696259659924184, guid: 24963b147d895464bb08d9c62fc3f30e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6068696259659924184, guid: 24963b147d895464bb08d9c62fc3f30e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6068696259659924184, guid: 24963b147d895464bb08d9c62fc3f30e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6068696259659924184, guid: 24963b147d895464bb08d9c62fc3f30e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
