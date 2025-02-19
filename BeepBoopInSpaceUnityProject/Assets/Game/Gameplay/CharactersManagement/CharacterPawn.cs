@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using DG.Tweening;
 using Game.Gameplay.GridSystem;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 namespace Game.Gameplay.CharactersManagement
 {
@@ -25,8 +27,13 @@ namespace Game.Gameplay.CharactersManagement
         
         public void MoveToCell(Cell cell)
         {
+            if (cell == null || !cell.TryGetComponent(out CanBeWalkedOnCellComponent comp))
+                return;
+            
             GridWalker.MoveToCell(cell);
-            transform.DOJump(GridWalker.transform.position, 0.5f, 1, 0.2f);
+            
+            var groundPosition = new Vector3(GridWalker.transform.position.x, 0f, GridWalker.transform.position.z);
+            transform.DOJump(groundPosition, 0.5f, 1, 0.2f);
         }
 
         public void TeleportToCell(Cell cell)
@@ -34,6 +41,235 @@ namespace Game.Gameplay.CharactersManagement
             GridWalker.MoveToCell(cell);
             transform.position = GridWalker.transform.position;
         }
+
+        public void ChangeDirection(EDirection direction)
+        {
+            Vector3 newForward;
+            switch (direction)
+            {
+                case EDirection.Z:
+                default:
+                    newForward = Vector3.forward;
+                    break;
+                case EDirection.X:
+                    newForward = Vector3.right;
+                    break;
+                case EDirection.MinusX:
+                    newForward = Vector3.left;
+                    break;
+                case EDirection.MinusZ:
+                    newForward = Vector3.back;
+                    break;
+            }
+            
+            var groundPosition = new Vector3(transform.position.x, 0f, transform.position.z);
+            transform.DOJump(groundPosition, 0.5f, 1, 0.2f);
+            transform.DORotateQuaternion(Quaternion.LookRotation(newForward, Vector3.up), 0.2f);
+            
+            CurrentDirection = direction;
+        }
+
+
+        public delegate void FActionKeyDelegate();
+
+        public class ActionKeysConfiguration
+        {
+            public FActionKeyDelegate[] Action = new FActionKeyDelegate[8];
+        }
+
+        public ActionKeysConfiguration KeysConfiguration { get; private set; }
+        public void SetConfiguration(List<int> config)
+        {
+            var newConfig = new ActionKeysConfiguration();
+            for (int i = 0; i < 8; i++)
+            {
+                if (i == config[0])
+                {
+                    newConfig.Action[i] = WalkForward;
+                }
+                else if (i == config[1])
+                {
+                    newConfig.Action[i] = WalkLeft;
+                }
+                else if (i == config[2])
+                {
+                    newConfig.Action[i] = WalkRight;
+                }
+                else if (i == config[3])
+                {
+                    newConfig.Action[i] = TurnRight;
+                }
+                else if (i == config[4])
+                {
+                    newConfig.Action[i] = TurnLeft;
+                }
+                else if (i == config[5])
+                {
+                    newConfig.Action[i] = Explode;
+                }
+                else
+                {
+                    newConfig.Action[i] = null;
+                }
+            }
+            
+            
+            KeysConfiguration = newConfig;
+        }
+
+        public void TryToPerformAction(int index)
+        {
+            KeysConfiguration.Action[index]?.Invoke();
+        }
+
+        public enum EDirection
+        {
+            Z,
+            MinusZ,
+            X,
+            MinusX
+        }
         
+        public EDirection CurrentDirection { get; private set; } = EDirection.Z;
+        
+        private void WalkForward()
+        {
+            switch (CurrentDirection)
+            {
+                case EDirection.Z:
+                {
+                    MoveToCell(GridWalker.CurrentCell.ForwardCell);
+                }
+                    break;
+                case EDirection.MinusZ:
+                {
+                    MoveToCell(GridWalker.CurrentCell.BackwardCell);
+                }
+                    break;
+                case EDirection.X:
+                {
+                    MoveToCell(GridWalker.CurrentCell.RightCell);
+                }
+                    break;
+                case EDirection.MinusX:
+                {
+                    MoveToCell(GridWalker.CurrentCell.LeftCell);
+                }
+                    break;
+            }
+        }
+
+        private void WalkLeft()
+        {
+            switch (CurrentDirection)
+            {
+                case EDirection.Z:
+                {
+                    MoveToCell(GridWalker.CurrentCell.LeftCell);
+                }
+                    break;
+                case EDirection.MinusZ:
+                {
+                    MoveToCell(GridWalker.CurrentCell.RightCell);
+                }
+                    break;
+                case EDirection.X:
+                {
+                    MoveToCell(GridWalker.CurrentCell.ForwardCell);
+                }
+                    break;
+                case EDirection.MinusX:
+                {
+                    MoveToCell(GridWalker.CurrentCell.BackwardCell);
+                }
+                    break;
+            }
+        }
+
+        private void WalkRight()
+        {
+            switch (CurrentDirection)
+            {
+                case EDirection.Z:
+                {
+                    MoveToCell(GridWalker.CurrentCell.RightCell);
+                }
+                    break;
+                case EDirection.MinusZ:
+                {
+                    MoveToCell(GridWalker.CurrentCell.LeftCell);
+                }
+                    break;
+                case EDirection.X:
+                {
+                    MoveToCell(GridWalker.CurrentCell.BackwardCell);
+                }
+                    break;
+                case EDirection.MinusX:
+                {
+                    MoveToCell(GridWalker.CurrentCell.ForwardCell);
+                }
+                    break;
+            }
+        }
+
+        private void TurnLeft()
+        {
+            switch (CurrentDirection)
+            {
+                case EDirection.Z:
+                {
+                    ChangeDirection(EDirection.MinusX);
+                }
+                    break;
+                case EDirection.MinusZ:
+                {
+                    ChangeDirection(EDirection.X);
+                }
+                    break;
+                case EDirection.X:
+                {
+                    ChangeDirection(EDirection.Z);
+                }
+                    break;
+                case EDirection.MinusX:
+                {
+                    ChangeDirection(EDirection.MinusZ);
+                }
+                    break;
+            }
+        }
+
+        private void TurnRight()
+        {
+            switch (CurrentDirection)
+            {
+                case EDirection.Z:
+                {
+                    ChangeDirection(EDirection.X);
+                }
+                    break;
+                case EDirection.MinusZ:
+                {
+                    ChangeDirection(EDirection.MinusX);
+                }
+                    break;
+                case EDirection.X:
+                {
+                    ChangeDirection(EDirection.MinusZ);
+                }
+                    break;
+                case EDirection.MinusX:
+                {
+                    ChangeDirection(EDirection.Z);
+                }
+                    break;
+            }
+        }
+
+        private void Explode()
+        {
+            Debug.Log("BOOM");
+        }
     }
 }

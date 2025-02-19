@@ -1,8 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
+using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.FlowMachine;
-using Game.Gameplay.GridSystem;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Game.Gameplay.Flows
 {
@@ -10,10 +10,8 @@ namespace Game.Gameplay.Flows
     {
         [SerializeField] 
         private AFlowState m_nextState;
-
-        [SerializeField] 
-        private List<Cell> m_spawnPointsCells;
-        
+        [SerializeField]
+        private string m_environmentSceneName = "Environment";
         protected override void HandleEnter()
         {
             base.HandleEnter();
@@ -23,7 +21,13 @@ namespace Game.Gameplay.Flows
         private IEnumerator LoadingRoutine()
         {
             yield return null;
-
+            var charactersManager = CharactersManager.Instance;
+            charactersManager.CreateCharactersAndPlayerControllers();
+            
+            var op = SceneManager.LoadSceneAsync(m_environmentSceneName, LoadSceneMode.Additive);
+            yield return op;
+            SceneManager.SetActiveScene(SceneManager.GetSceneByName(m_environmentSceneName));
+            
             RequestState(m_nextState);
         }
     }

@@ -1030,10 +1030,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: HomeScreen
       objectReference: {fileID: 0}
-    - target: {fileID: 243257593240635392, guid: 4edcd16398d5849448967433a7cbdbea, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8775671520492345532, guid: 4edcd16398d5849448967433a7cbdbea, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -1128,17 +1124,9 @@ PrefabInstance:
     m_TransformParent: {fileID: 827816607}
     m_Modifications:
     - target: {fileID: 672801060483618991, guid: 2a9135dce43dece4fb230f74f0d45441, type: 3}
-      propertyPath: <CharacterData>k__BackingField
-      value: 
-      objectReference: {fileID: 11400000, guid: 22ee1dc4df4ba3c4bbf457ac478610af, type: 2}
-    - target: {fileID: 672801060483618991, guid: 2a9135dce43dece4fb230f74f0d45441, type: 3}
       propertyPath: <AssociatedCharacter>k__BackingField
       value: 
       objectReference: {fileID: 1563756205}
-    - target: {fileID: 1085042591320910531, guid: 2a9135dce43dece4fb230f74f0d45441, type: 3}
-      propertyPath: <CharacterData>k__BackingField
-      value: 
-      objectReference: {fileID: 11400000, guid: c703a2161e4689f42952f4e918664f29, type: 2}
     - target: {fileID: 1085042591320910531, guid: 2a9135dce43dece4fb230f74f0d45441, type: 3}
       propertyPath: <AssociatedCharacter>k__BackingField
       value: 
@@ -1167,10 +1155,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerJoiningScreen
       objectReference: {fileID: 0}
-    - target: {fileID: 3294401831751615001, guid: 2a9135dce43dece4fb230f74f0d45441, type: 3}
-      propertyPath: <CharacterData>k__BackingField
-      value: 
-      objectReference: {fileID: 11400000, guid: 90f8c4801b806d34aa100e818206b8e9, type: 2}
     - target: {fileID: 3294401831751615001, guid: 2a9135dce43dece4fb230f74f0d45441, type: 3}
       propertyPath: <AssociatedCharacter>k__BackingField
       value: 
@@ -1295,10 +1279,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4711858665282606595, guid: 2a9135dce43dece4fb230f74f0d45441, type: 3}
-      propertyPath: <CharacterData>k__BackingField
-      value: 
-      objectReference: {fileID: 11400000, guid: e5230f81225487f459dac92cf6995416, type: 2}
     - target: {fileID: 4711858665282606595, guid: 2a9135dce43dece4fb230f74f0d45441, type: 3}
       propertyPath: <AssociatedCharacter>k__BackingField
       value: 

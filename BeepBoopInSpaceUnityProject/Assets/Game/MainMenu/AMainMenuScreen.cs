@@ -28,5 +28,10 @@ namespace Game.MainMenu
         
         protected virtual void HandleDeactivation()
         {}
+
+        private void OnDestroy()
+        {
+            Deactivate();
+        }
     }
 }

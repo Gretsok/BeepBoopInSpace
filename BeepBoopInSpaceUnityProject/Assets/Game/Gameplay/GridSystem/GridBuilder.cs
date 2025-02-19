@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
+using Game.ArchitectureTools.Manager;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace Game.Gameplay.GridSystem
 {
-    public class GridBuilder : MonoBehaviour
+    public class GridBuilder : AManager<GridBuilder>
     {
         [SerializeField]
         private Vector2Int m_gridSize = new Vector2Int(10, 10);
@@ -40,7 +42,12 @@ namespace Game.Gameplay.GridSystem
                 cells.Add(new Row());
                 for (int y = 0; y < gridSize.y; y++)
                 {
+#if UNITY_EDITOR
+                    var cell = UnityEditor.PrefabUtility.InstantiatePrefab(cellPrefab, source) as Cell;
+#else
                     var cell = Instantiate<Cell>(cellPrefab, source);
+#endif
+
                     
                     cell.transform.localPosition = new Vector3(x * cellSpacing.x, 0, y * cellSpacing.y);
                     
@@ -103,6 +110,13 @@ namespace Game.Gameplay.GridSystem
             }
             
             m_cells.Clear();
+        }
+
+        public Cell GetRandomCell()
+        {
+            var randomRowIndex = Random.Range(0, m_cells.Count);
+            var randomCellIndexInRow = Random.Range(0, m_cells[randomRowIndex].RowData.Count);
+            return m_cells[randomRowIndex].RowData[randomCellIndexInRow];
         }
     }
 }

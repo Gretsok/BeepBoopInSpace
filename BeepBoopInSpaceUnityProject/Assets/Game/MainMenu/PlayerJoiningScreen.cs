@@ -109,6 +109,15 @@ namespace Game.MainMenu
                         
             m_backButton.onClick.RemoveListener(HandleBackButtonClicked);
             m_startGameButton.onClick.RemoveListener(HandleStartGameButtonClicked);
+            
+            for (int i = m_playerJoiningPlayers.Count - 1; i >= 0; i--)
+            {
+                var controller = m_playerJoiningPlayers[i];
+                if (controller == null)
+                    continue;
+                controller.Deactivate();
+                Destroy(controller);
+            }
         }
 
         private CharacterWidget GetCharacterWidgetFor(int index)

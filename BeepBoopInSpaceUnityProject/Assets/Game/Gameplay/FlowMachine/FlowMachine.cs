@@ -37,12 +37,14 @@ namespace Game.Gameplay.FlowMachine
         {
             if (CurrentState)
             {
+                Debug.Log($"About to leave {CurrentState.name}");
                 CurrentState.Leave();
                 CurrentState.OnAnotherStateRequested -= HandleAnotherStateRequested;
             }
             CurrentState = newState;
             if (CurrentState)
             {
+                Debug.Log($"About to enter {CurrentState.name}");
                 CurrentState.OnAnotherStateRequested += HandleAnotherStateRequested;
                 CurrentState.Enter();
             }

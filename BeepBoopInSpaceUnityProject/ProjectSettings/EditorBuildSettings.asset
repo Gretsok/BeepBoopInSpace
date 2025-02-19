@@ -8,6 +8,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Game/MainMenu/MainMenu.unity
     guid: a57a0ee9f82ad024cb2d1ab1f02c23b6
+  - enabled: 1
+    path: Assets/Game/Gameplay/Levels/Arenas/TestArena/TestArena.unity
+    guid: 0bc3d4077faf5744081b93e5c2a7de5f
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

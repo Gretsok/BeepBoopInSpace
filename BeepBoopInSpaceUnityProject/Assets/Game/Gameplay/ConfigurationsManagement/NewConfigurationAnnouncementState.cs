@@ -3,22 +3,21 @@ using System.Collections;
 using Game.Gameplay.FlowMachine;
 using UnityEngine;
 
-namespace Game.Gameplay.Flows.NewRoundAnnouncement
+namespace Game.Gameplay.ConfigurationsManagement
 {
-    public class NewRoundAnnouncementState : AFlowState
+    public class NewConfigurationAnnouncementState : AFlowState
     {
-        [SerializeField]
-        private AFlowState m_nextState;
-
         [SerializeField] 
-        private float m_stateDuration = 4f;
+        private float m_duration = 2f;
+        [SerializeField]
+        private AFlowState m_nextState = null;
 
         protected override void HandleEnter()
         {
             base.HandleEnter();
             
 
-            StartCoroutine(WaitAndDo(m_stateDuration, () => RequestState(m_nextState)));
+            StartCoroutine(WaitAndDo(m_duration, () => RequestState(m_nextState)));
         }
 
         private static IEnumerator WaitAndDo(float duration, Action action)

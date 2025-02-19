@@ -32,6 +32,9 @@ namespace Game.Gameplay.CharactersManagement
                 playerController.SetCharacterPawn(character);
                 
                 character.SetModel(player.CharacterData.CharacterPrefab.transform);
+
+                m_characterPawns.Add(character);
+                m_characterPlayerControllers.Add(playerController, character);
             }
         }
     }

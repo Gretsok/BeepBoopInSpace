@@ -211,10 +211,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -294,7 +294,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 128, y: 44.8}
+  m_AnchoredPosition: {x: 128, y: 44.80005}
   m_SizeDelta: {x: 224, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3893603117171140761
@@ -845,6 +845,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4340256764383669456, guid: fbad0df965c53b94683daaa5009783aa, type: 3}
+      propertyPath: <CharacterData>k__BackingField
+      value: 
+      objectReference: {fileID: 11400000, guid: 90f8c4801b806d34aa100e818206b8e9, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -958,6 +962,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4340256764383669456, guid: fbad0df965c53b94683daaa5009783aa, type: 3}
+      propertyPath: <CharacterData>k__BackingField
+      value: 
+      objectReference: {fileID: 11400000, guid: c703a2161e4689f42952f4e918664f29, type: 2}
     - target: {fileID: 7569779506095273476, guid: fbad0df965c53b94683daaa5009783aa, type: 3}
       propertyPath: m_text
       value: Aero
@@ -1075,6 +1083,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4340256764383669456, guid: fbad0df965c53b94683daaa5009783aa, type: 3}
+      propertyPath: <CharacterData>k__BackingField
+      value: 
+      objectReference: {fileID: 11400000, guid: 22ee1dc4df4ba3c4bbf457ac478610af, type: 2}
     - target: {fileID: 7569779506095273476, guid: fbad0df965c53b94683daaa5009783aa, type: 3}
       propertyPath: m_text
       value: Milo
@@ -1192,6 +1204,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4340256764383669456, guid: fbad0df965c53b94683daaa5009783aa, type: 3}
+      propertyPath: <CharacterData>k__BackingField
+      value: 
+      objectReference: {fileID: 11400000, guid: e5230f81225487f459dac92cf6995416, type: 2}
     - target: {fileID: 7569779506095273476, guid: fbad0df965c53b94683daaa5009783aa, type: 3}
       propertyPath: m_text
       value: Turbyo
