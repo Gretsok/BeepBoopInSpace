@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.FlowMachine;
 using Game.Gameplay.GridSystem;
+using Game.Gameplay.ObjectiveManagement;
 using UnityEngine;
 
 namespace Game.Gameplay.Flows.NewRoundAnnouncement
@@ -25,6 +26,7 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
                 character.TeleportToCell(m_spawnPointsCells[i]);
             }
 
+            ObjectiveManager.Instance.SetUp();
             
             RequestState(m_nextState);
         }

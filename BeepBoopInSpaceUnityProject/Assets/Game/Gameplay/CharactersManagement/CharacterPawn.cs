@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using Game.Gameplay.GridSystem;
@@ -14,6 +15,17 @@ namespace Game.Gameplay.CharactersManagement
         [field: SerializeField]
         public Transform ModelSource { get; private set; }
 
+        private void Start()
+        {
+            GridWalker.transform.SetParent(null);
+        }
+
+        private void OnDestroy()
+        {
+            if (GridWalker)
+                Destroy(GridWalker.gameObject);
+        }
+
         public void SetModel(Transform model)
         {
             while (ModelSource.childCount > 0)
@@ -24,7 +36,8 @@ namespace Game.Gameplay.CharactersManagement
             
             Instantiate(model, ModelSource);
         }
-        
+
+        public Action<CharacterPawn, Cell> OnMove;
         public void MoveToCell(Cell cell)
         {
             if (cell == null || !cell.TryGetComponent(out CanBeWalkedOnCellComponent comp))
@@ -34,6 +47,8 @@ namespace Game.Gameplay.CharactersManagement
             
             var groundPosition = new Vector3(GridWalker.transform.position.x, 0f, GridWalker.transform.position.z);
             transform.DOJump(groundPosition, 0.5f, 1, 0.2f);
+            
+            OnMove?.Invoke(this, cell);
         }
 
         public void TeleportToCell(Cell cell)
