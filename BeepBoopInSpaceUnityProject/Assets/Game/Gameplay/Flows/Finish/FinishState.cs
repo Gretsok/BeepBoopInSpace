@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game.Gameplay.Flows.Winning
 {
-    public class WinningState : AFlowState
+    public class FinishState : AFlowState
     {
         [SerializeField]
         private AFlowState m_nextState;

@@ -3,6 +3,7 @@ using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.FlowMachine;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.ObjectiveManagement;
+using Game.Gameplay.Timer;
 using UnityEngine;
 
 namespace Game.Gameplay.Flows.NewRoundAnnouncement
@@ -27,6 +28,8 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
             }
 
             ObjectiveManager.Instance.SetUp();
+            
+            TimerManager.Instance.ResetTimer();
             
             RequestState(m_nextState);
         }

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
+using Game.Characters;
 using Game.Gameplay.GridSystem;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 namespace Game.Gameplay.CharactersManagement
 {
@@ -15,6 +15,21 @@ namespace Game.Gameplay.CharactersManagement
         [field: SerializeField]
         public Transform ModelSource { get; private set; }
 
+        public CharacterData CharacterData { get; private set; }
+
+        public void SetCharacterData(CharacterData characterData)
+        {
+            CharacterData = characterData;
+            SetModel(CharacterData.CharacterPrefab.transform);
+        }
+        
+        public int Score { get; private set; }
+
+        public void IncreaseScore()
+        {
+            ++Score;
+        }
+        
         private void Start()
         {
             GridWalker.transform.SetParent(null);
@@ -40,7 +55,7 @@ namespace Game.Gameplay.CharactersManagement
         public Action<CharacterPawn, Cell> OnMove;
         public void MoveToCell(Cell cell)
         {
-            if (cell == null || !cell.TryGetComponent(out CanBeWalkedOnCellComponent comp))
+            if (cell == null || !cell.TryGetComponent(out CanBeWalkedOnCellComponent _))
                 return;
             
             GridWalker.MoveToCell(cell);

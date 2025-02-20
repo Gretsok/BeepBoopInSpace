@@ -29,8 +29,8 @@ namespace Game.Gameplay.ObjectiveManagement
         {
             if (cell == CurrentObjectiveCell)
             {
+                pawn.IncreaseScore();
                 UpdateObjective();
-                // Give score to pawn
             }
         }
 
