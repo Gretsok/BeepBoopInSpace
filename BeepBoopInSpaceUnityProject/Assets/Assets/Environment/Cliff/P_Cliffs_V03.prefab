@@ -181,7 +181,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2036696156270420836}
-  - component: {fileID: 2860049516709590066}
+  - component: {fileID: 7992006700822705693}
   m_Layer: 0
   m_Name: P_Cliffs_V03
   m_TagString: Untagged
@@ -214,7 +214,7 @@ Transform:
   - {fileID: 3576092573548265365}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2860049516709590066
+--- !u!114 &7992006700822705693
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -223,10 +223,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 1218995895664552613}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07c0074dde18f844595f9a54e6d051ab, type: 3}
+  m_Script: {fileID: 11500000, guid: 3eb4039400bd2c14dbaae97169c51965, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slider: 0
+  Slider: 0
+  allChildren:
+  - {fileID: 4051878848048546936}
+  - {fileID: 2660753247154251335}
+  - {fileID: 3338784777002430430}
+  - {fileID: 3137882886712928611}
+  - {fileID: 364741492382319863}
+  - {fileID: 4590162536892075048}
+  - {fileID: 1553487420653911383}
+  - {fileID: 7052955088223601635}
+  - {fileID: 1066851309704100767}
+  - {fileID: 4315147669189801089}
 --- !u!1 &1553487420653911383
 GameObject:
   m_ObjectHideFlags: 0

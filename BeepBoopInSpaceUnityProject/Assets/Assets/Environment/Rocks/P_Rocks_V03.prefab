@@ -697,7 +697,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8564222903735454580}
-  - component: {fileID: 3099618271105324533}
+  - component: {fileID: 5236323586885629520}
   m_Layer: 0
   m_Name: P_Rocks_V03
   m_TagString: Untagged
@@ -730,7 +730,7 @@ Transform:
   - {fileID: 8982548428271599213}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3099618271105324533
+--- !u!114 &5236323586885629520
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -739,10 +739,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 7416942955663297160}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07c0074dde18f844595f9a54e6d051ab, type: 3}
+  m_Script: {fileID: 11500000, guid: 3eb4039400bd2c14dbaae97169c51965, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slider: 0
+  Slider: 0
+  allChildren:
+  - {fileID: 442060565061347387}
+  - {fileID: 8574087291795181899}
+  - {fileID: 2035686718106664626}
+  - {fileID: 6147657047214683328}
+  - {fileID: 6005499292549211937}
+  - {fileID: 205024451372488789}
+  - {fileID: 8590069088586741767}
+  - {fileID: 3329715479040456256}
+  - {fileID: 5726732987927911966}
+  - {fileID: 5277682052676025674}
 --- !u!1 &8574087291795181899
 GameObject:
   m_ObjectHideFlags: 0
