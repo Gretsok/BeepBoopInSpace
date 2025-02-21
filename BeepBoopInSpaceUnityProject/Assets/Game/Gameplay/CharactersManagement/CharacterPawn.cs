@@ -55,7 +55,7 @@ namespace Game.Gameplay.CharactersManagement
         public Action<CharacterPawn, Cell> OnMove;
         public void MoveToCell(Cell cell)
         {
-            if (cell == null || !cell.TryGetComponent(out CanBeWalkedOnCellComponent _))
+            if (cell == null || !cell.TryGetComponent(out CanBeWalkedOnCellComponent comp) || comp.IsLocked)
                 return;
             
             GridWalker.MoveToCell(cell);
