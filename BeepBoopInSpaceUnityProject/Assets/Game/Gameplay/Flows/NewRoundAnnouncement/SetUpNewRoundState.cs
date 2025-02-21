@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Gameplay.CameraManagement;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.FlowMachine;
 using Game.Gameplay.GridSystem;
@@ -30,6 +31,8 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
             ObjectiveManager.Instance.SetUp();
             
             TimerManager.Instance.ResetTimer();
+            
+            CameraManager.Instance.SwitchToGameplayCamera();
             
             RequestState(m_nextState);
         }

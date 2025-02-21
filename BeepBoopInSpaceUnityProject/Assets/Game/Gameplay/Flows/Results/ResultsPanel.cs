@@ -1,25 +1,42 @@
-using Game.Gameplay.CharactersManagement;
-using TMPro;
+using System.Collections;
+using Game.ArchitectureTools.Manager;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace Game.Gameplay.Flows.Results
 {
-    public class ResultsPanel : MonoBehaviour
+    public class ResultsPanel : AManager<ResultsPanel>
     {
-        [SerializeField] 
-        private TMP_Text m_text;
+        [SerializeField]
+        private Button m_backToMenuButton;
+
+        protected override IEnumerator Initialize()
+        {
+            return base.Initialize();
+            HideButton();
+        }
 
         private void OnEnable()
         {
-            var charactersManager = CharactersManager.Instance;
+            HideButton();
+        }
 
-            string content = "";
+        private void OnDisable()
+        {
+            HideButton();
+        }
 
-            foreach (var pawn in charactersManager.CharacterPawns)
-            {
-                content += $"{pawn.CharacterData.Name} : {pawn.Score} points\n";
-            }
-            m_text.text = content;
+        public void ShowButton(UnityAction buttonCallback)
+        {
+            m_backToMenuButton.onClick.AddListener(buttonCallback);
+            m_backToMenuButton.gameObject.SetActive(true);
+        }
+
+        public void HideButton()
+        {
+            m_backToMenuButton.onClick.RemoveAllListeners();
+            m_backToMenuButton.gameObject.SetActive(false);
         }
     }
 }
