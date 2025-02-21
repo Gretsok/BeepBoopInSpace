@@ -14,6 +14,10 @@ namespace Game.Gameplay.CharactersManagement
 
         [field: SerializeField]
         public Transform ModelSource { get; private set; }
+        [field: SerializeField]
+        public CharacterDestructionHandler DestructionHandler { get; private set; }
+        [field: SerializeField]
+        public CharacterVFXsHandler VFXsHandler { get; private set; }
 
         public CharacterData CharacterData { get; private set; }
 
@@ -33,6 +37,9 @@ namespace Game.Gameplay.CharactersManagement
         private void Start()
         {
             GridWalker.transform.SetParent(null);
+            DestructionHandler.SetDependencies(ModelSource, VFXsHandler);
+            
+            VFXsHandler.PlaySpawnEffect();
         }
 
         private void OnDestroy()
@@ -61,15 +68,20 @@ namespace Game.Gameplay.CharactersManagement
             GridWalker.MoveToCell(cell, this);
             
             var groundPosition = new Vector3(GridWalker.transform.position.x, 0f, GridWalker.transform.position.z);
-            transform.DOJump(groundPosition, 0.5f, 1, 0.2f);
+            m_targetPosition = groundPosition;
+            
+            transform.DOJump(m_targetPosition, 0.5f, 1, 0.2f);
             
             OnMove?.Invoke(this, cell);
         }
+
+        private Vector3 m_targetPosition;
 
         public void TeleportToCell(Cell cell)
         {
             GridWalker.MoveToCell(cell, this);
             transform.position = GridWalker.transform.position;
+            m_targetPosition = transform.position;
         }
 
         public void ChangeDirection(EDirection direction)
@@ -92,8 +104,7 @@ namespace Game.Gameplay.CharactersManagement
                     break;
             }
             
-            var groundPosition = new Vector3(transform.position.x, 0f, transform.position.z);
-            transform.DOJump(groundPosition, 0.5f, 1, 0.2f);
+            transform.DOJump(m_targetPosition, 0.5f, 1, 0.2f);
             transform.DORotateQuaternion(Quaternion.LookRotation(newForward, Vector3.up), 0.2f);
             
             CurrentDirection = direction;
@@ -149,9 +160,11 @@ namespace Game.Gameplay.CharactersManagement
 
         public void TryToPerformAction(int index)
         {
+            if (DestructionHandler.IsDestroyed)
+                return;
             KeysConfiguration.Action[index]?.Invoke();
         }
-
+        
         public enum EDirection
         {
             Z,
@@ -300,6 +313,7 @@ namespace Game.Gameplay.CharactersManagement
         private void Explode()
         {
             Debug.Log("BOOM");
+            DestructionHandler.Destroy();
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.FlowMachine;
 using UnityEngine;
 

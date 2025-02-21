@@ -2402,7 +2402,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 518909292}
-  - component: {fileID: 518909293}
+  - component: {fileID: 518909295}
   - component: {fileID: 518909294}
   m_Layer: 0
   m_Name: NewConfigurationAnnouncementState
@@ -2426,20 +2426,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 645081846}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &518909293
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 518909291}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61ab93940a211d84ba8640792cf290fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_nextState: {fileID: 645081847}
-  m_stateDuration: 1
 --- !u!114 &518909294
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2454,6 +2440,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_gameObjectsToActivateDuringState:
   - {fileID: 8221626187746911376}
+--- !u!114 &518909295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 518909291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d9c9a5725f6ff94482b75f8bf5315b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_duration: 1
+  m_nextState: {fileID: 645081847}
 --- !u!1001 &544414109
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2836,7 +2836,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_flowMachine: {fileID: 1179210594}
-  m_configurationChangeAnnouncementState: {fileID: 518909293}
+  m_configurationChangeAnnouncementState: {fileID: 518909295}
   m_changePeriod: 15
 --- !u!4 &576341874
 Transform:
