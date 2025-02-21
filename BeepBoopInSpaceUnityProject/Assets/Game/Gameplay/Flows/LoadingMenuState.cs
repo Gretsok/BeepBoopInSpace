@@ -1,4 +1,5 @@
 using Game.Gameplay.FlowMachine;
+using Game.Gameplay.LoadingScreen;
 using UnityEngine.SceneManagement;
 
 namespace Game.Gameplay.Flows
@@ -9,6 +10,7 @@ namespace Game.Gameplay.Flows
         {
             base.HandleEnter();
 
+            LoadingScreenManager.Instance?.ShowLoadingScreen();
             SceneManager.LoadSceneAsync("MainMenu");
         }
     }

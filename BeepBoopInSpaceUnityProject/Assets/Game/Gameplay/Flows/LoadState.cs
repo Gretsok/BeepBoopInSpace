@@ -1,6 +1,7 @@
 using System.Collections;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.FlowMachine;
+using Game.Gameplay.LoadingScreen;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -27,7 +28,7 @@ namespace Game.Gameplay.Flows
             var op = SceneManager.LoadSceneAsync(m_environmentSceneName, LoadSceneMode.Additive);
             yield return op;
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(m_environmentSceneName));
-            
+            LoadingScreenManager.Instance?.HideLoadingScreen();
             RequestState(m_nextState);
         }
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Game.Gameplay.LoadingScreen;
 using Game.PlayerManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -42,6 +43,7 @@ namespace Game.MainMenu
 
         private void HandleStartGameButtonClicked()
         {
+            LoadingScreenManager.Instance.ShowLoadingScreen();
             SceneManager.LoadSceneAsync(1);
         }
 

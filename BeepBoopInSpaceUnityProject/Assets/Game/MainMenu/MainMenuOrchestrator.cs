@@ -1,3 +1,4 @@
+using Game.Gameplay.LoadingScreen;
 using UnityEngine;
 
 namespace Game.MainMenu
@@ -21,6 +22,8 @@ namespace Game.MainMenu
 
             m_homeScreen.OnPlayRequested += HandlePlayRequestFromHomeScreen;
             m_joiningScreen.OnBack += HandleBackRequestFromJoiningScreen;
+            
+            LoadingScreenManager.Instance.HideLoadingScreen();
         }
 
         private void OnDestroy()
