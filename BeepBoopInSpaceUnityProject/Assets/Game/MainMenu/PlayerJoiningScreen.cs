@@ -39,10 +39,15 @@ namespace Game.MainMenu
             
             InflateWithPlayers();
             m_playerManager.ListenForNewPlayers();
+            
+            m_startGameButton.interactable = m_playerManager.Players.Count >= 2;
         }
 
         private void HandleStartGameButtonClicked()
         {
+            if (m_playerManager.Players.Count < 2)
+                return;
+            
             LoadingScreenManager.Instance.ShowLoadingScreen();
             SceneManager.LoadSceneAsync(1);
         }
@@ -55,6 +60,7 @@ namespace Game.MainMenu
 
         private void HandlePlayerJoined(PlayerManager playerManager, AbstractPlayer abstractPlayer)
         {
+            m_startGameButton.interactable = m_playerManager.Players.Count >= 2;
             InflateWithPlayers();
         }
         
@@ -62,6 +68,7 @@ namespace Game.MainMenu
         {
             if (!gameObject)
                 return;
+            m_startGameButton.interactable = m_playerManager.Players.Count >= 2;
             InflateWithPlayers();
         }
 
