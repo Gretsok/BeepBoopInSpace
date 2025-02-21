@@ -50,7 +50,7 @@ namespace Game.Gameplay.ConfigurationsManagement
             
             CurrentConfiguration.Clear();
 
-            int maxIndex = 7;
+            int maxIndex = 5;
             for (int i = 0; i < 6; i++)
             {
                 int newIndex;

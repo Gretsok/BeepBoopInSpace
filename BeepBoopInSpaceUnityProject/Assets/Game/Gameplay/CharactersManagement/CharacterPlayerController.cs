@@ -33,8 +33,6 @@ namespace Game.Gameplay.CharactersManagement
             actionsMap.FindAction("Action_4").started += HandleAction4Started;
             actionsMap.FindAction("Action_5").started += HandleAction5Started;
             actionsMap.FindAction("Action_6").started += HandleAction6Started;
-            actionsMap.FindAction("Action_7").started += HandleAction7Started;
-            actionsMap.FindAction("Action_8").started += HandleAction8Started;
             
         }
 
@@ -48,8 +46,6 @@ namespace Game.Gameplay.CharactersManagement
             actionsMap.FindAction("Action_4").started -= HandleAction4Started;
             actionsMap.FindAction("Action_5").started -= HandleAction5Started;
             actionsMap.FindAction("Action_6").started -= HandleAction6Started;
-            actionsMap.FindAction("Action_7").started -= HandleAction7Started;
-            actionsMap.FindAction("Action_8").started -= HandleAction8Started;
             
             actionsMap.Disable();
         }
@@ -82,16 +78,6 @@ namespace Game.Gameplay.CharactersManagement
         private void HandleAction6Started(InputAction.CallbackContext obj)
         {
             m_characterPawn.TryToPerformAction(5);
-        }
-
-        private void HandleAction7Started(InputAction.CallbackContext obj)
-        {
-            m_characterPawn.TryToPerformAction(6);
-        }
-
-        private void HandleAction8Started(InputAction.CallbackContext obj)
-        {
-            m_characterPawn.TryToPerformAction(7);
         }
     }
 }

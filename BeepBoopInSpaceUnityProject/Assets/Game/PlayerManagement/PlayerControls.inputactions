@@ -97,24 +97,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "Action_7",
-                    "type": "Button",
-                    "id": "60809b96-9f1d-4433-bdef-5751b8b5ff88",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Action_8",
-                    "type": "Button",
-                    "id": "ae49f5ed-d1c5-4925-ad83-7e0a5ff979c7",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -247,50 +229,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Action_6",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c91b3d22-cb08-4ca5-a861-8d9d007154dd",
-                    "path": "<Gamepad>/rightTrigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Action_7",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "0fbd378c-d852-483c-8a98-75cd5a4a6d6c",
-                    "path": "<Keyboard>/r",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Action_7",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "e3bee69d-d632-465a-a852-a1583fbd191d",
-                    "path": "<Gamepad>/leftTrigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Action_8",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c8f2bc01-b6b8-4700-9421-9f90eb0cd606",
-                    "path": "<Keyboard>/f",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Action_8",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
