@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <CharacterPrefab>k__BackingField: {fileID: 9215793098723920122, guid: f824197bf647dc349b88a05e6ab6328f, type: 3}
   <Name>k__BackingField: Milo
+  <CharacterColor>k__BackingField: {r: 0.24705884, g: 0.81568635, b: 0.79215693, a: 1}

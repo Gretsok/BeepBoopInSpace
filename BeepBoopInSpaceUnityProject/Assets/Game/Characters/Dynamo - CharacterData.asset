@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <CharacterPrefab>k__BackingField: {fileID: 2278166290751912373, guid: 24963b147d895464bb08d9c62fc3f30e, type: 3}
   <Name>k__BackingField: Dynamo
+  <CharacterColor>k__BackingField: {r: 0.6445405, g: 0.9150943, b: 0.26330543, a: 1}

@@ -9,5 +9,7 @@ namespace Game.Characters
         public GameObject CharacterPrefab { get; private set; }
         [field: SerializeField]
         public string Name { get; private set; }
+        [field: SerializeField]
+        public Color CharacterColor { get; private set; }
     }
 }

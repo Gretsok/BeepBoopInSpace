@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <CharacterPrefab>k__BackingField: {fileID: 3634131481852056691, guid: 6713b253c738e914d87e35267f6d7272, type: 3}
   <Name>k__BackingField: Turbyo
+  <CharacterColor>k__BackingField: {r: 1, g: 0.9515192, b: 0.19339621, a: 1}

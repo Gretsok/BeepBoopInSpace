@@ -55,10 +55,10 @@ namespace Game.Gameplay.CharactersManagement
         public Action<CharacterPawn, Cell> OnMove;
         public void MoveToCell(Cell cell)
         {
-            if (cell == null || !cell.TryGetComponent(out CanBeWalkedOnCellComponent comp) || comp.IsLocked)
+            if (cell == null || !cell.TryGetComponent(out CanBeWalkedOnCellComponent comp) || comp.PawnOnCell)
                 return;
             
-            GridWalker.MoveToCell(cell);
+            GridWalker.MoveToCell(cell, this);
             
             var groundPosition = new Vector3(GridWalker.transform.position.x, 0f, GridWalker.transform.position.z);
             transform.DOJump(groundPosition, 0.5f, 1, 0.2f);
@@ -68,7 +68,7 @@ namespace Game.Gameplay.CharactersManagement
 
         public void TeleportToCell(Cell cell)
         {
-            GridWalker.MoveToCell(cell);
+            GridWalker.MoveToCell(cell, this);
             transform.position = GridWalker.transform.position;
         }
 
