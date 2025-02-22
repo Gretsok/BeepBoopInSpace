@@ -18,6 +18,8 @@ namespace Game.Gameplay.CharactersManagement
         public CharacterDestructionHandler DestructionHandler { get; private set; }
         [field: SerializeField]
         public CharacterVFXsHandler VFXsHandler { get; private set; }
+        [field: SerializeField]
+        public CharacterAnimationsHandler AnimationsHandler { get; private set; }
 
         public CharacterData CharacterData { get; private set; }
 
@@ -48,7 +50,7 @@ namespace Game.Gameplay.CharactersManagement
                 Destroy(GridWalker.gameObject);
         }
 
-        public void SetModel(Transform model)
+        public void SetModel(Transform modelPrefab)
         {
             while (ModelSource.childCount > 0)
             {
@@ -56,7 +58,7 @@ namespace Game.Gameplay.CharactersManagement
                 Destroy(child.gameObject);
             }
             
-            Instantiate(model, ModelSource);
+            AnimationsHandler = Instantiate(modelPrefab, ModelSource).GetComponent<CharacterAnimationsHandler>();
         }
 
         public Action<CharacterPawn, Cell> OnMove;
@@ -72,6 +74,7 @@ namespace Game.Gameplay.CharactersManagement
             
             transform.DOJump(m_targetPosition, 0.5f, 1, 0.2f);
             
+            AnimationsHandler.Move();
             OnMove?.Invoke(this, cell);
         }
 
@@ -106,6 +109,8 @@ namespace Game.Gameplay.CharactersManagement
             
             transform.DOJump(m_targetPosition, 0.5f, 1, 0.2f);
             transform.DORotateQuaternion(Quaternion.LookRotation(newForward, Vector3.up), 0.2f);
+            
+            AnimationsHandler.Squash();
             
             CurrentDirection = direction;
         }

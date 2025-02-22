@@ -100,6 +100,7 @@ MonoBehaviour:
   <ModelSource>k__BackingField: {fileID: 7048431492476794205}
   <DestructionHandler>k__BackingField: {fileID: 789259537556289983}
   <VFXsHandler>k__BackingField: {fileID: 2901552922222585421}
+  <AnimationsHandler>k__BackingField: {fileID: 0}
 --- !u!1 &6167329796168025976
 GameObject:
   m_ObjectHideFlags: 0

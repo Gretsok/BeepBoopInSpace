@@ -360,7 +360,7 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
-  - m_Name: Loose
+  - m_Name: Lose
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -392,7 +392,7 @@ AnimatorController:
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
   - serializedVersion: 5
-    m_Name: Move
+    m_Name: StretchAndSquash
     m_StateMachine: {fileID: 4443456809022099456}
     m_Mask: {fileID: 0}
     m_Motions: []
@@ -412,7 +412,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: Loose
+    m_ConditionEvent: Lose
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 7008785198920089493}
@@ -491,13 +491,13 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: -1527876507552713206}
-    m_Position: {x: 370, y: 120, z: 0}
+    m_Position: {x: 290, y: 120, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 8462764671625660073}
-    m_Position: {x: 360, y: 310, z: 0}
+    m_Position: {x: 280, y: 310, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7008785198920089493}
-    m_Position: {x: 660, y: 220, z: 0}
+    m_Position: {x: 580, y: 220, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -515,17 +515,17 @@ AnimatorStateMachine:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Move
+  m_Name: StretchAndSquash
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: 6933773223844389621}
-    m_Position: {x: 253.32921, y: 112.07335, z: 0}
+    m_Position: {x: 330, y: 110, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -492974286077383791}
-    m_Position: {x: 350, y: -10, z: 0}
+    m_Position: {x: 400, y: -10, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7456352724143997961}
-    m_Position: {x: 780, y: 10, z: 0}
+    m_Position: {x: 630, y: -30, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -628,7 +628,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 2
-    m_ConditionEvent: Loose
+    m_ConditionEvent: Lose
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -1527876507552713206}

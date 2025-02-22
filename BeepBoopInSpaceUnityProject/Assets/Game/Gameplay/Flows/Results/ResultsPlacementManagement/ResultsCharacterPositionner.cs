@@ -40,6 +40,8 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
 
         public CharacterPawn Character { get; private set; }
 
+        public CharacterAnimationsHandler ResultCharacter { get; private set; }
+        
         private void Awake()
         {
             DOTween.Init();
@@ -68,7 +70,7 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
                 Destroy(m_modelContainer.GetChild(i).gameObject);
             }
 
-            Instantiate(pawn.CharacterData.CharacterPrefab, m_modelContainer);
+            ResultCharacter = Instantiate(pawn.CharacterData.CharacterPrefab, m_modelContainer).GetComponent<CharacterAnimationsHandler>();
             
             
             m_textName.text = pawn.CharacterData.Name;

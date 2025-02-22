@@ -58,12 +58,17 @@ namespace Game.Gameplay.Flows.Results
             
             m_currentPositionner.Display(true, true);
             
+            
             if (m_currentViewedCharacterIndex > 0)
             {
+                character.AnimationsHandler.Lose();
+                m_currentPositionner.ResultCharacter.Lose();
                 Invoke(nameof(ViewingNextCharacter), m_timeToLookAtCharactersByRank[m_currentViewedCharacterIndex]);
             }
             else
             {
+                character.AnimationsHandler.Win();
+                m_currentPositionner.ResultCharacter.Win();
                 Invoke(nameof(HandleEndOfCloseUps), m_timeToLookAtCharactersByRank[0]);
             }
         }
