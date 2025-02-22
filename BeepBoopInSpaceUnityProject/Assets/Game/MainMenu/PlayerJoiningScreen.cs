@@ -14,10 +14,7 @@ namespace Game.MainMenu
         [SerializeField] 
         private CanvasGroup m_container;
 
-        [SerializeField] private CharacterWidget m_aeroWidget;
-        [SerializeField] private CharacterWidget m_miloWidget;
-        [SerializeField] private CharacterWidget m_turbyoWidget;
-        [SerializeField] private CharacterWidget m_dynamoWidget;
+        [SerializeField] private List<CharacterWidget> m_widgets;
 
         [SerializeField] private Button m_backButton;
         [SerializeField] private Button m_startGameButton;
@@ -41,11 +38,23 @@ namespace Game.MainMenu
             
             m_backButton.onClick.AddListener(HandleBackButtonClicked);
             m_startGameButton.onClick.AddListener(HandleStartGameButtonClicked);
+
+            m_widgets.ForEach(widget => widget.OnCharacterDataUpdated += HandleCharacterDataUpdated);
             
             InflateWithPlayers();
             m_playerManager.ListenForNewPlayers();
             
-            m_startGameButton.interactable = m_playerManager.Players.Count >= 2;
+            UpdateStartButtonState();
+        }
+
+        private void UpdateStartButtonState()
+        {
+            m_startGameButton.interactable = m_playerManager.Players.Count >= 2 && m_widgets.TrueForAll(widget => widget.CanPlay || !widget.IsActivated);
+        }
+
+        private void HandleCharacterDataUpdated()
+        {
+            InflateWithPlayers();
         }
 
         private void HandleStartGameButtonClicked()
@@ -65,7 +74,7 @@ namespace Game.MainMenu
 
         private void HandlePlayerJoined(PlayerManager playerManager, AbstractPlayer abstractPlayer)
         {
-            m_startGameButton.interactable = m_playerManager.Players.Count >= 2;
+            UpdateStartButtonState();
             InflateWithPlayers();
             m_playerConnectedAudioSource.Play();
         }
@@ -74,7 +83,7 @@ namespace Game.MainMenu
         {
             if (!gameObject)
                 return;
-            m_startGameButton.interactable = m_playerManager.Players.Count >= 2;
+            UpdateStartButtonState();
             InflateWithPlayers();
         }
 
@@ -94,19 +103,27 @@ namespace Game.MainMenu
                 var player = m_playerManager.Players[i];
                 
                 var playerController = gameObject.AddComponent<PlayerJoiningPlayerController>();
-                var characterWidget = GetCharacterWidgetFor(i);
+                var characterWidget = m_widgets[i];
                 playerController.SetDependencies(player, characterWidget);
                 characterWidget.Activate();
                 playerController.Activate();
                 m_playerJoiningPlayers.Add(playerController);
             }
+            
+            for (int i = 0; i < m_playerManager.Players.Count; i++)
+            {
+                var characterWidget = m_widgets[i];
+                characterWidget.UpdateModel();
+            }
 
             for (int i = m_playerManager.Players.Count; i < 4; i++)
             {
-                var characterWidget = GetCharacterWidgetFor(i);
+                var characterWidget = m_widgets[i];
                 
                 characterWidget.Deactivate();
             }
+            
+            UpdateStartButtonState();
         }
 
         protected override void HandleDeactivation()
@@ -133,22 +150,6 @@ namespace Game.MainMenu
                 controller.Deactivate();
                 Destroy(controller);
             }
-        }
-
-        private CharacterWidget GetCharacterWidgetFor(int index)
-        {
-            switch (index)
-            {
-                case 0:
-                    return m_aeroWidget;
-                case 1:
-                    return m_miloWidget;
-                case 2:
-                    return m_turbyoWidget;
-                case 3:
-                    return m_dynamoWidget;
-            }
-            return null;
         }
     }
 }

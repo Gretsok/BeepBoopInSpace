@@ -145,10 +145,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4265535832078493826}
+  - component: {fileID: 5172448027585276271}
   - component: {fileID: 7397805276314529081}
   - component: {fileID: 3960316988754630709}
   - component: {fileID: 2661923684727355902}
-  - component: {fileID: 5172448027585276271}
   m_Layer: 0
   m_Name: PlayerJoiningScreen
   m_TagString: Untagged
@@ -177,6 +177,27 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &5172448027585276271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911328440338922893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aec6c457d1a7e364ca6f53ed7374c691, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_container: {fileID: 1652179661781672350}
+  m_widgets:
+  - {fileID: 1085042591320910531}
+  - {fileID: 672801060483618991}
+  - {fileID: 4711858665282606595}
+  - {fileID: 3294401831751615001}
+  m_backButton: {fileID: 6526020362685332762}
+  m_startGameButton: {fileID: 7534811382181699038}
+  m_playerConnectedAudioSource: {fileID: 2423498302390193095}
 --- !u!223 &7397805276314529081
 Canvas:
   m_ObjectHideFlags: 0
@@ -240,26 +261,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &5172448027585276271
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1911328440338922893}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aec6c457d1a7e364ca6f53ed7374c691, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_container: {fileID: 1652179661781672350}
-  m_aeroWidget: {fileID: 1085042591320910531}
-  m_miloWidget: {fileID: 672801060483618991}
-  m_turbyoWidget: {fileID: 4711858665282606595}
-  m_dynamoWidget: {fileID: 3294401831751615001}
-  m_backButton: {fileID: 6526020362685332762}
-  m_startGameButton: {fileID: 7534811382181699038}
-  m_playerConnectedAudioSource: {fileID: 2423498302390193095}
 --- !u!1 &1981161282885091861
 GameObject:
   m_ObjectHideFlags: 0

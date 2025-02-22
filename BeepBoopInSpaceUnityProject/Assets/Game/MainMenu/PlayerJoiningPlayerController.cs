@@ -20,6 +20,13 @@ namespace Game.MainMenu
         public void Activate()
         {
             m_player.PlayerInput.actions.FindActionMap("MainMenu").FindAction("Pop").started += HandlePopStarted;
+            m_player.PlayerInput.actions.FindActionMap("MainMenu").FindAction("SwitchToNextCharacter").started += HandleSwitchToNextCharacterStarted;
+        }
+
+        private void HandleSwitchToNextCharacterStarted(InputAction.CallbackContext obj)
+        {
+            m_widget.SwitchToNextCharacter();
+            m_player.SetCharacterData(m_widget.CharacterData);
         }
 
         private void HandlePopStarted(InputAction.CallbackContext obj)
@@ -30,6 +37,7 @@ namespace Game.MainMenu
         public void Deactivate()
         {
             m_player.PlayerInput.actions.FindActionMap("MainMenu").FindAction("Pop").started -= HandlePopStarted;
+            m_player.PlayerInput.actions.FindActionMap("MainMenu").FindAction("SwitchToNextCharacter").started -= HandleSwitchToNextCharacterStarted;
         }
 
 
