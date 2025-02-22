@@ -820,7 +820,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_nextState: {fileID: 645081847}
   m_waitDurationOnStart: 1
-  m_showDurationPerCharacter: 3
+  m_showDurationPerCharacter: 2
   m_audioPlayer1: {fileID: 615105055}
   m_audioPlayer2: {fileID: 964326906}
   m_hologrammeAudioPlayer: {fileID: 571019415}

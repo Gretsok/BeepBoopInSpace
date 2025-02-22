@@ -11,5 +11,7 @@ namespace Game.Characters
         public string Name { get; private set; }
         [field: SerializeField]
         public Color CharacterColor { get; private set; }
+        [field: SerializeField]
+        public Sprite NameplateSprite { get; private set; }
     }
 }

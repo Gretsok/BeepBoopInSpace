@@ -5,6 +5,7 @@ using Game.Gameplay.CharactersManagement;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game.Gameplay.Flows.NewRoundAnnouncement
 {
@@ -20,8 +21,6 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
 
         [SerializeField]
         private Canvas m_nameCanvas;
-        [SerializeField]
-        private TMP_Text m_nameText;
 
         private Vector3 m_defaultNameCanvasScale;
 
@@ -66,7 +65,7 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
             
             characterPawn.RumbleHandler.PlayItsMeRumble();
             m_canvasPositionnerRoot.transform.position = characterPawn.transform.position;
-            m_nameText.text = characterPawn.CharacterData.Name;
+            m_nameCanvas.GetComponent<Image>().sprite = characterPawn.CharacterData.NameplateSprite;
             m_nameCanvas.transform.DOKill();
             m_nameCanvas.transform.DOScale(Vector3.one * m_defaultNameCanvasScale.x, 0.3f).SetDelay(0.2f).SetEase(Ease.InOutSine);
         }
@@ -78,7 +77,6 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
                 .SetEase(Ease.InCubic)
                 .onComplete += () =>
             {
-                m_nameText.text = "";
                 onComplete?.Invoke();
                 IsNameCanvasHidden = true;
             };

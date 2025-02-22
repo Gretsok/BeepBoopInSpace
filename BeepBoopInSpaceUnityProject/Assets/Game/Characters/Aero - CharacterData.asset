@@ -15,3 +15,4 @@ MonoBehaviour:
   <CharacterPrefab>k__BackingField: {fileID: 5124372139074820205, guid: 891d34048abb2d445966a82fc018f161, type: 3}
   <Name>k__BackingField: Aero
   <CharacterColor>k__BackingField: {r: 1, g: 0.4020164, b: 0, a: 1}
+  <NameplateSprite>k__BackingField: {fileID: 21300000, guid: 46c1d3a103b2ab84d974221c6bacfc2b, type: 3}

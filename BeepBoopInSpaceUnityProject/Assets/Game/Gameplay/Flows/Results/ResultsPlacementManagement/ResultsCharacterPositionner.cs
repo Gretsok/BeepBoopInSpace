@@ -12,8 +12,6 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
     public class ResultsCharacterPositionner : MonoBehaviour
     {
         [SerializeField] 
-        private TMP_Text m_textName;
-        [SerializeField] 
         private TMP_Text m_scoreText;
 
         [SerializeField] 
@@ -81,15 +79,17 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
             }
 
             ResultCharacter = Instantiate(pawn.CharacterData.CharacterPrefab, m_modelContainer).GetComponent<CharacterAnimationsHandler>();
-            
-            
-            m_textName.text = pawn.CharacterData.Name;
+
+
+            m_nameCanvas.GetComponent<Image>().sprite = pawn.CharacterData.NameplateSprite; 
+
             m_scoreText.text = $"{pawn.Score.ToString()} Points";
             m_rankImage.sprite = m_rankImages[rankIndex];
             
             IsLast = isLast;
         }
 
+        
         public void Display(bool displayUI, bool activateCam)
         {
             if (displayUI)
