@@ -5,6 +5,7 @@ using Game.SFXManagement;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
@@ -48,6 +49,9 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
         public CharacterPawn Character { get; private set; }
 
         public CharacterAnimationsHandler ResultCharacter { get; private set; }
+
+        [SerializeField]
+        private UnityEvent m_onDisplayUI;
         
         private void Awake()
         {
@@ -105,6 +109,8 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
                 m_rankImage.transform.DORotate(Vector3.forward * 360f, 0.2f, RotateMode.LocalAxisAdd).SetDelay(0.2f).SetEase(Ease.InOutSine);
                 
                 m_hologrammeAudioPlayer.Play();
+                
+                m_onDisplayUI?.Invoke();
             } 
             else
             {
