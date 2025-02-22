@@ -4,6 +4,7 @@ using Game.Gameplay.CameraManagement;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.FlowMachine;
 using Game.Gameplay.Flows.Results.ResultsPlacementManagement;
+using Game.Gameplay.MusicsManagement;
 using UnityEngine;
 
 namespace Game.Gameplay.Flows.Results
@@ -86,7 +87,7 @@ namespace Game.Gameplay.Flows.Results
                 positionner.Display(true, false);
             }
             CameraManager.Instance.SwitchToGlobalViewResultsCamera();
-            
+            MusicsManager.Instance.StartPlayingResultsMusic();
             ResultsPanel.Instance.ShowButton(() => RequestState(m_nextState));
         }
     }

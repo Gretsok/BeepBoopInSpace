@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.FlowMachine;
+using Game.Gameplay.MusicsManagement;
 using Game.SFXManagement;
 using UnityEngine;
 
@@ -52,9 +54,17 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
                 yield return new WaitForSeconds(m_showDurationPerCharacter/2);
             }
 
-            m_audioPlayer2.Play();
+            var audioSource = m_audioPlayer2.PlayWithAudioSourceReturned();
+            yield return WaitForAudioSourceToEnd(audioSource,() => MusicsManager.Instance.StartPlayingGameplayMusics());
             introductionManager.Stop();
             RequestState(m_nextState);
+        }
+
+        private IEnumerator WaitForAudioSourceToEnd(AudioSource source, Action onComplete)
+        {
+            while (source.isPlaying)
+                yield return null;
+            onComplete?.Invoke();
         }
     }
 }

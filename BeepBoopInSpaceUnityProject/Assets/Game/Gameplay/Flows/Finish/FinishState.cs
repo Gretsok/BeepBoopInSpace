@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Game.Gameplay.FlowMachine;
+using Game.Gameplay.MusicsManagement;
 using Game.SFXManagement;
 using UnityEngine;
 
@@ -21,6 +22,8 @@ namespace Game.Gameplay.Flows.Finish
             base.HandleEnter();
             
             m_endAudioPlayer.Play();
+            MusicsManager.Instance.StopPlayingGameplayMusics();
+            
             StartCoroutine(WaitAndDo(m_stateDuration, () => RequestState(m_nextState)));
         }
 

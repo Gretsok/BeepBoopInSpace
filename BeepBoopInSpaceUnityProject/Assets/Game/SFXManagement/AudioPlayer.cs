@@ -20,5 +20,15 @@ namespace Game.SFXManagement
             }
             AudioManager.Instance.Play2DSound(this);
         }
+
+        public AudioSource PlayWithAudioSourceReturned()
+        {
+            if (!AudioManager.Instance)
+            {
+                Debug.LogError("No AudioManager found");
+                return null;
+            }
+            return AudioManager.Instance.Play2DSound(this);
+        }
     }
 }

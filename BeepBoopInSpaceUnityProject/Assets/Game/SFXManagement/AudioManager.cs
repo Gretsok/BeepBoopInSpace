@@ -19,7 +19,7 @@ namespace Game.SFXManagement
 
         private readonly List<AudioSource> m_audioSources = new();
 
-        public void Play2DSound(AudioPlayer audioPlayer)
+        public AudioSource Play2DSound(AudioPlayer audioPlayer)
         {
             var audioSource = m_audioPool.GetAudioSource();
             audioSource.resource = audioPlayer.AudioResource;
@@ -27,6 +27,7 @@ namespace Game.SFXManagement
             audioSource.Play();
             m_audioSources.Add(audioSource);
             audioSource.gameObject.name = $"{audioPlayer.AudioResource.name}_AudioSource";
+            return audioSource;
         }
 
         private void Update()
