@@ -62,12 +62,14 @@ namespace Game.Gameplay.Flows.Results
             if (m_currentViewedCharacterIndex > 0)
             {
                 character.AnimationsHandler.Lose();
+                character.RumbleHandler.PlayLoseRumble();
                 m_currentPositionner.ResultCharacter.Lose();
                 Invoke(nameof(ViewingNextCharacter), m_timeToLookAtCharactersByRank[m_currentViewedCharacterIndex]);
             }
             else
             {
                 character.AnimationsHandler.Win();
+                character.RumbleHandler.PlayWinRumble();
                 m_currentPositionner.ResultCharacter.Win();
                 Invoke(nameof(HandleEndOfCloseUps), m_timeToLookAtCharactersByRank[0]);
             }

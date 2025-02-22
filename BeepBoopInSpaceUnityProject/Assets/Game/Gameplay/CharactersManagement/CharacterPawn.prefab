@@ -82,6 +82,7 @@ Transform:
   - {fileID: 7048431492476794205}
   - {fileID: 6684012847226120008}
   - {fileID: 6278761842438159147}
+  - {fileID: 4397561707874150475}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &823131769837130883
@@ -101,6 +102,7 @@ MonoBehaviour:
   <DestructionHandler>k__BackingField: {fileID: 789259537556289983}
   <VFXsHandler>k__BackingField: {fileID: 2901552922222585421}
   <AnimationsHandler>k__BackingField: {fileID: 0}
+  <RumbleHandler>k__BackingField: {fileID: 921332162017450596}
 --- !u!1 &6167329796168025976
 GameObject:
   m_ObjectHideFlags: 0
@@ -177,6 +179,56 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2028030414153412368}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7962963158807425181
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4397561707874150475}
+  - component: {fileID: 921332162017450596}
+  m_Layer: 0
+  m_Name: RumbleHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4397561707874150475
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7962963158807425181}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2028030414153412368}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &921332162017450596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7962963158807425181}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a9a7eb310f8edd47ae15d85b33771e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_explodedRumbleData: {fileID: 11400000, guid: 1ed561dec8909054181930f6922ccb16, type: 2}
+  m_itsMeRumbleData: {fileID: 11400000, guid: 8883fe409555213468ffc561ca645c48, type: 2}
+  m_winRumbleData: {fileID: 11400000, guid: f00fbb45297749b4094d036f2cfae91c, type: 2}
+  m_loseRumbleData: {fileID: 11400000, guid: 959e48ccefdd62043b7395bdd6b0331d, type: 2}
+  m_moveRumbleData: {fileID: 11400000, guid: b4333556e5c015741980650522879397, type: 2}
+  m_turnRumbleData: {fileID: 11400000, guid: e4b3844b91eebf446bd5113b776612c0, type: 2}
 --- !u!1 &9006474903038113876
 GameObject:
   m_ObjectHideFlags: 0

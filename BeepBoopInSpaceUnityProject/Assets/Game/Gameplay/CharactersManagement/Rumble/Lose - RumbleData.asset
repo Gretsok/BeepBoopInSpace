@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab445d37b9a3c7341b0e29ddedd53f16, type: 3}
+  m_Name: Lose - RumbleData
+  m_EditorClassIdentifier: 
+  <RumbleDuration>k__BackingField: 0.4
+  <LowFrequenciesLimits>k__BackingField: {x: 0.2, y: 0.5}
+  <LowFrequenciesCurve>k__BackingField:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: -4.5070763
+      outSlope: -4.5070763
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.040816322
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -0.59021217
+      outSlope: -0.59021217
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.31168836
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  <HighFrequenciesLimits>k__BackingField: {x: 0, y: 0}
+  <HighFrequenciesCurve>k__BackingField:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

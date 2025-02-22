@@ -1,3 +1,4 @@
+using Game.Gameplay.CharactersManagement.Rumble;
 using UnityEngine;
 
 namespace Game.Gameplay.CharactersManagement
@@ -6,11 +7,13 @@ namespace Game.Gameplay.CharactersManagement
     {
         private Transform m_model;
         private CharacterVFXsHandler m_VFXsHandler;
+        private CharacterRumbleHandler m_rumbleHandler;
 
-        public void SetDependencies(Transform model, CharacterVFXsHandler vfxHandler)
+        public void SetDependencies(Transform model, CharacterVFXsHandler vfxHandler, CharacterRumbleHandler rumbleHandler)
         {
             m_model = model;
             m_VFXsHandler = vfxHandler;
+            m_rumbleHandler = rumbleHandler;
         }
 
         [SerializeField]
@@ -25,6 +28,7 @@ namespace Game.Gameplay.CharactersManagement
             m_model.gameObject.SetActive(false);
             
             m_VFXsHandler.PlayExplosionEffect();
+            m_rumbleHandler.PlayExplodedRumble();
             
             Invoke(nameof(Respawn), m_destructionDuration);
         }

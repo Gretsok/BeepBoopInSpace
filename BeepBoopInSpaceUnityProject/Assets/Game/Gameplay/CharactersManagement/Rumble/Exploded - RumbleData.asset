@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab445d37b9a3c7341b0e29ddedd53f16, type: 3}
+  m_Name: Exploded - RumbleData
+  m_EditorClassIdentifier: 
+  <RumbleDuration>k__BackingField: 1
+  <LowFrequenciesLimits>k__BackingField: {x: 0.25, y: 0.9}
+  <LowFrequenciesCurve>k__BackingField:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.51666665
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -3.4219565
+      outSlope: -3.4219565
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.09166664
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  <HighFrequenciesLimits>k__BackingField: {x: 0, y: 0.9}
+  <HighFrequenciesCurve>k__BackingField:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: -2.7290533
+      outSlope: -2.7290533
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.051948052
+    - serializedVersion: 3
+      time: 0.99816895
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

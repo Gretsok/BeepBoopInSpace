@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using Game.Characters;
+using Game.Gameplay.CharactersManagement.Rumble;
 using Game.Gameplay.GridSystem;
 using UnityEngine;
 
@@ -20,7 +21,8 @@ namespace Game.Gameplay.CharactersManagement
         public CharacterVFXsHandler VFXsHandler { get; private set; }
         [field: SerializeField]
         public CharacterAnimationsHandler AnimationsHandler { get; private set; }
-
+        [field: SerializeField]
+        public CharacterRumbleHandler RumbleHandler { get; private set; }
         public CharacterData CharacterData { get; private set; }
 
         public void SetCharacterData(CharacterData characterData)
@@ -39,9 +41,11 @@ namespace Game.Gameplay.CharactersManagement
         private void Start()
         {
             GridWalker.transform.SetParent(null);
-            DestructionHandler.SetDependencies(ModelSource, VFXsHandler);
+            DestructionHandler.SetDependencies(ModelSource, VFXsHandler, RumbleHandler);
             
             VFXsHandler.PlaySpawnEffect();
+            
+            RumbleHandler.SetDependencies(this);
         }
 
         private void OnDestroy()
@@ -75,6 +79,7 @@ namespace Game.Gameplay.CharactersManagement
             transform.DOJump(m_targetPosition, 0.5f, 1, 0.2f);
             
             AnimationsHandler.Move();
+            RumbleHandler.PlayMoveRumble();
             OnMove?.Invoke(this, cell);
         }
 
@@ -110,6 +115,7 @@ namespace Game.Gameplay.CharactersManagement
             transform.DOJump(m_targetPosition, 0.5f, 1, 0.2f);
             transform.DORotateQuaternion(Quaternion.LookRotation(newForward, Vector3.up), 0.2f);
             
+            RumbleHandler.PlayTurnRumble();
             AnimationsHandler.Squash();
             
             CurrentDirection = direction;

@@ -64,6 +64,7 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
                 m_cam01.gameObject.SetActive(false);
             }
             
+            characterPawn.RumbleHandler.PlayItsMeRumble();
             m_canvasPositionnerRoot.transform.position = characterPawn.transform.position;
             m_nameText.text = characterPawn.CharacterData.Name;
             m_nameCanvas.transform.DOKill();

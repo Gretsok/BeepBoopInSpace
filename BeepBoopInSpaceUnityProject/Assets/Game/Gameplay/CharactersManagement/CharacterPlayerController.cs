@@ -14,6 +14,7 @@ namespace Game.Gameplay.CharactersManagement
         }
         
         private AbstractPlayer m_player;
+        public AbstractPlayer Player => m_player;
 
         public void SetPlayer(AbstractPlayer player)
         {
