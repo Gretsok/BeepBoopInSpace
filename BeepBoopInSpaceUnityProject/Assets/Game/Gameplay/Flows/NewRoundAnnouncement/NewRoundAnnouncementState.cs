@@ -1,6 +1,7 @@
 using System.Collections;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.FlowMachine;
+using Game.SFXManagement;
 using UnityEngine;
 
 namespace Game.Gameplay.Flows.NewRoundAnnouncement
@@ -10,8 +11,19 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
         [SerializeField]
         private AFlowState m_nextState;
 
+        [SerializeField]
+        private float m_waitDurationOnStart = 1f;
         [SerializeField] 
         private float m_showDurationPerCharacter = 3f;
+        
+        [SerializeField]
+        private AudioPlayer m_audioPlayer1;
+        [SerializeField]
+        private AudioPlayer m_audioPlayer2;
+        
+        [SerializeField]
+        private AudioPlayer m_hologrammeAudioPlayer;
+        
         
         protected override void HandleEnter()
         {
@@ -22,6 +34,8 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
 
         private IEnumerator IntroductionRoutine()
         {
+            yield return new WaitForSeconds(m_waitDurationOnStart);
+            
             var charactersManager = CharactersManager.Instance;
             var introductionManager = IntroductionManager.Instance;
 
@@ -29,9 +43,16 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
             {
                 var characterPawn = charactersManager.CharacterPawns[i];
                 introductionManager.InflateCharacterPawn(characterPawn);
-                yield return new WaitForSeconds(m_showDurationPerCharacter);
+                
+                m_hologrammeAudioPlayer.Play();
+                
+                yield return new WaitForSeconds(m_showDurationPerCharacter/2);
+                if (i == charactersManager.CharacterPawns.Count - 1)
+                    m_audioPlayer1.Play();
+                yield return new WaitForSeconds(m_showDurationPerCharacter/2);
             }
 
+            m_audioPlayer2.Play();
             introductionManager.Stop();
             RequestState(m_nextState);
         }

@@ -40,7 +40,7 @@ namespace Game.Gameplay.Flows.Results
             for (int i = 0; i < m_orderedCharacters.Count; i++)
             {
                 var character = m_orderedCharacters[i];
-                m_resultsPlacementsManager.SetCharacterAt(character, i);
+                m_resultsPlacementsManager.SetCharacterAt(character, i, i == m_orderedCharacters.Count - 1);
             }
             
             m_currentViewedCharacterIndex = m_orderedCharacters.Count;

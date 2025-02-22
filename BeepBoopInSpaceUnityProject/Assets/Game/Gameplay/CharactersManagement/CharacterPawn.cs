@@ -23,6 +23,9 @@ namespace Game.Gameplay.CharactersManagement
         public CharacterAnimationsHandler AnimationsHandler { get; private set; }
         [field: SerializeField]
         public CharacterRumbleHandler RumbleHandler { get; private set; }
+        [field: SerializeField]
+        public CharacterSFXsHandler SFXsHandler { get; private set; }
+        
         public CharacterData CharacterData { get; private set; }
 
         public void SetCharacterData(CharacterData characterData)
@@ -41,7 +44,7 @@ namespace Game.Gameplay.CharactersManagement
         private void Start()
         {
             GridWalker.transform.SetParent(null);
-            DestructionHandler.SetDependencies(ModelSource, VFXsHandler, RumbleHandler);
+            DestructionHandler.SetDependencies(ModelSource, VFXsHandler, RumbleHandler, SFXsHandler);
             
             VFXsHandler.PlaySpawnEffect();
             
@@ -69,7 +72,14 @@ namespace Game.Gameplay.CharactersManagement
         public void MoveToCell(Cell cell)
         {
             if (cell == null || !cell.TryGetComponent(out CanBeWalkedOnCellComponent comp) || comp.PawnOnCell)
+            {
+                AnimationsHandler.Move();
+                transform.DOJump(m_targetPosition, 0.5f, 1, 0.2f);
+                RumbleHandler.PlayMoveRumble();
+                SFXsHandler.PlayCannotMoveAudio();
+
                 return;
+            }
             
             GridWalker.MoveToCell(cell, this);
             
@@ -79,6 +89,7 @@ namespace Game.Gameplay.CharactersManagement
             transform.DOJump(m_targetPosition, 0.5f, 1, 0.2f);
             
             AnimationsHandler.Move();
+            SFXsHandler.PlayMoveAudio();
             RumbleHandler.PlayMoveRumble();
             OnMove?.Invoke(this, cell);
         }
@@ -116,6 +127,7 @@ namespace Game.Gameplay.CharactersManagement
             transform.DORotateQuaternion(Quaternion.LookRotation(newForward, Vector3.up), 0.2f);
             
             RumbleHandler.PlayTurnRumble();
+            SFXsHandler.PlayTurnAudio();
             AnimationsHandler.Squash();
             
             CurrentDirection = direction;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using Game.Gameplay.CharactersManagement;
+using Game.SFXManagement;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -38,6 +39,14 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
         [SerializeField]
         private CinemachineCamera m_camera;
 
+        [SerializeField]
+        private AudioPlayer m_reactionAudioPlayer;
+        
+        [SerializeField]
+        private AudioPlayer m_worstReactionAudioPlayer;
+
+        [SerializeField]
+        private AudioPlayer m_hologrammeAudioPlayer;
         public CharacterPawn Character { get; private set; }
 
         public CharacterAnimationsHandler ResultCharacter { get; private set; }
@@ -61,7 +70,8 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
             }
         }
 
-        public void InflateData(CharacterPawn pawn, int rankIndex)
+        public bool IsLast { get; private set; }
+        public void InflateData(CharacterPawn pawn, int rankIndex, bool isLast)
         {
             Character = pawn;
 
@@ -76,6 +86,8 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
             m_textName.text = pawn.CharacterData.Name;
             m_scoreText.text = $"{pawn.Score.ToString()} Points";
             m_rankImage.sprite = m_rankImages[rankIndex];
+            
+            IsLast = isLast;
         }
 
         public void Display(bool displayUI, bool activateCam)
@@ -91,6 +103,8 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
                 m_rankCanvas.transform.DOScale(Vector3.one * m_defaultRankCanvasScale.x, 0.3f).SetDelay(0.2f).SetEase(Ease.InOutSine);
                 m_rankImage.transform.DOKill();
                 m_rankImage.transform.DORotate(Vector3.forward * 360f, 0.2f, RotateMode.LocalAxisAdd).SetDelay(0.2f).SetEase(Ease.InOutSine);
+                
+                m_hologrammeAudioPlayer.Play();
             } 
             else
             {
@@ -104,6 +118,18 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
                 
                 m_rankImage.transform.DOKill();
                 m_rankImage.transform.localRotation = Quaternion.identity;
+            }
+
+            if (activateCam)
+            {
+                if (IsLast)
+                {
+                    m_worstReactionAudioPlayer.Play();
+                }
+                else
+                {
+                    m_reactionAudioPlayer.Play();
+                }
             }
             m_camera.gameObject.SetActive(activateCam);
         }

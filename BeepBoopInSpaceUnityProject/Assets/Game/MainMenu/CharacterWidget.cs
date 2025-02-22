@@ -18,11 +18,17 @@ namespace Game.MainMenu
         [field: SerializeField]
         public TMP_Text NameText { get; private set; }
         
+        
+        [SerializeField]
+        private AudioSource m_playerPopAudioSource;
+        
         private void Awake()
         {
             Deactivate();
         }
 
+        public bool IsActivated { get; private set;}
+        
         public void Activate()
         {
             m_container.alpha = 1;
@@ -30,6 +36,7 @@ namespace Game.MainMenu
             AssociatedCharacter.SetActive(true);
             
             NameText.text = CharacterData.Name;
+            IsActivated = true;
         }
 
         public void Deactivate()
@@ -37,12 +44,16 @@ namespace Game.MainMenu
             m_container.alpha = 0;
             
             AssociatedCharacter.SetActive(false);
+            IsActivated = false;
         }
 
         public void Pop()
         {
+            if (!IsActivated)
+                return;
             transform.DOKill(true);
             transform.DOPunchScale(Vector3.one * 0.1f, 0.1f);
+            m_playerPopAudioSource.Play();
         }
     }
 }

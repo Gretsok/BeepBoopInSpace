@@ -2,12 +2,15 @@ using System.Collections;
 using Game.ArchitectureTools.Manager;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.GridSystem;
+using Game.SFXManagement;
 using UnityEngine;
 
 namespace Game.Gameplay.ObjectiveManagement
 {
     public class ObjectiveManager : AManager<ObjectiveManager>
     {
+        [SerializeField]
+        private AudioPlayer m_objectiveCollectedAudioPlayer;
         [SerializeField] private GameObject m_objectiveIndicationPrefab;
         private GameObject m_currentObjectiveIndication;
         public Cell CurrentObjectiveCell { get; private set; }
@@ -52,7 +55,7 @@ namespace Game.Gameplay.ObjectiveManagement
             {
                 CurrentObjectiveCell = m_gridBuilder.GetRandomCell();
             } while (DoesAPawnStandOnCell(CurrentObjectiveCell));
-            
+            m_objectiveCollectedAudioPlayer.Play();
             m_currentObjectiveIndication = Instantiate(m_objectiveIndicationPrefab, CurrentObjectiveCell.transform);
         }
 

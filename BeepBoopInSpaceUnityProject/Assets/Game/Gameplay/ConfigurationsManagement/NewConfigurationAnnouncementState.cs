@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Game.Gameplay.FlowMachine;
+using Game.SFXManagement;
 using UnityEngine;
 
 namespace Game.Gameplay.ConfigurationsManagement
@@ -12,10 +13,15 @@ namespace Game.Gameplay.ConfigurationsManagement
         [SerializeField]
         private AFlowState m_nextState = null;
 
+        [SerializeField]
+        private AudioPlayer m_pauseAudioPlayer;
+        [SerializeField]
+        private AudioPlayer m_resumeAudioPlayer;
+        
         protected override void HandleEnter()
         {
             base.HandleEnter();
-            
+            m_pauseAudioPlayer.Play();
 
             StartCoroutine(WaitAndDo(m_duration, () => RequestState(m_nextState)));
         }
@@ -24,6 +30,13 @@ namespace Game.Gameplay.ConfigurationsManagement
         {
             yield return new WaitForSeconds(duration);
             action?.Invoke();
+        }
+
+        protected override void HandleLeave()
+        {
+            base.HandleLeave();
+            
+            m_resumeAudioPlayer.Play();
         }
     }
 }

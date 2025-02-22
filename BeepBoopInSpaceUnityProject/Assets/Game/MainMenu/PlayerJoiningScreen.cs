@@ -4,6 +4,7 @@ using Game.Gameplay.LoadingScreen;
 using Game.PlayerManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Game.MainMenu
@@ -22,7 +23,11 @@ namespace Game.MainMenu
         [SerializeField] private Button m_startGameButton;
         
         private PlayerManager m_playerManager;
-        
+
+        [Header("Sounds")]
+        [SerializeField]
+        private AudioSource m_playerConnectedAudioSource;
+
         protected override void HandleActivation()
         {
             gameObject.SetActive(true);
@@ -62,6 +67,7 @@ namespace Game.MainMenu
         {
             m_startGameButton.interactable = m_playerManager.Players.Count >= 2;
             InflateWithPlayers();
+            m_playerConnectedAudioSource.Play();
         }
         
         private void HandlePlayerLeft(PlayerManager playerManager, AbstractPlayer abstractPlayer)
@@ -90,8 +96,8 @@ namespace Game.MainMenu
                 var playerController = gameObject.AddComponent<PlayerJoiningPlayerController>();
                 var characterWidget = GetCharacterWidgetFor(i);
                 playerController.SetDependencies(player, characterWidget);
-                playerController.Activate();
                 characterWidget.Activate();
+                playerController.Activate();
                 m_playerJoiningPlayers.Add(playerController);
             }
 
