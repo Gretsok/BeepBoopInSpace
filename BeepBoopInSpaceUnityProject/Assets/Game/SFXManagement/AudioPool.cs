@@ -18,6 +18,7 @@ namespace Game.SFXManagement
                 newAudioSource = Instantiate<AudioSource>(m_audioSourcePrefab, transform);
             else
                 newAudioSource = m_availableSources[0];
+            m_availableSources.Remove(newAudioSource);
             m_runningSources.Add(newAudioSource);
             newAudioSource.gameObject.SetActive(true);
             return newAudioSource;
