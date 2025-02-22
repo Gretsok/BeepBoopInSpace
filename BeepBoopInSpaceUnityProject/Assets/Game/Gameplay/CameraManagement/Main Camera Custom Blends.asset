@@ -14,6 +14,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CustomBlends:
   - From: GameplayCineCamera
+    To: IntroCineCamera
+    Blend:
+      Style: 0
+      Time: 0.2
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 4
+  - From: IntroCineCamera
+    To: IntroCineCamera
+    Blend:
+      Style: 1
+      Time: 0.2
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 4
+  - From: GameplayCineCamera
+    To: GameplayCineCamera
+    Blend:
+      Style: 1
+      Time: 0.2
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 4
+  - From: GameplayCineCamera
     To: GlobalViewCineCamera
     Blend:
       Style: 0

@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Game/Gameplay/Levels/Arenas/TestArena/TestArena.unity
     guid: 0bc3d4077faf5744081b93e5c2a7de5f
+  - enabled: 1
+    path: Assets/Game/Gameplay/Levels/Arenas/TestArena/TestArena_Enviro.unity
+    guid: ac2260587d271bf4e94d2009229f27fd
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

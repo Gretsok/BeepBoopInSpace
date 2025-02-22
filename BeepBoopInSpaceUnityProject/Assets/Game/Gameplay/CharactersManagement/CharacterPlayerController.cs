@@ -33,7 +33,6 @@ namespace Game.Gameplay.CharactersManagement
             actionsMap.FindAction("Action_4").started += HandleAction4Started;
             actionsMap.FindAction("Action_5").started += HandleAction5Started;
             actionsMap.FindAction("Action_6").started += HandleAction6Started;
-            
         }
 
         public void Deactivate()
