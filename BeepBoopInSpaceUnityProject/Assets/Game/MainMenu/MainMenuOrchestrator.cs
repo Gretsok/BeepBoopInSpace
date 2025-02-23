@@ -9,11 +9,14 @@ namespace Game.MainMenu
         private HomeScreen m_homeScreen;
         [SerializeField]
         private PlayerJoiningScreen m_joiningScreen;
+        [SerializeField]
+        private CreditsScreen m_creditsScreen;
 
         private void Awake()
         {
             m_homeScreen.Deactivate(true);
             m_joiningScreen.Deactivate(true);
+            m_creditsScreen.Deactivate(true);
         }
 
         private void Start()
@@ -21,17 +24,36 @@ namespace Game.MainMenu
             SwitchToHomeScreen();
 
             m_homeScreen.OnPlayRequested += HandlePlayRequestFromHomeScreen;
+            m_homeScreen.OnCreditsRequested += HandleCreditsRequested;
             m_joiningScreen.OnBack += HandleBackRequestFromJoiningScreen;
+            m_creditsScreen.OnBackRequested += HandleBackRequestedFromCreditsScreen;
             
             LoadingScreenManager.Instance.HideLoadingScreen();
         }
 
+
         private void OnDestroy()
         {
             m_homeScreen.OnPlayRequested -= HandlePlayRequestFromHomeScreen;
-            m_joiningScreen.OnBack -= HandleBackRequestFromJoiningScreen;        
+            m_homeScreen.OnCreditsRequested -= HandleCreditsRequested;
+            m_joiningScreen.OnBack -= HandleBackRequestFromJoiningScreen;       
+            m_creditsScreen.OnBackRequested -= HandleBackRequestedFromCreditsScreen;
+        }
+        
+        private void HandleCreditsRequested()
+        {
+            SwitchToCreditsScreen();
+        }
+        
+        private void HandleBackRequestedFromCreditsScreen()
+        {
+            if (!m_creditsScreen.IsActivated)
+                return;
+            
+            SwitchToHomeScreen();
         }
 
+        
         private void HandleBackRequestFromJoiningScreen()
         {
             if (!m_joiningScreen.IsActivated)
@@ -50,14 +72,23 @@ namespace Game.MainMenu
 
         public void SwitchToHomeScreen()
         {
+            m_creditsScreen.Deactivate();
             m_joiningScreen.Deactivate();
             m_homeScreen.Activate();
         }
 
         public void SwitchToJoiningScreen()
         {
+            m_creditsScreen.Deactivate();
             m_homeScreen.Deactivate();
             m_joiningScreen.Activate();
+        }
+
+        public void SwitchToCreditsScreen()
+        {
+            m_joiningScreen.Deactivate();
+            m_homeScreen.Deactivate();
+            m_creditsScreen.Activate();
         }
     }
 }

@@ -31,9 +31,10 @@ namespace Game.MainMenu
             OnPlayRequested?.Invoke();
         }
         
+        public Action OnCreditsRequested;
         private void HandleCreditsButtonClicked()
         {
-            Debug.Log("TO DO : CREDITS");
+            OnCreditsRequested?.Invoke();
         }
         
         private void HandleQuitButtonClicked()
