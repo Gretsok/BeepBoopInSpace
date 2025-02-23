@@ -55,7 +55,7 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
             }
 
             var audioSource = m_audioPlayer2.PlayWithAudioSourceReturned();
-            yield return WaitForAudioSourceToEnd(audioSource,() => MusicsManager.Instance.StartPlayingGameplayMusics());
+            StartCoroutine(WaitForAudioSourceToEnd(audioSource,() => MusicsManager.Instance.StartPlayingGameplayMusics()));
             introductionManager.Stop();
             RequestState(m_nextState);
         }

@@ -204,7 +204,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <AudioResource>k__BackingField: {fileID: 8300000, guid: 802014a004ccbcc4d8e7ab29b0671ee8, type: 3}
-  <Volume>k__BackingField: 1
+  <Volume>k__BackingField: 0.2
 --- !u!1 &6167329796168025976
 GameObject:
   m_ObjectHideFlags: 0
@@ -295,7 +295,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <AudioResource>k__BackingField: {fileID: 8300000, guid: e517058b85bad214cb60d3ca482d0e62, type: 3}
-  <Volume>k__BackingField: 1
+  <Volume>k__BackingField: 0.2
 --- !u!1 &7805743343914529952
 GameObject:
   m_ObjectHideFlags: 0
@@ -468,7 +468,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <AudioResource>k__BackingField: {fileID: 8300000, guid: 4c1c97d06aabf524e9009f99c22500c8, type: 3}
-  <Volume>k__BackingField: 1
+  <Volume>k__BackingField: 0.2
 --- !u!1 &8930613349980638639
 GameObject:
   m_ObjectHideFlags: 0
@@ -514,7 +514,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <AudioResource>k__BackingField: {fileID: 8300000, guid: cc94d5cf56b2ae1479b06b2bde3da9f2, type: 3}
-  <Volume>k__BackingField: 1
+  <Volume>k__BackingField: 0.2
 --- !u!1 &9006474903038113876
 GameObject:
   m_ObjectHideFlags: 0
