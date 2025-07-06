@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game.Gameplay.GridSystem
 {
-    [CreateAssetMenu(fileName = "GridDataAsset", menuName = "Game/Gameplay/Grid System/Grid Data Asset")]
+    [CreateAssetMenu(fileName = "{LevelName} - GridDataAsset", menuName = "Game/Gameplay/Grid System/Grid Data Asset")]
     public class GridDataAsset : ScriptableObject
     {
         [Serializable]

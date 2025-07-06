@@ -15,5 +15,6 @@ EditorBuildSettings:
     path: Assets/Game/Gameplay/Levels/Arenas/TestArena/TestArena_Enviro.unity
     guid: ac2260587d271bf4e94d2009229f27fd
   m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 28a8c72d87481c442974bc7b9e2989c6, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

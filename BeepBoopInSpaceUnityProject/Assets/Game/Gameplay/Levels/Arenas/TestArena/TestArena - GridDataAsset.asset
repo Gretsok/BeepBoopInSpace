@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d17179d5cd6f3d14dbff7e0c58dadf79, type: 3}
-  m_Name: TestArena_GridDataAsset
+  m_Name: TestArena - GridDataAsset
   m_EditorClassIdentifier: 
   m_rows:
   - m_cellIds: 5ad3b6c25ad3b6c25ad3b6c25ad3b6c25ad3b6c25ad3b6c25ad3b6c25ad3b6c25ad3b6c25ad3b6c2
