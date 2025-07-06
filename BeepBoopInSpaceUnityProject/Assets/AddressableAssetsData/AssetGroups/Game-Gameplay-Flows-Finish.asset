@@ -10,14 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Default Local Group
+  m_Name: Game-Gameplay-Flows-Finish
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
-  m_GUID: 930fe804a8e5b614bbbf7a096c661bfc
-  m_SerializeEntries: []
+  m_GroupName: Game-Gameplay-Flows-Finish
+  m_GUID: 12ce0d7b3e24a2c498787a61f4390126
+  m_SerializeEntries:
+  - m_GUID: 3236b76d9137b2a499330ff7e036eccd
+    m_Address: Assets/Game/Gameplay/Flows/Finish
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 22ca0aaefa80e5a4eb8c4beaa1f2aae1, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: be6dbb98c3d22b549a02d95c9017047b, type: 2}
-    - {fileID: 11400000, guid: 257b8ddd075601644a6c03960bf72a58, type: 2}
+    - {fileID: 11400000, guid: ce4efbab07a031c40842f8dcdead4840, type: 2}
+    - {fileID: 11400000, guid: 64b67106d379e984bb8e0699aaac6050, type: 2}

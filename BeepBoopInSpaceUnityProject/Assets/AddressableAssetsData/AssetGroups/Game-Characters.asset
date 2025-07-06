@@ -10,14 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Default Local Group
+  m_Name: Game-Characters
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
-  m_GUID: 930fe804a8e5b614bbbf7a096c661bfc
-  m_SerializeEntries: []
+  m_GroupName: Game-Characters
+  m_GUID: 317c7e70bbe32f24ea4825273d25c0fd
+  m_SerializeEntries:
+  - m_GUID: 0791da32e5466c34fa0bbb190fc03920
+    m_Address: Assets/Game/Characters
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 22ca0aaefa80e5a4eb8c4beaa1f2aae1, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: be6dbb98c3d22b549a02d95c9017047b, type: 2}
-    - {fileID: 11400000, guid: 257b8ddd075601644a6c03960bf72a58, type: 2}
+    - {fileID: 11400000, guid: 34f37c76cf480e6408f59c4787f2024f, type: 2}
+    - {fileID: 11400000, guid: 9ab2db5488cf94840901babead4ffaee, type: 2}

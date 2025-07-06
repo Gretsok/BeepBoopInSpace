@@ -10,14 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Default Local Group
+  m_Name: Game-Gameplay-Flows-Results
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
-  m_GUID: 930fe804a8e5b614bbbf7a096c661bfc
-  m_SerializeEntries: []
+  m_GroupName: Game-Gameplay-Flows-Results
+  m_GUID: 2ce2880c05066e04cbb7486ef0dc6cfd
+  m_SerializeEntries:
+  - m_GUID: f62b2faad7b5a1940b38e2e940ff64f8
+    m_Address: Assets/Game/Gameplay/Flows/Results
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 22ca0aaefa80e5a4eb8c4beaa1f2aae1, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: be6dbb98c3d22b549a02d95c9017047b, type: 2}
-    - {fileID: 11400000, guid: 257b8ddd075601644a6c03960bf72a58, type: 2}
+    - {fileID: 11400000, guid: c5567048225845f47841d4e0553637c9, type: 2}
+    - {fileID: 11400000, guid: f47c7f9d29668df469d22adcbcf79953, type: 2}

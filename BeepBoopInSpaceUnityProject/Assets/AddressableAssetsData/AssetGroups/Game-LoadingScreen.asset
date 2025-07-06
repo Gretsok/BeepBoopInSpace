@@ -10,14 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Default Local Group
+  m_Name: Game-LoadingScreen
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
-  m_GUID: 930fe804a8e5b614bbbf7a096c661bfc
-  m_SerializeEntries: []
+  m_GroupName: Game-LoadingScreen
+  m_GUID: 3fe52f313512ae14d837d6be9fe846f6
+  m_SerializeEntries:
+  - m_GUID: 61a1190ea98a4a64196df5a36160d481
+    m_Address: Assets/Game/LoadingScreen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 22ca0aaefa80e5a4eb8c4beaa1f2aae1, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: be6dbb98c3d22b549a02d95c9017047b, type: 2}
-    - {fileID: 11400000, guid: 257b8ddd075601644a6c03960bf72a58, type: 2}
+    - {fileID: 11400000, guid: 14796b77791adc44e9ec6201bc9b3a5c, type: 2}
+    - {fileID: 11400000, guid: 3c9905136a76afe4f8a15c53924ac031, type: 2}

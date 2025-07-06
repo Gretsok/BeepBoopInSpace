@@ -10,14 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Default Local Group
+  m_Name: Game-Gameplay-CameraManagement
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
-  m_GUID: 930fe804a8e5b614bbbf7a096c661bfc
-  m_SerializeEntries: []
+  m_GroupName: Game-Gameplay-CameraManagement
+  m_GUID: 5c686bc4f9c929d4d8f56c1863d27acc
+  m_SerializeEntries:
+  - m_GUID: 82a011665fb90324f94e34122f956f62
+    m_Address: Assets/Game/Gameplay/CameraManagement
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 22ca0aaefa80e5a4eb8c4beaa1f2aae1, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: be6dbb98c3d22b549a02d95c9017047b, type: 2}
-    - {fileID: 11400000, guid: 257b8ddd075601644a6c03960bf72a58, type: 2}
+    - {fileID: 11400000, guid: 58bf86da62ad07e4b88815d828d6ab4e, type: 2}
+    - {fileID: 11400000, guid: b30f96a1848ea5242bceab1a2e727a6f, type: 2}

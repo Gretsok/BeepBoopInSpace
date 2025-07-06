@@ -10,14 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Default Local Group
+  m_Name: Game-Gameplay-MusicsManagement
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
-  m_GUID: 930fe804a8e5b614bbbf7a096c661bfc
-  m_SerializeEntries: []
+  m_GroupName: Game-Gameplay-MusicsManagement
+  m_GUID: df9c2c28c52affb419a95fe2c6c3e485
+  m_SerializeEntries:
+  - m_GUID: 51edaecd9dc1c2a4faf563e3c72ba0e7
+    m_Address: Assets/Game/Gameplay/MusicsManagement
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 22ca0aaefa80e5a4eb8c4beaa1f2aae1, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: be6dbb98c3d22b549a02d95c9017047b, type: 2}
-    - {fileID: 11400000, guid: 257b8ddd075601644a6c03960bf72a58, type: 2}
+    - {fileID: 11400000, guid: 7a77fdc59b88a5a47910bb30e262d118, type: 2}
+    - {fileID: 11400000, guid: f30e42186a0f24440a5eb3fcbb6e6de2, type: 2}
