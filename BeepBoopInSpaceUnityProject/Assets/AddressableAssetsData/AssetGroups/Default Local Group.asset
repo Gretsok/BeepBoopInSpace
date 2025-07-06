@@ -14,7 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_GroupName: Default Local Group
   m_GUID: 930fe804a8e5b614bbbf7a096c661bfc
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 8256b168afc5a2d419d2e0058a400e7c
+    m_Address: Assets/Game/Gameplay/Levels/Arenas/TestArena/TestArena - GridDataAsset.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 22ca0aaefa80e5a4eb8c4beaa1f2aae1, type: 2}
   m_SchemaSet:

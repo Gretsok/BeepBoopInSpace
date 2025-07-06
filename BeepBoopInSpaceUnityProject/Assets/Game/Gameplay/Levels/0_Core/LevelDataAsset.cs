@@ -17,6 +17,9 @@ namespace Game.Gameplay.Levels._0_Core
         [field: SerializeField]
         public int AdditionalSceneIndexToActivate { get; private set; }
         
+        [field: SerializeField]
+        public GridDataAssetReference GridDataAsset { get; private set; }
+        
         // TO ADD : Available special actions with weights.
     }
 }
