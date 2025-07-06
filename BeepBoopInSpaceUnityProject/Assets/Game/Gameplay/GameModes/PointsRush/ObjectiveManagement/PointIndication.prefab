@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4596694236054294700}
   m_Layer: 0
-  m_Name: ObjectiveIndication
+  m_Name: PointIndication
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

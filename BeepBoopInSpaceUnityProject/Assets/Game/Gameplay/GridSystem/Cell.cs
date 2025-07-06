@@ -1,5 +1,7 @@
 using System;
+using NaughtyAttributes;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Game.Gameplay.GridSystem
 {
@@ -55,7 +57,6 @@ namespace Game.Gameplay.GridSystem
             BackwardCell = cell;
             if (BackwardCell)
                 BackwardCell.OnCellStateUpdated += HandleBackwardCellUpdated;
-            
                         
 #if UNITY_EDITOR
             UnityEditor.EditorUtility.SetDirty(this);
@@ -115,6 +116,17 @@ namespace Game.Gameplay.GridSystem
         {
             OnNeighborsUpdated?.Invoke(this, obj);
             OnRightCellUpdated?.Invoke(this, obj);
+        }
+        
+        
+        [field: ReadOnly]
+        [field: SerializeField]
+        public int CellTypeID { get; private set; }
+
+        [Button]
+        public void GenerateNewID()
+        {
+            CellTypeID = Random.Range(int.MinValue, int.MaxValue);
         }
     }
 }

@@ -5,9 +5,9 @@ using Game.Gameplay.GridSystem;
 using Game.SFXManagement;
 using UnityEngine;
 
-namespace Game.Gameplay.ObjectiveManagement
+namespace Game.Gameplay.GameModes.PointsRush.ObjectiveManagement
 {
-    public class ObjectiveManager : AManager<ObjectiveManager>
+    public class PointsRushObjectiveManager : AManager<PointsRushObjectiveManager>
     {
         [SerializeField]
         private AudioPlayer m_objectiveCollectedAudioPlayer;

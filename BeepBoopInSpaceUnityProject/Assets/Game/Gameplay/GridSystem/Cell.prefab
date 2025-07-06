@@ -137,6 +137,7 @@ MonoBehaviour:
   <BackwardCell>k__BackingField: {fileID: 0}
   <LeftCell>k__BackingField: {fileID: 0}
   <RightCell>k__BackingField: {fileID: 0}
+  <CellTypeID>k__BackingField: -1028205734
 --- !u!114 &5879605538767961046
 MonoBehaviour:
   m_ObjectHideFlags: 0

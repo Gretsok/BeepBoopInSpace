@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using Game.Gameplay.CameraManagement;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.FlowMachine;
+using Game.Gameplay.GameModes.PointsRush.ObjectiveManagement;
 using Game.Gameplay.GridSystem;
-using Game.Gameplay.ObjectiveManagement;
 using Game.Gameplay.Timer;
 using UnityEngine;
 
@@ -28,7 +28,7 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
                 character.TeleportToCell(m_spawnPointsCells[i]);
             }
 
-            ObjectiveManager.Instance.SetUp();
+            PointsRushObjectiveManager.Instance.SetUp();
             
             TimerManager.Instance.ResetTimer();
             
