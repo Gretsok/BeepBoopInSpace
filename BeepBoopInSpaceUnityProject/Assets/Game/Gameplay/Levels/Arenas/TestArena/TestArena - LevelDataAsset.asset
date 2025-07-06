@@ -14,12 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <NameKey>k__BackingField: TEST_ARENA
   <GameModeScene>k__BackingField:
-    m_AssetGUID: 
+    m_AssetGUID: 0bc3d4077faf5744081b93e5c2a7de5f
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
-  <AdditionalScenes>k__BackingField: []
+  <AdditionalScenes>k__BackingField:
+  - m_AssetGUID: ac2260587d271bf4e94d2009229f27fd
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
   <AdditionalSceneIndexToActivate>k__BackingField: 0
   <GridDataAsset>k__BackingField:
     m_AssetGUID: 8256b168afc5a2d419d2e0058a400e7c

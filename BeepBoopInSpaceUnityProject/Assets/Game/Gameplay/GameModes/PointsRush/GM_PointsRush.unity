@@ -2825,7 +2825,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_nextState: {fileID: 114932042}
-  m_environmentSceneName: TestArena_Enviro
 --- !u!1001 &488753345
 PrefabInstance:
   m_ObjectHideFlags: 0
