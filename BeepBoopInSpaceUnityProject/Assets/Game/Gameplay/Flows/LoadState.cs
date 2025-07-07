@@ -1,6 +1,7 @@
 using System.Collections;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.FlowMachine;
+using Game.Gameplay.GridSystem;
 using Game.Gameplay.Levels._0_Core;
 using Game.Gameplay.LoadingScreen;
 using UnityEngine;
@@ -35,15 +36,28 @@ namespace Game.Gameplay.Flows
 
             for (int i = 0; i < currentLevelDataAsset.AdditionalScenes.Count; ++i)
             {
-                var op = Addressables.LoadSceneAsync(currentLevelDataAsset.AdditionalScenes[i], LoadSceneMode.Additive);
+                var sceneOp = Addressables.LoadSceneAsync(currentLevelDataAsset.AdditionalScenes[i], LoadSceneMode.Additive);
                 bool isCompleted = false;
-                op.Completed += _ => isCompleted = true;
+                sceneOp.Completed += _ => isCompleted = true;
                 yield return new WaitUntil(() => isCompleted);
                 if (i == currentLevelDataAsset.AdditionalSceneIndexToActivate)
                 {
-                    SceneManager.SetActiveScene(op.Result.Scene);
+                    SceneManager.SetActiveScene(sceneOp.Result.Scene);
                 }
             }
+
+            var gridDataAssetOp = currentLevelDataAsset.GridDataAsset.LoadAssetAsync();
+            yield return gridDataAssetOp.WaitForCompletion();
+            
+            
+            var dictionaryDataAssetOp = currentLevelDataAsset.CellsDictionaryDataAsset.LoadAssetAsync();
+            yield return dictionaryDataAssetOp.WaitForCompletion();
+            
+            var gridBuilder = GridBuilder.Instance;
+            
+            gridBuilder.SetData(gridDataAssetOp.Result, dictionaryDataAssetOp.Result);
+            gridBuilder.BuildGridFromGridDataAsset();
+            
             LoadingScreenManager.Instance?.HideLoadingScreen();
             RequestState(m_nextState);
         }

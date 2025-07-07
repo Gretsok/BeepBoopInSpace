@@ -21,7 +21,13 @@ namespace Game.Gameplay.GridSystem
         [SerializeField] 
         private Vector2 m_cellSpacing = new Vector2(1f, 1f);
 
-
+        public void SetData(GridDataAsset gridDataAsset, CellsDictionaryDataAsset cellsDictionaryDataAsset)
+        {
+            m_gridDataAsset = gridDataAsset;
+            m_cellsDictionaryDataAsset = cellsDictionaryDataAsset;
+        }
+        
+        
         [SerializeField]
         List<Row> m_cells = new();
 

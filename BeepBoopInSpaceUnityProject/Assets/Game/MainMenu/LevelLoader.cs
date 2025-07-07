@@ -15,6 +15,7 @@ namespace Game.MainMenu
         public void LoadLevel()
         {
             LoadingScreenManager.Instance?.ShowLoadingScreen();
+            CurrentLevelInfoManager.Instance?.Setup(m_levelDataAsset);
             var op = Addressables.LoadSceneAsync(m_levelDataAsset.GameModeScene, LoadSceneMode.Single);
         }
     }
