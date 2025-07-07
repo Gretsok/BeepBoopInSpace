@@ -20,6 +20,7 @@ namespace Game.MainMenu
         [SerializeField] private Button m_startGameButton;
         
         private PlayerManager m_playerManager;
+        private LevelLoader m_levelLoader;
 
         [Header("Sounds")]
         [SerializeField]
@@ -29,6 +30,8 @@ namespace Game.MainMenu
         {
             gameObject.SetActive(true);
 
+            m_levelLoader = LevelLoader.Instance;
+            
             m_playerManager = PlayerManager.Instance;
 
             m_playerManager.RemoveAllPlayers();
@@ -62,8 +65,7 @@ namespace Game.MainMenu
             if (m_playerManager.Players.Count < 2)
                 return;
             
-            LoadingScreenManager.Instance.ShowLoadingScreen();
-            SceneManager.LoadSceneAsync(1);
+            m_levelLoader.LoadLevel();
         }
 
         public Action OnBack;

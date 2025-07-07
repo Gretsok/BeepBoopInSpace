@@ -36,7 +36,9 @@ namespace Game.Gameplay.Flows
             for (int i = 0; i < currentLevelDataAsset.AdditionalScenes.Count; ++i)
             {
                 var op = Addressables.LoadSceneAsync(currentLevelDataAsset.AdditionalScenes[i], LoadSceneMode.Additive);
-                yield return op;
+                bool isCompleted = false;
+                op.Completed += _ => isCompleted = true;
+                yield return new WaitUntil(() => isCompleted);
                 if (i == currentLevelDataAsset.AdditionalSceneIndexToActivate)
                 {
                     SceneManager.SetActiveScene(op.Result.Scene);

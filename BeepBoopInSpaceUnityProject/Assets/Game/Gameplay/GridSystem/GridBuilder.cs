@@ -159,5 +159,19 @@ namespace Game.Gameplay.GridSystem
             var randomCellIndexInRow = Random.Range(0, m_cells[randomRowIndex].RowData.Count);
             return m_cells[randomRowIndex].RowData[randomCellIndexInRow];
         }
+
+        public Cell GetCellAt(Vector2Int position)
+        {
+            if (position.x < 0
+                || position.y < 0
+                || m_cells.Count <= position.x
+                || m_cells[position.x].RowData.Count <= position.y)
+            {
+                Debug.LogError($"Cell at ({position.x}, {position.y}) is out of range.");
+                return null;
+            }
+
+            return m_cells[position.x].RowData[position.y];
+        }
     }
 }

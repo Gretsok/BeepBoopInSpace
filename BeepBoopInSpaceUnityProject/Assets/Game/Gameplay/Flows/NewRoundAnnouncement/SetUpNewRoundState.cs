@@ -14,10 +14,12 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
         [SerializeField]
         private AFlowState m_nextState;
         [SerializeField] 
-        private List<Cell> m_spawnPointsCells;
+        private List<Vector2Int> m_spawnPointsCells;
         protected override void HandleEnter()
         {
             base.HandleEnter();
+            
+            var gridBuilder = GridBuilder.Instance;
             
             var charactersManager = CharactersManager.Instance;
 
@@ -25,7 +27,7 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
             {
                 var character = charactersManager.CharacterPawns[i];
                 
-                character.TeleportToCell(m_spawnPointsCells[i]);
+                character.TeleportToCell(gridBuilder.GetCellAt(m_spawnPointsCells[i]));
             }
 
             PointsRushObjectiveManager.Instance.SetUp();

@@ -536,10 +536,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_nextState: {fileID: 573862225}
   m_spawnPointsCells:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {x: 3, y: 1}
+  - {x: 1, y: 7}
+  - {x: 6, y: 8}
+  - {x: 8, y: 3}
 --- !u!1001 &138908782
 PrefabInstance:
   m_ObjectHideFlags: 0
