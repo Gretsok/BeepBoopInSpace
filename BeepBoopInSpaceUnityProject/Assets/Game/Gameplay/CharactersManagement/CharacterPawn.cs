@@ -4,7 +4,6 @@ using DG.Tweening;
 using Game.Characters;
 using Game.Gameplay.CharactersManagement.ReferencesHolding;
 using Game.Gameplay.CharactersManagement.Rumble;
-using Game.Gameplay.CharactersManagement.SpecialActionsSystem.Destruction;
 using Game.Gameplay.GridSystem;
 using UnityEngine;
 

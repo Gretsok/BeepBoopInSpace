@@ -3,9 +3,9 @@ using Game.Gameplay.CharactersManagement.Rumble;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using UnityEngine;
 
-namespace Game.Gameplay.CharactersManagement.SpecialActionsSystem.Destruction
+namespace Game.Gameplay.CharactersManagement.SpecialActionsSystem.Bomb
 {
-    public class CharacterDestructionHandler : MonoBehaviour
+    public class BombEffectHandler : MonoBehaviour
     {
         [SerializeField]
         private RumbleData m_explosionRumbleData;
