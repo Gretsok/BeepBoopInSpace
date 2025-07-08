@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using Game.Characters;
+using Game.Gameplay.CharactersManagement.ReferencesHolding;
 using Game.Gameplay.CharactersManagement.Rumble;
+using Game.Gameplay.CharactersManagement.SpecialActionsSystem.Destruction;
 using Game.Gameplay.GridSystem;
 using UnityEngine;
 
@@ -10,29 +12,10 @@ namespace Game.Gameplay.CharactersManagement
 {
     public class CharacterPawn : MonoBehaviour
     {
-        [field: SerializeField] 
-        public GridWalker GridWalker { get; private set; }
-
         [field: SerializeField]
-        public Transform ModelSource { get; private set; }
-        [field: SerializeField]
-        public CharacterDestructionHandler DestructionHandler { get; private set; }
-        [field: SerializeField]
-        public CharacterVFXsHandler VFXsHandler { get; private set; }
-        [field: SerializeField]
-        public CharacterAnimationsHandler AnimationsHandler { get; private set; }
-        [field: SerializeField]
-        public CharacterRumbleHandler RumbleHandler { get; private set; }
-        [field: SerializeField]
-        public CharacterSFXsHandler SFXsHandler { get; private set; }
+        public CharacterReferencesHolder ReferencesHolder { get; private set; }
         
-        public CharacterData CharacterData { get; private set; }
 
-        public void SetCharacterData(CharacterData characterData)
-        {
-            CharacterData = characterData;
-            SetModel(CharacterData.CharacterPrefab.transform);
-        }
         
         public int Score { get; private set; }
 
@@ -43,54 +26,45 @@ namespace Game.Gameplay.CharactersManagement
         
         private void Start()
         {
-            GridWalker.transform.SetParent(null);
-            DestructionHandler.SetDependencies(ModelSource, VFXsHandler, RumbleHandler, SFXsHandler);
+            ReferencesHolder.GridWalker.transform.SetParent(null);
+            ReferencesHolder.SpecialAction.InjectDependencies(ReferencesHolder);
+            ReferencesHolder.DeathController.InjectDependencies(ReferencesHolder);
             
-            VFXsHandler.PlaySpawnEffect();
+            ReferencesHolder.VFXsHandler.PlaySpawnEffect();
             
-            RumbleHandler.SetDependencies(this);
+            ReferencesHolder.RumbleHandler.SetDependencies(this);
         }
 
         private void OnDestroy()
         {
-            if (GridWalker)
-                Destroy(GridWalker.gameObject);
+            if (ReferencesHolder.GridWalker)
+                Destroy(ReferencesHolder.GridWalker.gameObject);
         }
-
-        public void SetModel(Transform modelPrefab)
-        {
-            while (ModelSource.childCount > 0)
-            {
-                var child = ModelSource.GetChild(0);
-                Destroy(child.gameObject);
-            }
-            
-            AnimationsHandler = Instantiate(modelPrefab, ModelSource).GetComponent<CharacterAnimationsHandler>();
-        }
+        
 
         public Action<CharacterPawn, Cell> OnMove;
         public void MoveToCell(Cell cell)
         {
             if (cell == null || !cell.TryGetComponent(out CanBeWalkedOnCellComponent comp) || comp.PawnOnCell)
             {
-                AnimationsHandler.Move();
+                ReferencesHolder.AnimationsHandler.Move();
                 transform.DOJump(m_targetPosition, 0.5f, 1, 0.2f);
-                RumbleHandler.PlayMoveRumble();
-                SFXsHandler.PlayCannotMoveAudio();
+                ReferencesHolder.RumbleHandler.PlayMoveRumble();
+                ReferencesHolder.SFXsHandler.PlayCannotMoveAudio();
 
                 return;
             }
             
-            GridWalker.MoveToCell(cell, this);
+            ReferencesHolder.GridWalker.MoveToCell(cell, this);
             
-            var groundPosition = new Vector3(GridWalker.transform.position.x, 0f, GridWalker.transform.position.z);
+            var groundPosition = new Vector3(ReferencesHolder.GridWalker.transform.position.x, 0f, ReferencesHolder.GridWalker.transform.position.z);
             m_targetPosition = groundPosition;
             
             transform.DOJump(m_targetPosition, 0.5f, 1, 0.2f);
             
-            AnimationsHandler.Move();
-            SFXsHandler.PlayMoveAudio();
-            RumbleHandler.PlayMoveRumble();
+            ReferencesHolder.AnimationsHandler.Move();
+            ReferencesHolder.SFXsHandler.PlayMoveAudio();
+            ReferencesHolder.RumbleHandler.PlayMoveRumble();
             OnMove?.Invoke(this, cell);
         }
 
@@ -98,8 +72,8 @@ namespace Game.Gameplay.CharactersManagement
 
         public void TeleportToCell(Cell cell)
         {
-            GridWalker.MoveToCell(cell, this);
-            transform.position = GridWalker.transform.position;
+            ReferencesHolder.GridWalker.MoveToCell(cell, this);
+            transform.position = ReferencesHolder.GridWalker.transform.position;
             m_targetPosition = transform.position;
         }
 
@@ -126,9 +100,9 @@ namespace Game.Gameplay.CharactersManagement
             transform.DOJump(m_targetPosition, 0.5f, 1, 0.2f);
             transform.DORotateQuaternion(Quaternion.LookRotation(newForward, Vector3.up), 0.2f);
             
-            RumbleHandler.PlayTurnRumble();
-            SFXsHandler.PlayTurnAudio();
-            AnimationsHandler.Squash();
+            ReferencesHolder.RumbleHandler.PlayTurnRumble();
+            ReferencesHolder.SFXsHandler.PlayTurnAudio();
+            ReferencesHolder.AnimationsHandler.Squash();
             
             CurrentDirection = direction;
         }
@@ -169,7 +143,7 @@ namespace Game.Gameplay.CharactersManagement
                 }
                 else if (i == config[5])
                 {
-                    newConfig.Action[i] = Explode;
+                    newConfig.Action[i] = PlaySpecialAction;
                 }
                 else
                 {
@@ -183,7 +157,7 @@ namespace Game.Gameplay.CharactersManagement
 
         public void TryToPerformAction(int index)
         {
-            if (DestructionHandler.IsDestroyed)
+            if (!ReferencesHolder.DeathController.IsAlive)
                 return;
             KeysConfiguration.Action[index]?.Invoke();
         }
@@ -204,22 +178,22 @@ namespace Game.Gameplay.CharactersManagement
             {
                 case EDirection.Z:
                 {
-                    MoveToCell(GridWalker.CurrentCell.ForwardCell);
+                    MoveToCell(ReferencesHolder.GridWalker.CurrentCell.ForwardCell);
                 }
                     break;
                 case EDirection.MinusZ:
                 {
-                    MoveToCell(GridWalker.CurrentCell.BackwardCell);
+                    MoveToCell(ReferencesHolder.GridWalker.CurrentCell.BackwardCell);
                 }
                     break;
                 case EDirection.X:
                 {
-                    MoveToCell(GridWalker.CurrentCell.RightCell);
+                    MoveToCell(ReferencesHolder.GridWalker.CurrentCell.RightCell);
                 }
                     break;
                 case EDirection.MinusX:
                 {
-                    MoveToCell(GridWalker.CurrentCell.LeftCell);
+                    MoveToCell(ReferencesHolder.GridWalker.CurrentCell.LeftCell);
                 }
                     break;
             }
@@ -231,22 +205,22 @@ namespace Game.Gameplay.CharactersManagement
             {
                 case EDirection.Z:
                 {
-                    MoveToCell(GridWalker.CurrentCell.LeftCell);
+                    MoveToCell(ReferencesHolder.GridWalker.CurrentCell.LeftCell);
                 }
                     break;
                 case EDirection.MinusZ:
                 {
-                    MoveToCell(GridWalker.CurrentCell.RightCell);
+                    MoveToCell(ReferencesHolder.GridWalker.CurrentCell.RightCell);
                 }
                     break;
                 case EDirection.X:
                 {
-                    MoveToCell(GridWalker.CurrentCell.ForwardCell);
+                    MoveToCell(ReferencesHolder.GridWalker.CurrentCell.ForwardCell);
                 }
                     break;
                 case EDirection.MinusX:
                 {
-                    MoveToCell(GridWalker.CurrentCell.BackwardCell);
+                    MoveToCell(ReferencesHolder.GridWalker.CurrentCell.BackwardCell);
                 }
                     break;
             }
@@ -258,22 +232,22 @@ namespace Game.Gameplay.CharactersManagement
             {
                 case EDirection.Z:
                 {
-                    MoveToCell(GridWalker.CurrentCell.RightCell);
+                    MoveToCell(ReferencesHolder.GridWalker.CurrentCell.RightCell);
                 }
                     break;
                 case EDirection.MinusZ:
                 {
-                    MoveToCell(GridWalker.CurrentCell.LeftCell);
+                    MoveToCell(ReferencesHolder.GridWalker.CurrentCell.LeftCell);
                 }
                     break;
                 case EDirection.X:
                 {
-                    MoveToCell(GridWalker.CurrentCell.BackwardCell);
+                    MoveToCell(ReferencesHolder.GridWalker.CurrentCell.BackwardCell);
                 }
                     break;
                 case EDirection.MinusX:
                 {
-                    MoveToCell(GridWalker.CurrentCell.ForwardCell);
+                    MoveToCell(ReferencesHolder.GridWalker.CurrentCell.ForwardCell);
                 }
                     break;
             }
@@ -333,10 +307,9 @@ namespace Game.Gameplay.CharactersManagement
             }
         }
 
-        private void Explode()
+        private void PlaySpecialAction()
         {
-            Debug.Log("BOOM");
-            DestructionHandler.Destroy();
+            ReferencesHolder.SpecialAction.PerformAction();
         }
     }
 }

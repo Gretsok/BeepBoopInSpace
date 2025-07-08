@@ -13,8 +13,6 @@ namespace Game.Gameplay.CharactersManagement
         private AudioPlayer m_cannotMoveAudioPlayer;
 
         [SerializeField]
-        private AudioPlayer m_explosionAudioPlayer;
-        [SerializeField]
         private AudioPlayer m_spawnAudioPlayer;
 
         public void PlayMoveAudio()
@@ -30,11 +28,6 @@ namespace Game.Gameplay.CharactersManagement
         public void PlayCannotMoveAudio()
         {
             m_cannotMoveAudioPlayer.Play();
-        }
-
-        public void PlayExplosionAudio()
-        {
-            m_explosionAudioPlayer.Play();
         }
 
         public void PlaySpawnAudio()

@@ -82,10 +82,10 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
                 Destroy(m_modelContainer.GetChild(i).gameObject);
             }
 
-            ResultCharacter = Instantiate(pawn.CharacterData.CharacterPrefab, m_modelContainer).GetComponent<CharacterAnimationsHandler>();
+            ResultCharacter = Instantiate(pawn.ReferencesHolder.CharacterData.CharacterPrefab, m_modelContainer).GetComponent<CharacterAnimationsHandler>();
 
 
-            m_nameCanvas.GetComponent<Image>().sprite = pawn.CharacterData.NameplateSprite; 
+            m_nameCanvas.GetComponent<Image>().sprite = pawn.ReferencesHolder.CharacterData.NameplateSprite; 
 
             m_scoreText.text = $"{pawn.Score.ToString()} Points";
             m_rankImage.sprite = m_rankImages[rankIndex];

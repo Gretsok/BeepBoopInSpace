@@ -13,9 +13,6 @@ namespace Game.Gameplay.CharactersManagement.Rumble
         {
             m_characterPawn = characterPawn;
         }
-        
-        [SerializeField]
-        private RumbleData m_explodedRumbleData;
 
         [SerializeField]
         private RumbleData m_itsMeRumbleData;
@@ -31,11 +28,7 @@ namespace Game.Gameplay.CharactersManagement.Rumble
         
         [SerializeField]
         private RumbleData m_turnRumbleData;
-
-        public void PlayExplodedRumble(Action onComplete = null)
-        {
-            PlayRumbleData(m_explodedRumbleData, onComplete);
-        }
+        
 
         public void PlayItsMeRumble(Action onComplete = null)
         {

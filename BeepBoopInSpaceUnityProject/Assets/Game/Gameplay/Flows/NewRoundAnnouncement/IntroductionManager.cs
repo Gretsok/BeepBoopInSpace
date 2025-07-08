@@ -63,9 +63,9 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
                 m_cam01.gameObject.SetActive(false);
             }
             
-            characterPawn.RumbleHandler.PlayItsMeRumble();
+            characterPawn.ReferencesHolder.RumbleHandler.PlayItsMeRumble();
             m_canvasPositionnerRoot.transform.position = characterPawn.transform.position;
-            m_nameCanvas.GetComponent<Image>().sprite = characterPawn.CharacterData.NameplateSprite;
+            m_nameCanvas.GetComponent<Image>().sprite = characterPawn.ReferencesHolder.CharacterData.NameplateSprite;
             m_nameCanvas.transform.DOKill(true);
             m_nameCanvas.transform.localScale = new Vector3(1f, 0f, 1f) * m_defaultNameCanvasScale.x;
             m_nameCanvas.transform.DOScale(Vector3.one * m_defaultNameCanvasScale.x, 0.3f).SetDelay(0.2f).SetEase(Ease.InOutSine);

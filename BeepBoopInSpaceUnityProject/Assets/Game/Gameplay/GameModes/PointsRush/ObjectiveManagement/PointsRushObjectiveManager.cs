@@ -54,7 +54,7 @@ namespace Game.Gameplay.GameModes.PointsRush.ObjectiveManagement
             do
             {
                 CurrentObjectiveCell = m_gridBuilder.GetRandomCell();
-            } while (DoesAPawnStandOnCell(CurrentObjectiveCell));
+            } while (!CurrentObjectiveCell || DoesAPawnStandOnCell(CurrentObjectiveCell));
             m_objectiveCollectedAudioPlayer.Play();
             m_currentObjectiveIndication = Instantiate(m_objectiveIndicationPrefab, CurrentObjectiveCell.transform);
         }
@@ -63,7 +63,7 @@ namespace Game.Gameplay.GameModes.PointsRush.ObjectiveManagement
         {
             foreach (var pawn in m_charactersManager.CharacterPawns)
             {
-                if (pawn.GridWalker.CurrentCell == cell)
+                if (pawn.ReferencesHolder.GridWalker.CurrentCell == cell)
                     return true;
             }
 
