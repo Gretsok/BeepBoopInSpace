@@ -1,11 +1,11 @@
 using System.Collections;
 using Game.Characters;
 using Game.Gameplay.CharactersManagement;
+using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using Game.Gameplay.FlowMachine;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.Levels._0_Core;
 using Game.Gameplay.LoadingScreen;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
@@ -31,13 +31,24 @@ namespace Game.Gameplay.Flows
 #if UNITY_EDITOR
         private IEnumerator SettingGameInfosInStandaloneRoutine()
         {
+
+
             var currentLevelDataAsset = CurrentLevelInfoManager.Instance?.CurrentLevelDataAsset;
 
             if (currentLevelDataAsset)
                 yield break;
-
+            
             if (!UnityEditor.EditorPrefs.GetBool(LevelEditorPrefsConstants.OverridesGameInfosKey, false))
                 yield break;
+            
+            if (!CurrentLevelInfoManager.Instance)
+            {
+                var currentLevelInfoManager = new GameObject("CurrentLevelInfoManager").AddComponent<CurrentLevelInfoManager>();
+                yield return new WaitUntil(() => currentLevelInfoManager.IsInitialized);
+                
+                currentLevelDataAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<LevelDataAsset>(UnityEditor.EditorPrefs.GetString("BB_LDA"));
+                currentLevelInfoManager.Setup(currentLevelDataAsset);
+            }
 
             var playerManagerPrefab = AssetDatabase.LoadAssetAtPath<PlayerManager>("Assets/Game/PlayerManagement/PlayerManager.prefab");
             
@@ -59,19 +70,17 @@ namespace Game.Gameplay.Flows
 
         private IEnumerator LoadingRoutine()
         {
-            var currentLevelDataAsset = CurrentLevelInfoManager.Instance?.CurrentLevelDataAsset;
-            
-            
 #if UNITY_EDITOR // When starting a game mode in standalone
             yield return SettingGameInfosInStandaloneRoutine();
-            
-            if (!currentLevelDataAsset)
-                currentLevelDataAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<LevelDataAsset>(UnityEditor.EditorPrefs.GetString("BB_LDA"));
 #endif
             
-            yield return null;
+            var currentLevelDataAsset = CurrentLevelInfoManager.Instance?.CurrentLevelDataAsset;
             var charactersManager = CharactersManager.Instance;
-            charactersManager.CreateCharactersAndPlayerControllers();
+
+            var specialActionOp = currentLevelDataAsset.SpecialActionPrefab.LoadAssetAsync<GameObject>();
+            yield return specialActionOp.WaitForCompletion();
+            
+            charactersManager.CreateCharactersAndPlayerControllers(specialActionOp.Result.GetComponent<SpecialAction>());
 
             for (int i = 0; i < currentLevelDataAsset.AdditionalScenes.Count; ++i)
             {

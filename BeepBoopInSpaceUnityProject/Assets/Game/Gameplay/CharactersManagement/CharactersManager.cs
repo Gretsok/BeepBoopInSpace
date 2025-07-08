@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using Game.ArchitectureTools.Manager;
+using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
+using Game.Gameplay.Levels._0_Core;
 using Game.PlayerManagement;
 using UnityEngine;
 
@@ -18,7 +20,7 @@ namespace Game.Gameplay.CharactersManagement
         private Dictionary<CharacterPlayerController, CharacterPawn> m_characterPlayerControllers = new ();
         public IReadOnlyDictionary<CharacterPlayerController, CharacterPawn> CharacterPlayerControllers => m_characterPlayerControllers;
         
-        public void CreateCharactersAndPlayerControllers()
+        public void CreateCharactersAndPlayerControllers(SpecialAction specialActionPrefab)
         {
             var playerManager = PlayerManager.Instance;
 
@@ -31,6 +33,7 @@ namespace Game.Gameplay.CharactersManagement
                 playerController.SetPlayer(player);
                 playerController.SetCharacterPawn(character);
                 
+                character.ReferencesHolder.SetSpecialAction(specialActionPrefab);
                 character.ReferencesHolder.SetCharacterData(player.CharacterDataAsset);
                 
                 m_characterPawns.Add(character);

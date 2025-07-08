@@ -30,8 +30,12 @@ namespace Game.Gameplay.CharactersManagement.ReferencesHolding
         public CharacterRumbleHandler RumbleHandler { get; private set; }
         [field: SerializeField]
         public CharacterSFXsHandler SFXsHandler { get; private set; }
-        
 
+        public void SetSpecialAction(SpecialAction specialActionPrefab)
+        {
+            SpecialAction = Instantiate(specialActionPrefab, transform);
+        }
+        
         public void SetCharacterData(CharacterDataAsset characterDataAsset)
         {
             CharacterDataAsset = characterDataAsset;
