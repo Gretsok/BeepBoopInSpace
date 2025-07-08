@@ -12,7 +12,7 @@ namespace Game.MainMenu
         [field: SerializeField]
         public Transform ModelContainer { get; private set; }
         [field: SerializeField]
-        public CharacterData CharacterData { get; private set; }
+        public CharacterDataAsset CharacterDataAsset { get; private set; }
         
         [SerializeField] 
         private CanvasGroup m_container;
@@ -26,7 +26,7 @@ namespace Game.MainMenu
         [SerializeField]
         private AudioSource m_playerPopAudioSource;
 
-        public bool CanPlay => !CharacterBankManager.Instance.IsCharacterAlreadyTakenByAnotherWidget(CharacterData, this);
+        public bool CanPlay => !CharacterBankManager.Instance.IsCharacterAlreadyTakenByAnotherWidget(CharacterDataAsset, this);
         
         private CharacterBankManager m_characterBankManager;
         
@@ -45,7 +45,7 @@ namespace Game.MainMenu
         {
             m_container.alpha = 1;
 
-            m_characterBankManager.NotifyAssociation(this, CharacterData);
+            m_characterBankManager.NotifyAssociation(this, CharacterDataAsset);
 
             IsActivated = true;
         }
@@ -58,10 +58,10 @@ namespace Game.MainMenu
                 Destroy(ModelContainer.GetChild(i).gameObject);
             }
 
-            Instantiate(CharacterData.CharacterPrefab, ModelContainer);
+            Instantiate(CharacterDataAsset.CharacterPrefab, ModelContainer);
             
-            m_alreadySelectedBlock.gameObject.SetActive(m_characterBankManager.IsCharacterAlreadyTakenByAnotherWidget(CharacterData, this));
-            NameText.text = CharacterData.Name;
+            m_alreadySelectedBlock.gameObject.SetActive(m_characterBankManager.IsCharacterAlreadyTakenByAnotherWidget(CharacterDataAsset, this));
+            NameText.text = CharacterDataAsset.Name;
         }
 
         public void Deactivate()
@@ -92,8 +92,8 @@ namespace Game.MainMenu
         public Action OnCharacterDataUpdated;
         public void SwitchToNextCharacter()
         {
-            CharacterData = m_characterBankManager.GetNextCharacterDataAfter(CharacterData);
-            m_characterBankManager.NotifyAssociation(this, CharacterData);
+            CharacterDataAsset = m_characterBankManager.GetNextCharacterDataAfter(CharacterDataAsset);
+            m_characterBankManager.NotifyAssociation(this, CharacterDataAsset);
             m_onCharacterDataUpdated?.Invoke();
             OnCharacterDataUpdated?.Invoke();
         }

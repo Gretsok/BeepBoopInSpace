@@ -48,6 +48,10 @@ namespace Game.PlayerManagement
             }
         }
 
+        public PlayerInput AddPlayerFromDevice(InputDevice device)
+        {
+            return PlayerInputManager.JoinPlayer(-1, -1, null, device);
+        }
 
         public void ListenForNewPlayers()
         {

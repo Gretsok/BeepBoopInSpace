@@ -19,7 +19,7 @@ namespace Game.Gameplay.CharactersManagement.ReferencesHolding
         public SpecialAction SpecialAction { get; private set; }
         [field: SerializeField]
         public DeathController DeathController { get; private set; }
-        public CharacterData CharacterData { get; private set; }
+        public CharacterDataAsset CharacterDataAsset { get; private set; }
         
         [field: Header("Feedback Handlers")]
         [field: SerializeField]
@@ -32,10 +32,10 @@ namespace Game.Gameplay.CharactersManagement.ReferencesHolding
         public CharacterSFXsHandler SFXsHandler { get; private set; }
         
 
-        public void SetCharacterData(CharacterData characterData)
+        public void SetCharacterData(CharacterDataAsset characterDataAsset)
         {
-            CharacterData = characterData;
-            SetModel(CharacterData.CharacterPrefab.transform);
+            CharacterDataAsset = characterDataAsset;
+            SetModel(CharacterDataAsset.CharacterPrefab.transform);
         }
         
         public void SetModel(Transform modelPrefab)

@@ -38,7 +38,7 @@ namespace Game.Gameplay.GridSystem
             {
                 m_outlineBlocks?.ForEach(block =>
                 {
-                    block.sharedMaterial.color = m_pawnOnCell.ReferencesHolder.CharacterData.CharacterColor;
+                    block.sharedMaterial.color = m_pawnOnCell.ReferencesHolder.CharacterDataAsset.CharacterColor;
                     block.gameObject.SetActive(true);
                 });
             }

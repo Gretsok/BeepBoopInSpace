@@ -10,11 +10,11 @@ namespace Game.PlayerManagement
         public PlayerInput PlayerInput => GetComponent<PlayerInput>();
         
         [field: SerializeField]
-        public CharacterData CharacterData { get; private set; }
+        public CharacterDataAsset CharacterDataAsset { get; private set; }
 
-        public void SetCharacterData(CharacterData characterData)
+        public void SetCharacterData(CharacterDataAsset characterDataAsset)
         {
-            CharacterData = characterData;
+            CharacterDataAsset = characterDataAsset;
         }
     }
 }

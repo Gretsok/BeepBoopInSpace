@@ -31,7 +31,7 @@ namespace Game.Gameplay.CharactersManagement
                 playerController.SetPlayer(player);
                 playerController.SetCharacterPawn(character);
                 
-                character.ReferencesHolder.SetCharacterData(player.CharacterData);
+                character.ReferencesHolder.SetCharacterData(player.CharacterDataAsset);
                 
                 m_characterPawns.Add(character);
                 m_characterPlayerControllers.Add(playerController, character);

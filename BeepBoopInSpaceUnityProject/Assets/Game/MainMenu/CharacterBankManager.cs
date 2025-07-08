@@ -8,30 +8,30 @@ namespace Game.MainMenu
     public class CharacterBankManager : AManager<CharacterBankManager>
     {
         [SerializeField]
-        private List<CharacterData> m_charactersData = new List<CharacterData>();
+        private List<CharacterDataAsset> m_charactersData = new List<CharacterDataAsset>();
 
-        private Dictionary<CharacterWidget, CharacterData> m_associations = new();
+        private Dictionary<CharacterWidget, CharacterDataAsset> m_associations = new();
         
-        public CharacterData GetNextCharacterDataAfter(CharacterData characterData)
+        public CharacterDataAsset GetNextCharacterDataAfter(CharacterDataAsset characterDataAsset)
         {
-            var index = m_charactersData.FindIndex(data => data == characterData);
+            var index = m_charactersData.FindIndex(data => data == characterDataAsset);
             
             return m_charactersData[(index + 1) % m_charactersData.Count];
         }
 
-        public void NotifyAssociation(CharacterWidget widget, CharacterData characterData)
+        public void NotifyAssociation(CharacterWidget widget, CharacterDataAsset characterDataAsset)
         {
             if (m_associations.ContainsKey(widget))
-                m_associations[widget] = characterData;
+                m_associations[widget] = characterDataAsset;
             else
-                m_associations.Add(widget, characterData);
+                m_associations.Add(widget, characterDataAsset);
         }
 
-        public bool IsCharacterAlreadyTakenByAnotherWidget(CharacterData characterDataToFind, CharacterWidget widgetOwner)
+        public bool IsCharacterAlreadyTakenByAnotherWidget(CharacterDataAsset characterDataAssetToFind, CharacterWidget widgetOwner)
         {
             foreach (var (widget, characterData) in m_associations)
             {
-                if (characterData == characterDataToFind && widget != widgetOwner)
+                if (characterData == characterDataAssetToFind && widget != widgetOwner)
                     return true;
             }
             

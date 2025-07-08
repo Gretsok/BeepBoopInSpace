@@ -14,7 +14,7 @@ namespace Game.MainMenu
             m_player = player;
             m_widget = widget;
             
-            m_player.SetCharacterData(widget.CharacterData);
+            m_player.SetCharacterData(widget.CharacterDataAsset);
         }
 
         public void Activate()
@@ -26,7 +26,7 @@ namespace Game.MainMenu
         private void HandleSwitchToNextCharacterStarted(InputAction.CallbackContext obj)
         {
             m_widget.SwitchToNextCharacter();
-            m_player.SetCharacterData(m_widget.CharacterData);
+            m_player.SetCharacterData(m_widget.CharacterDataAsset);
         }
 
         private void HandlePopStarted(InputAction.CallbackContext obj)
