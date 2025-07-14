@@ -22,7 +22,7 @@ namespace Game.Gameplay.Flows.Gameplay
             foreach (var pair in charactersManager.CharacterPlayerControllers)
             {
                 pair.Key.Activate();
-                pair.Value.SetConfiguration(m_configurationsManager.CurrentConfiguration);
+                pair.Value.ReferencesHolder.ActionsController.SetConfiguration(m_configurationsManager.CurrentConfiguration);
             }
         }
 

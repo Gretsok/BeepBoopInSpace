@@ -31,7 +31,7 @@ namespace Game.Gameplay.CharactersManagement
                 var playerController = Instantiate(m_characterPlayerControllerPrefab);
                 
                 playerController.SetPlayer(player);
-                playerController.SetCharacterPawn(character);
+                playerController.InjectDependencies(character.ReferencesHolder);
                 
                 character.ReferencesHolder.SetSpecialAction(specialActionPrefab);
                 character.ReferencesHolder.SetCharacterData(player.CharacterDataAsset);

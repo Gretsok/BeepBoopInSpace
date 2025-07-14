@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Game.Gameplay.CharactersManagement;
+using Game.Gameplay.CharactersManagement.Movement;
 using UnityEngine;
 
 namespace Game.Gameplay.GridSystem
@@ -8,7 +9,7 @@ namespace Game.Gameplay.GridSystem
     {
         [SerializeField]
         private List<MeshRenderer> m_outlineBlocks = new();
-        private CharacterPawn m_pawnOnCell;
+        private CharacterMovementController m_movementControllerOnCell;
 
         private Material m_commonOutlineMaterial;
         private void Start()
@@ -18,19 +19,19 @@ namespace Game.Gameplay.GridSystem
             HandleValueChanged();
         }
 
-        public CharacterPawn PawnOnCell
+        public CharacterMovementController MovementControllerOnCell
         {
-            get => m_pawnOnCell;
+            get => m_movementControllerOnCell;
             set
             {
-                m_pawnOnCell = value;
+                m_movementControllerOnCell = value;
                 HandleValueChanged();
             }
         }
 
         private void HandleValueChanged()
         {
-            if (m_pawnOnCell == null)
+            if (m_movementControllerOnCell == null)
             {
                 m_outlineBlocks?.ForEach(block => block.gameObject.SetActive(false));
             }
@@ -38,7 +39,7 @@ namespace Game.Gameplay.GridSystem
             {
                 m_outlineBlocks?.ForEach(block =>
                 {
-                    block.sharedMaterial.color = m_pawnOnCell.ReferencesHolder.CharacterDataAsset.CharacterColor;
+                    block.sharedMaterial.color = m_movementControllerOnCell.ReferencesHolder.CharacterDataAsset.CharacterColor;
                     block.gameObject.SetActive(true);
                 });
             }

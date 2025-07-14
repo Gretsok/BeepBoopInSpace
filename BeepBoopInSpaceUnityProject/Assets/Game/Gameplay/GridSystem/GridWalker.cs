@@ -1,4 +1,5 @@
 using Game.Gameplay.CharactersManagement;
+using Game.Gameplay.CharactersManagement.Movement;
 using NaughtyAttributes;
 using UnityEngine;
 
@@ -9,18 +10,18 @@ namespace Game.Gameplay.GridSystem
         [field: SerializeField]
         public Cell CurrentCell { get; private set; }
 
-        public void MoveToCell(Cell cell, CharacterPawn pawn = null)
+        public void MoveToCell(Cell cell, CharacterMovementController movementController = null)
         {
             if (CurrentCell != null)
             {
-                CurrentCell.GetComponent<CanBeWalkedOnCellComponent>().PawnOnCell = null;
+                CurrentCell.GetComponent<CanBeWalkedOnCellComponent>().MovementControllerOnCell = null;
             }
             CurrentCell = cell;
             transform.position = cell.transform.position;
             
             if (CurrentCell != null)
             {
-                CurrentCell.GetComponent<CanBeWalkedOnCellComponent>().PawnOnCell = pawn;
+                CurrentCell.GetComponent<CanBeWalkedOnCellComponent>().MovementControllerOnCell = movementController;
             }
         }
 
@@ -28,7 +29,7 @@ namespace Game.Gameplay.GridSystem
         public void MoveForward()
         {
             if (CurrentCell && CurrentCell.ForwardCell
-                            && CurrentCell.ForwardCell.TryGetComponent(out CanBeWalkedOnCellComponent comp) && !comp.PawnOnCell)
+                            && CurrentCell.ForwardCell.TryGetComponent(out CanBeWalkedOnCellComponent comp) && !comp.MovementControllerOnCell)
                 MoveToCell(CurrentCell.ForwardCell);
         }
 
@@ -36,7 +37,7 @@ namespace Game.Gameplay.GridSystem
         public void MoveBackward()
         {
             if (CurrentCell && CurrentCell.BackwardCell 
-                            && CurrentCell.BackwardCell.TryGetComponent(out CanBeWalkedOnCellComponent comp) && !comp.PawnOnCell)
+                            && CurrentCell.BackwardCell.TryGetComponent(out CanBeWalkedOnCellComponent comp) && !comp.MovementControllerOnCell)
                 MoveToCell(CurrentCell.BackwardCell);
         }
 
@@ -44,7 +45,7 @@ namespace Game.Gameplay.GridSystem
         public void MoveRight()
         {
             if (CurrentCell && CurrentCell.RightCell
-                            && CurrentCell.RightCell.TryGetComponent(out CanBeWalkedOnCellComponent comp) && !comp.PawnOnCell)
+                            && CurrentCell.RightCell.TryGetComponent(out CanBeWalkedOnCellComponent comp) && !comp.MovementControllerOnCell)
                 MoveToCell(CurrentCell.RightCell);
         }
 
@@ -52,7 +53,7 @@ namespace Game.Gameplay.GridSystem
         public void MoveLeft()
         {
             if (CurrentCell && CurrentCell.LeftCell
-                            && CurrentCell.LeftCell.TryGetComponent(out CanBeWalkedOnCellComponent comp) && !comp.PawnOnCell)
+                            && CurrentCell.LeftCell.TryGetComponent(out CanBeWalkedOnCellComponent comp) && !comp.MovementControllerOnCell)
                 MoveToCell(CurrentCell.LeftCell);
         }
     }

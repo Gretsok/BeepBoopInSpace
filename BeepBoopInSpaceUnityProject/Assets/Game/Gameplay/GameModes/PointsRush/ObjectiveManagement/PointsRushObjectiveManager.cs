@@ -1,6 +1,7 @@
 using System.Collections;
 using Game.ArchitectureTools.Manager;
 using Game.Gameplay.CharactersManagement;
+using Game.Gameplay.CharactersManagement.Movement;
 using Game.Gameplay.GridSystem;
 using Game.SFXManagement;
 using UnityEngine;
@@ -28,11 +29,11 @@ namespace Game.Gameplay.GameModes.PointsRush.ObjectiveManagement
             yield return null;
         }
 
-        private void HandlePawnMove(CharacterPawn pawn, Cell cell)
+        private void HandlePawnMove(CharacterMovementController characterMovementController, Cell cell)
         {
             if (cell == CurrentObjectiveCell)
             {
-                pawn.IncreaseScore();
+                characterMovementController.ReferencesHolder.ScoringController.IncreaseScore();
                 UpdateObjective();
             }
         }
@@ -41,7 +42,7 @@ namespace Game.Gameplay.GameModes.PointsRush.ObjectiveManagement
         {
             foreach (var pawn in m_charactersManager.CharacterPawns)
             {
-                pawn.OnMove += HandlePawnMove;
+                pawn.ReferencesHolder.MovementController.OnMove += HandlePawnMove;
             }
             UpdateObjective();
         }

@@ -43,7 +43,7 @@ namespace Game.Gameplay.Levels._0_Core.Editor
                     EditorGUILayout.Popup( EditorPrefs.GetInt($"{LevelEditorPrefsConstants.DeviceAssignedKey}{i}", 0), devices.ToArray()));
                 
                 var characterDataAsset = AssetDatabase.LoadAssetAtPath<CharacterDataAsset>(EditorPrefs.GetString($"{LevelEditorPrefsConstants.CharacterDataAssignedKey}{i}"));
-                characterDataAsset = EditorGUILayout.ObjectField("Level Data Asset to use:", characterDataAsset, typeof(CharacterDataAsset), false) as CharacterDataAsset;
+                characterDataAsset = EditorGUILayout.ObjectField("Character Data Asset:", characterDataAsset, typeof(CharacterDataAsset), false) as CharacterDataAsset;
                 EditorPrefs.SetString($"{LevelEditorPrefsConstants.CharacterDataAssignedKey}{i}", AssetDatabase.GetAssetPath(characterDataAsset));
             }
         }

@@ -27,7 +27,7 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
             {
                 var character = charactersManager.CharacterPawns[i];
                 
-                character.TeleportToCell(gridBuilder.GetCellAt(m_spawnPointsCells[i]));
+                character.ReferencesHolder.MovementController.TeleportToCell(gridBuilder.GetCellAt(m_spawnPointsCells[i]));
             }
 
             PointsRushObjectiveManager.Instance.SetUp();

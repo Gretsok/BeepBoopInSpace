@@ -1,6 +1,9 @@
 using Game.Characters;
+using Game.Gameplay.CharactersManagement.Actions;
 using Game.Gameplay.CharactersManagement.Death;
+using Game.Gameplay.CharactersManagement.Movement;
 using Game.Gameplay.CharactersManagement.Rumble;
+using Game.Gameplay.CharactersManagement.Scoring;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using Game.Gameplay.GridSystem;
 using UnityEngine;
@@ -9,7 +12,8 @@ namespace Game.Gameplay.CharactersManagement.ReferencesHolding
 {
     public class CharacterReferencesHolder : MonoBehaviour
     {
-
+        [field: SerializeField]
+        public Transform Root { get; private set; }
         [field: SerializeField]
         public Transform ModelSource { get; private set; }
         [field: SerializeField] 
@@ -19,6 +23,12 @@ namespace Game.Gameplay.CharactersManagement.ReferencesHolding
         [field: SerializeField]
         public DeathController DeathController { get; private set; }
         public CharacterDataAsset CharacterDataAsset { get; private set; }
+        [field: SerializeField]
+        public CharacterMovementController MovementController { get; private set; }
+        [field: SerializeField]
+        public CharacterScoringController ScoringController { get; private set; }
+        [field: SerializeField]
+        public CharacterActionsController ActionsController { get; private set; }
         
         [field: Header("Feedback Handlers")]
         [field: SerializeField]
@@ -30,6 +40,7 @@ namespace Game.Gameplay.CharactersManagement.ReferencesHolding
         [field: SerializeField]
         public CharacterSFXsHandler SFXsHandler { get; private set; }
 
+        
         public void SetSpecialAction(SpecialAction specialActionPrefab)
         {
             SpecialAction = Instantiate(specialActionPrefab, transform);

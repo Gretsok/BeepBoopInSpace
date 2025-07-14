@@ -1,3 +1,4 @@
+using Game.Gameplay.CharactersManagement.ReferencesHolding;
 using Game.PlayerManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,11 +7,12 @@ namespace Game.Gameplay.CharactersManagement
 {
     public class CharacterPlayerController : MonoBehaviour
     {
-        private CharacterPawn m_characterPawn;
+        private CharacterReferencesHolder m_referencesHolder;
+        public CharacterReferencesHolder ReferencesHolder => m_referencesHolder;
 
-        public void SetCharacterPawn(CharacterPawn characterPawn)
+        public void InjectDependencies(CharacterReferencesHolder referencesHolder)
         {
-            m_characterPawn = characterPawn;
+            m_referencesHolder = referencesHolder;
         }
         
         private AbstractPlayer m_player;
@@ -20,8 +22,6 @@ namespace Game.Gameplay.CharactersManagement
         {
             m_player = player;
         }
-        
-
         public void Activate()
         {
             var actionsMap = m_player.PlayerInput.actions.FindActionMap("Gameplay");
@@ -52,32 +52,32 @@ namespace Game.Gameplay.CharactersManagement
 
         private void HandleAction1Started(InputAction.CallbackContext obj)
         {
-            m_characterPawn.TryToPerformAction(0);
+            m_referencesHolder.ActionsController.TryToPerformAction(0);
         }
 
         private void HandleAction2Started(InputAction.CallbackContext obj)
         {
-            m_characterPawn.TryToPerformAction(1);
+            m_referencesHolder.ActionsController.TryToPerformAction(1);
         }
 
         private void HandleAction3Started(InputAction.CallbackContext obj)
         {
-            m_characterPawn.TryToPerformAction(2);
+            m_referencesHolder.ActionsController.TryToPerformAction(2);
         }
 
         private void HandleAction4Started(InputAction.CallbackContext obj)
         {
-            m_characterPawn.TryToPerformAction(3);
+            m_referencesHolder.ActionsController.TryToPerformAction(3);
         }
 
         private void HandleAction5Started(InputAction.CallbackContext obj)
         {
-            m_characterPawn.TryToPerformAction(4);
+            m_referencesHolder.ActionsController.TryToPerformAction(4);
         }
 
         private void HandleAction6Started(InputAction.CallbackContext obj)
         {
-            m_characterPawn.TryToPerformAction(5);
+            m_referencesHolder.ActionsController.TryToPerformAction(5);
         }
     }
 }

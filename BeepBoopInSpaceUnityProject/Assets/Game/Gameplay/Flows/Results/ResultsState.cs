@@ -34,7 +34,8 @@ namespace Game.Gameplay.Flows.Results
 
             var charactersManager = CharactersManager.Instance;
             m_orderedCharacters = new List<CharacterPawn>(charactersManager.CharacterPawns);
-            m_orderedCharacters.Sort((item1, item2) => item2.Score.CompareTo(item1.Score));
+            m_orderedCharacters.Sort((item1, item2) => item2.ReferencesHolder.ScoringController.Score.CompareTo(
+                item1.ReferencesHolder.ScoringController.Score));
             
             m_resultsPlacementsManager = ResultsPlacementsManager.Instance;
 

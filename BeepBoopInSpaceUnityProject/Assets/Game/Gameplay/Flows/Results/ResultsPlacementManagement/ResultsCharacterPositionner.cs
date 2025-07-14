@@ -87,7 +87,7 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
 
             m_nameCanvas.GetComponent<Image>().sprite = pawn.ReferencesHolder.CharacterDataAsset.NameplateSprite; 
 
-            m_scoreText.text = $"{pawn.Score.ToString()} Points";
+            m_scoreText.text = $"{pawn.ReferencesHolder.ScoringController.Score.ToString()} Points";
             m_rankImage.sprite = m_rankImages[rankIndex];
             
             IsLast = isLast;
