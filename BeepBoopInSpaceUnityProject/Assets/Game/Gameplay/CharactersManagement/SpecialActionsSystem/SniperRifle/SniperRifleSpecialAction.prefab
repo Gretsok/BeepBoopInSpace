@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &8003557110830176533
+--- !u!1 &5717299966874920280
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,23 +8,23 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7369854139156527397}
-  - component: {fileID: 635219622022477897}
-  - component: {fileID: 3490459386318628818}
+  - component: {fileID: 7046974560548365901}
+  - component: {fileID: 5648851256772028603}
+  - component: {fileID: 4219699070516181408}
   m_Layer: 0
-  m_Name: BombSpecialAction
+  m_Name: SniperRifleSpecialAction
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7369854139156527397
+--- !u!4 &7046974560548365901
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8003557110830176533}
+  m_GameObject: {fileID: 5717299966874920280}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -33,13 +33,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &635219622022477897
+--- !u!114 &5648851256772028603
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8003557110830176533}
+  m_GameObject: {fileID: 5717299966874920280}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 67129127e3f390649924214378368328, type: 3}
@@ -48,10 +48,10 @@ MonoBehaviour:
   m_onActionPressed:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3490459386318628818}
-        m_TargetAssemblyTypeName: Game.Gameplay.CharactersManagement.CharacterDestructionHandler,
+      - m_Target: {fileID: 4219699070516181408}
+        m_TargetAssemblyTypeName: Game.Gameplay.CharactersManagement.SpecialActionsSystem.SniperRifle.SniperBulletShooter,
           Assembly-CSharp
-        m_MethodName: Destroy
+        m_MethodName: Shoot
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -61,16 +61,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &3490459386318628818
+--- !u!114 &4219699070516181408
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8003557110830176533}
+  m_GameObject: {fileID: 5717299966874920280}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86f26c1a7a5ce66499a990a93605f955, type: 3}
+  m_Script: {fileID: 11500000, guid: aed4ec7392cc5db4599fbc30fb67216f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_explosionRumbleData: {fileID: 11400000, guid: 1ed561dec8909054181930f6922ccb16, type: 2}
+  m_bulletPrefab: {fileID: 7673947369115396451, guid: 62aeac359ca47934fac0b15925b39941, type: 3}
+  m_bulletHeight: 0.75
+  m_bulletStartingForwardPosition: 0.5
