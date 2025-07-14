@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Game.ArchitectureTools.Manager;
+using Game.Gameplay.Cells.Default;
 using NaughtyAttributes;
 using Unity.Cinemachine;
 using UnityEngine;

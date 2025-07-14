@@ -1,3 +1,4 @@
+using Game.Gameplay.Cells.Default;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.CharactersManagement.Movement;
 using NaughtyAttributes;
@@ -9,9 +10,11 @@ namespace Game.Gameplay.GridSystem
     {
         [field: SerializeField]
         public Cell CurrentCell { get; private set; }
+        public Cell PreviousCell { get; private set; }
 
         public void MoveToCell(Cell cell, CharacterMovementController movementController = null)
         {
+            PreviousCell = CurrentCell;
             if (CurrentCell != null)
             {
                 CurrentCell.GetComponent<CanBeWalkedOnCellComponent>().MovementControllerOnCell = null;

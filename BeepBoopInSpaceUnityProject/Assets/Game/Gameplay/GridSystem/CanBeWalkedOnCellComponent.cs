@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.CharactersManagement.Movement;
 using UnityEngine;
 
@@ -29,6 +29,7 @@ namespace Game.Gameplay.GridSystem
             }
         }
 
+        public Action<CanBeWalkedOnCellComponent> OnMovementControllerOnCellChanged;
         private void HandleValueChanged()
         {
             if (m_movementControllerOnCell == null)
@@ -43,7 +44,7 @@ namespace Game.Gameplay.GridSystem
                     block.gameObject.SetActive(true);
                 });
             }
-            
+            OnMovementControllerOnCellChanged?.Invoke(this);
         }
     }
 }

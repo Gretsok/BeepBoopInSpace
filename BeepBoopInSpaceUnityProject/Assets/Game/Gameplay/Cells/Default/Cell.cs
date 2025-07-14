@@ -3,7 +3,7 @@ using NaughtyAttributes;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Game.Gameplay.GridSystem
+namespace Game.Gameplay.Cells.Default
 {
     public class Cell : MonoBehaviour
     {

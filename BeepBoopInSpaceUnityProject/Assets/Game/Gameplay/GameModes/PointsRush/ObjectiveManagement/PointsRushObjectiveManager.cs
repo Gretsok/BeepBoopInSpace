@@ -1,5 +1,6 @@
 using System.Collections;
 using Game.ArchitectureTools.Manager;
+using Game.Gameplay.Cells.Default;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.CharactersManagement.Movement;
 using Game.Gameplay.GridSystem;

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using DG.Tweening;
+using Game.Gameplay.Cells.Default;
 using Game.Gameplay.CharactersManagement.ReferencesHolding;
 using Game.Gameplay.GridSystem;
 using UnityEngine;
@@ -16,6 +18,21 @@ namespace Game.Gameplay.CharactersManagement.Movement
             m_referencesHolder = referencesHolder;
         }
         
+        #region Blocking
+        private List<ICharacterMovementControllerBlocker> m_blockers = new();
+        public bool IsBlocked => m_blockers.Count > 0;
+        public void RegisterBlocker(ICharacterMovementControllerBlocker blocker)
+        {
+            if (!m_blockers.Contains(blocker))
+                m_blockers.Add(blocker);
+        }
+
+        public void UnregisterBlocker(ICharacterMovementControllerBlocker blocker)
+        {
+            m_blockers.RemoveAll(b => b == blocker);
+        }
+        #endregion
+        
         public enum EDirection
         {
             Z,
@@ -26,12 +43,13 @@ namespace Game.Gameplay.CharactersManagement.Movement
         
         public EDirection CurrentDirection { get; private set; } = EDirection.Z;
         
-        
-        
 
         public Action<CharacterMovementController, Cell> OnMove;
         public void MoveToCell(Cell cell)
         {
+            if (IsBlocked)
+                return;
+            
             if (cell == null || !cell.TryGetComponent(out CanBeWalkedOnCellComponent comp) || comp.MovementControllerOnCell)
             {
                 m_referencesHolder.AnimationsHandler.Move();
@@ -59,6 +77,9 @@ namespace Game.Gameplay.CharactersManagement.Movement
 
         public void TeleportToCell(Cell cell)
         {
+            if (IsBlocked)
+                return;
+            
             m_referencesHolder.GridWalker.MoveToCell(cell, this);
             m_referencesHolder.Root.transform.position = m_referencesHolder.GridWalker.transform.position;
             m_targetPosition = transform.position;
@@ -66,6 +87,9 @@ namespace Game.Gameplay.CharactersManagement.Movement
 
         public void ChangeDirection(EDirection direction)
         {
+            if (IsBlocked)
+                return;
+            
             var newForward = GetWorldDirectionFrom(direction);
 
             m_referencesHolder.Root.transform.DOJump(m_targetPosition, 0.5f, 1, 0.2f);
