@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Game.ArchitectureTools.Manager;
 using Game.Gameplay.Cells.Default;
 using NaughtyAttributes;
@@ -165,6 +166,24 @@ namespace Game.Gameplay.GridSystem
             var randomRowIndex = Random.Range(0, m_cells.Count);
             var randomCellIndexInRow = Random.Range(0, m_cells[randomRowIndex].RowData.Count);
             return m_cells[randomRowIndex].RowData[randomCellIndexInRow];
+        }
+
+        public Cell GetRandomWalkableCell()
+        {
+            int iterations = 0;
+            
+
+            while (iterations < 250)
+            {
+                var randomCell = GetRandomCell();
+                if (randomCell.TryGetComponent<CanBeWalkedOnCellComponent>(out _))
+                    return randomCell;
+                
+                ++iterations;
+            }
+
+            Debug.LogError($"Max iterations hit when tried to get random walkable cell.");
+            return null;
         }
 
         public Cell GetCellAt(Vector2Int position)
