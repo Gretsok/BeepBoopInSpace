@@ -50,7 +50,10 @@ namespace Game.Gameplay.CharactersManagement.SpecialActionsSystem.SniperRifle
         private void HandleProjectileTriggerEnter(Collider obj, Projectile projectile)
         {
             if (!obj.TryGetComponent(out CharacterCollisionsHandler collisionsHandler))
+            {
+                Destroy(projectile.gameObject);
                 return;
+            }
 
             var otherDeathController = collisionsHandler.ReferencesHolder.DeathController;
             var myDeathController = m_referencesHolder.DeathController;
