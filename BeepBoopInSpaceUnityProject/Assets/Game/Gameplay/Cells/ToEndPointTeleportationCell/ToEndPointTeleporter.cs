@@ -43,7 +43,13 @@ namespace Game.Gameplay.Cells.ToEndPointTeleportationCell
             var cellAtPosition = gridBuilder.GetCellAt(m_endPointCoordinates);
             if (!cellAtPosition)
             {
-                Debug.LogError($"Destination cell is null");
+                Debug.LogError($"Destination cell is null.");
+                return;
+            }
+            
+            if (!cellAtPosition.TryGetComponent<CanBeWalkedOnCellComponent>(out _))
+            {
+                Debug.LogError($"Destination cell cannot be walked on.");
                 return;
             }
             
