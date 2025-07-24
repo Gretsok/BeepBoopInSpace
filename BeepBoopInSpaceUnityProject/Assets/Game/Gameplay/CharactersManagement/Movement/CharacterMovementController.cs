@@ -4,6 +4,7 @@ using DG.Tweening;
 using Game.Gameplay.Cells.Default;
 using Game.Gameplay.CharactersManagement.ReferencesHolding;
 using Game.Gameplay.GridSystem;
+using Game.Gameplay.GridSystem.GenericComponents;
 using UnityEngine;
 
 namespace Game.Gameplay.CharactersManagement.Movement

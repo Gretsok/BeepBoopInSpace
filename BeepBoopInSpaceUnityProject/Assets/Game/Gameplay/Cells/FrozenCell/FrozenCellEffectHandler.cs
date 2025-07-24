@@ -3,6 +3,7 @@ using DG.Tweening;
 using Game.Gameplay.Cells.Default;
 using Game.Gameplay.CharactersManagement.Movement;
 using Game.Gameplay.GridSystem;
+using Game.Gameplay.GridSystem.GenericComponents;
 using UnityEngine;
 
 namespace Game.Gameplay.Cells.FrozenCell

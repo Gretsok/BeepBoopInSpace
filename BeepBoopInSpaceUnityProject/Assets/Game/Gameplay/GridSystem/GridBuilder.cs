@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Game.ArchitectureTools.Manager;
 using Game.Gameplay.Cells.Default;
+using Game.Gameplay.GridSystem.GenericComponents;
 using NaughtyAttributes;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -168,7 +169,8 @@ namespace Game.Gameplay.GridSystem
             return m_cells[randomRowIndex].RowData[randomCellIndexInRow];
         }
 
-        public Cell GetRandomWalkableCell()
+        public delegate bool DGettingWalkableCondition(Cell cell);
+        public Cell GetRandomWalkableCell(DGettingWalkableCondition additionalCondition = null)
         {
             int iterations = 0;
             
@@ -176,6 +178,12 @@ namespace Game.Gameplay.GridSystem
             while (iterations < 250)
             {
                 var randomCell = GetRandomCell();
+                if (!randomCell)
+                    continue;
+                
+                if (!additionalCondition?.Invoke(randomCell) ?? false)
+                    continue;
+                
                 if (randomCell.TryGetComponent<CanBeWalkedOnCellComponent>(out _))
                     return randomCell;
                 

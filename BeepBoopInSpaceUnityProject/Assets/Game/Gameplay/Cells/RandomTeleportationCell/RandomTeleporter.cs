@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Game.Gameplay.GridSystem;
+using Game.Gameplay.GridSystem.GenericComponents;
 using UnityEngine;
 
 namespace Game.Gameplay.Cells.RandomTeleportationCell

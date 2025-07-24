@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Game.Gameplay.CharactersManagement.Movement;
 using UnityEngine;
 
-namespace Game.Gameplay.GridSystem
+namespace Game.Gameplay.GridSystem.GenericComponents
 {
     public class CanBeWalkedOnCellComponent : MonoBehaviour
     {

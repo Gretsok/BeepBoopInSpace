@@ -1,5 +1,6 @@
 using System.Collections;
 using Game.Gameplay.GridSystem;
+using Game.Gameplay.GridSystem.GenericComponents;
 using UnityEngine;
 
 namespace Game.Gameplay.Cells.ToEndPointTeleportationCell
@@ -59,6 +60,8 @@ namespace Game.Gameplay.Cells.ToEndPointTeleportationCell
 #if UNITY_EDITOR
         private void OnValidate()
         {
+            if (Application.isPlaying)
+                return;
             var gridBuilder = FindFirstObjectByType<GridBuilder>();
             UpdateIndicatorPosition(gridBuilder);
         }

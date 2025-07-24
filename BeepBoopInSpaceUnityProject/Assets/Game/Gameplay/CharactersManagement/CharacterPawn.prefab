@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 658062313399438582}
   - component: {fileID: 6051631261950093210}
   - component: {fileID: 9141549851595477391}
+  - component: {fileID: 6098286198891080245}
   m_Layer: 0
   m_Name: DeathController
   m_TagString: Untagged
@@ -88,6 +89,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 589616274d8999f47a28b1ff4c324172, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6098286198891080245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 451879134252219528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a15fa1e4db8fa774fb294d79a723f880, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &961321939369364563
