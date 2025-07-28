@@ -23,7 +23,7 @@ namespace Game.Gameplay.CharactersManagement.Death
             if (m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell.TryGetComponent(out KillingCellComponent killingCellComponent))
             {
                 m_deathController.CharacterReferencesHolder.MovementController.TeleportToCell(
-                    m_gridBuilder.GetRandomWalkableCell(cell => cell.TryGetComponent<KillingCellComponent>(out _))
+                    m_gridBuilder.GetRandomWalkableCell(cell => !cell.TryGetComponent<KillingCellComponent>(out _))
                     );
             }
         }
