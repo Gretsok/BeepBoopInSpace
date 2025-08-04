@@ -64,8 +64,14 @@ namespace Game.Gameplay.Cells.FrozenCell
             m_blockedController = null;
         }
 
-        public void SlideTowardCell(Cell cell)
+        private void SlideTowardCell(Cell cell)
         {
+            if (!cell.GetComponent<CanBeWalkedOnCellComponent>())
+            {
+                UnblockController();
+                return;
+            }
+            
             StartCoroutine(SlidingTowardCellRoutine(cell));
         }
 
