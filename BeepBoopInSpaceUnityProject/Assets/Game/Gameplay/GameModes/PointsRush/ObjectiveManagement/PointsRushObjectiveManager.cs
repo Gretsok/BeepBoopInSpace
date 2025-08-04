@@ -4,7 +4,9 @@ using Game.Gameplay.Cells.Default;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.CharactersManagement.Movement;
 using Game.Gameplay.GridSystem;
+using Game.Gameplay.GridSystem.GenericComponents;
 using Game.SFXManagement;
+using NaughtyAttributes;
 using UnityEngine;
 
 namespace Game.Gameplay.GameModes.PointsRush.ObjectiveManagement
@@ -48,6 +50,7 @@ namespace Game.Gameplay.GameModes.PointsRush.ObjectiveManagement
             UpdateObjective();
         }
         
+        [Button]
         private void UpdateObjective()
         {
             if (m_currentObjectiveIndication != null)
@@ -55,7 +58,7 @@ namespace Game.Gameplay.GameModes.PointsRush.ObjectiveManagement
 
             do
             {
-                CurrentObjectiveCell = m_gridBuilder.GetRandomCell();
+                CurrentObjectiveCell = m_gridBuilder.GetRandomWalkableCell((cell) => !cell.GetComponent<KillingCellComponent>());
             } while (!CurrentObjectiveCell || DoesAPawnStandOnCell(CurrentObjectiveCell));
             m_objectiveCollectedAudioPlayer.Play();
             m_currentObjectiveIndication = Instantiate(m_objectiveIndicationPrefab, CurrentObjectiveCell.transform);
