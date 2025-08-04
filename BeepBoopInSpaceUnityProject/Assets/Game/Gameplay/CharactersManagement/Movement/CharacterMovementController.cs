@@ -84,6 +84,7 @@ namespace Game.Gameplay.CharactersManagement.Movement
             m_referencesHolder.GridWalker.MoveToCell(cell, this);
             m_referencesHolder.Root.transform.position = m_referencesHolder.GridWalker.transform.position;
             m_targetPosition = transform.position;
+            OnMove?.Invoke(this, cell);
         }
 
         public void ChangeDirection(EDirection direction)
