@@ -1,9 +1,14 @@
 fileFormatVersion: 2
-guid: 80c0ce4e4401ac54d91fbaed93375868
+guid: 35115476b86fa3b4a90f95b4a02dfdef
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MI_ColorsGradients_02
+    second: {fileID: 2100000, guid: f4aab8a1a201caa46a29f011131cd1ac, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

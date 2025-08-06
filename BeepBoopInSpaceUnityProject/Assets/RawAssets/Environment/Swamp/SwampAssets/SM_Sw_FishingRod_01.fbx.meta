@@ -1,9 +1,19 @@
 fileFormatVersion: 2
-guid: 276f1d3f1e221b948b71fc4ce5a13573
+guid: 9a576497e2ba6044c9e63efc7700f262
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Couleurs
+    second: {fileID: 2100000, guid: f4aab8a1a201caa46a29f011131cd1ac, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MarronGris
+    second: {fileID: 2100000, guid: 42b85aeae79319e40adb4d12d08c2556, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
