@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 048d2f5fcc3ce4d49a52f320dad1e845
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 302915
+  packageName: CONTOUR - Edge detection & outline post effect - URP Render Graph
+  packageVersion: 1.2.0.1
+  assetPath: Assets/PinwheelStudio/Contour/Runtime/ShaderIncludes/WorldPositionReconstruct.hlsl
+  uploadId: 782969

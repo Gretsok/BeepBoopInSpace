@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: a6bd8126e206afe4991c657977172789
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 625f186215c104763be7675aa2d941aa, type: 3}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 302915
+  packageName: CONTOUR - Edge detection & outline post effect - URP Render Graph
+  packageVersion: 1.2.0.1
+  assetPath: Assets/PinwheelStudio/Contour/Runtime/Shaders/FullscreenEdgeDetection.shadergraph
+  uploadId: 782969

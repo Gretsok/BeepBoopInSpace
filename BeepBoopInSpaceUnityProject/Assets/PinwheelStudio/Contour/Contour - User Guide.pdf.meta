@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: c7d8fd837c93ab449a5a42d6ca1f114c
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 302915
+  packageName: CONTOUR - Edge detection & outline post effect - URP Render Graph
+  packageVersion: 1.2.0.1
+  assetPath: Assets/PinwheelStudio/Contour/Contour - User Guide.pdf
+  uploadId: 782969
