@@ -82,29 +82,34 @@ namespace Game.Gameplay.Flows
             
             charactersManager.CreateCharactersAndPlayerControllers(specialActionOp.Result.GetComponent<SpecialAction>());
 
+            // Loading environment
+            {
+                var sceneOp =
+                    Addressables.LoadSceneAsync(currentLevelDataAsset.EnvironmentScene, LoadSceneMode.Additive);
+                bool isCompleted = false;
+                sceneOp.Completed += _ => isCompleted = true;
+                yield return new WaitUntil(() => isCompleted);
+
+                SceneManager.SetActiveScene(sceneOp.Result.Scene);
+            }
+            
+            // Loading level (mainly containing the grid and all other gameplay elements in the world)
+            {
+                var sceneOp =
+                    Addressables.LoadSceneAsync(currentLevelDataAsset.LevelScene, LoadSceneMode.Additive);
+                bool isCompleted = false;
+                sceneOp.Completed += _ => isCompleted = true;
+                yield return new WaitUntil(() => isCompleted);
+            }
+            
+            // Loading optional scenes
             for (int i = 0; i < currentLevelDataAsset.AdditionalScenes.Count; ++i)
             {
                 var sceneOp = Addressables.LoadSceneAsync(currentLevelDataAsset.AdditionalScenes[i], LoadSceneMode.Additive);
                 bool isCompleted = false;
                 sceneOp.Completed += _ => isCompleted = true;
                 yield return new WaitUntil(() => isCompleted);
-                if (i == currentLevelDataAsset.AdditionalSceneIndexToActivate)
-                {
-                    SceneManager.SetActiveScene(sceneOp.Result.Scene);
-                }
             }
-
-            var gridDataAssetOp = currentLevelDataAsset.GridDataAsset.LoadAssetAsync();
-            yield return gridDataAssetOp.WaitForCompletion();
-            
-            
-            var dictionaryDataAssetOp = currentLevelDataAsset.CellsDictionaryDataAsset.LoadAssetAsync();
-            yield return dictionaryDataAssetOp.WaitForCompletion();
-            
-            var gridBuilder = GridBuilder.Instance;
-            
-            gridBuilder.SetData(gridDataAssetOp.Result, dictionaryDataAssetOp.Result);
-            gridBuilder.BuildGridFromGridDataAsset();
             
             LoadingScreenManager.Instance?.HideLoadingScreen();
             RequestState(m_nextState);

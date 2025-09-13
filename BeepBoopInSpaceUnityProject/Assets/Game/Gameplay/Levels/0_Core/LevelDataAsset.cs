@@ -15,15 +15,11 @@ namespace Game.Gameplay.Levels._0_Core
         [field: SerializeField]
         public AssetReference GameModeScene { get; private set; }
         [field: SerializeField]
+        public AssetReference EnvironmentScene { get; private set; }
+        [field: SerializeField]
+        public AssetReference LevelScene { get; private set; }
+        [field: SerializeField]
         public List<AssetReference> AdditionalScenes { get; private set; }
-        [field: SerializeField]
-        public int AdditionalSceneIndexToActivate { get; private set; }
-        
-        [field: SerializeField]
-        public GridDataAssetReference GridDataAsset { get; private set; }
-        
-        [field: SerializeField]
-        public CellsDictionaryDataAssetReference CellsDictionaryDataAsset { get; private set; }
         
         [field: SerializeField]
         public SpecialActionAssetReference SpecialActionPrefab { get; private set; }
