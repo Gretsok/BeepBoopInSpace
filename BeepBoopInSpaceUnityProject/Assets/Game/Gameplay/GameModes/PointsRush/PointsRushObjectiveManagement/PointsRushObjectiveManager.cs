@@ -28,8 +28,8 @@ namespace Game.Gameplay.GameModes.PointsRush.ObjectiveManagement
             {
                 m_charactersManager = manager;
             });
-            
-            yield return null;
+
+            yield break;
         }
 
         private void HandlePawnMove(CharacterMovementController characterMovementController, Cell cell)

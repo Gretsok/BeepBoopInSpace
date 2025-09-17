@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
+using Game.Gameplay.GlobalGameplayData;
 using Game.Gameplay.GridSystem;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -23,6 +24,9 @@ namespace Game.Gameplay.Levels._0_Core
         
         [field: SerializeField]
         public SpecialActionAssetReference SpecialActionPrefab { get; private set; }
+        
+        [field: SerializeField]
+        public GlobalGameplayDataAsset GlobalGameplayDataAsset { get; private set; }
         
         // TO ADD : Available special actions with weights.
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Game.ArchitectureTools.Manager;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
@@ -19,6 +20,8 @@ namespace Game.Gameplay.CharactersManagement
         
         private Dictionary<CharacterPlayerController, CharacterPawn> m_characterPlayerControllers = new ();
         public IReadOnlyDictionary<CharacterPlayerController, CharacterPawn> CharacterPlayerControllers => m_characterPlayerControllers;
+
+        public event Action<CharactersManager> OnCharactersCreated;
         
         public void CreateCharactersAndPlayerControllers(SpecialAction specialActionPrefab)
         {
@@ -39,6 +42,8 @@ namespace Game.Gameplay.CharactersManagement
                 m_characterPawns.Add(character);
                 m_characterPlayerControllers.Add(playerController, character);
             }
+            
+            OnCharactersCreated?.Invoke(this);
         }
     }
 }

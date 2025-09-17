@@ -3,6 +3,7 @@ using Game.Characters;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using Game.Gameplay.FlowMachine;
+using Game.Gameplay.GlobalGameplayData;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.Levels._0_Core;
 using Game.Gameplay.LoadingScreen;
@@ -31,8 +32,6 @@ namespace Game.Gameplay.Flows
 #if UNITY_EDITOR
         private IEnumerator SettingGameInfosInStandaloneRoutine()
         {
-
-
             var currentLevelDataAsset = CurrentLevelInfoManager.Instance?.CurrentLevelDataAsset;
 
             if (currentLevelDataAsset)
@@ -110,8 +109,14 @@ namespace Game.Gameplay.Flows
                 sceneOp.Completed += _ => isCompleted = true;
                 yield return new WaitUntil(() => isCompleted);
             }
+
+            GlobalGameplayDataManager.Instance.SetDataAsset(currentLevelDataAsset.GlobalGameplayDataAsset.CreateAndGetData());
+            
+            yield return new WaitUntil(() => GridBuilder.Instance.IsInitialized);
             
             LoadingScreenManager.Instance?.HideLoadingScreen();
+
+            
             RequestState(m_nextState);
         }
     }

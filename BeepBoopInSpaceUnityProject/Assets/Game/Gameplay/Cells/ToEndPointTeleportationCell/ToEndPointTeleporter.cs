@@ -63,7 +63,8 @@ namespace Game.Gameplay.Cells.ToEndPointTeleportationCell
             if (Application.isPlaying)
                 return;
             var gridBuilder = FindFirstObjectByType<GridBuilder>();
-            UpdateIndicatorPosition(gridBuilder);
+            if (gridBuilder)
+                UpdateIndicatorPosition(gridBuilder);
         }
 #endif
     }

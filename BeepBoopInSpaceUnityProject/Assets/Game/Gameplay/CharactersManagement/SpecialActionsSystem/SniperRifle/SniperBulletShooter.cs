@@ -1,3 +1,4 @@
+using System;
 using Game.Gameplay.CharactersManagement.CollisionsHandling;
 using Game.Gameplay.CharactersManagement.ReferencesHolding;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
@@ -19,15 +20,17 @@ namespace Game.Gameplay.CharactersManagement.SpecialActionsSystem.SniperRifle
         [SerializeField]
         private float m_bulletStartingForwardPosition = 0.5f;
 
-        private CharacterReferencesHolder m_referencesHolder;
+        public CharacterReferencesHolder ReferencesHolder { get; private set; }
 
+        public event Action<SniperBulletShooter, Projectile> OnShot;
+        public event Action<SniperBulletShooter> OnKilledOtherPlayer;
         
         private float m_lastShotTime;
         
         private void Start()
         {
             GetComponent<SpecialAction>()
-                .RegisterForDependencies(referencesHolder => m_referencesHolder = referencesHolder);
+                .RegisterForDependencies(referencesHolder => ReferencesHolder = referencesHolder);
             m_lastShotTime = Time.time;
         }
 
@@ -36,13 +39,14 @@ namespace Game.Gameplay.CharactersManagement.SpecialActionsSystem.SniperRifle
             if (Time.time - m_lastShotTime < m_cooldown)
                 return;
             
-            var model = m_referencesHolder.ModelSource;
+            var model = ReferencesHolder.ModelSource;
             var bullet = Instantiate(m_bulletPrefab,
                 model.position + Vector3.up * m_bulletHeight + model.forward * m_bulletStartingForwardPosition,
                 Quaternion.identity);
 
-            bullet.SetUp(bullet.transform.position, m_referencesHolder.MovementController.GetWorldDirection(),
+            bullet.SetUp(bullet.transform.position, ReferencesHolder.MovementController.GetWorldDirection(),
                 HandleProjectileTriggerEnter);
+            OnShot?.Invoke(this, bullet);
             
             m_lastShotTime = Time.time;
         }
@@ -56,7 +60,7 @@ namespace Game.Gameplay.CharactersManagement.SpecialActionsSystem.SniperRifle
             }
 
             var otherDeathController = collisionsHandler.ReferencesHolder.DeathController;
-            var myDeathController = m_referencesHolder.DeathController;
+            var myDeathController = ReferencesHolder.DeathController;
 
             if (otherDeathController == myDeathController)
                 return;
@@ -65,6 +69,8 @@ namespace Game.Gameplay.CharactersManagement.SpecialActionsSystem.SniperRifle
             
             collisionsHandler.ReferencesHolder.DeathController.Kill();
             Destroy(projectile.gameObject);
+            
+            OnKilledOtherPlayer?.Invoke(this);
         }
     }
 }
