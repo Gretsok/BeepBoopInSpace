@@ -121,6 +121,9 @@ namespace Game.Tools.LevelEditing.Editor
             cell.LeftCell?.SetRightCell(cell);
             
             DestroyImmediate(selectedCell.gameObject, false);
+            
+            EditorUtility.SetDirty(cell.gameObject);
+            //EditorUtility.SetDirty(selectedCell.gameObject);
         }
     }
 }
