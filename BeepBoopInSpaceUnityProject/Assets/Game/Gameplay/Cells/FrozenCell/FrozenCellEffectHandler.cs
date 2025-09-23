@@ -85,7 +85,10 @@ namespace Game.Gameplay.Cells.FrozenCell
             if (!m_blockedController.ReferencesHolder.GridWalker.PreviousCell.GetComponent<FrozenCellEffectHandler>())
             {
                 characterRoot.DOKill(false);
-                characterRoot.transform.DOJump(transform.position, 0.5f, 1, 0.2f).onComplete += () => isComplete = true;
+                characterRoot.transform.DOJump(transform.position, 0.5f, 1, 0.2f).onComplete += () =>
+                {
+                    isComplete = true;
+                };
                 yield return new WaitUntil(() => isComplete);
             }
 

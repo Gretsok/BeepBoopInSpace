@@ -45,7 +45,7 @@ namespace Game.Gameplay.GameModes.PointsRush.ObjectiveManagement
         {
             foreach (var pawn in m_charactersManager.CharacterPawns)
             {
-                pawn.ReferencesHolder.MovementController.OnMove += HandlePawnMove;
+                pawn.ReferencesHolder.MovementController.OnPositionUpdated += HandlePawnMove;
             }
             UpdateObjective();
         }
