@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Game.Characters;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
@@ -113,11 +114,23 @@ namespace Game.Gameplay.Flows
             GlobalGameplayDataManager.Instance.SetDataAsset(currentLevelDataAsset.GlobalGameplayDataAsset.CreateAndGetData());
             
             yield return new WaitUntil(() => GridBuilder.Instance.IsInitialized);
+
+            yield return new WaitUntil(() => m_loadingRequirements.TrueForAll(requirement => requirement.Invoke()));
             
             LoadingScreenManager.Instance?.HideLoadingScreen();
 
             
             RequestState(m_nextState);
+        }
+        
+        
+        public delegate bool DLoadingRequirement();
+        
+        private readonly List<DLoadingRequirement> m_loadingRequirements = new();
+
+        public void AddLoadingRequirement(DLoadingRequirement loadingRequirement)
+        {
+            m_loadingRequirements.Add(loadingRequirement);
         }
     }
 }
