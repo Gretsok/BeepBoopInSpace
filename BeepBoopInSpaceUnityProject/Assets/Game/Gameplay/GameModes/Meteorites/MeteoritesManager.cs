@@ -17,8 +17,13 @@ namespace Game.Gameplay.GameModes.Meteorites
         
         [SerializeField]
         private int m_prewarmedMeteoritesAmount = 10;
-        public float SpawnCooldown => 1f;
-        public float DropTime => 2f;
+        
+        [SerializeField]
+        private float m_testSpawnCooldown = 1f;
+        public float SpawnCooldown => m_testSpawnCooldown;
+        [SerializeField]
+        private float m_testDropTime = 2f;
+        public float DropTime => m_testDropTime;
 
         public bool IsSpawning { get; private set; }
         public float TimePassedSpawning { get; private set; }

@@ -2,7 +2,6 @@ using DG.Tweening;
 using Game.Gameplay.Cells.Default;
 using Game.Gameplay.GridSystem.GenericComponents;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Game.Gameplay.GameModes.Meteorites
 {
@@ -25,6 +24,9 @@ namespace Game.Gameplay.GameModes.Meteorites
         
         public void ResetMeteorite()
         {
+            m_meteoriteTransform.DOKill();
+            m_imminentImpactVisualScaler.DOKill();
+            
             m_meteoriteTransform.gameObject.SetActive(false);
             m_imminentImpactVisualContainer.gameObject.SetActive(false);
             m_imminentImpactVisualScaler.localScale = Vector3.one;
@@ -46,8 +48,8 @@ namespace Game.Gameplay.GameModes.Meteorites
             
             m_meteoriteTransform.gameObject.SetActive(true);
             m_imminentImpactVisualContainer.gameObject.SetActive(true);
-            m_meteoriteTransform.DOLocalMoveY(0f, dropTime).onComplete += Explode;
-            m_imminentImpactVisualScaler.DOScale(0f, dropTime);
+            m_meteoriteTransform.DOLocalMoveY(0f, dropTime).SetEase(Ease.InQuad).onComplete += Explode;
+            m_imminentImpactVisualScaler.DOScale(0f, dropTime).SetEase(Ease.InQuart);
         }
 
         private void Explode()
