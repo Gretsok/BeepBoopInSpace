@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: cd63bc7cf2239624190509de5d92fb25
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 302915
+  packageName: CONTOUR - Edge detection & outline post effect - URP Render Graph
+  packageVersion: 1.2.0.1
+  assetPath: Assets/PinwheelStudio/Contour/Runtime/ShaderIncludes/KernelUV.hlsl
+  uploadId: 782969

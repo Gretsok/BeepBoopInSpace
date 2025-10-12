@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 9f9a85d9033549647a5ba4d203c162e8
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 302915
+  packageName: CONTOUR - Edge detection & outline post effect - URP Render Graph
+  packageVersion: 1.2.0.1
+  assetPath: Assets/PinwheelStudio/Contour/Samples/Contour_SampleScene.unity
+  uploadId: 782969

@@ -1,3 +1,5 @@
+using Game.Gameplay.Cells.Default;
+using Game.Gameplay.CharactersManagement.Movement;
 using UnityEngine;
 
 namespace Game.Gameplay.GridSystem.GenericComponents
@@ -15,7 +17,16 @@ namespace Game.Gameplay.GridSystem.GenericComponents
 
         private void HandleMovementControllerOnCellChanged(CanBeWalkedOnCellComponent obj)
         {
-            obj.MovementControllerOnCell?.ReferencesHolder.DeathController.Kill();
+            if (obj.MovementControllerOnCell)
+                obj.MovementControllerOnCell.OnMoveAnimationDone += HandleTargetMoveAnimationDone;
+        }
+
+        private void HandleTargetMoveAnimationDone(CharacterMovementController arg1, Cell arg2)
+        {
+            if (arg1 != m_canBeWalkedOnCellComponent.MovementControllerOnCell)
+                return;
+            arg1.OnMoveAnimationDone -= HandleTargetMoveAnimationDone;
+            arg1?.ReferencesHolder.DeathController.Kill();
         }
     }
 }

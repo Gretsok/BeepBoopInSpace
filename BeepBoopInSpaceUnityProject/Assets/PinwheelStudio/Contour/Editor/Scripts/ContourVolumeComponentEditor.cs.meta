@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: f5c8b4c8826b4d941a518ea6a9911a8f
+AssetOrigin:
+  serializedVersion: 1
+  productId: 302915
+  packageName: CONTOUR - Edge detection & outline post effect - URP Render Graph
+  packageVersion: 1.2.0.1
+  assetPath: Assets/PinwheelStudio/Contour/Editor/Scripts/ContourVolumeComponentEditor.cs
+  uploadId: 782969

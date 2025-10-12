@@ -15,21 +15,13 @@ namespace Game.Gameplay.GridSystem
     public class GridBuilder : AManager<GridBuilder>
     {
         [SerializeField]
-        private GridDataAsset m_gridDataAsset;
-        [SerializeField]
-        private CellsDictionaryDataAsset m_cellsDictionaryDataAsset;
-        [SerializeField]
         private Vector2Int m_gridSize = new Vector2Int(10, 10);
 
         [SerializeField] 
         private Vector2 m_cellSpacing = new Vector2(1f, 1f);
 
-        public void SetData(GridDataAsset gridDataAsset, CellsDictionaryDataAsset cellsDictionaryDataAsset)
-        {
-            m_gridDataAsset = gridDataAsset;
-            m_cellsDictionaryDataAsset = cellsDictionaryDataAsset;
-        }
-        
+        [SerializeField]
+        private Cell m_defaultCellPrefab;
         
         [SerializeField]
         List<Row> m_cells = new();
@@ -41,14 +33,8 @@ namespace Game.Gameplay.GridSystem
         }
         
         [Button]
-        public void BuildGridFromGridDataAsset()
+        public void BuildGrid()
         {
-            if (!m_gridDataAsset)
-            {
-                Debug.LogError("No grid data asset found. Cannot read from it.");
-                return;
-            }
-            
             CleanCells();
             var gridSize = m_gridSize;
             var source = transform;
@@ -61,8 +47,7 @@ namespace Game.Gameplay.GridSystem
                 cells.Add(new Row());
                 for (int y = 0; y < gridSize.y; y++)
                 {
-                    var cellTypeId = m_gridDataAsset.Rows[x].CellIds[y];
-                    var cellPrefab = m_cellsDictionaryDataAsset.GetCellPrefabWithID(cellTypeId);
+                    var cellPrefab = m_defaultCellPrefab;
                     if (!cellPrefab)
                     {
                         cells[x].RowData.Add(null);
@@ -84,37 +69,7 @@ namespace Game.Gameplay.GridSystem
             
             GenerateLinks();
         }
-
-        [Button]
-        public void WriteToGridDataAsset()
-        {
-            if (!m_gridDataAsset)
-            {
-                Debug.LogError("No grid data asset found. Cannot write to it.");
-                return;
-            }
-            
-            List<GridDataAsset.RowData> rows = new();
-            for (int i = 0; i < m_cells.Count; i++)
-            {
-                var row = m_cells[i];
-                GridDataAsset.RowData rowData = new GridDataAsset.RowData();
-
-                List<int> rowIds = new();
-                for (int y = 0; y < row.RowData.Count; ++y)
-                {
-                    if (row.RowData[y])
-                        rowIds.Add(row.RowData[y].CellTypeID);
-                    else
-                        rowIds.Add(-1);
-                }
-                rowData.SetCellIds(rowIds);
-                rows.Add(rowData);
-            }
-            
-            m_gridDataAsset.SetRows(rows);
-        }
-
+        
         [Button]
         private void GenerateLinks()
         {

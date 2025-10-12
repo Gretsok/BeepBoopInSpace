@@ -42,7 +42,7 @@ namespace Game.ArchitectureTools.Manager
 
         protected virtual IEnumerator Initialize()
         {
-            yield return null;
+            yield break;
         }
     }
 }

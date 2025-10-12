@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Game.Gameplay.CameraManagement;
 using Game.Gameplay.CharactersManagement;
@@ -15,6 +16,8 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
         private AFlowState m_nextState;
         [SerializeField] 
         private List<Vector2Int> m_spawnPointsCells;
+
+        public event Action OnTimeToSetUpDependencies;
         protected override void HandleEnter()
         {
             base.HandleEnter();
@@ -30,7 +33,7 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
                 character.ReferencesHolder.MovementController.TeleportToCell(gridBuilder.GetCellAt(m_spawnPointsCells[i]));
             }
 
-            PointsRushObjectiveManager.Instance.SetUp();
+            OnTimeToSetUpDependencies?.Invoke();
             
             TimerManager.Instance.ResetTimer();
             

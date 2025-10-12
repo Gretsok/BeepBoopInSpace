@@ -45,7 +45,8 @@ namespace Game.Gameplay.CharactersManagement.Movement
         public EDirection CurrentDirection { get; private set; } = EDirection.Z;
         
 
-        public Action<CharacterMovementController, Cell> OnMove;
+        public Action<CharacterMovementController, Cell> OnPositionUpdated;
+        public Action<CharacterMovementController, Cell> OnMoveAnimationDone;
         public void MoveToCell(Cell cell)
         {
             if (IsBlocked)
@@ -66,12 +67,12 @@ namespace Game.Gameplay.CharactersManagement.Movement
             var groundPosition = new Vector3(m_referencesHolder.GridWalker.transform.position.x, 0f, m_referencesHolder.GridWalker.transform.position.z);
             m_targetPosition = groundPosition;
             
-            m_referencesHolder.Root.transform.DOJump(m_targetPosition, 0.5f, 1, 0.2f);
+            m_referencesHolder.Root.transform.DOJump(m_targetPosition, 0.5f, 1, 0.2f).onComplete += () => OnMoveAnimationDone?.Invoke(this, cell);
             
             m_referencesHolder.AnimationsHandler.Move();
             m_referencesHolder.SFXsHandler.PlayMoveAudio();
             m_referencesHolder.RumbleHandler.PlayMoveRumble();
-            OnMove?.Invoke(this, cell);
+            OnPositionUpdated?.Invoke(this, cell);
         }
 
         private Vector3 m_targetPosition;
@@ -84,7 +85,8 @@ namespace Game.Gameplay.CharactersManagement.Movement
             m_referencesHolder.GridWalker.MoveToCell(cell, this);
             m_referencesHolder.Root.transform.position = m_referencesHolder.GridWalker.transform.position;
             m_targetPosition = transform.position;
-            OnMove?.Invoke(this, cell);
+            OnPositionUpdated?.Invoke(this, cell);
+            OnMoveAnimationDone?.Invoke(this, cell);
         }
 
         public void ChangeDirection(EDirection direction)

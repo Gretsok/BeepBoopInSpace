@@ -1,0 +1,6 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <uie:ObjectField label="Cells pool to use:" data-source-type="Game.Gameplay.Environments.Core.CellsPoolDataAsset, Assembly-CSharp" type="Game.Gameplay.Environments.Core.CellsPoolDataAsset, Assembly-CSharp" name="CellsPoolField" />
+    <ui:ScrollView style="flex-direction: row; flex-wrap: wrap;">
+        <ui:GroupBox name="CellsPreviewGroupBox" style="flex-direction: row; flex-wrap: wrap;" />
+    </ui:ScrollView>
+</ui:UXML>

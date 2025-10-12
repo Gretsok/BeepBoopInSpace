@@ -1,8 +1,10 @@
 using System.Collections;
+using System.Collections.Generic;
 using Game.Characters;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using Game.Gameplay.FlowMachine;
+using Game.Gameplay.GlobalGameplayData;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.Levels._0_Core;
 using Game.Gameplay.LoadingScreen;
@@ -31,8 +33,6 @@ namespace Game.Gameplay.Flows
 #if UNITY_EDITOR
         private IEnumerator SettingGameInfosInStandaloneRoutine()
         {
-
-
             var currentLevelDataAsset = CurrentLevelInfoManager.Instance?.CurrentLevelDataAsset;
 
             if (currentLevelDataAsset)
@@ -82,32 +82,55 @@ namespace Game.Gameplay.Flows
             
             charactersManager.CreateCharactersAndPlayerControllers(specialActionOp.Result.GetComponent<SpecialAction>());
 
+            // Loading environment
+            {
+                var sceneOp =
+                    Addressables.LoadSceneAsync(currentLevelDataAsset.EnvironmentScene, LoadSceneMode.Additive);
+                bool isCompleted = false;
+                sceneOp.Completed += _ => isCompleted = true;
+                yield return new WaitUntil(() => isCompleted);
+
+                SceneManager.SetActiveScene(sceneOp.Result.Scene);
+            }
+            
+            // Loading level (mainly containing the grid and all other gameplay elements in the world)
+            {
+                var sceneOp =
+                    Addressables.LoadSceneAsync(currentLevelDataAsset.LevelScene, LoadSceneMode.Additive);
+                bool isCompleted = false;
+                sceneOp.Completed += _ => isCompleted = true;
+                yield return new WaitUntil(() => isCompleted);
+            }
+            
+            // Loading optional scenes
             for (int i = 0; i < currentLevelDataAsset.AdditionalScenes.Count; ++i)
             {
                 var sceneOp = Addressables.LoadSceneAsync(currentLevelDataAsset.AdditionalScenes[i], LoadSceneMode.Additive);
                 bool isCompleted = false;
                 sceneOp.Completed += _ => isCompleted = true;
                 yield return new WaitUntil(() => isCompleted);
-                if (i == currentLevelDataAsset.AdditionalSceneIndexToActivate)
-                {
-                    SceneManager.SetActiveScene(sceneOp.Result.Scene);
-                }
             }
 
-            var gridDataAssetOp = currentLevelDataAsset.GridDataAsset.LoadAssetAsync();
-            yield return gridDataAssetOp.WaitForCompletion();
+            GlobalGameplayDataManager.Instance.SetDataAsset(currentLevelDataAsset.GlobalGameplayDataAsset.CreateAndGetData());
             
-            
-            var dictionaryDataAssetOp = currentLevelDataAsset.CellsDictionaryDataAsset.LoadAssetAsync();
-            yield return dictionaryDataAssetOp.WaitForCompletion();
-            
-            var gridBuilder = GridBuilder.Instance;
-            
-            gridBuilder.SetData(gridDataAssetOp.Result, dictionaryDataAssetOp.Result);
-            gridBuilder.BuildGridFromGridDataAsset();
+            yield return new WaitUntil(() => GridBuilder.Instance.IsInitialized);
+
+            yield return new WaitUntil(() => m_loadingRequirements.TrueForAll(requirement => requirement.Invoke()));
             
             LoadingScreenManager.Instance?.HideLoadingScreen();
+
+            
             RequestState(m_nextState);
+        }
+        
+        
+        public delegate bool DLoadingRequirement();
+        
+        private readonly List<DLoadingRequirement> m_loadingRequirements = new();
+
+        public void AddLoadingRequirement(DLoadingRequirement loadingRequirement)
+        {
+            m_loadingRequirements.Add(loadingRequirement);
         }
     }
 }

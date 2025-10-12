@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4376f49ec7119a84cb08bb181d082854
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 302915
+  packageName: CONTOUR - Edge detection & outline post effect - URP Render Graph
+  packageVersion: 1.2.0.1
+  assetPath: Assets/PinwheelStudio/Contour/Samples/Contour_SampleScene/Contour_DemoVlumeProfile.asset
+  uploadId: 782969

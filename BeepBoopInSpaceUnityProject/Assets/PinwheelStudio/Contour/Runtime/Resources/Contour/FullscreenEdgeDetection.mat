@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: FullscreenEdgeDetection
+  m_Shader: {fileID: -6465566751694194690, guid: a6bd8126e206afe4991c657977172789, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _USE_SCENE_COLOR
+  - _USE_SCENE_NORMALS
+  m_InvalidKeywords:
+  - _BLENDMODE_A
+  - _BLEND_MODE_BURN
+  - _USE_CAMERA_COLOR
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BLENDMODE: 0
+    - _BLEND_MODE: 0
+    - _DepthResponse: 1
+    - _EDGE_ONLY: 0
+    - _EdgeClarity: 0
+    - _FAST_MODE: 0
+    - _FadeBottomEnd: 1.3
+    - _FadeBottomStart: 0
+    - _FadeDistanceEnd: 0
+    - _FadeDistanceStart: 0.3
+    - _FadeTopEnd: 6.33
+    - _FadeTopStart: 5
+    - _Intensity: 1
+    - _MaxWorldHeight: 2.88
+    - _MinWorldHeight: 0.5
+    - _Min_World_Height: 0
+    - _PeakBrightness: 0
+    - _Response: 0
+    - _StrongEdgeHighlight: 0
+    - _Thickness: 1.01
+    - _USE_CAMERA_COLOR: 1
+    - _USE_DEPTH: 0
+    - _USE_SCENE_COLOR: 1
+    - _USE_SCENE_DEPTH: 0
+    - _USE_SCENE_NORMALS: 1
+    - _USE_WORLD_NORMALS: 0
+    - _WeakEdgeRemoval: 0
+    m_Colors:
+    - _Color: {r: 0, g: 0, b: 0, a: 0}
+    - _EdgeColor: {r: 0, g: 0, b: 0, a: 1}
+    - _NonEdgeColor: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
