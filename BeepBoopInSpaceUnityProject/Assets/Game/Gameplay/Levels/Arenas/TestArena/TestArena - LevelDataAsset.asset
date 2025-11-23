@@ -33,11 +33,11 @@ MonoBehaviour:
     m_EditorAssetChanged: 0
   <AdditionalScenes>k__BackingField: []
   <ObjectiveManagerPrefab>k__BackingField:
-    m_AssetGUID: e01f34049b694954c8d3436fd26d2b31
+    m_AssetGUID: 37f15a3dee4a498408b5cfdb1e5113b1
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 
-    m_EditorAssetChanged: 1
+    m_EditorAssetChanged: 0
   <SpecialActionPrefab>k__BackingField:
     m_AssetGUID: 63c5df9df3cc2b94b94d89490d122b4d
     m_SubObjectName: 

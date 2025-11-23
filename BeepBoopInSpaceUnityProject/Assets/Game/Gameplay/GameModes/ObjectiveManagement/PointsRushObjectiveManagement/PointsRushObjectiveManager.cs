@@ -62,7 +62,7 @@ namespace Game.Gameplay.GameModes.PointsRush.PointsRushObjectiveManagement
 
             do
             {
-                CurrentObjectiveCell = m_gridBuilder.GetRandomWalkableCell((cell) => !cell.GetComponent<KillingCellComponent>());
+                CurrentObjectiveCell = m_gridBuilder.GetRandomAvailableWalkableCell((cell) => !cell.GetComponent<KillingCellComponent>());
             } while (!CurrentObjectiveCell || DoesAPawnStandOnCell(CurrentObjectiveCell));
             m_objectiveCollectedAudioPlayer.Play();
             m_currentObjectiveIndication = Instantiate(m_objectiveIndicationPrefab, CurrentObjectiveCell.transform);

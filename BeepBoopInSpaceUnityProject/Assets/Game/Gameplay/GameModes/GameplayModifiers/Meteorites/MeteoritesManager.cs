@@ -5,6 +5,7 @@ using Game.ArchitectureTools.Manager;
 using Game.Gameplay.Flows._0_Load;
 using Game.Gameplay.Flows.Gameplay;
 using Game.Gameplay.GridSystem;
+using Game.Gameplay.GridSystem.GenericComponents;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -96,7 +97,7 @@ namespace Game.Gameplay.GameModes.Meteorites
             m_lastSpawnTime = TimePassedSpawning;
             
             var meteoriteSystem = PrepareAndGetReadyMeteoriteSystem();
-            meteoriteSystem.Drop(m_gridBuilder.GetRandomWalkableCell(), DropTime);
+            meteoriteSystem.Drop(m_gridBuilder.GetRandomAvailableWalkableCell(cell => !cell.TryGetComponent<KillingCellComponent>(out _)), DropTime);
             Debug.Log($"Spawn meteorite at {m_lastSpawnTime}", meteoriteSystem.gameObject);
         }
 
