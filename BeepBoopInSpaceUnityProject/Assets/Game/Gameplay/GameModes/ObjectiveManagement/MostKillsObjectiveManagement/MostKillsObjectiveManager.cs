@@ -2,9 +2,9 @@ using System.Collections;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem.SniperRifle;
 
-namespace Game.Gameplay.GameModes.Sniper.ShootingObjectiveManagement
+namespace Game.Gameplay.GameModes.ObjectiveManagement.MostKillsObjectiveManagement
 {
-    public class ShootingObjectiveManager : AObjectiveManager
+    public class MostKillsObjectiveManager : AObjectiveManager
     {
         private CharactersManager m_charactersManager;
 

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2062787261331355299}
   - component: {fileID: 6884732213639136104}
   m_Layer: 0
-  m_Name: ShootingObjectiveManager
+  m_Name: MostKillsObjectiveManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

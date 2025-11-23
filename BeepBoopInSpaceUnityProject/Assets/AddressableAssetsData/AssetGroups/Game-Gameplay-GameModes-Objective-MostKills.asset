@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Game-Gameplay-GameModes-Objective-Shooting
+  m_Name: Game-Gameplay-GameModes-Objective-MostKills
   m_EditorClassIdentifier: 
-  m_GroupName: Game-Gameplay-GameModes-Objective-Shooting
+  m_GroupName: Game-Gameplay-GameModes-Objective-MostKills
   m_GUID: f3aeaec4e65b2124ba3dd6fd14c4c277
   m_SerializeEntries:
   - m_GUID: 849a61769599dc7459dae8a0f5757a49
