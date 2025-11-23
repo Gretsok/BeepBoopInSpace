@@ -6,6 +6,7 @@ using Game.Gameplay.Flows._0_Load;
 using Game.Gameplay.Flows.Gameplay;
 using Game.Gameplay.GridSystem;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Gameplay.GameModes.Meteorites
 {
@@ -21,11 +22,19 @@ namespace Game.Gameplay.GameModes.Meteorites
         private int m_prewarmedMeteoritesAmount = 10;
         
         [SerializeField]
-        private float m_testSpawnCooldown = 1f;
-        public float SpawnCooldown => m_testSpawnCooldown;
+        private float m_startSpawnCooldown = 1f;
         [SerializeField]
-        private float m_testDropTime = 2f;
-        public float DropTime => m_testDropTime;
+        private float m_cooldownReducingSpeed = 0.05f;
+        [SerializeField]
+        private float m_minimalCooldown = 0.05f;
+        public float SpawnCooldown => Mathf.Max(m_minimalCooldown, m_startSpawnCooldown - m_cooldownReducingSpeed * TimePassedSpawning);
+        [SerializeField]
+        private float m_startDropTime = 2f;
+        [SerializeField]
+        private float m_dropTimeReducingSpeed = 0.00f;
+        [SerializeField]
+        private float m_minimalDropTime = 0.1f;
+        public float DropTime => Mathf.Max(m_minimalDropTime, m_startDropTime - m_dropTimeReducingSpeed * TimePassedSpawning);
 
         public bool IsSpawning { get; private set; }
         public float TimePassedSpawning { get; private set; }
@@ -47,10 +56,12 @@ namespace Game.Gameplay.GameModes.Meteorites
             
             for (int i = 0; i < m_prewarmedMeteoritesAmount; i++)
             {
-                var meteoriteSystem = Instantiate(m_meteoriteSystemPrefab);
+                var meteoriteSystem = Instantiate(m_meteoriteSystemPrefab, transform);
                 meteoriteSystem.ResetMeteorite();
                 m_instantiatedMeteoriteSystems.Add(meteoriteSystem);
             }
+            
+            TimePassedSpawning = 0f;
             
             GridBuilder.RegisterPostInitializationCallback(builder => m_gridBuilder = builder);
         }
@@ -58,7 +69,6 @@ namespace Game.Gameplay.GameModes.Meteorites
         private void ActivateMeteoritesSpawning()
         {
             m_lastSpawnTime = float.MinValue;
-            TimePassedSpawning = 0f;
             IsSpawning = true;
         }
 
@@ -96,7 +106,7 @@ namespace Game.Gameplay.GameModes.Meteorites
 
             if (!meteoriteSystem)
             {
-                meteoriteSystem = Instantiate(m_meteoriteSystemPrefab);
+                meteoriteSystem = Instantiate(m_meteoriteSystemPrefab, transform);
                 meteoriteSystem.ResetMeteorite();
                 m_instantiatedMeteoriteSystems.Add(meteoriteSystem);
             }
