@@ -4,6 +4,7 @@ using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.FlowMachine;
 using Game.Gameplay.Flows._1_SetUp;
 using Game.Gameplay.GridSystem;
+using Game.Gameplay.Levels._0_Core;
 using Game.Gameplay.Timer;
 using UnityEngine;
 
@@ -14,8 +15,6 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
     {
         [SerializeField]
         private AFlowState m_nextState;
-        [SerializeField] 
-        private List<Vector2Int> m_spawnPointsCells;
 
         protected override void HandleEnter()
         {
@@ -25,11 +24,13 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
             
             var charactersManager = CharactersManager.Instance;
 
+            var levelManager = LevelManager.Instance;
+            
             for (int i = 0; i < charactersManager.CharacterPawns.Count; i++)
             {
                 var character = charactersManager.CharacterPawns[i];
                 
-                character.ReferencesHolder.MovementController.TeleportToCell(gridBuilder.GetCellAt(m_spawnPointsCells[i]));
+                character.ReferencesHolder.MovementController.TeleportToCell(levelManager.StartingCells[i]);
             }
 
             GetComponent<SetUpEventsHooker>().NotifySetUp();
