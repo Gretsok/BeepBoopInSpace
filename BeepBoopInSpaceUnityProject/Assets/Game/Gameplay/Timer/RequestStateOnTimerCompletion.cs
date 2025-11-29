@@ -1,4 +1,4 @@
-using Game.Gameplay.FlowMachine;
+using Game.Gameplay.Flows.Finish;
 using UnityEngine;
 
 namespace Game.Gameplay.Timer
@@ -6,8 +6,7 @@ namespace Game.Gameplay.Timer
     public class RequestStateOnTimerCompletion : MonoBehaviour
     {
         private TimerManager m_timerManager;
-        [SerializeField] 
-        private AFlowState m_stateToRequest;
+
         private void Awake()
         {
             m_timerManager = GetComponent<TimerManager>();
@@ -16,7 +15,7 @@ namespace Game.Gameplay.Timer
 
         private void HandleTimerCompleted(TimerManager obj)
         {
-            FlowMachine.FlowMachine.Instance.RequestState(m_stateToRequest);
+            FlowMachine.FlowMachine.Instance.RequestState(FinishStateGrabber.Instance.FinishState);
         }
     }
 }

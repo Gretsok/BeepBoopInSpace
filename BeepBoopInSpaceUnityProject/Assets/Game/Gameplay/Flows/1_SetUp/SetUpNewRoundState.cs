@@ -33,13 +33,16 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
                 character.ReferencesHolder.MovementController.TeleportToCell(levelManager.StartingCells[i]);
             }
 
-            GetComponent<SetUpEventsHooker>().NotifySetUp();
+            var eventsHooker = GetComponent<SetUpEventsHooker>();
+            eventsHooker.NotifySetUp();
             
             TimerManager.Instance.ResetTimer();
             
             CameraManager.Instance.SwitchToGameplayCamera();
             
             RequestState(m_nextState);
+            
+            eventsHooker.NotifySetUpCompleted();
         }
     }
 }

@@ -11,5 +11,12 @@ namespace Game.Gameplay.Flows._1_SetUp
         {
             OnTimeToSetUpDependencies?.Invoke();
         }
+
+
+        public event Action OnSetUpCompleted;
+        public void NotifySetUpCompleted()
+        {
+            OnSetUpCompleted?.Invoke();
+        }
     }
 }
