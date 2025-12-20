@@ -11,7 +11,6 @@ namespace Game.MainMenu
     {
         [field: SerializeField]
         public Transform ModelContainer { get; private set; }
-        [field: SerializeField]
         public CharacterDataAsset CharacterDataAsset { get; private set; }
         
         [SerializeField] 
@@ -45,6 +44,7 @@ namespace Game.MainMenu
         {
             m_container.alpha = 1;
 
+            CharacterDataAsset = m_characterBankManager.GetFirstAvailableCharacterData();
             m_characterBankManager.NotifyAssociation(this, CharacterDataAsset);
 
             IsActivated = true;

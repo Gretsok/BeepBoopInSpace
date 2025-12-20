@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Game.ArchitectureTools.Manager;
 using Game.Characters;
 using UnityEngine;
@@ -10,7 +11,12 @@ namespace Game.MainMenu
         [SerializeField]
         private List<CharacterDataAsset> m_charactersData = new List<CharacterDataAsset>();
 
-        private Dictionary<CharacterWidget, CharacterDataAsset> m_associations = new();
+        private readonly Dictionary<CharacterWidget, CharacterDataAsset> m_associations = new();
+
+        public CharacterDataAsset GetFirstAvailableCharacterData()
+        {
+            return m_charactersData.First(data => !m_associations.ContainsValue(data));
+        }
         
         public CharacterDataAsset GetNextCharacterDataAfter(CharacterDataAsset characterDataAsset)
         {
