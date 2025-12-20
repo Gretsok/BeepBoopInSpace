@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Game-Gameplay-GameModes-Objective-LeastDeaths
+  m_EditorClassIdentifier: 
+  m_GroupName: Game-Gameplay-GameModes-Objective-LeastDeaths
+  m_GUID: c2f056e7a36393c42b5ac4bcaf823fbd
+  m_SerializeEntries:
+  - m_GUID: dc2995b66b36fbc40b107d68d38c42d6
+    m_Address: Assets/Game/Gameplay/GameModes/ObjectiveManagement/LeastDeathsObjectiveManagement
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 22ca0aaefa80e5a4eb8c4beaa1f2aae1, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 4903fa9c4ac2ee84b984464f756997d3, type: 2}
+    - {fileID: 11400000, guid: 623edbf3f839f2e46810a56491fa7226, type: 2}

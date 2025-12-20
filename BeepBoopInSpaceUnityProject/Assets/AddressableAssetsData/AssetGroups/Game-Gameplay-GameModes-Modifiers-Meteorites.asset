@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Game-Gameplay-GameModes-Modifiers-Meteorites
+  m_EditorClassIdentifier: 
+  m_GroupName: Game-Gameplay-GameModes-Modifiers-Meteorites
+  m_GUID: bba04e7fd3b2f5a4db7e3801445e5f49
+  m_SerializeEntries:
+  - m_GUID: d66c9242013f46d44bbe36b3727e5647
+    m_Address: Assets/Game/Gameplay/GameModes/GameplayModifiers/Meteorites
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 22ca0aaefa80e5a4eb8c4beaa1f2aae1, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 3e2a5aeacb558554d8c0c6b33f101043, type: 2}
+    - {fileID: 11400000, guid: e58634602abb6534597aeafd8d49fcd3, type: 2}

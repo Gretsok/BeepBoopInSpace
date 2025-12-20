@@ -28,6 +28,8 @@ namespace Game.Gameplay.CharactersManagement.Death
         
         public bool IsAlive { get; private set; } = true;
 
+        public bool CanResurrect { get; set; } = true;
+        
         public void Kill(float a_waitDurationToResurrect = -1f)
         {
             IsAlive = false;
@@ -35,7 +37,13 @@ namespace Game.Gameplay.CharactersManagement.Death
             if (a_waitDurationToResurrect < 0f)
                 a_waitDurationToResurrect = m_defaultWaitDurationToResurrect;
             
-            Invoke(nameof(Resurrect), a_waitDurationToResurrect);
+            if (CanResurrect)
+                Invoke(nameof(Resurrect), a_waitDurationToResurrect);
+            else
+            {
+                CharacterReferencesHolder.GridWalker.MoveToCell(null);
+                
+            }
             
             m_onDeath?.Invoke();
             OnDeath?.Invoke(this);
