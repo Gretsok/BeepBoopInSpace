@@ -16833,6 +16833,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2739707084526467144, guid: a93fdc95b9dc4c41bb4a2f27252e81f0, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 22100000, guid: 94d05d84302859b19b69850ffbf926c9, type: 2}
     - target: {fileID: 3535632233893311308, guid: a93fdc95b9dc4c41bb4a2f27252e81f0, type: 3}
       propertyPath: m_Name
       value: P_Volto
