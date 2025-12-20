@@ -324,7 +324,7 @@ GameObject:
   - component: {fileID: 620040812}
   - component: {fileID: 620040811}
   m_Layer: 0
-  m_Name: LevelLoader
+  m_Name: GameModesLauncher
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -342,7 +342,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eee187f84a8e31141b963eea51549853, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_levelDataAsset: {fileID: 11400000, guid: 3dccdb5a039f0504696a5ef3c5009927, type: 2}
+  m_tournamentBootScene:
+    m_AssetGUID: 7e0da08633cdbf74392249333b428b5b
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
 --- !u!4 &620040812
 Transform:
   m_ObjectHideFlags: 0

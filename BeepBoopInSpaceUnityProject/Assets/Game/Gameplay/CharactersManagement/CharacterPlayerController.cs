@@ -7,12 +7,14 @@ namespace Game.Gameplay.CharactersManagement
 {
     public class CharacterPlayerController : MonoBehaviour
     {
+        private CharacterPawn m_pawn;
+        public CharacterPawn Pawn => m_pawn;
         private CharacterReferencesHolder m_referencesHolder;
-        public CharacterReferencesHolder ReferencesHolder => m_referencesHolder;
 
-        public void InjectDependencies(CharacterReferencesHolder referencesHolder)
+        public void InjectDependencies(CharacterPawn pawn)
         {
-            m_referencesHolder = referencesHolder;
+            m_pawn = pawn;
+            m_referencesHolder = pawn.ReferencesHolder;
         }
         
         private AbstractPlayer m_player;

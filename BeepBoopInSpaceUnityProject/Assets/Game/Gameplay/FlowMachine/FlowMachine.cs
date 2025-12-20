@@ -1,10 +1,9 @@
 using System.Collections.Generic;
-using Game.ArchitectureTools.Manager;
 using UnityEngine;
 
 namespace Game.Gameplay.FlowMachine
 {
-    public class FlowMachine : AManager<FlowMachine>
+    public class FlowMachine : MonoBehaviour
     {
         [SerializeField] 
         private AFlowState m_defaultState;

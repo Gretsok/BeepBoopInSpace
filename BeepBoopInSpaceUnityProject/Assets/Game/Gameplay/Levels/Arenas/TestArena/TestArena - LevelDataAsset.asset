@@ -33,21 +33,16 @@ MonoBehaviour:
     m_EditorAssetChanged: 0
   <AdditionalScenes>k__BackingField: []
   <ObjectiveManagerPrefab>k__BackingField:
-    m_AssetGUID: d08a044cc3bdfc14cae52eb01456245b
+    m_AssetGUID: d6382a634cd50c946b1963b05337ead1
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
   <SpecialActionPrefab>k__BackingField:
-    m_AssetGUID: 63c5df9df3cc2b94b94d89490d122b4d
+    m_AssetGUID: 9e7e77a7a2c3547458d91f20f185a371
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
-  <AdditionalSystemsToInstantiate>k__BackingField:
-  - m_AssetGUID: 35c0dc46571c7aa49b105800fb631ae3
-    m_SubObjectName: 
-    m_SubObjectType: 
-    m_SubObjectGUID: 
-    m_EditorAssetChanged: 0
+  <AdditionalSystemsToInstantiate>k__BackingField: []
   <GlobalGameplayDataAsset>k__BackingField: {fileID: 11400000, guid: fe1db95f1b7cb434896346d5a170c8aa, type: 2}

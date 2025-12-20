@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Game.ArchitectureTools.Manager;
 
@@ -7,9 +8,12 @@ namespace Game.Gameplay.Levels._0_Core
     {
         public LevelDataAsset CurrentLevelDataAsset { get; private set; }
 
-        public void Setup(LevelDataAsset levelDataAsset)
+        public event Action<CurrentLevelInfoManager, LevelDataAsset> OnCurrentLevelDataAssetChanged;
+        
+        public void SetCurrentLevelDataAsset(LevelDataAsset levelDataAsset)
         {
             CurrentLevelDataAsset = levelDataAsset;
+            OnCurrentLevelDataAssetChanged?.Invoke(this, CurrentLevelDataAsset);
         }
 
         protected override IEnumerator Initialize()

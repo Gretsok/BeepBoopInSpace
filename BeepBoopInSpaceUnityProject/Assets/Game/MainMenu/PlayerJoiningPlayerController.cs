@@ -15,6 +15,13 @@ namespace Game.MainMenu
             m_widget = widget;
             
             m_player.SetCharacterData(widget.CharacterDataAsset);
+            widget.OnActivated -= HandleWidgetActivated;
+            widget.OnActivated += HandleWidgetActivated;
+        }
+
+        private void HandleWidgetActivated(CharacterWidget obj)
+        {
+            m_player.SetCharacterData(obj.CharacterDataAsset);
         }
 
         public void Activate()

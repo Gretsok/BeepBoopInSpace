@@ -36,7 +36,7 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LastManStandingObjectiveMa
             gameplayEventsHooker.OnGameplayResumed += HandleGameplayResumed;
             gameplayEventsHooker.OnGameplayPaused += HandleGameplayPaused;
             
-            ResultsManager.RegisterPostInitializationCallback(manager => manager.SetScoreCalculationMethod(ResultsManager.EScoreCalculationMethod.HigherScoreIsBest));
+            ResultsManager.RegisterPostInitializationCallback(manager => manager.SetScoreCalculationMethod(EScoreCalculationMethod.HigherScoreIsBest));
 
             Destroy(TimerManager.Instance.gameObject);
             
@@ -83,7 +83,7 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LastManStandingObjectiveMa
         private IEnumerator TriggerEndOfGame()
         {
             yield return new WaitForSeconds(m_playTimeAfterLastDeath);
-            FlowMachine.FlowMachine.Instance.RequestState(FinishStateGrabber.Instance.FinishState);
+            GameplayContext.Instance.FlowMachine.RequestState(FinishStateGrabber.Instance.FinishState);
             m_charactersManager.CharacterPawns.First(pawn => pawn.ReferencesHolder.DeathController.IsAlive)
                 .ReferencesHolder.ScoringController.SetScore((int)(TimePassed * 10f));
         }

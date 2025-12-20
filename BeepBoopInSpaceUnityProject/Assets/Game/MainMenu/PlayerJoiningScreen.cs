@@ -20,7 +20,7 @@ namespace Game.MainMenu
         [SerializeField] private Button m_startGameButton;
         
         private PlayerManager m_playerManager;
-        private LevelLoader m_levelLoader;
+        private GameModesLauncher m_gameModesLauncher;
 
         [Header("Sounds")]
         [SerializeField]
@@ -30,7 +30,7 @@ namespace Game.MainMenu
         {
             gameObject.SetActive(true);
 
-            m_levelLoader = LevelLoader.Instance;
+            m_gameModesLauncher = GameModesLauncher.Instance;
             
             m_playerManager = PlayerManager.Instance;
 
@@ -65,7 +65,7 @@ namespace Game.MainMenu
             if (m_playerManager.Players.Count < 2)
                 return;
             
-            m_levelLoader.LoadLevel();
+            m_gameModesLauncher.LaunchTournament();
         }
 
         public Action OnBack;

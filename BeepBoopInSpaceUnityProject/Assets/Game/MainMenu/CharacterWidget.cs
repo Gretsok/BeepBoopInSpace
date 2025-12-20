@@ -2,6 +2,7 @@ using System;
 using DG.Tweening;
 using Game.Characters;
 using TMPro;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -35,19 +36,24 @@ namespace Game.MainMenu
             {
                 m_characterBankManager = manager;
             });
-            Deactivate();
+            Deactivate(true);
         }
 
-        public bool IsActivated { get; private set; }
+        public bool IsActivated { get; private set; } = false;
+        public event Action<CharacterWidget> OnActivated;
+        public event Action<CharacterWidget> OnDeactivated;
         
         public void Activate()
         {
+            if (IsActivated)
+                return;
             m_container.alpha = 1;
 
             CharacterDataAsset = m_characterBankManager.GetFirstAvailableCharacterData();
             m_characterBankManager.NotifyAssociation(this, CharacterDataAsset);
 
             IsActivated = true;
+            OnActivated?.Invoke(this);
         }
         
 
@@ -64,8 +70,10 @@ namespace Game.MainMenu
             NameText.text = CharacterDataAsset.Name;
         }
 
-        public void Deactivate()
+        public void Deactivate(bool force = false)
         {
+            if (!IsActivated && !force)
+                return;
             m_container.alpha = 0;
             
             m_alreadySelectedBlock.gameObject.SetActive(false);
@@ -76,6 +84,7 @@ namespace Game.MainMenu
             }
             
             IsActivated = false;
+            OnDeactivated?.Invoke(this);
         }
 
         public void Pop()
