@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <NameKey>k__BackingField: TEST_ARENA
   <GameModeScene>k__BackingField:
-    m_AssetGUID: 9ff6f2cc3f2cac140b6bbe2fdeeb2128
+    m_AssetGUID: 0bc3d4077faf5744081b93e5c2a7de5f
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 
@@ -32,8 +32,20 @@ MonoBehaviour:
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
   <AdditionalScenes>k__BackingField: []
+  <ObjectiveManagerPrefab>k__BackingField:
+    m_AssetGUID: d08a044cc3bdfc14cae52eb01456245b
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
   <SpecialActionPrefab>k__BackingField:
     m_AssetGUID: 63c5df9df3cc2b94b94d89490d122b4d
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  <AdditionalSystemsToInstantiate>k__BackingField:
+  - m_AssetGUID: 35c0dc46571c7aa49b105800fb631ae3
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 

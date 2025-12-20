@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Game/MainMenu/MainMenu.unity
     guid: a57a0ee9f82ad024cb2d1ab1f02c23b6
   - enabled: 1
-    path: Assets/Game/Gameplay/GameModes/PointsRush/GM_PointsRush.unity
+    path: Assets/Game/Gameplay/GameModes/BaseGame/GM_BaseGame.unity
     guid: 0bc3d4077faf5744081b93e5c2a7de5f
   - enabled: 1
     path: Assets/Game/Gameplay/Levels/Arenas/TestArena/TestArena_Enviro.unity

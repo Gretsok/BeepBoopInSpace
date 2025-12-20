@@ -19,12 +19,20 @@ namespace Game.Gameplay.FlowMachine
 
         private void HandleEntered(AFlowState obj)
         {
-            m_gameObjectsToActivateDuringState?.ForEach(go => go.SetActive(true));
+            m_gameObjectsToActivateDuringState?.ForEach(go =>
+            {
+                if (go)
+                    go.SetActive(true);
+            });
         }
 
         private void HandleLeft(AFlowState obj)
         {
-            m_gameObjectsToActivateDuringState?.ForEach(go => go.SetActive(false));
+            m_gameObjectsToActivateDuringState?.ForEach(go =>
+            {
+                if (go)
+                    go.SetActive(false);
+            });
         }
     }
 }

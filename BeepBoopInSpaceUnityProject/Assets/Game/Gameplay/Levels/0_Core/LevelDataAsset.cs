@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
+using Game.Gameplay.GameModes;
 using Game.Gameplay.GlobalGameplayData;
-using Game.Gameplay.GridSystem;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -23,7 +23,13 @@ namespace Game.Gameplay.Levels._0_Core
         public List<AssetReference> AdditionalScenes { get; private set; }
         
         [field: SerializeField]
+        public ObjectiveManagerAssetReference ObjectiveManagerPrefab { get; private set; }
+        
+        [field: SerializeField]
         public SpecialActionAssetReference SpecialActionPrefab { get; private set; }
+        
+        [field: SerializeField]
+        public List<AssetReference> AdditionalSystemsToInstantiate { get; private set; }
         
         [field: SerializeField]
         public GlobalGameplayDataAsset GlobalGameplayDataAsset { get; private set; }
