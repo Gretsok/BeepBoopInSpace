@@ -6,6 +6,7 @@ using Game.Gameplay.Levels._0_Core;
 using Game.Gameplay.LoadingScreen;
 using Game.Tournament.Config;
 using Game.Tournament.Results;
+using Game.Tournament.Results.ResultsScene;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -20,7 +21,7 @@ namespace Game.Tournament.Flow
         private AssetReference m_tournamentCloseScene;
 
         [SerializeField]
-        private AssetReference m_tournamentTransitionScene;
+        private AssetReference m_tournamentResultsScene;
         
         private TournamentResultsManager m_resultsManager;
         private TournamentConfigDataAsset m_configDataAsset;
@@ -62,15 +63,14 @@ namespace Game.Tournament.Flow
             var loadingScreenManager = LoadingScreenManager.Instance;
             
             loadingScreenManager.ShowLoadingScreen();
-            var op = Addressables.LoadSceneAsync(m_tournamentTransitionScene, LoadSceneMode.Single);
-            // op.ReleaseHandleOnCompletion();
+            var op = Addressables.LoadSceneAsync(m_tournamentResultsScene, LoadSceneMode.Single);
             yield return new WaitUntil(() => op.IsDone);
-            loadingScreenManager.HideLoadingScreen();
-            // Display Result tournament
-            Debug.Log("[TODO] Display Result tournament");
             
-            // TODO: Should be called through an event
-            HandleEndOfResultTournamentScreenClosed();
+            TournamentResultsSceneContext.RegisterPostInitializationCallback(resultsSceneContext =>
+            {
+                resultsSceneContext.ResultsCanvas.SetUp(HandleEndOfResultTournamentScreenClosed);
+                loadingScreenManager.HideLoadingScreen();
+            });
         }
 
         private void HandleEndOfResultTournamentScreenClosed()

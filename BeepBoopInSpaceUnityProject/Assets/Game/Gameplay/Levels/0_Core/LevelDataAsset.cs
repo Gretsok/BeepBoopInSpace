@@ -12,7 +12,8 @@ namespace Game.Gameplay.Levels._0_Core
     {
         [field: SerializeField]
         public string NameKey { get; private set; }
-
+        [field: SerializeField]
+        public Sprite Thumbnail { get; private set; }
         [field: SerializeField]
         public AssetReference GameModeScene { get; private set; }
         [field: SerializeField]

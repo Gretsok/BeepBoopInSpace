@@ -533,6 +533,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2332525237624400161}
   - component: {fileID: 2739707084526467144}
+  - component: {fileID: 9057753469260652866}
   m_Layer: 0
   m_Name: P_Volto
   m_TagString: Untagged
@@ -548,9 +549,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3535632233893311308}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.046405558, y: 0, z: -0, w: 0.9989227}
-  m_LocalPosition: {x: 1.9795132, y: -0.0012066364, z: -5.0079412}
-  m_LocalScale: {x: 1, y: 0.9999999, z: 0.9999999}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4413743573874689201}
@@ -578,6 +579,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &9057753469260652866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3535632233893311308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ad4372ddfe0be646a8e3a1746fa26c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4078202901985232931
 GameObject:
   m_ObjectHideFlags: 0

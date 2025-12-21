@@ -16,3 +16,4 @@ MonoBehaviour:
   <Name>k__BackingField: Milo
   <CharacterColor>k__BackingField: {r: 0.24705884, g: 0.81568635, b: 0.79215693, a: 1}
   <NameplateSprite>k__BackingField: {fileID: 21300000, guid: c0123674b1efff141819735cc9371b91, type: 3}
+  <AvatarSprite>k__BackingField: {fileID: 21300000, guid: 20619d25f33debe448d59c7e7ba11176, type: 3}

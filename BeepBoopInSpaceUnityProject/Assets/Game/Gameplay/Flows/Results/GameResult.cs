@@ -11,6 +11,7 @@ namespace Game.Gameplay.Flows.Results
         {
             public AbstractPlayer Player;
             public int Score;
+            public bool IsWinner;
         }
 
         private List<SPlayerResult> m_players = new();
@@ -19,7 +20,7 @@ namespace Game.Gameplay.Flows.Results
         public LevelDataAsset LevelDataAsset => m_levelDataAsset;
         private EScoreCalculationMethod m_scoreCalculationMethod;
         public EScoreCalculationMethod ScoreCalculationMethod => m_scoreCalculationMethod;
-
+        
         public void SetUp(
             IEnumerable<SPlayerResult> playersResults, 
             LevelDataAsset levelDataAsset,

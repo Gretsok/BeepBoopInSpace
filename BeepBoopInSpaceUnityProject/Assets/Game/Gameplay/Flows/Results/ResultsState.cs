@@ -59,7 +59,7 @@ namespace Game.Gameplay.Flows.Results
                 m_resultsPlacementsManager.SetCharacterAt(character, i, i == m_orderedCharacters.Count - 1);
             }
             
-            m_resultsManager.ProcessGameResult(m_orderedCharacters);
+            m_resultsManager.ProcessGameResult(m_orderedCharacters, winner: m_orderedCharacters[0]);
             
             m_currentViewedCharacterIndex = m_orderedCharacters.Count;
             Invoke(nameof(ViewingNextCharacter), m_waitTimeOnStart);

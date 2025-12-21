@@ -78,5 +78,19 @@ namespace Game.Tournament.Results
         {
             return m_playersScores.Values.ToList().Exists(score => score >= m_configDataAsset.ScoreToReach);
         }
+
+        public IEnumerable<GameResult.SPlayerResult> GetPlayerResultsOf(AbstractPlayer player)
+        {
+            List<GameResult.SPlayerResult> results = new();
+
+            for (int i = 0; i < m_tournamentGameResults.Count; i++)
+            {
+                var gameResult = m_tournamentGameResults[i];
+                
+                results.Add(gameResult.Players.First(result => result.Player == player));
+            }
+
+            return results;
+        }
     }
 }

@@ -99,8 +99,8 @@ MonoBehaviour:
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
-  m_tournamentTransitionScene:
-    m_AssetGUID: aef7fcfc7a4f3cf479cd4271e470db43
+  m_tournamentResultsScene:
+    m_AssetGUID: 0cb61a2b72b135f46928e5139f248a93
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 

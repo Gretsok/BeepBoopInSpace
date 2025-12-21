@@ -13,5 +13,7 @@ namespace Game.Characters
         public Color CharacterColor { get; private set; }
         [field: SerializeField]
         public Sprite NameplateSprite { get; private set; }
+        [field: SerializeField]
+        public Sprite AvatarSprite { get; private set; }
     }
 }

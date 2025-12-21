@@ -16,7 +16,7 @@ namespace Game.Gameplay.Flows.Results
         }
 
         public event Action<ResultsManager, GameResult> OnGameResultProcessed;
-        public void ProcessGameResult(List<CharacterPawn> orderedCharacterPawns)
+        public void ProcessGameResult(List<CharacterPawn> orderedCharacterPawns, CharacterPawn winner)
         {
             GameResult gameResult = new GameResult();
 
@@ -33,6 +33,7 @@ namespace Game.Gameplay.Flows.Results
                 {
                     Player = player,
                     Score = pawn.ReferencesHolder.ScoringController.Score,
+                    IsWinner =  pawn == winner,
                 });
             }
             
