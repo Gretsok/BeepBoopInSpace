@@ -7,7 +7,9 @@ using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using Game.Gameplay.GlobalGameplayData;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.Levels._0_Core;
+#if UNITY_EDITOR
 using Game.Gameplay.Levels._0_Core.EditorUtils;
+#endif
 using Game.Gameplay.LoadingScreen;
 using Game.PlayerManagement;
 using UnityEditor;
@@ -22,7 +24,7 @@ namespace Game.Gameplay.Flows._0_Load
 {
     public class LoadingManager : MonoBehaviour
     {
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         private IEnumerator SettingGameInfosInStandaloneRoutine()
         {
             var currentLevelDataAsset = CurrentLevelInfoManager.Instance?.CurrentLevelDataAsset;
