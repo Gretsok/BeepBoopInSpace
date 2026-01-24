@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Game.Gameplay.LoadingScreen;
+using Game.MainMenu.CameraManagement;
 using Game.PlayerManagement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-namespace Game.MainMenu
+namespace Game.MainMenu.PlayerJoining
 {
     public class PlayerJoiningScreen : AMainMenuScreen
     {
@@ -21,6 +19,7 @@ namespace Game.MainMenu
         
         private PlayerManager m_playerManager;
         private GameModesLauncher m_gameModesLauncher;
+        private CameraManager m_cameraManager;
 
         [Header("Sounds")]
         [SerializeField]
@@ -48,6 +47,8 @@ namespace Game.MainMenu
             m_playerManager.ListenForNewPlayers();
             
             UpdateStartButtonState();
+            
+            m_cameraManager.SwitchToCharacterSelectionCamera();
         }
 
         private void UpdateStartButtonState()
@@ -90,6 +91,7 @@ namespace Game.MainMenu
         }
 
         private List<PlayerJoiningPlayerController> m_playerJoiningPlayers = new ();
+
         private void InflateWithPlayers()
         {
             for (int i = m_playerJoiningPlayers.Count - 1; i >= 0; i--)
@@ -152,6 +154,11 @@ namespace Game.MainMenu
                 controller.Deactivate();
                 Destroy(controller);
             }
+        }
+
+        public void Initialize(CameraManager cameraManager)
+        {
+            m_cameraManager = cameraManager;
         }
     }
 }

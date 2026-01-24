@@ -1,4 +1,7 @@
 using Game.Gameplay.LoadingScreen;
+using Game.MainMenu.CameraManagement;
+using Game.MainMenu.Credits;
+using Game.MainMenu.PlayerJoining;
 using UnityEngine;
 
 namespace Game.MainMenu
@@ -19,8 +22,12 @@ namespace Game.MainMenu
             m_creditsScreen.Deactivate(true);
         }
 
-        private void Start()
+        public void Initialize(CameraManager cameraManager)
         {
+            m_homeScreen.Initialize(cameraManager);
+            m_joiningScreen.Initialize(cameraManager);
+            m_creditsScreen.Initialize(cameraManager);
+            
             SwitchToHomeScreen();
 
             m_homeScreen.OnPlayRequested += HandlePlayRequestFromHomeScreen;

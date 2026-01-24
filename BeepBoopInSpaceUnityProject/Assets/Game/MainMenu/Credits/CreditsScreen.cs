@@ -1,11 +1,13 @@
 using System;
+using Game.MainMenu.CameraManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Game.MainMenu
+namespace Game.MainMenu.Credits
 {
     public class CreditsScreen : AMainMenuScreen
     {
+        private CameraManager m_cameraManager;
         [SerializeField]
         private Button m_backButton;
         protected override void HandleActivation()
@@ -18,6 +20,7 @@ namespace Game.MainMenu
         }
 
         public Action OnBackRequested;
+
         private void HandleBackButtonClicked()
         {
             OnBackRequested?.Invoke();
@@ -30,6 +33,11 @@ namespace Game.MainMenu
             gameObject.SetActive(false);
             
             m_backButton.onClick.RemoveListener(HandleBackButtonClicked);
+        }
+
+        public void Initialize(CameraManager cameraManager)
+        {
+            m_cameraManager = cameraManager;
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using Game.MainMenu.CameraManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +16,7 @@ namespace Game.MainMenu
         private Button m_creditsButton;
         [SerializeField] 
         private Button m_quitButton;
+        private CameraManager m_cameraManager;
 
         protected override void HandleActivation()
         {
@@ -23,6 +25,8 @@ namespace Game.MainMenu
             m_playButton.onClick.AddListener(HandlePlayButtonClicked);
             m_creditsButton.onClick.AddListener(HandleCreditsButtonClicked);
             m_quitButton.onClick.AddListener(HandleQuitButtonClicked);
+            
+            m_cameraManager.SwitchToEntranceCamera();
         }
 
         public Action OnPlayRequested;
@@ -32,6 +36,7 @@ namespace Game.MainMenu
         }
         
         public Action OnCreditsRequested;
+
         private void HandleCreditsButtonClicked()
         {
             OnCreditsRequested?.Invoke();
@@ -53,6 +58,11 @@ namespace Game.MainMenu
             m_playButton.onClick.RemoveListener(HandlePlayButtonClicked);
             m_creditsButton.onClick.RemoveListener(HandleCreditsButtonClicked);
             m_quitButton.onClick.RemoveListener(HandleQuitButtonClicked);
+        }
+
+        public void Initialize(CameraManager cameraManager)
+        {
+            m_cameraManager = cameraManager;
         }
     }
 }
