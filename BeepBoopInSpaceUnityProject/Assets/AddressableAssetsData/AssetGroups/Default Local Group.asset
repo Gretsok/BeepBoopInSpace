@@ -14,7 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_GroupName: Default Local Group
   m_GUID: 930fe804a8e5b614bbbf7a096c661bfc
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 0bc3d4077faf5744081b93e5c2a7de5f
+    m_Address: Assets/Game/Gameplay/GameModes/BaseGame/GM_BaseGame.unity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8a9149f399c80ba4c988ae031c74599b
+    m_Address: Assets/Game/Gameplay/Levels/Arenas/TestArena/TestArena_Level.unity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ac2260587d271bf4e94d2009229f27fd
+    m_Address: Assets/Game/Gameplay/Levels/Arenas/TestArena/TestArena_Enviro.unity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 22ca0aaefa80e5a4eb8c4beaa1f2aae1, type: 2}
   m_SchemaSet:
