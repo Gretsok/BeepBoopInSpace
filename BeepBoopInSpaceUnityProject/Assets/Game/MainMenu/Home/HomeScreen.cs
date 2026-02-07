@@ -1,5 +1,5 @@
 using System;
-using Game.MainMenu.CameraManagement;
+using Game.MainMenu.ZoneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,7 +19,7 @@ namespace Game.MainMenu
         [SerializeField]
         private Button m_settingsButton;
         
-        private CameraManager m_cameraManager;
+        private ZoneManager m_zoneManager;
         private MainMenuOrchestrator m_mainMenuOrchestrator;
 
         protected override void HandleActivation()
@@ -31,7 +31,7 @@ namespace Game.MainMenu
             m_quitButton.onClick.AddListener(HandleQuitButtonClicked);
             m_settingsButton.onClick.AddListener(HandleSettingsButtonClicked);
             
-            m_cameraManager.SwitchToEntranceCamera();
+            m_zoneManager.SwitchToEntranceCamera();
         }
 
         private void HandlePlayButtonClicked()
@@ -67,9 +67,9 @@ namespace Game.MainMenu
             m_quitButton.onClick.RemoveListener(HandleQuitButtonClicked);
         }
 
-        public void Initialize(MainMenuOrchestrator orchestrator, CameraManager cameraManager)
+        public void Initialize(MainMenuOrchestrator orchestrator, ZoneManager zoneManager)
         {
-            m_cameraManager = cameraManager;
+            m_zoneManager = zoneManager;
             m_mainMenuOrchestrator = orchestrator;
         }
     }

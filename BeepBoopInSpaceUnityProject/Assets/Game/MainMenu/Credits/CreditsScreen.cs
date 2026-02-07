@@ -1,5 +1,5 @@
 using System;
-using Game.MainMenu.CameraManagement;
+using Game.MainMenu.ZoneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +7,7 @@ namespace Game.MainMenu.Credits
 {
     public class CreditsScreen : AMainMenuScreen
     {
-        private CameraManager m_cameraManager;
+        private ZoneManager m_zoneManager;
         [SerializeField]
         private Button m_backButton;
         protected override void HandleActivation()
@@ -35,9 +35,9 @@ namespace Game.MainMenu.Credits
             m_backButton.onClick.RemoveListener(HandleBackButtonClicked);
         }
 
-        public void Initialize(CameraManager cameraManager)
+        public void Initialize(ZoneManager zoneManager)
         {
-            m_cameraManager = cameraManager;
+            m_zoneManager = zoneManager;
         }
     }
 }

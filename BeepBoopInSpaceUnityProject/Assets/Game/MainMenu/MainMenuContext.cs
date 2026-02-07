@@ -1,7 +1,7 @@
 using System.Collections;
 using Game.ArchitectureTools.Manager;
 using Game.Global;
-using Game.MainMenu.CameraManagement;
+using Game.MainMenu.ZoneManagement;
 using UnityEngine;
 
 namespace Game.MainMenu
@@ -9,7 +9,7 @@ namespace Game.MainMenu
     public class MainMenuContext : AManager<MainMenuContext>
     {
         [field: SerializeField]
-        public CameraManager CameraManager { get; private set; }
+        public ZoneManager ZoneManager { get; private set; }
         [field: SerializeField]
         public MainMenuOrchestrator MainMenuOrchestrator { get; private set; }
 
@@ -22,7 +22,7 @@ namespace Game.MainMenu
             var settingsManager = globalContext.SettingsManager;
             var saveManager = globalContext.SaveManager;
             
-            MainMenuOrchestrator.Initialize(CameraManager, playerManager, settingsManager, saveManager);
+            MainMenuOrchestrator.Initialize(ZoneManager, playerManager, settingsManager, saveManager);
         }
     }
 }

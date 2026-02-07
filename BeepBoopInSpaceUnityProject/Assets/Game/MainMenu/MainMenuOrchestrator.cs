@@ -2,10 +2,10 @@ using Game.Gameplay.LoadingScreen;
 using Game.Global.PlayerManagement;
 using Game.Global.Save;
 using Game.Global.Settings;
-using Game.MainMenu.CameraManagement;
 using Game.MainMenu.Credits;
 using Game.MainMenu.PlayerJoining;
 using Game.MainMenu.SettingsScreen;
+using Game.MainMenu.ZoneManagement;
 using Game.PlayerManagement;
 using UnityEngine;
 
@@ -30,12 +30,12 @@ namespace Game.MainMenu
             m_settingsScreen.Deactivate(true);
         }
 
-        public void Initialize(CameraManager cameraManager, PlayerManager playerManager, SettingsManager settingsManager, SaveManager saveManager)
+        public void Initialize(ZoneManager zoneManager, PlayerManager playerManager, SettingsManager settingsManager, SaveManager saveManager)
         {
-            m_homeScreen.Initialize(this, cameraManager);
-            m_joiningScreen.Initialize(cameraManager, playerManager);
-            m_creditsScreen.Initialize(cameraManager);
-            m_settingsScreen.Initialize(settingsManager, saveManager);
+            m_homeScreen.Initialize(this, zoneManager);
+            m_joiningScreen.Initialize(zoneManager, playerManager);
+            m_creditsScreen.Initialize(zoneManager);
+            m_settingsScreen.Initialize(zoneManager, settingsManager, saveManager);
             
             SwitchToHomeScreen();
 

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Game.Global.PlayerManagement;
-using Game.MainMenu.CameraManagement;
+using Game.MainMenu.ZoneManagement;
 using Game.PlayerManagement;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,7 +20,7 @@ namespace Game.MainMenu.PlayerJoining
         
         private PlayerManager m_playerManager;
         private GameModesLauncher m_gameModesLauncher;
-        private CameraManager m_cameraManager;
+        private ZoneManager m_zoneManager;
 
         [Header("Sounds")]
         [SerializeField]
@@ -47,7 +47,7 @@ namespace Game.MainMenu.PlayerJoining
             
             UpdateStartButtonState();
             
-            m_cameraManager.SwitchToCharacterSelectionCamera();
+            m_zoneManager.SwitchToCharacterSelectionCamera();
         }
 
         private void UpdateStartButtonState()
@@ -155,9 +155,9 @@ namespace Game.MainMenu.PlayerJoining
             }
         }
 
-        public void Initialize(CameraManager cameraManager, PlayerManager playerManager)
+        public void Initialize(ZoneManager zoneManager, PlayerManager playerManager)
         {
-            m_cameraManager = cameraManager;
+            m_zoneManager = zoneManager;
             m_playerManager = playerManager;
         }
     }
