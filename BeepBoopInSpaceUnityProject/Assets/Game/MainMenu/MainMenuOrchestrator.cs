@@ -1,7 +1,10 @@
 using Game.Gameplay.LoadingScreen;
+using Game.Global.Save;
+using Game.Global.Settings;
 using Game.MainMenu.CameraManagement;
 using Game.MainMenu.Credits;
 using Game.MainMenu.PlayerJoining;
+using Game.MainMenu.SettingsScreen;
 using UnityEngine;
 
 namespace Game.MainMenu
@@ -14,26 +17,29 @@ namespace Game.MainMenu
         private PlayerJoiningScreen m_joiningScreen;
         [SerializeField]
         private CreditsScreen m_creditsScreen;
+        [SerializeField]
+        private MainMenuSettingsScreen m_settingsScreen;
 
         private void Awake()
         {
             m_homeScreen.Deactivate(true);
             m_joiningScreen.Deactivate(true);
             m_creditsScreen.Deactivate(true);
+            m_settingsScreen.Deactivate(true);
         }
 
-        public void Initialize(CameraManager cameraManager)
+        public void Initialize(CameraManager cameraManager, SettingsManager settingsManager, SaveManager saveManager)
         {
-            m_homeScreen.Initialize(cameraManager);
+            m_homeScreen.Initialize(this, cameraManager);
             m_joiningScreen.Initialize(cameraManager);
             m_creditsScreen.Initialize(cameraManager);
+            m_settingsScreen.Initialize(settingsManager, saveManager);
             
             SwitchToHomeScreen();
 
-            m_homeScreen.OnPlayRequested += HandlePlayRequestFromHomeScreen;
-            m_homeScreen.OnCreditsRequested += HandleCreditsRequested;
             m_joiningScreen.OnBack += HandleBackRequestFromJoiningScreen;
             m_creditsScreen.OnBackRequested += HandleBackRequestedFromCreditsScreen;
+            m_settingsScreen.OnBackRequested += HandleBackRequestFromSettingsScreen;
             
             LoadingScreenManager.Instance.HideLoadingScreen();
         }
@@ -41,15 +47,9 @@ namespace Game.MainMenu
 
         private void OnDestroy()
         {
-            m_homeScreen.OnPlayRequested -= HandlePlayRequestFromHomeScreen;
-            m_homeScreen.OnCreditsRequested -= HandleCreditsRequested;
             m_joiningScreen.OnBack -= HandleBackRequestFromJoiningScreen;       
             m_creditsScreen.OnBackRequested -= HandleBackRequestedFromCreditsScreen;
-        }
-        
-        private void HandleCreditsRequested()
-        {
-            SwitchToCreditsScreen();
+            m_settingsScreen.OnBackRequested -= HandleBackRequestFromSettingsScreen;
         }
         
         private void HandleBackRequestedFromCreditsScreen()
@@ -69,18 +69,19 @@ namespace Game.MainMenu
             SwitchToHomeScreen();
         }
 
-        private void HandlePlayRequestFromHomeScreen()
+        private void HandleBackRequestFromSettingsScreen()
         {
-            if (!m_homeScreen.IsActivated)
+            if (!m_settingsScreen.IsActivated)
                 return;
             
-            SwitchToJoiningScreen();
+            SwitchToHomeScreen();
         }
 
         public void SwitchToHomeScreen()
         {
             m_creditsScreen.Deactivate();
             m_joiningScreen.Deactivate();
+            m_settingsScreen.Deactivate();
             m_homeScreen.Activate();
         }
 
@@ -88,6 +89,7 @@ namespace Game.MainMenu
         {
             m_creditsScreen.Deactivate();
             m_homeScreen.Deactivate();
+            m_settingsScreen.Deactivate();
             m_joiningScreen.Activate();
         }
 
@@ -95,7 +97,17 @@ namespace Game.MainMenu
         {
             m_joiningScreen.Deactivate();
             m_homeScreen.Deactivate();
+            m_settingsScreen.Deactivate();
             m_creditsScreen.Activate();
+        }
+
+        public void SwitchToSettingsScreen()
+        {
+            m_joiningScreen.Deactivate();
+            m_homeScreen.Deactivate();
+            m_creditsScreen.Deactivate();
+            m_settingsScreen.Activate();
+            
         }
     }
 }

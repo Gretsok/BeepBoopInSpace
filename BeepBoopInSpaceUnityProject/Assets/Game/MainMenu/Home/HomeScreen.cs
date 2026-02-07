@@ -16,7 +16,11 @@ namespace Game.MainMenu
         private Button m_creditsButton;
         [SerializeField] 
         private Button m_quitButton;
+        [SerializeField]
+        private Button m_settingsButton;
+        
         private CameraManager m_cameraManager;
+        private MainMenuOrchestrator m_mainMenuOrchestrator;
 
         protected override void HandleActivation()
         {
@@ -25,21 +29,19 @@ namespace Game.MainMenu
             m_playButton.onClick.AddListener(HandlePlayButtonClicked);
             m_creditsButton.onClick.AddListener(HandleCreditsButtonClicked);
             m_quitButton.onClick.AddListener(HandleQuitButtonClicked);
+            m_settingsButton.onClick.AddListener(HandleSettingsButtonClicked);
             
             m_cameraManager.SwitchToEntranceCamera();
         }
 
-        public Action OnPlayRequested;
         private void HandlePlayButtonClicked()
         {
-            OnPlayRequested?.Invoke();
+            m_mainMenuOrchestrator.SwitchToJoiningScreen();
         }
         
-        public Action OnCreditsRequested;
-
         private void HandleCreditsButtonClicked()
         {
-            OnCreditsRequested?.Invoke();
+            m_mainMenuOrchestrator.SwitchToCreditsScreen();
         }
         
         private void HandleQuitButtonClicked()
@@ -49,6 +51,11 @@ namespace Game.MainMenu
 #else
             Application.Quit();
 #endif
+        }
+        
+        private void HandleSettingsButtonClicked()
+        {
+            m_mainMenuOrchestrator.SwitchToSettingsScreen();
         }
 
         protected override void HandleDeactivation()
@@ -60,9 +67,10 @@ namespace Game.MainMenu
             m_quitButton.onClick.RemoveListener(HandleQuitButtonClicked);
         }
 
-        public void Initialize(CameraManager cameraManager)
+        public void Initialize(MainMenuOrchestrator orchestrator, CameraManager cameraManager)
         {
             m_cameraManager = cameraManager;
+            m_mainMenuOrchestrator = orchestrator;
         }
     }
 }

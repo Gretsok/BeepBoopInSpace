@@ -1,5 +1,6 @@
 using System.Collections;
 using Game.ArchitectureTools.Manager;
+using Game.Global;
 using Game.MainMenu.CameraManagement;
 using UnityEngine;
 
@@ -16,7 +17,11 @@ namespace Game.MainMenu
         {
             yield return base.Initialize();
             
-            MainMenuOrchestrator.Initialize(CameraManager);
+            var globalContext = GlobalContext.Instance;
+            var settingsManager = globalContext.SettingsManager;
+            var saveManager = globalContext.SaveManager;
+            
+            MainMenuOrchestrator.Initialize(CameraManager, settingsManager, saveManager);
         }
     }
 }
