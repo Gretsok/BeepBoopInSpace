@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.Gameplay.FlowMachine
+namespace Game.ArchitectureTools.FlowMachine
 {
     [RequireComponent(typeof(AFlowState))]
     public class GameObjectActivatorStateComponent : MonoBehaviour
@@ -15,7 +15,13 @@ namespace Game.Gameplay.FlowMachine
             m_flowState = GetComponent<AFlowState>();
             m_flowState.OnEntered += HandleEntered;
             m_flowState.OnLeft += HandleLeft;
+            m_flowState.OnPaused += HandlePaused;
+            m_flowState.OnUnpaused += HandleUnpaused;
         }
+
+        private void HandlePaused(AFlowState obj) { }
+
+        private void HandleUnpaused(AFlowState obj) { }
 
         private void HandleEntered(AFlowState obj)
         {

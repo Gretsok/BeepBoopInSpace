@@ -1,6 +1,6 @@
+using Game.ArchitectureTools.FlowMachine;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.ConfigurationsManagement;
-using Game.Gameplay.FlowMachine;
 using Game.Gameplay.Timer;
 
 namespace Game.Gameplay.Flows.Gameplay

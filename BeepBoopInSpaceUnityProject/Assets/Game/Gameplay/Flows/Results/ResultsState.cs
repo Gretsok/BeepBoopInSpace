@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using Game.ArchitectureTools.FlowMachine;
 using Game.Gameplay.CameraManagement;
 using Game.Gameplay.CharactersManagement;
-using Game.Gameplay.FlowMachine;
 using Game.Gameplay.Flows.Results.ResultsPlacementManagement;
 using Game.Gameplay.MusicsManagement;
 using UnityEngine;

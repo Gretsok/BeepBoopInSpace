@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.Gameplay.FlowMachine
+namespace Game.ArchitectureTools.FlowMachine
 {
-    public class FlowMachine : MonoBehaviour
+    public class FlowMachine : MonoBehaviour,
+        IFlowMachinePauser // It means a flow machine can pause another flow machine.
     {
         [SerializeField] 
         private AFlowState m_defaultState;
@@ -23,6 +24,8 @@ namespace Game.Gameplay.FlowMachine
 
         private void Update()
         {
+            if (IsPaused) return;
+            
             if (m_requestedStates.Count > 0)
             {
                 var state = m_requestedStates.Dequeue();
@@ -53,6 +56,41 @@ namespace Game.Gameplay.FlowMachine
         private void HandleAnotherStateRequested(AFlowState obj)
         {
             RequestState(obj);
+        }
+        
+        private List<IFlowMachinePauser> m_pausers = new();
+        public bool IsPaused => m_pausers.Count > 0;
+
+        public void Pause(IFlowMachinePauser pauser)
+        {
+            var isPaused = IsPaused;
+            m_pausers.Add(pauser);
+            if (!isPaused && IsPaused)
+            {
+                HandleFlowMachinePaused();
+            }
+        }
+
+        public void Unpause(IFlowMachinePauser pauser)
+        {
+            var isPaused = IsPaused;
+            m_pausers.Remove(pauser);
+            if (isPaused && !IsPaused)
+            {
+                HandleFlowMachineUnpaused();
+            }
+        }
+
+        private void HandleFlowMachinePaused()
+        {
+            if (CurrentState)
+                CurrentState.NotifyFlowMachinePaused();
+        }
+
+        private void HandleFlowMachineUnpaused()
+        {
+            if (CurrentState)
+                CurrentState.NotifyFlowMachineUnpaused();
         }
     }
 }

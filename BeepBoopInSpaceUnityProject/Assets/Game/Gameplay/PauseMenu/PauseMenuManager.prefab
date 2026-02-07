@@ -45,7 +45,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ad96dc5ff2d46f43b5f3d2d9328af59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <PlayerInputController>k__BackingField: {fileID: 0}
 --- !u!1001 &5630590634235843950
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -442,6 +441,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7399421372248255650, guid: 8c2a28cff4100aa49babb68fb25258dc, type: 3}
+      propertyPath: m_manager
+      value: 
+      objectReference: {fileID: 5152384955830653304}
     - target: {fileID: 7439276285298775528, guid: 8c2a28cff4100aa49babb68fb25258dc, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

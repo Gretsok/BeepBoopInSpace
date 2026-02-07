@@ -1,5 +1,7 @@
 using System;
 using DG.Tweening;
+using Game.Global;
+using Game.Global.Settings.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,10 +9,13 @@ namespace Game.Gameplay.PauseMenu
 {
     public class PauseMenuPanel : MonoBehaviour
     {
+        [SerializeField]
         private PauseMenuManager m_manager;
         [Header("----- VIEW -----")]
         [SerializeField] 
         private CanvasGroup m_container;
+        [SerializeField]
+        private SettingsScreen m_settingsScreen;
         
         [Header("Buttons")]
         [SerializeField]
@@ -19,31 +24,19 @@ namespace Game.Gameplay.PauseMenu
         private Button m_backToMenuButton;
         [SerializeField] 
         private Button m_quitGameButton;
-        
-        [Header("Options Sliders")]
-        [SerializeField]
-        private Slider m_horizontalSensitivitySlider;
-        [SerializeField]
-        private Slider m_verticalSensitivitySlider;
-        [SerializeField]
-        private Slider m_sfxVolumeSlider;
-        [SerializeField]
-        private Slider m_musicVolumeSlider;
+
 
         private void Awake()
         {
-            PauseMenuManager.RegisterPostInitializationCallback((manager) =>
-            {
-                m_manager = manager;
-
-                manager.OnPause += HandlePause;
-                manager.OnResume += HandleResume;
-            });
-            
+            m_manager.OnPause += HandlePause;
+            m_manager.OnResume += HandleResume;
             
             m_container.DOKill();
             m_container.DOFade(0f, 0f);
             m_container.gameObject.SetActive(false);
+            
+            var globalContext = GlobalContext.Instance;
+            m_settingsScreen.Initialize(globalContext.SettingsManager, globalContext.SaveManager, null);
         }
 
         private void HandleResume(PauseMenuManager obj)

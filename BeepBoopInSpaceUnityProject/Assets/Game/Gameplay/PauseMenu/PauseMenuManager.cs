@@ -1,27 +1,26 @@
 using System;
-using System.Collections;
 using DG.Tweening;
-using Game.ArchitectureTools.Manager;
+using Game.ArchitectureTools.FlowMachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Game.Gameplay.PauseMenu
 {
-    public class PauseMenuManager : AManager<PauseMenuManager>
+    public class PauseMenuManager : MonoBehaviour,
+        IFlowMachinePauser
     {
-        /*[field: SerializeField]
-        public PlayerInputController PlayerInputController { get; private set; }*/
-        
+        private FlowMachine m_flowMachine;
         public bool IsPaused { get; private set; }
         
         private PauseControls m_controls;
-        protected override IEnumerator Initialize()
+        public void Initialize(FlowMachine flowMachine)
         {
             m_controls = new PauseControls();
             m_controls.Enable();
-            yield return null;
             
             m_controls.Pause.Toggle.started += HandlePauseToggleStarted;
+            
+            m_flowMachine = flowMachine;
         }
 
         private void HandlePauseToggleStarted(InputAction.CallbackContext obj)
@@ -41,7 +40,7 @@ namespace Game.Gameplay.PauseMenu
             Time.timeScale = 0;
             DOTween.defaultTimeScaleIndependent = true;
             
-            //PlayerInputController.Disable();
+            m_flowMachine.Pause(this);
             OnPause?.Invoke(this);
             
             IsPaused = true;
@@ -56,8 +55,8 @@ namespace Game.Gameplay.PauseMenu
             Time.timeScale = 1;
             DOTween.defaultTimeScaleIndependent = false;
             
+            m_flowMachine.Unpause(this);
             OnResume?.Invoke(this);
-            //PlayerInputController.Enable();
             
             IsPaused = false;
         }

@@ -1,4 +1,4 @@
-using Game.Gameplay.FlowMachine;
+using Game.ArchitectureTools.FlowMachine;
 using Game.Gameplay.LoadingScreen;
 
 namespace Game.Gameplay.Flows.End

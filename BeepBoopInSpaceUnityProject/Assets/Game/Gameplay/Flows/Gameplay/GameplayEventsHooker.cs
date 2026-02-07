@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
+using Game.ArchitectureTools.FlowMachine;
 using Game.ArchitectureTools.Manager;
-using Game.Gameplay.FlowMachine;
 using UnityEngine;
 
 namespace Game.Gameplay.Flows.Gameplay

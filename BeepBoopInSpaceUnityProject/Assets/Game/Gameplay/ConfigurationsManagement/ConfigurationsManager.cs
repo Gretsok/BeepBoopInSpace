@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Game.ArchitectureTools.FlowMachine;
 using Game.ArchitectureTools.Manager;
-using Game.Gameplay.FlowMachine;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -10,7 +10,7 @@ namespace Game.Gameplay.ConfigurationsManagement
     public class ConfigurationsManager : AManager<ConfigurationsManager>
     {
         [SerializeField]
-        private FlowMachine.FlowMachine m_flowMachine;
+        private ArchitectureTools.FlowMachine.FlowMachine m_flowMachine;
 
         [SerializeField] private AFlowState m_configurationChangeAnnouncementState;
         [SerializeField] private float m_changePeriod = 10f;
