@@ -1,5 +1,4 @@
 using Game.Gameplay.FlowMachine;
-using Game.Gameplay.Levels._0_Core;
 using Game.Gameplay.LoadingScreen;
 
 namespace Game.Gameplay.Flows.End
@@ -10,11 +9,12 @@ namespace Game.Gameplay.Flows.End
         {
             base.HandleEnter();
 
-            var currentLevelInfoManager = CurrentLevelInfoManager.Instance;
+            var gameplayContext = GameplayContext.Instance;
+            var currentLevelInfoManager = gameplayContext.CurrentLevelInfoManager;
             
             LoadingScreenManager.Instance?.ShowLoadingScreen();
             
-            GameplayContext.Instance.LoadingManager.Unload(() =>
+            gameplayContext.LoadingManager.Unload(() =>
             {
                 if (currentLevelInfoManager)
                 {

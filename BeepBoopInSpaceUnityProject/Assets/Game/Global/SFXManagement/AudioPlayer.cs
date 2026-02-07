@@ -1,7 +1,8 @@
+using Game.SFXManagement;
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace Game.SFXManagement
+namespace Game.Global.SFXManagement
 {
     public class AudioPlayer : MonoBehaviour
     {
@@ -11,24 +12,33 @@ namespace Game.SFXManagement
         [field: SerializeField]
         public float Volume { get; private set; } = 1f;
 
+        private AudioManager m_audioManager;
+        private void Start()
+        {
+            GlobalContext.RegisterPostInitializationCallback(context =>
+            {
+                m_audioManager = context.AudioManager;
+            });
+        }
+
         public void Play()
         {
-            if (!AudioManager.Instance)
+            if (!m_audioManager)
             {
                 Debug.LogError("No AudioManager found");
                 return;
             }
-            AudioManager.Instance.Play2DSound(this);
+            m_audioManager.Play2DSound(this);
         }
 
         public AudioSource PlayWithAudioSourceReturned()
         {
-            if (!AudioManager.Instance)
+            if (!m_audioManager)
             {
                 Debug.LogError("No AudioManager found");
                 return null;
             }
-            return AudioManager.Instance.Play2DSound(this);
+            return m_audioManager.Play2DSound(this);
         }
     }
 }

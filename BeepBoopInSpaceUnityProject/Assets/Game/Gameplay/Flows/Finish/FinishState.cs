@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Game.Gameplay.FlowMachine;
 using Game.Gameplay.MusicsManagement;
+using Game.Global.SFXManagement;
 using Game.SFXManagement;
 using UnityEngine;
 

@@ -1,6 +1,8 @@
 using Game.ArchitectureTools.Manager;
+using Game.Global.PlayerManagement;
 using Game.Global.Settings;
 using Game.Global.Save;
+using Game.Global.SFXManagement;
 using UnityEngine;
 
 namespace Game.Global
@@ -11,13 +13,21 @@ namespace Game.Global
         public SaveManager SaveManager { get; private set; }
         [field: SerializeField]
         public SettingsManager SettingsManager { get; private set; }
+        [field: SerializeField]
+        public AudioManager AudioManager { get; private set; }
+        [field: SerializeField]
+        public PlayerManager PlayerManager { get; private set; }
 
         private void Start()
         {
-            SaveManager.LoadProfile((result) =>
+            DontDestroyOnLoad(gameObject);
+            SaveManager.LoadProfile(_ =>
             {
                 SettingsManager.Initialize(SaveManager);
             });
+            
+            AudioManager.Initialize();
+            PlayerManager.Initialize();
         }
     }
 }

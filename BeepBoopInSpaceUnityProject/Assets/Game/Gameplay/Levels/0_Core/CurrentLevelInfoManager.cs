@@ -1,10 +1,9 @@
 using System;
-using System.Collections;
-using Game.ArchitectureTools.Manager;
+using UnityEngine;
 
 namespace Game.Gameplay.Levels._0_Core
 {
-    public class CurrentLevelInfoManager : AManager<CurrentLevelInfoManager>
+    public class CurrentLevelInfoManager : MonoBehaviour
     {
         public LevelDataAsset CurrentLevelDataAsset { get; private set; }
 
@@ -14,12 +13,6 @@ namespace Game.Gameplay.Levels._0_Core
         {
             CurrentLevelDataAsset = levelDataAsset;
             OnCurrentLevelDataAssetChanged?.Invoke(this, CurrentLevelDataAsset);
-        }
-
-        protected override IEnumerator Initialize()
-        {
-            DontDestroyOnLoad(this.gameObject);
-            yield return base.Initialize();
         }
     }
 }

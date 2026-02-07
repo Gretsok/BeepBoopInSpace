@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Game.Global.PlayerManagement;
 using Game.MainMenu.CameraManagement;
 using Game.PlayerManagement;
 using UnityEngine;
@@ -31,8 +32,6 @@ namespace Game.MainMenu.PlayerJoining
 
             m_gameModesLauncher = GameModesLauncher.Instance;
             
-            m_playerManager = PlayerManager.Instance;
-
             m_playerManager.RemoveAllPlayers();
             
             m_playerManager.OnPlayerJoined += HandlePlayerJoined;
@@ -156,9 +155,10 @@ namespace Game.MainMenu.PlayerJoining
             }
         }
 
-        public void Initialize(CameraManager cameraManager)
+        public void Initialize(CameraManager cameraManager, PlayerManager playerManager)
         {
             m_cameraManager = cameraManager;
+            m_playerManager = playerManager;
         }
     }
 }

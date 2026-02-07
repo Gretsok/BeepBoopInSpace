@@ -264,6 +264,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "FlowControl",
+            "id": "e5ac459e-6ef4-4a1e-afef-829b3e0b4a61",
+            "actions": [
+                {
+                    "name": "Pause",
+                    "type": "Button",
+                    "id": "00773e09-1ff6-436a-874c-e66f895d33a4",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "6b0a86c0-bc38-4ee8-8ccb-dbdb729bcd01",
+                    "path": "<Keyboard>/p",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

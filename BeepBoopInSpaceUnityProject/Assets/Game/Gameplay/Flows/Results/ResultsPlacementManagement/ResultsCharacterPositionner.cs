@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using Game.Gameplay.CharactersManagement;
+using Game.Global.SFXManagement;
 using Game.SFXManagement;
 using TMPro;
 using Unity.Cinemachine;

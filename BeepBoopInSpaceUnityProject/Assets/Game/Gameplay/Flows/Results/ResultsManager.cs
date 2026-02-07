@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Game.ArchitectureTools.Manager;
 using Game.Gameplay.CharactersManagement;
-using Game.Gameplay.Levels._0_Core;
 
 namespace Game.Gameplay.Flows.Results
 {
@@ -21,7 +20,7 @@ namespace Game.Gameplay.Flows.Results
             GameResult gameResult = new GameResult();
 
             var charactersManager = CharactersManager.Instance;
-            var currentLevelInfoManager = CurrentLevelInfoManager.Instance;
+            var currentLevelInfoManager = GameplayContext.Instance.CurrentLevelInfoManager;
             
             List<GameResult.SPlayerResult> playersResults = new List<GameResult.SPlayerResult>();
             for (int i = 0; i < orderedCharacterPawns.Count; i++)

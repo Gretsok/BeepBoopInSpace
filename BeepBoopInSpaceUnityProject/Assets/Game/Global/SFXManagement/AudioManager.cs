@@ -1,20 +1,17 @@
-using System.Collections;
 using System.Collections.Generic;
-using Game.ArchitectureTools.Manager;
+using Game.SFXManagement;
 using UnityEngine;
 
-namespace Game.SFXManagement
+namespace Game.Global.SFXManagement
 {
     [RequireComponent(typeof(AudioPool))]
-    public class AudioManager : AManager<AudioManager>
+    public class AudioManager : MonoBehaviour
     {
         private AudioPool m_audioPool;
 
-        protected override IEnumerator Initialize()
+        public void Initialize()
         {
             m_audioPool = GetComponent<AudioPool>();
-            DontDestroyOnLoad(gameObject);
-            yield break;
         }
 
         private readonly List<AudioSource> m_audioSources = new();

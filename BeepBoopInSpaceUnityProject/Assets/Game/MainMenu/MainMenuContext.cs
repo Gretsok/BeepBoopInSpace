@@ -18,10 +18,11 @@ namespace Game.MainMenu
             yield return base.Initialize();
             
             var globalContext = GlobalContext.Instance;
+            var playerManager = globalContext.PlayerManager;
             var settingsManager = globalContext.SettingsManager;
             var saveManager = globalContext.SaveManager;
             
-            MainMenuOrchestrator.Initialize(CameraManager, settingsManager, saveManager);
+            MainMenuOrchestrator.Initialize(CameraManager, playerManager, settingsManager, saveManager);
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using Game.ArchitectureTools.Manager;
+using Game.Gameplay.Levels._0_Core;
 using Game.Tournament.Config;
 using Game.Tournament.Flow;
 using Game.Tournament.Results;
@@ -18,12 +19,14 @@ namespace Game.Tournament
         public TournamentFlowManager FlowManager { get; private set; }
         [field: SerializeField]
         public TournamentResultsManager ResultsManager { get; private set; }
-
+        [field: SerializeField]
+        public CurrentLevelInfoManager CurrentLevelInfoManager { get; private set; }
+        
         protected override IEnumerator Initialize()
         {
             DontDestroyOnLoad(gameObject);
             ResultsManager.InjectDependencies(ConfigDataAsset);
-            FlowManager.InjectDependencies(ResultsManager, ConfigDataAsset);
+            FlowManager.InjectDependencies(ResultsManager, ConfigDataAsset, CurrentLevelInfoManager);
             
             yield break;
         }

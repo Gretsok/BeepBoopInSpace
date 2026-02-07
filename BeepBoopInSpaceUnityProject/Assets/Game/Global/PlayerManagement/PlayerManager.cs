@@ -1,29 +1,25 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Game.ArchitectureTools.Manager;
+using Game.PlayerManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Game.PlayerManagement
+namespace Game.Global.PlayerManagement
 {
     [RequireComponent(typeof(PlayerInputManager))]
-    public class PlayerManager : AManager<PlayerManager>
+    public class PlayerManager : MonoBehaviour
     {
         public PlayerInputManager PlayerInputManager { get; private set; }
 
         private readonly List<AbstractPlayer> m_players = new();
         public IReadOnlyList<AbstractPlayer> Players => m_players;
 
-        protected override IEnumerator Initialize()
+        public void Initialize()
         {
             PlayerInputManager = GetComponent<PlayerInputManager>();
 
             PlayerInputManager.onPlayerJoined += HandlePlayerJoined;
             PlayerInputManager.onPlayerLeft += HandlePlayerLeft;
-            
-            DontDestroyOnLoad(gameObject);
-            yield return null;
         }
         
         public Action<PlayerManager, AbstractPlayer> OnPlayerJoined;

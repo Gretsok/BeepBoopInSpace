@@ -9,6 +9,8 @@ using Game.Gameplay.GridSystem;
 using Game.Gameplay.Levels._0_Core;
 #if UNITY_EDITOR
 using Game.Gameplay.Levels._0_Core.EditorUtils;
+using Game.Global;
+using Game.Tournament;
 #endif
 using Game.Gameplay.LoadingScreen;
 using Game.PlayerManagement;
@@ -27,34 +29,30 @@ namespace Game.Gameplay.Flows._0_Load
 #if UNITY_EDITOR
         private IEnumerator SettingGameInfosInStandaloneRoutine()
         {
-            var currentLevelDataAsset = CurrentLevelInfoManager.Instance?.CurrentLevelDataAsset;
-
-            if (currentLevelDataAsset)
+            var tournamentContext = TournamentContext.Instance;
+            if (tournamentContext)
                 yield break;
+
+            var tournamentContextPrefab =
+                UnityEditor.AssetDatabase.LoadAssetAtPath<TournamentContext>( "Assets/Game/Tournament/TournamentContext.prefab");
+            tournamentContext = Instantiate(tournamentContextPrefab);
             
             if (!UnityEditor.EditorPrefs.GetBool(LevelEditorPrefsConstants.OverridesGameInfosKey, false))
                 yield break;
             
-            if (!CurrentLevelInfoManager.Instance)
-            {
-                var currentLevelInfoManager = new GameObject("CurrentLevelInfoManager").AddComponent<CurrentLevelInfoManager>();
-                yield return new WaitUntil(() => currentLevelInfoManager.IsInitialized);
-                
-                currentLevelDataAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<LevelDataAsset>(UnityEditor.EditorPrefs.GetString("BB_LDA"));
-                currentLevelInfoManager.SetCurrentLevelDataAsset(currentLevelDataAsset);
-            }
+            var currentLevelDataAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<LevelDataAsset>(UnityEditor.EditorPrefs.GetString("BB_LDA"));
+            tournamentContext.CurrentLevelInfoManager.SetCurrentLevelDataAsset(currentLevelDataAsset);
 
-            var playerManagerPrefab = AssetDatabase.LoadAssetAtPath<PlayerManager>("Assets/Game/PlayerManagement/PlayerManager.prefab");
+            var globalContextPrefab = AssetDatabase.LoadAssetAtPath<GlobalContext>("Assets/Game/Global/GlobalContext.prefab");
+            var globalContext = Instantiate(globalContextPrefab); 
             
-            var playerManager = Instantiate(playerManagerPrefab); 
-            
-            yield return new WaitUntil(() => playerManager.IsInitialized);
+            yield return new WaitUntil(() => globalContext.IsInitialized);
             
             var devices = InputSystem.devices;
             for (int i = 0; i < UnityEditor.EditorPrefs.GetInt(LevelEditorPrefsConstants.NumberOfPlayersKey, 0); ++i)
             {
                 var device = InputSystem.GetDevice(devices[UnityEditor.EditorPrefs.GetInt($"{LevelEditorPrefsConstants.DeviceAssignedKey}{i}", 0)].name);
-                var playerInput = PlayerManager.Instance.AddPlayerFromDevice(device);
+                var playerInput = globalContext.PlayerManager.AddPlayerFromDevice(device);
                 var abstractPlayer = playerInput.GetComponent<AbstractPlayer>();
                 var characterDataAsset = AssetDatabase.LoadAssetAtPath<CharacterDataAsset>(EditorPrefs.GetString($"{LevelEditorPrefsConstants.CharacterDataAssignedKey}{i}"));
                 abstractPlayer.SetCharacterData(characterDataAsset);
@@ -74,13 +72,20 @@ namespace Game.Gameplay.Flows._0_Load
             StartCoroutine(LoadingRoutine(onLoadingComplete));
         }
 
+        public static CurrentLevelInfoManager FetchCurrentLevelInfoManager()
+        {
+            var tournamentContext = TournamentContext.Instance;
+            return tournamentContext.CurrentLevelInfoManager;
+        }
+        
         private IEnumerator LoadingRoutine(Action onLoadingComplete = null)
         {
 #if UNITY_EDITOR // When starting a game mode in standalone
             yield return SettingGameInfosInStandaloneRoutine();
 #endif
             
-            var currentLevelDataAsset = CurrentLevelInfoManager.Instance?.CurrentLevelDataAsset;
+            var currentLevelInfoManager = FetchCurrentLevelInfoManager();
+            var currentLevelDataAsset = currentLevelInfoManager?.CurrentLevelDataAsset;
             var charactersManager = CharactersManager.Instance;
 
             if (!currentLevelDataAsset)
@@ -103,8 +108,6 @@ namespace Game.Gameplay.Flows._0_Load
             }
             
             charactersManager.CreateCharactersAndPlayerControllers(m_specialActionOp.Result.GetComponent<SpecialAction>());
-            //specialActionOp.Release();
-
 
             // Loading environment
             {

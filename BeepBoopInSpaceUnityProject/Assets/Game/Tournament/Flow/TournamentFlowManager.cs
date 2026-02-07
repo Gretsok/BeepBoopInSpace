@@ -28,12 +28,11 @@ namespace Game.Tournament.Flow
         
         private CurrentLevelInfoManager m_currentLevelInfoManager;
 
-        public void InjectDependencies(TournamentResultsManager resultsManager, TournamentConfigDataAsset configDataAsset)
+        public void InjectDependencies(TournamentResultsManager resultsManager, TournamentConfigDataAsset configDataAsset, CurrentLevelInfoManager currentLevelInfoManager)
         {
             m_resultsManager = resultsManager;
             m_configDataAsset = configDataAsset;
-            
-            m_currentLevelInfoManager = CurrentLevelInfoManager.Instance;
+            m_currentLevelInfoManager = currentLevelInfoManager;
         }
         
         private readonly List<LevelDataAsset> m_levelsDone = new ();

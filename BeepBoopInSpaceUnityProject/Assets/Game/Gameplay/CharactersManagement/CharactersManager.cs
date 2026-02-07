@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Game.ArchitectureTools.Manager;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using Game.Gameplay.Levels._0_Core;
+using Game.Global;
 using Game.PlayerManagement;
 using UnityEngine;
 
@@ -33,7 +34,7 @@ namespace Game.Gameplay.CharactersManagement
         
         public void CreateCharactersAndPlayerControllers(SpecialAction specialActionPrefab)
         {
-            var playerManager = PlayerManager.Instance;
+            var playerManager = GlobalContext.Instance.PlayerManager;
 
             for (int i = 0; i < playerManager.Players.Count; i++)
             {

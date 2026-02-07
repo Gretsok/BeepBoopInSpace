@@ -15,6 +15,10 @@ namespace Game.Global.Settings
         public void Initialize(SaveManager saveManager)
         {
             m_saveManager = saveManager;
+            
+            SetMasterVolume(saveManager.Profile.MasterVolume);
+            SetSfxVolume(saveManager.Profile.SfxVolume);
+            SetMusicVolume(saveManager.Profile.MusicVolume);
         }
         
 #region Sounds
@@ -27,6 +31,11 @@ namespace Game.Global.Settings
             volume = Mathf.Clamp(volume, 0, 100);
             m_saveManager.Profile.MasterVolume = volume;
 
+            if (volume == 0)
+            {
+                m_audioMixer.SetFloat("MasterVolume", -80);
+                return;
+            }
             float db = math.log10(volume / 100f) * 20f;
             m_audioMixer.SetFloat("MasterVolume", db);
         }
@@ -41,6 +50,11 @@ namespace Game.Global.Settings
             volume = Mathf.Clamp(volume, 0, 100);
             m_saveManager.Profile.SfxVolume = volume;
 
+            if (volume == 0)
+            {
+                m_audioMixer.SetFloat("SfxVolume", -80);
+                return;
+            }
             float db = math.log10(volume / 100f) * 20f;
             m_audioMixer.SetFloat("SfxVolume", db);
         }
@@ -55,6 +69,11 @@ namespace Game.Global.Settings
             volume = Mathf.Clamp(volume, 0, 100);
             m_saveManager.Profile.MusicVolume = volume;
 
+            if (volume == 0)
+            {
+                m_audioMixer.SetFloat("MusicVolume", -80);
+                return;
+            }
             float db = math.log10(volume / 100f) * 20f;
             m_audioMixer.SetFloat("MusicVolume", db);
         }

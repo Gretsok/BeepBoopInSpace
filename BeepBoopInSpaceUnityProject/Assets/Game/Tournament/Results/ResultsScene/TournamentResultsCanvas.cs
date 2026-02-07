@@ -1,4 +1,5 @@
 using System;
+using Game.Global;
 using Game.PlayerManagement;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,7 +19,7 @@ namespace Game.Tournament.Results.ResultsScene
         private event Action m_quitCallback;
         public void SetUp(Action quitCallback)
         {
-            var players = PlayerManager.Instance.Players;
+            var players = GlobalContext.Instance.PlayerManager.Players;
 
             for (int i = m_resultsContainer.childCount - 1; i >= 0; i--)
             {
