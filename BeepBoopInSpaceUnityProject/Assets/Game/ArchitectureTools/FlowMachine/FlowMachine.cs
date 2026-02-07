@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using NaughtyAttributes;
 using UnityEngine;
 
 namespace Game.ArchitectureTools.FlowMachine
@@ -6,12 +7,29 @@ namespace Game.ArchitectureTools.FlowMachine
     public class FlowMachine : MonoBehaviour,
         IFlowMachinePauser // It means a flow machine can pause another flow machine.
     {
+        public ERunningState RunningState { get; private set; } = ERunningState.Inactive;
         [SerializeField] 
         private AFlowState m_defaultState;
 
-        private void Start()
+        [Button]
+        public void Run()
         {
+            if (RunningState != ERunningState.Inactive)
+                return;
+            
             RequestState(m_defaultState);
+            RunningState = ERunningState.Running;
+        }
+
+        [Button]
+        public void Stop()
+        {
+            if (RunningState == ERunningState.Inactive)
+                return;
+            
+            m_requestedStates.Clear();
+            SwitchToState(null);
+            RunningState = ERunningState.Inactive;
         }
 
         public AFlowState CurrentState { get; private set; }
@@ -24,7 +42,7 @@ namespace Game.ArchitectureTools.FlowMachine
 
         private void Update()
         {
-            if (IsPaused) return;
+            if (RunningState != ERunningState.Running) return;
             
             if (m_requestedStates.Count > 0)
             {
@@ -68,6 +86,7 @@ namespace Game.ArchitectureTools.FlowMachine
             if (!isPaused && IsPaused)
             {
                 HandleFlowMachinePaused();
+                RunningState = ERunningState.Paused;
             }
         }
 
@@ -78,6 +97,7 @@ namespace Game.ArchitectureTools.FlowMachine
             if (isPaused && !IsPaused)
             {
                 HandleFlowMachineUnpaused();
+                RunningState = ERunningState.Running;
             }
         }
 

@@ -6,9 +6,9 @@ using Game.PlayerManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Game.MainMenu.PlayerJoining
+namespace Game.MainMenu.CharacterSelection
 {
-    public class PlayerJoiningScreen : AMainMenuScreen
+    public class CharacterSelectionScreen : AMainMenuScreen
     {
         [SerializeField] 
         private CanvasGroup m_container;
@@ -89,7 +89,7 @@ namespace Game.MainMenu.PlayerJoining
             InflateWithPlayers();
         }
 
-        private List<PlayerJoiningPlayerController> m_playerJoiningPlayers = new ();
+        private List<CharacterSelectionPlayerController> m_playerJoiningPlayers = new ();
 
         private void InflateWithPlayers()
         {
@@ -105,7 +105,7 @@ namespace Game.MainMenu.PlayerJoining
             {
                 var player = m_playerManager.Players[i];
                 
-                var playerController = gameObject.AddComponent<PlayerJoiningPlayerController>();
+                var playerController = gameObject.AddComponent<CharacterSelectionPlayerController>();
                 var characterWidget = m_widgets[i];
                 playerController.SetDependencies(player, characterWidget);
                 characterWidget.Activate();

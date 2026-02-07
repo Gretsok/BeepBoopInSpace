@@ -46,7 +46,7 @@ namespace Game.Gameplay.Flows._0_Load
             var globalContextPrefab = AssetDatabase.LoadAssetAtPath<GlobalContext>("Assets/Game/Global/GlobalContext.prefab");
             var globalContext = Instantiate(globalContextPrefab); 
             
-            yield return new WaitUntil(() => globalContext.IsInitialized);
+            yield return new WaitUntil(() => GlobalContext.IsInitialized);
             
             var devices = InputSystem.devices;
             for (int i = 0; i < UnityEditor.EditorPrefs.GetInt(LevelEditorPrefsConstants.NumberOfPlayersKey, 0); ++i)
@@ -144,7 +144,7 @@ namespace Game.Gameplay.Flows._0_Load
 
             GlobalGameplayDataManager.Instance.SetDataAsset(currentLevelDataAsset.GlobalGameplayDataAsset.CreateAndGetData());
             
-            yield return new WaitUntil(() => GridBuilder.Instance.IsInitialized);
+            yield return new WaitUntil(() => GridBuilder.IsInitialized);
 
             yield return new WaitUntil(() => GetComponent<LoadEventsHooker>().AllRequirementsMet);
             

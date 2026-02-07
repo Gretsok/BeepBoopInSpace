@@ -1,3 +1,4 @@
+using System.Collections;
 using Game.ArchitectureTools.Manager;
 using Game.Global.PlayerManagement;
 using Game.Global.Settings;
@@ -18,7 +19,7 @@ namespace Game.Global
         [field: SerializeField]
         public PlayerManager PlayerManager { get; private set; }
 
-        private void Start()
+        protected override IEnumerator Initialize()
         {
             DontDestroyOnLoad(gameObject);
             SaveManager.LoadProfile(_ =>
@@ -28,6 +29,8 @@ namespace Game.Global
             
             AudioManager.Initialize();
             PlayerManager.Initialize();
+            
+            yield break;
         }
     }
 }

@@ -261,7 +261,7 @@ GameObject:
   - component: {fileID: 3960316988754630709}
   - component: {fileID: 2661923684727355902}
   m_Layer: 0
-  m_Name: PlayerJoiningScreen
+  m_Name: CharacterSelectionScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

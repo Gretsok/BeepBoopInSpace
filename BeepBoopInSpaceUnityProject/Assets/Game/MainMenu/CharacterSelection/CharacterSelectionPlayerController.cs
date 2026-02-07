@@ -2,9 +2,9 @@ using Game.PlayerManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Game.MainMenu
+namespace Game.MainMenu.CharacterSelection
 {
-    public class PlayerJoiningPlayerController : MonoBehaviour
+    public class CharacterSelectionPlayerController : MonoBehaviour
     {
         private AbstractPlayer m_player;
         private CharacterWidget m_widget;

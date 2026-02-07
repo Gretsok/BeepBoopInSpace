@@ -36,7 +36,7 @@ namespace Game.MainMenu
 
         private void HandlePlayButtonClicked()
         {
-            m_mainMenuOrchestrator.SwitchToJoiningScreen();
+            m_mainMenuOrchestrator.SwitchToCharacterSelectionScreen();
         }
         
         private void HandleCreditsButtonClicked()

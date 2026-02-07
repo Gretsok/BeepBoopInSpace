@@ -1,115 +1,57 @@
+using Game.ArchitectureTools.FlowMachine;
 using Game.Gameplay.LoadingScreen;
-using Game.Global.PlayerManagement;
-using Game.Global.Save;
-using Game.Global.Settings;
+using Game.Global;
+using Game.MainMenu.CharacterSelection;
 using Game.MainMenu.Credits;
-using Game.MainMenu.PlayerJoining;
+using Game.MainMenu.Home;
 using Game.MainMenu.SettingsScreen;
-using Game.MainMenu.ZoneManagement;
-using Game.PlayerManagement;
 using UnityEngine;
 
 namespace Game.MainMenu
 {
     public class MainMenuOrchestrator : MonoBehaviour
     {
+        private FlowMachine m_flowMachine;
+        
+        [Header("States")]
         [SerializeField]
-        private HomeScreen m_homeScreen;
+        private HomeState m_homeState;
         [SerializeField]
-        private PlayerJoiningScreen m_joiningScreen;
+        private CharacterSelectionState m_characterSelectionState;
         [SerializeField]
-        private CreditsScreen m_creditsScreen;
+        private CreditsState m_creditsState;
         [SerializeField]
-        private MainMenuSettingsScreen m_settingsScreen;
+        private MainMenuSettingsState m_settingsState;
 
-        private void Awake()
+        public void Initialize(GlobalContext globalContext, MainMenuContext mainMenuContext)
         {
-            m_homeScreen.Deactivate(true);
-            m_joiningScreen.Deactivate(true);
-            m_creditsScreen.Deactivate(true);
-            m_settingsScreen.Deactivate(true);
-        }
+            m_flowMachine = mainMenuContext.FlowMachine;
+            m_homeState.Initialize(globalContext, mainMenuContext);
+            m_characterSelectionState.Initialize(globalContext, mainMenuContext);
+            m_creditsState.Initialize(globalContext, mainMenuContext);
+            m_settingsState.Initialize(globalContext, mainMenuContext);
 
-        public void Initialize(ZoneManager zoneManager, PlayerManager playerManager, SettingsManager settingsManager, SaveManager saveManager)
-        {
-            m_homeScreen.Initialize(this, zoneManager);
-            m_joiningScreen.Initialize(zoneManager, playerManager);
-            m_creditsScreen.Initialize(zoneManager);
-            m_settingsScreen.Initialize(zoneManager, settingsManager, saveManager);
-            
-            SwitchToHomeScreen();
-
-            m_joiningScreen.OnBack += HandleBackRequestFromJoiningScreen;
-            m_creditsScreen.OnBackRequested += HandleBackRequestedFromCreditsScreen;
-            m_settingsScreen.OnBackRequested += HandleBackRequestFromSettingsScreen;
-            
             LoadingScreenManager.Instance.HideLoadingScreen();
-        }
-
-
-        private void OnDestroy()
-        {
-            m_joiningScreen.OnBack -= HandleBackRequestFromJoiningScreen;       
-            m_creditsScreen.OnBackRequested -= HandleBackRequestedFromCreditsScreen;
-            m_settingsScreen.OnBackRequested -= HandleBackRequestFromSettingsScreen;
-        }
-        
-        private void HandleBackRequestedFromCreditsScreen()
-        {
-            if (!m_creditsScreen.IsActivated)
-                return;
-            
-            SwitchToHomeScreen();
-        }
-
-        
-        private void HandleBackRequestFromJoiningScreen()
-        {
-            if (!m_joiningScreen.IsActivated)
-                return;
-            
-            SwitchToHomeScreen();
-        }
-
-        private void HandleBackRequestFromSettingsScreen()
-        {
-            if (!m_settingsScreen.IsActivated)
-                return;
-            
-            SwitchToHomeScreen();
         }
 
         public void SwitchToHomeScreen()
         {
-            m_creditsScreen.Deactivate();
-            m_joiningScreen.Deactivate();
-            m_settingsScreen.Deactivate();
-            m_homeScreen.Activate();
+            m_flowMachine.RequestState(m_homeState);
         }
 
-        public void SwitchToJoiningScreen()
+        public void SwitchToCharacterSelectionScreen()
         {
-            m_creditsScreen.Deactivate();
-            m_homeScreen.Deactivate();
-            m_settingsScreen.Deactivate();
-            m_joiningScreen.Activate();
+            m_flowMachine.RequestState(m_characterSelectionState);
         }
 
         public void SwitchToCreditsScreen()
         {
-            m_joiningScreen.Deactivate();
-            m_homeScreen.Deactivate();
-            m_settingsScreen.Deactivate();
-            m_creditsScreen.Activate();
+            m_flowMachine.RequestState(m_creditsState);
         }
 
         public void SwitchToSettingsScreen()
         {
-            m_joiningScreen.Deactivate();
-            m_homeScreen.Deactivate();
-            m_creditsScreen.Deactivate();
-            m_settingsScreen.Activate();
-            
+            m_flowMachine.RequestState(m_settingsState);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Game.ArchitectureTools.Manager
     public abstract class AManager<TManagerType> : MonoBehaviour where TManagerType : AManager<TManagerType>
     {
         public static TManagerType Instance { get; private set; }
-        public bool IsInitialized { get; private set; } 
+        public static bool IsInitialized { get; private set; } 
         private void Awake()
         {
             if (Instance != null)
@@ -23,7 +23,7 @@ namespace Game.ArchitectureTools.Manager
         private static Action<TManagerType> s_onInitializedCallbacks;
         public static void RegisterPostInitializationCallback(Action<TManagerType> callback)
         {
-            if (Instance && Instance.IsInitialized)
+            if (Instance && IsInitialized)
             {
                 callback?.Invoke(Instance);
                 return;
