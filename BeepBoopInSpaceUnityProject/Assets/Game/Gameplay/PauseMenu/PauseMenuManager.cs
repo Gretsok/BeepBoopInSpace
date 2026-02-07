@@ -9,18 +9,18 @@ namespace Game.Gameplay.PauseMenu
     public class PauseMenuManager : MonoBehaviour,
         IFlowMachinePauser
     {
-        private FlowMachine m_flowMachine;
+        private FlowMachine m_gameplayFlowMachine;
         public bool IsPaused { get; private set; }
         
         private PauseControls m_controls;
-        public void Initialize(FlowMachine flowMachine)
+        public void Initialize(FlowMachine gameplayFlowMachine)
         {
             m_controls = new PauseControls();
             m_controls.Enable();
             
             m_controls.Pause.Toggle.started += HandlePauseToggleStarted;
             
-            m_flowMachine = flowMachine;
+            m_gameplayFlowMachine = gameplayFlowMachine;
         }
 
         private void HandlePauseToggleStarted(InputAction.CallbackContext obj)
@@ -36,11 +36,13 @@ namespace Game.Gameplay.PauseMenu
         {
             if (IsPaused)
                 return;
+            if (!m_gameplayFlowMachine.CurrentState.GetComponent<CanBePausedTagStateComponent>())
+                return;
             
             Time.timeScale = 0;
             DOTween.defaultTimeScaleIndependent = true;
             
-            m_flowMachine.Pause(this);
+            m_gameplayFlowMachine.Pause(this);
             OnPause?.Invoke(this);
             
             IsPaused = true;
@@ -55,7 +57,7 @@ namespace Game.Gameplay.PauseMenu
             Time.timeScale = 1;
             DOTween.defaultTimeScaleIndependent = false;
             
-            m_flowMachine.Unpause(this);
+            m_gameplayFlowMachine.Unpause(this);
             OnResume?.Invoke(this);
             
             IsPaused = false;
