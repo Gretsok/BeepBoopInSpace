@@ -19,19 +19,24 @@ namespace Game.MainMenu.CharacterSelection
         [SerializeField] private Button m_startGameButton;
         
         private PlayerManager m_playerManager;
-        private GameModesLauncher m_gameModesLauncher;
         private ZoneManager m_zoneManager;
+        private MainMenuOrchestrator m_orchestrator;
 
         [Header("Sounds")]
         [SerializeField]
         private AudioSource m_playerConnectedAudioSource;
 
+        public void Initialize(ZoneManager zoneManager, PlayerManager playerManager, MainMenuOrchestrator orchestrator)
+        {
+            m_zoneManager = zoneManager;
+            m_playerManager = playerManager;
+            m_orchestrator = orchestrator;
+        }
+        
         protected override void HandleActivation()
         {
             gameObject.SetActive(true);
 
-            m_gameModesLauncher = GameModesLauncher.Instance;
-            
             m_playerManager.RemoveAllPlayers();
             
             m_playerManager.OnPlayerJoined += HandlePlayerJoined;
@@ -65,7 +70,7 @@ namespace Game.MainMenu.CharacterSelection
             if (m_playerManager.Players.Count < 2)
                 return;
             
-            m_gameModesLauncher.LaunchTournament();
+            m_orchestrator.SwitchToHubScreen();
         }
 
         public Action OnBack;
@@ -155,10 +160,5 @@ namespace Game.MainMenu.CharacterSelection
             }
         }
 
-        public void Initialize(ZoneManager zoneManager, PlayerManager playerManager)
-        {
-            m_zoneManager = zoneManager;
-            m_playerManager = playerManager;
-        }
     }
 }

@@ -1,10 +1,9 @@
 using System;
-using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace Game.Gameplay.GameModes
+namespace Game.Gameplay.GameModes.ObjectiveManagement
 {
     [Serializable]
     public class ObjectiveManagerAssetReference : AssetReferenceT<GameObject>

@@ -7,6 +7,7 @@ namespace Game.ArchitectureTools.FlowMachine
     public class FlowMachine : MonoBehaviour,
         IFlowMachinePauser // It means a flow machine can pause another flow machine.
     {
+        [field: ReadOnly]
         public ERunningState RunningState { get; private set; } = ERunningState.Inactive;
         [SerializeField] 
         private AFlowState m_defaultState;

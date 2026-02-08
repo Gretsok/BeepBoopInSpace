@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using Game.Gameplay.GameModes;
+using Game.Gameplay.GameModes.ObjectiveManagement;
 using Game.Gameplay.GlobalGameplayData;
 using UnityEngine;
 using UnityEngine.AddressableAssets;

@@ -21,6 +21,9 @@ namespace Game.Gameplay
         {
             CurrentLevelInfoManager = LoadingManager.FetchCurrentLevelInfoManager();
             PauseMenuManager.Initialize(FlowMachine);
+            
+            
+            FlowMachine.Run();
         }
     }
 }

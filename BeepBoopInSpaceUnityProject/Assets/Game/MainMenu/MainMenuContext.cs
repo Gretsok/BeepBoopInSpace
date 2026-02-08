@@ -15,6 +15,8 @@ namespace Game.MainMenu
         public MainMenuOrchestrator MainMenuOrchestrator { get; private set; }
         [field: SerializeField]
         public FlowMachine FlowMachine { get; private set; }
+        [field: SerializeField]
+        public GameModesLauncher GameModesLauncher { get; private set; }
 
         protected override IEnumerator Initialize()
         {

@@ -14,6 +14,7 @@ using Game.Tournament;
 #endif
 using Game.Gameplay.LoadingScreen;
 using Game.PlayerManagement;
+using Game.Training;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -29,19 +30,26 @@ namespace Game.Gameplay.Flows._0_Load
 #if UNITY_EDITOR
         private IEnumerator SettingGameInfosInStandaloneRoutine()
         {
-            var tournamentContext = TournamentContext.Instance;
-            if (tournamentContext)
-                yield break;
-
-            var tournamentContextPrefab =
-                UnityEditor.AssetDatabase.LoadAssetAtPath<TournamentContext>( "Assets/Game/Tournament/TournamentContext.prefab");
-            tournamentContext = Instantiate(tournamentContextPrefab);
+            {
+                var tournamentContext = TournamentContext.Instance;
+                if (tournamentContext)
+                    yield break;
+            }
+            {
+                var trainingContext = TrainingContext.Instance;
+                if (trainingContext)
+                    yield break;
+            }
             
+            var currentLevelInfoManagerGO = new GameObject("CurrentLevelInfoManager_Standalone");
+            var currentLevelInfoManager = currentLevelInfoManagerGO.AddComponent<CurrentLevelInfoManager>();
+            currentLevelInfoManagerGO.AddComponent<CurrentLevelInfoManagerStandaloneSingleton>().Initialize();
+
             if (!UnityEditor.EditorPrefs.GetBool(LevelEditorPrefsConstants.OverridesGameInfosKey, false))
                 yield break;
             
             var currentLevelDataAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<LevelDataAsset>(UnityEditor.EditorPrefs.GetString("BB_LDA"));
-            tournamentContext.CurrentLevelInfoManager.SetCurrentLevelDataAsset(currentLevelDataAsset);
+            currentLevelInfoManager.SetCurrentLevelDataAsset(currentLevelDataAsset);
 
             var globalContextPrefab = AssetDatabase.LoadAssetAtPath<GlobalContext>("Assets/Game/Global/GlobalContext.prefab");
             var globalContext = Instantiate(globalContextPrefab); 
@@ -75,7 +83,17 @@ namespace Game.Gameplay.Flows._0_Load
         public static CurrentLevelInfoManager FetchCurrentLevelInfoManager()
         {
             var tournamentContext = TournamentContext.Instance;
-            return tournamentContext.CurrentLevelInfoManager;
+            if (tournamentContext)
+                return tournamentContext.CurrentLevelInfoManager;
+            var trainingContext = TrainingContext.Instance;
+            if (trainingContext)
+                return trainingContext.CurrentLevelInfoManager;
+            var standaloneSingleton = CurrentLevelInfoManagerStandaloneSingleton.Instance;
+            if (standaloneSingleton)
+                return standaloneSingleton;
+            
+            Debug.LogError($"Failed to fetch current level info manager");
+            return null;
         }
         
         private IEnumerator LoadingRoutine(Action onLoadingComplete = null)
