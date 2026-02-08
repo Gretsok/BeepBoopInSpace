@@ -75,6 +75,8 @@ namespace Game.Gameplay.Flows._0_Load
         private AsyncOperationHandle<SceneInstance> m_levelSceneOp;
         private List<AsyncOperationHandle<SceneInstance>> m_optionalScenesOp = new ();
         
+        
+        public bool HasLoadedLevel { get; private set; }
         public void Load(Action onLoadingComplete = null)
         {
             StartCoroutine(LoadingRoutine(onLoadingComplete));
@@ -169,6 +171,7 @@ namespace Game.Gameplay.Flows._0_Load
             LoadingScreenManager.Instance?.HideLoadingScreen();
             
             onLoadingComplete?.Invoke();
+            HasLoadedLevel = true;
         }
 
 

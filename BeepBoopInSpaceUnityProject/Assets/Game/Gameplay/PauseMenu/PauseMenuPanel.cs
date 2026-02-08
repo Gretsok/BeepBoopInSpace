@@ -35,8 +35,10 @@ namespace Game.Gameplay.PauseMenu
             m_container.DOFade(0f, 0f);
             m_container.gameObject.SetActive(false);
             
-            var globalContext = GlobalContext.Instance;
-            m_settingsScreen.Initialize(globalContext.SettingsManager, globalContext.SaveManager, null);
+            GlobalContext.RegisterPostInitializationCallback(globalContext =>
+            {
+                m_settingsScreen.Initialize(globalContext.SettingsManager, globalContext.SaveManager, null);    
+            });
         }
 
         private void HandleResume(PauseMenuManager obj)

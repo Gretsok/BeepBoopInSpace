@@ -1,3 +1,4 @@
+using System.Collections;
 using Game.ArchitectureTools.Manager;
 using Game.Gameplay.Flows._0_Load;
 using Game.Gameplay.Levels._0_Core;
@@ -17,13 +18,13 @@ namespace Game.Gameplay
         
         public CurrentLevelInfoManager CurrentLevelInfoManager { get; private set; }
 
-        private void Start()
+        private IEnumerator Start()
         {
-            CurrentLevelInfoManager = LoadingManager.FetchCurrentLevelInfoManager();
+            FlowMachine.Run();
             PauseMenuManager.Initialize(FlowMachine);
             
-            
-            FlowMachine.Run();
+            yield return new WaitUntil(() => LoadingManager.HasLoadedLevel);
+            CurrentLevelInfoManager = LoadingManager.FetchCurrentLevelInfoManager();
         }
     }
 }

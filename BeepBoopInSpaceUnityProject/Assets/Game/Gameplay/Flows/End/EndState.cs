@@ -1,5 +1,6 @@
 using Game.ArchitectureTools.FlowMachine;
 using Game.Gameplay.LoadingScreen;
+using Game.Tournament;
 using Game.Training;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -29,9 +30,8 @@ namespace Game.Gameplay.Flows.End
                 }
             });
 
-            if (TrainingContext.Instance)
+            if (!TournamentContext.Instance)
             {
-                Destroy(TrainingContext.Instance.gameObject);
                 Addressables.LoadSceneAsync(m_mainMenuScene);
             }
         }
