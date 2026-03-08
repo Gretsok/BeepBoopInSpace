@@ -1,6 +1,6 @@
 using Game.ArchitectureTools.FlowMachine;
-using Game.Gameplay.LoadingScreen;
 using Game.Global;
+using Game.LoadingScreen;
 using Game.MainMenu.CharacterSelection;
 using Game.MainMenu.Credits;
 using Game.MainMenu.Home;

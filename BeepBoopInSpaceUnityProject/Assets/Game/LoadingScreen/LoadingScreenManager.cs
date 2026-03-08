@@ -2,7 +2,7 @@ using System.Collections;
 using Game.ArchitectureTools.Manager;
 using UnityEngine;
 
-namespace Game.Gameplay.LoadingScreen
+namespace Game.LoadingScreen
 {
     public class LoadingScreenManager : AManager<LoadingScreenManager>
     {

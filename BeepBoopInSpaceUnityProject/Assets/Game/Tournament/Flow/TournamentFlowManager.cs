@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Game.Gameplay.Flows.Results;
 using Game.Gameplay.Levels._0_Core;
-using Game.Gameplay.LoadingScreen;
+using Game.LoadingScreen;
 using Game.Tournament.Config;
 using Game.Tournament.Results;
 using Game.Tournament.Results.ResultsScene;

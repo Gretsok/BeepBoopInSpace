@@ -23,7 +23,7 @@ namespace Game.MainMenu.Credits
 
         private void HandleBackPerformed()
         {
-            MainMenuContext.MainMenuOrchestrator.SwitchToHomeScreen();
+            MainMenuContext.FlowMachine.RequestBack();
         }
 
         protected override void HandleLeave()
