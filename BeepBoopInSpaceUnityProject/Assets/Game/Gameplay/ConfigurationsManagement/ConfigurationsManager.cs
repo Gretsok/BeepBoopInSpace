@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Game.ArchitectureTools.FlowMachine;
@@ -24,14 +25,18 @@ namespace Game.Gameplay.ConfigurationsManagement
             yield return null;
         }
 
+        public Action<ConfigurationsManager> OnPauseRunning;
         public void PauseRunning()
         {
             IsRunning = false;
+            OnPauseRunning?.Invoke(this);
         }
 
+        public Action<ConfigurationsManager> OnResumeRunning;
         public void ResumeRunning()
         {
             IsRunning = true;
+            OnResumeRunning?.Invoke(this);
         }
 
         private void Update()

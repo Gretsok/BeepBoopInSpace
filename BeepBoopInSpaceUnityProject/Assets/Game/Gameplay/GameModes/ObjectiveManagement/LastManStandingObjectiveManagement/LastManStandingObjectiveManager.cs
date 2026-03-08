@@ -37,8 +37,6 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LastManStandingObjectiveMa
             gameplayEventsHooker.OnGameplayPaused += HandleGameplayPaused;
             
             ResultsManager.RegisterPostInitializationCallback(manager => manager.SetScoreCalculationMethod(EScoreCalculationMethod.HigherScoreIsBest));
-
-            Destroy(TimerManager.Instance.gameObject);
             
             yield break;
         }
