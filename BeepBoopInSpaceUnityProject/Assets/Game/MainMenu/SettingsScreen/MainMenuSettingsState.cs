@@ -23,7 +23,7 @@ namespace Game.MainMenu.SettingsScreen
 
         private void HandleBackRequested()
         {
-            MainMenuContext.MainMenuOrchestrator.SwitchToHomeScreen();
+            MainMenuContext.FlowMachine.RequestBack();
         }
 
         protected override void HandleLeave()

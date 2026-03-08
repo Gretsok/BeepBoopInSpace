@@ -23,7 +23,7 @@ namespace Game.MainMenu.CharacterSelection
 
         private void HandleBackPerformed()
         {
-            MainMenuContext.MainMenuOrchestrator.SwitchToHomeScreen();
+            MainMenuContext.FlowMachine.RequestBack();
         }
 
         protected override void HandleLeave()
