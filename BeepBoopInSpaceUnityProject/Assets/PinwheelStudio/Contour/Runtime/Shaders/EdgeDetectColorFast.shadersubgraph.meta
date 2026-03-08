@@ -12,6 +12,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 302915
   packageName: CONTOUR - Edge detection & outline post effect - URP Render Graph
-  packageVersion: 1.2.0.1
+  packageVersion: 1.2.0.2
   assetPath: Assets/PinwheelStudio/Contour/Runtime/Shaders/EdgeDetectColorFast.shadersubgraph
-  uploadId: 782969
+  uploadId: 858006

@@ -8,11 +8,14 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: FullscreenEdgeDetection
-  m_Shader: {fileID: -6465566751694194690, guid: a6bd8126e206afe4991c657977172789, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: a6bd8126e206afe4991c657977172789,
+    type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - _FAST_MODE
   - _USE_SCENE_COLOR
+  - _USE_SCENE_DEPTH
   - _USE_SCENE_NORMALS
   m_InvalidKeywords:
   - _BLENDMODE_A
@@ -61,7 +64,7 @@ Material:
     - _PeakBrightness: 0
     - _Response: 0
     - _StrongEdgeHighlight: 0
-    - _Thickness: 1.01
+    - _Thickness: 1.05
     - _USE_CAMERA_COLOR: 1
     - _USE_DEPTH: 0
     - _USE_SCENE_COLOR: 1

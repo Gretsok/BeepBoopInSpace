@@ -2,6 +2,7 @@ using System.Collections;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.CharactersManagement.Death;
 using Game.Gameplay.Flows.Results;
+using Game.Gameplay.Timer;
 using UnityEngine;
 
 namespace Game.Gameplay.GameModes.ObjectiveManagement.LeastDeathsObjectiveManagement
@@ -9,6 +10,9 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LeastDeathsObjectiveManage
     public class LeastDeathsObjectiveManager : AObjectiveManager
     {
         private CharactersManager m_charactersManager;
+
+        [SerializeField]
+        private TimerManager m_timerManager;
 
         protected override IEnumerator Initialize()
         {

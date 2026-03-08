@@ -1,6 +1,6 @@
 using System;
 using Game.Gameplay.Levels._0_Core;
-using Game.Gameplay.LoadingScreen;
+using Game.LoadingScreen;
 using Game.Training;
 using NaughtyAttributes;
 using UnityEngine;
@@ -30,6 +30,7 @@ namespace Game.MainMenu
             {
                 if (m_loadingTraining) return;
                 m_loadingTraining = true;
+                LoadingScreenManager.Instance?.ShowLoadingScreen();
                 await m_trainingContextAsset.InstantiateAsync().Task;
                 TrainingContext.RegisterPostInitializationCallback(trainingContext =>
                 {

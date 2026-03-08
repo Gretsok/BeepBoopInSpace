@@ -73,10 +73,16 @@ namespace Game.ArchitectureTools.FlowMachine
         protected virtual void HandleFlowMachineUnpaused()
         {}
         
-        public Action<AFlowState> OnAnotherStateRequested;
-        protected void RequestState(AFlowState newState)
+        public Action<AFlowState, bool> OnAnotherStateRequested;
+        protected void RequestState(AFlowState newState, bool ignoreBackStack = false)
         {
-            OnAnotherStateRequested?.Invoke(newState);
+            OnAnotherStateRequested?.Invoke(newState, ignoreBackStack);
+        }
+
+        public Action OnBackRequested;
+        protected void RequestBack()
+        {
+            OnBackRequested?.Invoke();
         }
     }
 }
