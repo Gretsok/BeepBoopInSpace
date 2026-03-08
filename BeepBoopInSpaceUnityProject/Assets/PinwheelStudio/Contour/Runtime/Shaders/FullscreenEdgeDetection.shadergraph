@@ -3484,14 +3484,14 @@
     ],
     "m_VertexContext": {
         "m_Position": {
-            "x": 3060.0,
+            "x": 3060.000244140625,
             "y": 1705.60009765625
         },
         "m_Blocks": []
     },
     "m_FragmentContext": {
         "m_Position": {
-            "x": 3060.0,
+            "x": 3060.000244140625,
             "y": 1784.0001220703125
         },
         "m_Blocks": [
@@ -5823,7 +5823,7 @@
     "m_Title": "Edge detection using scene depth",
     "m_Position": {
         "x": -2328.7998046875,
-        "y": 2185.599609375
+        "y": 2185.599853515625
     }
 }
 
@@ -6241,8 +6241,8 @@
     "m_ObjectId": "2b62dafb386341ab8047e8fe4b8ce43e",
     "m_Title": "Edge detect using scene color, fast mode",
     "m_Position": {
-        "x": -2368.000244140625,
-        "y": 458.3999938964844
+        "x": -2368.0,
+        "y": 458.39996337890627
     }
 }
 
@@ -8758,7 +8758,7 @@
     "m_Title": "Edge detection using scene color",
     "m_Position": {
         "x": -2324.7998046875,
-        "y": 3227.2001953125
+        "y": 3227.199951171875
     }
 }
 
@@ -10205,7 +10205,7 @@
     "m_ObjectId": "667af2302f52482fa6df10202c5de560",
     "m_Title": "Calculate kernel UVs",
     "m_Position": {
-        "x": -4653.60009765625,
+        "x": -4653.599609375,
         "y": 1835.199951171875
     }
 }
@@ -15417,7 +15417,7 @@
     "m_ObjectId": "b0e256cafb3c40e384a57be26c592d33",
     "m_Title": "Fade bottom",
     "m_Position": {
-        "x": 1019.199951171875,
+        "x": 1019.2001953125,
         "y": 2348.800048828125
     }
 }
@@ -16154,7 +16154,7 @@
     "m_Title": "Edge detection using scene normals",
     "m_Position": {
         "x": -2324.7998046875,
-        "y": 4408.80078125
+        "y": 4408.80029296875
     }
 }
 
@@ -16230,8 +16230,8 @@
     "m_ObjectId": "bebb45ba00d641748feee136f271d9ac",
     "m_Title": "Fade top",
     "m_Position": {
-        "x": 1044.000244140625,
-        "y": 2629.599609375
+        "x": 1044.0,
+        "y": 2629.599853515625
     }
 }
 
@@ -16540,7 +16540,7 @@
     "m_Title": "Edge detect using scene normals, fast mode",
     "m_Position": {
         "x": -2368.7998046875,
-        "y": -192.0
+        "y": -192.00006103515626
     }
 }
 
@@ -16749,7 +16749,7 @@
     "m_Title": "Remove artifact on surfaces parallel to view direction",
     "m_Position": {
         "x": -2611.199951171875,
-        "y": 1796.7996826171875
+        "y": 1796.7998046875
     }
 }
 
@@ -17213,6 +17213,7 @@
     "m_SourceType": 0,
     "m_FunctionName": "EdgeEnhancement",
     "m_FunctionSource": "2fd651330f84f1141bc334389bb1ac11",
+    "m_FunctionSourceUsePragmas": true,
     "m_FunctionBody": "Enter function body here..."
 }
 
@@ -18377,7 +18378,7 @@
     "m_ObjectId": "db6de9b19709490692ac9d8d27b4362f",
     "m_Title": "Fade by distance",
     "m_Position": {
-        "x": 1019.199951171875,
+        "x": 1019.2001953125,
         "y": 2044.800048828125
     }
 }
@@ -19779,8 +19780,8 @@
     "m_ObjectId": "f342667761084b92b3a5cbaeb3c10a11",
     "m_Title": "Blending",
     "m_Position": {
-        "x": 2563.199951171875,
-        "y": 1864.7996826171875
+        "x": 2563.2001953125,
+        "y": 1864.7998046875
     }
 }
 

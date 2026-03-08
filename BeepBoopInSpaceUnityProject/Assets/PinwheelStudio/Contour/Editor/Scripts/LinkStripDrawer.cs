@@ -10,8 +10,8 @@ namespace Pinwheel.Contour
         private static List<string> s_linkLabels = new List<string>();
         private static Dictionary<string, string> s_linkContents = new Dictionary<string, string>()
         {
-            {"Docs",  "https://docs.pinwheelstud.io/memo"},
-            {"Support",  "https://discord.gg/btX4pdmZdV"},
+            {"Docs",  "https://docs.google.com/document/d/1dM1M6wfiXaf3N1c0FGBcNd2LuZ4Pp3dSlZ8zOaQFkgQ/edit?tab=t.0#heading=h.cued3xf6e7ie"},
+            {"Support",  "https://discord.gg/Bm9bGgePNC"},
             {"|", "" },
             {"Poseidon", "https://assetstore.unity.com/packages/vfx/shaders/low-poly-water-poseidon-153826" },
             {"Jupiter" ,"https://assetstore.unity.com/packages/2d/textures-materials/sky/procedural-sky-shader-day-night-cycle-jupiter-159992" },
