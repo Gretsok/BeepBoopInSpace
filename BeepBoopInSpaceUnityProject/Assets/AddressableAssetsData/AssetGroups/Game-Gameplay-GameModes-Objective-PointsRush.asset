@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Game-Gameplay-GameModes-Objective-PointsRush
+  m_EditorClassIdentifier: 
+  m_GroupName: Game-Gameplay-GameModes-Objective-PointsRush
+  m_GUID: 4984e79d96431eb469aef564f4fc7905
+  m_SerializeEntries:
+  - m_GUID: 2597c207ff4e42b448f29a0a951255d2
+    m_Address: Assets/Game/Gameplay/GameModes/ObjectiveManagement/PointsRushObjectiveManagement
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 22ca0aaefa80e5a4eb8c4beaa1f2aae1, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: a4ccf7b8e7ce56a4d843424957f3036c, type: 2}
+    - {fileID: 11400000, guid: 11603cca836e6cf4faf854ee1f61bc53, type: 2}

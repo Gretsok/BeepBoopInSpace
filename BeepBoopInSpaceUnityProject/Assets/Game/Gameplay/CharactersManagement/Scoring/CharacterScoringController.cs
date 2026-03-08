@@ -10,5 +10,10 @@ namespace Game.Gameplay.CharactersManagement.Scoring
         {
             ++Score;
         }
+
+        public void SetScore(int score)
+        {
+            Score = score;
+        }
     }
 }

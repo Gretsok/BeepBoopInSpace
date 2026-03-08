@@ -21,7 +21,8 @@ namespace Game.Gameplay.GridSystem
                 CurrentCell.GetComponent<CanBeWalkedOnCellComponent>().MovementControllerOnCell = null;
             }
             CurrentCell = cell;
-            transform.position = cell.transform.position;
+            if (cell)
+                transform.position = cell.transform.position;
             
             if (CurrentCell != null)
             {

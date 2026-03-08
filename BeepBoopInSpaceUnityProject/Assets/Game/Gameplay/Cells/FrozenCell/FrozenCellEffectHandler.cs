@@ -66,7 +66,7 @@ namespace Game.Gameplay.Cells.FrozenCell
 
         private void SlideTowardCell(Cell cell)
         {
-            if (!cell.GetComponent<CanBeWalkedOnCellComponent>())
+            if (!cell.TryGetComponent(out CanBeWalkedOnCellComponent comp) || comp.MovementControllerOnCell)
             {
                 UnblockController();
                 return;

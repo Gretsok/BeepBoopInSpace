@@ -42,7 +42,6 @@ namespace Game.Gameplay.CharactersManagement.Death
                         break;
                     case GlobalGameplayDataAsset.EResurrectionPlacement.Checkpoint:
                         throw new NotImplementedException("Checkpoints not implemented.");
-                        break;
                 }
             }
             
@@ -61,7 +60,6 @@ namespace Game.Gameplay.CharactersManagement.Death
                         break;
                     case GlobalGameplayDataAsset.EResurrectionPlacement.Checkpoint:
                         throw new NotImplementedException("Checkpoints not implemented.");
-                        break;
                 }
             }
         }
@@ -70,7 +68,7 @@ namespace Game.Gameplay.CharactersManagement.Death
         {
             Debug.Log($"Teleport to a random cell.");
             m_deathController.CharacterReferencesHolder.MovementController.TeleportToCell(
-                m_gridBuilder.GetRandomWalkableCell(cell => !cell.TryGetComponent<KillingCellComponent>(out _))
+                m_gridBuilder.GetRandomAvailableWalkableCell(cell => !cell.TryGetComponent<KillingCellComponent>(out _))
             );
         }
 
@@ -90,6 +88,13 @@ namespace Game.Gameplay.CharactersManagement.Death
                 validNeighbourCells.Add(currentCell.RightCell);
             if (CellIsValid(currentCell.LeftCell))
                 validNeighbourCells.Add(currentCell.LeftCell);
+
+            if (validNeighbourCells.Count == 0)
+            {
+                Debug.LogError($"Could not find a neighbour valid cell. Respawning at a random position.");
+                TeleportToRandomCell();
+                return;
+            }
             
             m_deathController.CharacterReferencesHolder.MovementController.TeleportToCell(
                 validNeighbourCells[UnityEngine.Random.Range(0, validNeighbourCells.Count)]

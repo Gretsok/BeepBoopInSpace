@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AOC_Volto
+  m_Controller: {fileID: 9100000, guid: 21e17b4e7629ac74f84ed746be9b60ec, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 0e6049c6b18aa9740963af02a3efc81a, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 3d5fd7c12aec6a4c88139f404d378e92, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 5b27f73ea2ad23745a801f3c8482ccd1, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 87fede163ab983db39eb0e370ee04d48, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 3f66d173eb27c294ebda230df3a7fc13, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: db288a3dbd6befc26a17ebece8a33103, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 94918835759b1944a9d56737917d8638, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 422b9c2a02d0406dfb3679413380fdb2, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 186ed2d1c016dd24294a7a37cd3826dd, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 35e5234c390cb6e16ba3c2daf086d447, type: 2}

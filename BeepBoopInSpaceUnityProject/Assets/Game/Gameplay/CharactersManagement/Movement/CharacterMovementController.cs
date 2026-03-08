@@ -81,6 +81,13 @@ namespace Game.Gameplay.CharactersManagement.Movement
         {
             if (IsBlocked)
                 return;
+
+            if (cell == null || !cell.TryGetComponent(out CanBeWalkedOnCellComponent comp) ||
+                comp.MovementControllerOnCell)
+            {
+                Debug.LogError($"Cannot teleport to cell.");
+                return;
+            }
             
             m_referencesHolder.GridWalker.MoveToCell(cell, this);
             m_referencesHolder.Root.transform.position = m_referencesHolder.GridWalker.transform.position;

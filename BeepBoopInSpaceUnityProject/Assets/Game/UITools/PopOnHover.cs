@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Game.Global.SFXManagement;
 using Game.SFXManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;

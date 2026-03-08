@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Game-Gameplay-GameModes-Objective-MostKills
+  m_EditorClassIdentifier: 
+  m_GroupName: Game-Gameplay-GameModes-Objective-MostKills
+  m_GUID: f3aeaec4e65b2124ba3dd6fd14c4c277
+  m_SerializeEntries:
+  - m_GUID: 849a61769599dc7459dae8a0f5757a49
+    m_Address: Assets/Game/Gameplay/GameModes/ObjectiveManagement/ShootingObjectiveManagement
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 22ca0aaefa80e5a4eb8c4beaa1f2aae1, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 8e325c016c49f55489fc699001b55be8, type: 2}
+    - {fileID: 11400000, guid: 1614dfb526249a842876d8ec9b6a6582, type: 2}

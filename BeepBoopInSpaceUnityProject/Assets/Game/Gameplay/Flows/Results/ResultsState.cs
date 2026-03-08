@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using Game.ArchitectureTools.FlowMachine;
 using Game.Gameplay.CameraManagement;
 using Game.Gameplay.CharactersManagement;
-using Game.Gameplay.FlowMachine;
 using Game.Gameplay.Flows.Results.ResultsPlacementManagement;
 using Game.Gameplay.MusicsManagement;
 using UnityEngine;
@@ -21,6 +21,7 @@ namespace Game.Gameplay.Flows.Results
         
         private CameraManager m_cameraManager;
         private ResultsPlacementsManager m_resultsPlacementsManager;
+        private ResultsManager m_resultsManager;
         private List<CharacterPawn> m_orderedCharacters = new ();
 
         private int m_currentViewedCharacterIndex = -1;
@@ -31,11 +32,24 @@ namespace Game.Gameplay.Flows.Results
             base.HandleEnter();
             m_cameraManager = CameraManager.Instance;
             m_cameraManager.SwitchToGlobalViewResultsCamera();
+            
+            m_resultsManager = ResultsManager.Instance;
 
             var charactersManager = CharactersManager.Instance;
             m_orderedCharacters = new List<CharacterPawn>(charactersManager.CharacterPawns);
-            m_orderedCharacters.Sort((item1, item2) => item2.ReferencesHolder.ScoringController.Score.CompareTo(
-                item1.ReferencesHolder.ScoringController.Score));
+            
+            if (m_resultsManager.ScoreCalculationMethod ==
+                EScoreCalculationMethod.HigherScoreIsBest)
+            {
+                m_orderedCharacters.Sort((item1, item2) => item2.ReferencesHolder.ScoringController.Score.CompareTo(
+                    item1.ReferencesHolder.ScoringController.Score));
+            }
+            else
+            {
+                m_orderedCharacters.Sort((item1, item2) => item1.ReferencesHolder.ScoringController.Score.CompareTo(
+                    item2.ReferencesHolder.ScoringController.Score));
+            }
+            
             
             m_resultsPlacementsManager = ResultsPlacementsManager.Instance;
 
@@ -44,6 +58,8 @@ namespace Game.Gameplay.Flows.Results
                 var character = m_orderedCharacters[i];
                 m_resultsPlacementsManager.SetCharacterAt(character, i, i == m_orderedCharacters.Count - 1);
             }
+            
+            m_resultsManager.ProcessGameResult(m_orderedCharacters, winner: m_orderedCharacters[0]);
             
             m_currentViewedCharacterIndex = m_orderedCharacters.Count;
             Invoke(nameof(ViewingNextCharacter), m_waitTimeOnStart);

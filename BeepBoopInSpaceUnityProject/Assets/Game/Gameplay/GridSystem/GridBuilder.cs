@@ -125,7 +125,7 @@ namespace Game.Gameplay.GridSystem
         }
 
         public delegate bool DGettingWalkableCondition(Cell cell);
-        public Cell GetRandomWalkableCell(DGettingWalkableCondition additionalCondition = null)
+        public Cell GetRandomAvailableWalkableCell(DGettingWalkableCondition additionalCondition = null)
         {
             int iterations = 0;
             
@@ -139,7 +139,7 @@ namespace Game.Gameplay.GridSystem
                 if (!additionalCondition?.Invoke(randomCell) ?? false)
                     continue;
                 
-                if (randomCell.TryGetComponent<CanBeWalkedOnCellComponent>(out _))
+                if (randomCell.TryGetComponent<CanBeWalkedOnCellComponent>(out var comp) && !comp.MovementControllerOnCell)
                     return randomCell;
                 
                 ++iterations;

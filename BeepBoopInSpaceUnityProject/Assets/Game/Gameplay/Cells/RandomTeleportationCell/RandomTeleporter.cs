@@ -28,7 +28,7 @@ namespace Game.Gameplay.Cells.RandomTeleportationCell
             if (!obj.MovementControllerOnCell)
                 return;
             
-            obj.MovementControllerOnCell.TeleportToCell(m_gridBuilder.GetRandomWalkableCell());
+            obj.MovementControllerOnCell.TeleportToCell(m_gridBuilder.GetRandomAvailableWalkableCell(cell => !cell.TryGetComponent<KillingCellComponent>(out _)));
         }
     }
 }
