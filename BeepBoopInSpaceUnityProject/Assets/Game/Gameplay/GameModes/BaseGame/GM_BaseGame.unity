@@ -878,8 +878,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4279be6ebb8e93a4cbc4d6b262cc9c45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_gameObjectsToActivateDuringState:
-  - {fileID: 0}
+  m_gameObjectsToActivateDuringState: []
 --- !u!114 &645081849
 MonoBehaviour:
   m_ObjectHideFlags: 0
