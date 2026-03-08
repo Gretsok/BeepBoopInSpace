@@ -16,8 +16,6 @@ namespace Game.Gameplay.Flows.Gameplay
             
             m_configurationsManager.ResumeRunning();
             
-            TimerManager.Instance.ResumeTimer();
-            
             
             foreach (var pair in charactersManager.CharacterPlayerControllersAssociation)
             {
@@ -34,8 +32,6 @@ namespace Game.Gameplay.Flows.Gameplay
             
             var charactersManager = CharactersManager.Instance;
 
-            TimerManager.Instance.PauseTimer();
-            
             foreach (var pair in charactersManager.CharacterPlayerControllersAssociation)
             {
                 pair.Key.Deactivate();

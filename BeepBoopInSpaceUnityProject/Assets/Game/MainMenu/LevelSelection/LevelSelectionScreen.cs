@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Game.Gameplay.Levels._0_Core;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game.MainMenu.LevelSelection
 {
@@ -14,6 +15,9 @@ namespace Game.MainMenu.LevelSelection
         
         [SerializeField]
         private Transform m_levelsContainer;
+
+        [SerializeField]
+        private Button m_backButton;
 
         private readonly List<LevelWidget> m_instantiatedWidgets = new();
         public IReadOnlyList<LevelWidget> LevelWidgets => m_instantiatedWidgets;
@@ -47,6 +51,19 @@ namespace Game.MainMenu.LevelSelection
 
                 newWidget.OnLevelSelected += HandleLevelSelected;
             }
+            
+            m_backButton.onClick.AddListener(HandleBackButton);
+        }
+
+        protected override void HandleDeactivation()
+        {
+            base.HandleDeactivation();
+            m_backButton.onClick.RemoveListener(HandleBackButton);
+        }
+
+        private void HandleBackButton()
+        {
+            MainMenuContext.Instance.FlowMachine.RequestBack();
         }
 
         private void HandleLevelSelected(LevelDataAsset obj)

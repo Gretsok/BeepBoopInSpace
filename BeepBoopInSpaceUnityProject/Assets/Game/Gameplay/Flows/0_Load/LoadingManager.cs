@@ -7,12 +7,12 @@ using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using Game.Gameplay.GlobalGameplayData;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.Levels._0_Core;
+using Game.LoadingScreen;
 #if UNITY_EDITOR
 using Game.Gameplay.Levels._0_Core.EditorUtils;
 using Game.Global;
 using Game.Tournament;
 #endif
-using Game.Gameplay.LoadingScreen;
 using Game.PlayerManagement;
 using Game.Training;
 using UnityEditor;

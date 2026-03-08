@@ -65,6 +65,7 @@ namespace Game.MainMenu
             m_playButton.onClick.RemoveListener(HandlePlayButtonClicked);
             m_creditsButton.onClick.RemoveListener(HandleCreditsButtonClicked);
             m_quitButton.onClick.RemoveListener(HandleQuitButtonClicked);
+            m_settingsButton.onClick.RemoveListener(HandleSettingsButtonClicked);
         }
 
         public void Initialize(MainMenuOrchestrator orchestrator, ZoneManager zoneManager)
