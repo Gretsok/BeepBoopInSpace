@@ -30,6 +30,7 @@ namespace Game.MainMenu
             {
                 if (m_loadingTraining) return;
                 m_loadingTraining = true;
+                LoadingScreenManager.Instance?.ShowLoadingScreen();
                 await m_trainingContextAsset.InstantiateAsync().Task;
                 TrainingContext.RegisterPostInitializationCallback(trainingContext =>
                 {
