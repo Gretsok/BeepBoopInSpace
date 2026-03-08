@@ -13,8 +13,8 @@ namespace Game.Gameplay.Flows.Results
 
         protected override IEnumerator Initialize()
         {
-            return base.Initialize();
             HideButton();
+            return base.Initialize();
         }
 
         private void OnEnable()

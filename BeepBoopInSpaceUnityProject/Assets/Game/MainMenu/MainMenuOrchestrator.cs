@@ -1,94 +1,82 @@
+using Game.ArchitectureTools.FlowMachine;
 using Game.Gameplay.LoadingScreen;
+using Game.Global;
+using Game.MainMenu.CharacterSelection;
+using Game.MainMenu.Credits;
+using Game.MainMenu.Home;
+using Game.MainMenu.Hub;
+using Game.MainMenu.LevelSelection;
+using Game.MainMenu.SettingsScreen;
+using NaughtyAttributes;
 using UnityEngine;
 
 namespace Game.MainMenu
 {
     public class MainMenuOrchestrator : MonoBehaviour
     {
+        private FlowMachine m_flowMachine;
+        
+        [Header("States")]
         [SerializeField]
-        private HomeScreen m_homeScreen;
+        private HomeState m_homeState;
         [SerializeField]
-        private PlayerJoiningScreen m_joiningScreen;
+        private CharacterSelectionState m_characterSelectionState;
         [SerializeField]
-        private CreditsScreen m_creditsScreen;
+        private CreditsState m_creditsState;
+        [SerializeField]
+        private MainMenuSettingsState m_settingsState;
+        [SerializeField]
+        private HubState m_hubState;
+        [SerializeField]
+        private LevelSelectionState m_levelSelectionState;
 
-        private void Awake()
+        public void Initialize(GlobalContext globalContext, MainMenuContext mainMenuContext)
         {
-            m_homeScreen.Deactivate(true);
-            m_joiningScreen.Deactivate(true);
-            m_creditsScreen.Deactivate(true);
-        }
+            m_flowMachine = mainMenuContext.FlowMachine;
+            m_homeState.Initialize(globalContext, mainMenuContext);
+            m_characterSelectionState.Initialize(globalContext, mainMenuContext);
+            m_creditsState.Initialize(globalContext, mainMenuContext);
+            m_settingsState.Initialize(globalContext, mainMenuContext);
+            m_hubState.Initialize(globalContext, mainMenuContext);
+            m_levelSelectionState.Initialize(globalContext, mainMenuContext);
 
-        private void Start()
-        {
-            SwitchToHomeScreen();
-
-            m_homeScreen.OnPlayRequested += HandlePlayRequestFromHomeScreen;
-            m_homeScreen.OnCreditsRequested += HandleCreditsRequested;
-            m_joiningScreen.OnBack += HandleBackRequestFromJoiningScreen;
-            m_creditsScreen.OnBackRequested += HandleBackRequestedFromCreditsScreen;
-            
             LoadingScreenManager.Instance.HideLoadingScreen();
         }
 
-
-        private void OnDestroy()
-        {
-            m_homeScreen.OnPlayRequested -= HandlePlayRequestFromHomeScreen;
-            m_homeScreen.OnCreditsRequested -= HandleCreditsRequested;
-            m_joiningScreen.OnBack -= HandleBackRequestFromJoiningScreen;       
-            m_creditsScreen.OnBackRequested -= HandleBackRequestedFromCreditsScreen;
-        }
-        
-        private void HandleCreditsRequested()
-        {
-            SwitchToCreditsScreen();
-        }
-        
-        private void HandleBackRequestedFromCreditsScreen()
-        {
-            if (!m_creditsScreen.IsActivated)
-                return;
-            
-            SwitchToHomeScreen();
-        }
-
-        
-        private void HandleBackRequestFromJoiningScreen()
-        {
-            if (!m_joiningScreen.IsActivated)
-                return;
-            
-            SwitchToHomeScreen();
-        }
-
-        private void HandlePlayRequestFromHomeScreen()
-        {
-            if (!m_homeScreen.IsActivated)
-                return;
-            
-            SwitchToJoiningScreen();
-        }
-
+        [Button]
         public void SwitchToHomeScreen()
         {
-            m_creditsScreen.Deactivate();
-            m_joiningScreen.Deactivate();
-            m_homeScreen.Activate();
+            m_flowMachine.RequestState(m_homeState);
         }
 
-        public void SwitchToJoiningScreen()
+        [Button]
+        public void SwitchToCharacterSelectionScreen()
         {
-            m_creditsScreen.Deactivate();
-            m_homeScreen.Deactivate();
-            m_joiningScreen.Activate();
+            m_flowMachine.RequestState(m_characterSelectionState);
         }
 
+        [Button]
         public void SwitchToCreditsScreen()
         {
-            m_joiningScreen.Deactivate();
-            m_homeScreen.Deactivate();
-            m_creditsScreen.Activate();
+            m_flowMachine.RequestState(m_creditsState);
+        }
+
+        [Button]
+        public void SwitchToSettingsScreen()
+        {
+            m_flowMachine.RequestState(m_settingsState);
+        }
+
+        [Button]
+        public void SwitchToHubScreen()
+        {
+            m_flowMachine.RequestState(m_hubState);
+        }
+
+        [Button]
+        public void SwitchToLevelSelectionScreen()
+        {
+            m_flowMachine.RequestState(m_levelSelectionState);
         }
     }
 }

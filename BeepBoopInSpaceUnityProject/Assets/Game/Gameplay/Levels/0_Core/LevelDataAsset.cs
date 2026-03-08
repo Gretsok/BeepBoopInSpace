@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using Game.Gameplay.GameModes;
+using Game.Gameplay.GameModes.ObjectiveManagement;
 using Game.Gameplay.GlobalGameplayData;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -12,7 +13,8 @@ namespace Game.Gameplay.Levels._0_Core
     {
         [field: SerializeField]
         public string NameKey { get; private set; }
-
+        [field: SerializeField]
+        public Sprite Thumbnail { get; private set; }
         [field: SerializeField]
         public AssetReference GameModeScene { get; private set; }
         [field: SerializeField]

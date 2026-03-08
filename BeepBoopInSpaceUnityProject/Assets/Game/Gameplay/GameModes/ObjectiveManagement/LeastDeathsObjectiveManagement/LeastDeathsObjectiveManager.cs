@@ -19,7 +19,7 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LeastDeathsObjectiveManage
                 m_charactersManager.OnCharactersCreated += SetUp;
             });
             
-            ResultsManager.RegisterPostInitializationCallback(manager => manager.SetScoreCalculationMethod(ResultsManager.EScoreCalculationMethod.LowerScoreIsBest));
+            ResultsManager.RegisterPostInitializationCallback(manager => manager.SetScoreCalculationMethod(EScoreCalculationMethod.LowerScoreIsBest));
             yield break;
         }
 

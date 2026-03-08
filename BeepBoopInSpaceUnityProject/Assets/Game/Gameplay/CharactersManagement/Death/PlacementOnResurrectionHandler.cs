@@ -42,7 +42,6 @@ namespace Game.Gameplay.CharactersManagement.Death
                         break;
                     case GlobalGameplayDataAsset.EResurrectionPlacement.Checkpoint:
                         throw new NotImplementedException("Checkpoints not implemented.");
-                        break;
                 }
             }
             
@@ -61,7 +60,6 @@ namespace Game.Gameplay.CharactersManagement.Death
                         break;
                     case GlobalGameplayDataAsset.EResurrectionPlacement.Checkpoint:
                         throw new NotImplementedException("Checkpoints not implemented.");
-                        break;
                 }
             }
         }

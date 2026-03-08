@@ -60,7 +60,7 @@ namespace Game.Gameplay.CharactersManagement.Rumble
             if (!rumbleData)
                 return;
             var charactersManager = CharactersManager.Instance;
-            var controller = charactersManager.CharacterPlayerControllers.FirstOrDefault(pair => pair.Value == m_characterPawn)
+            var controller = charactersManager.CharacterPlayerControllersAssociation.FirstOrDefault(pair => pair.Value == m_characterPawn)
                 .Key;
             if (!controller)
                 return;
@@ -80,7 +80,7 @@ namespace Game.Gameplay.CharactersManagement.Rumble
         private void OnDisable()
         {
             var charactersManager = CharactersManager.Instance;
-            var controller = charactersManager.CharacterPlayerControllers.FirstOrDefault(pair => pair.Value == m_characterPawn)
+            var controller = charactersManager.CharacterPlayerControllersAssociation.FirstOrDefault(pair => pair.Value == m_characterPawn)
                 .Key;
             if (!controller)
                 return;

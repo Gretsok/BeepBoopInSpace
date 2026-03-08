@@ -15,7 +15,7 @@ namespace Game.Gameplay.Timer
 
         private void HandleTimerCompleted(TimerManager obj)
         {
-            FlowMachine.FlowMachine.Instance.RequestState(FinishStateGrabber.Instance.FinishState);
+            GameplayContext.Instance.FlowMachine.RequestState(FinishStateGrabber.Instance.FinishState);
         }
     }
 }

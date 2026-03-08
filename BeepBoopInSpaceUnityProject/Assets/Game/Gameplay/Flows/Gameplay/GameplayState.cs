@@ -1,6 +1,6 @@
+using Game.ArchitectureTools.FlowMachine;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.ConfigurationsManagement;
-using Game.Gameplay.FlowMachine;
 using Game.Gameplay.Timer;
 
 namespace Game.Gameplay.Flows.Gameplay
@@ -19,7 +19,7 @@ namespace Game.Gameplay.Flows.Gameplay
             TimerManager.Instance.ResumeTimer();
             
             
-            foreach (var pair in charactersManager.CharacterPlayerControllers)
+            foreach (var pair in charactersManager.CharacterPlayerControllersAssociation)
             {
                 pair.Key.Activate();
                 pair.Value.ReferencesHolder.ActionsController.SetConfiguration(m_configurationsManager.CurrentConfiguration);
@@ -36,7 +36,7 @@ namespace Game.Gameplay.Flows.Gameplay
 
             TimerManager.Instance.PauseTimer();
             
-            foreach (var pair in charactersManager.CharacterPlayerControllers)
+            foreach (var pair in charactersManager.CharacterPlayerControllersAssociation)
             {
                 pair.Key.Deactivate();
             }

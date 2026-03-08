@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace Game.MainMenu
@@ -14,9 +13,11 @@ namespace Game.MainMenu
             IsActivated = true;
             HandleActivation();
         }
-        
+
         protected virtual void HandleActivation()
-        {}
+        {
+            gameObject.SetActive(true);
+        }
 
         public void Deactivate(bool force = false)
         {
@@ -25,9 +26,11 @@ namespace Game.MainMenu
             IsActivated = false;
             HandleDeactivation();
         }
-        
+
         protected virtual void HandleDeactivation()
-        {}
+        {
+            gameObject.SetActive(false);
+        }
 
         private void OnDestroy()
         {

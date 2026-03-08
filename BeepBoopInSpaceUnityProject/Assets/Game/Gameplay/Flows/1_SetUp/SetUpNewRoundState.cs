@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using Game.ArchitectureTools.FlowMachine;
 using Game.Gameplay.CameraManagement;
 using Game.Gameplay.CharactersManagement;
-using Game.Gameplay.FlowMachine;
 using Game.Gameplay.Flows._1_SetUp;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.Levels._0_Core;
