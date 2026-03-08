@@ -1,6 +1,6 @@
 using System;
 using Game.Gameplay.Levels._0_Core;
-using Game.Gameplay.LoadingScreen;
+using Game.LoadingScreen;
 using Game.Training;
 using NaughtyAttributes;
 using UnityEngine;

@@ -1,5 +1,5 @@
 using Game.ArchitectureTools.FlowMachine;
-using Game.Gameplay.LoadingScreen;
+using Game.LoadingScreen;
 using Game.Tournament;
 using Game.Training;
 using UnityEngine;
