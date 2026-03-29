@@ -723,8 +723,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3c8c64218ab93b4ab2d0c00edeb5a85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_nextButton: {fileID: 1195977328051096388}
   m_nextState: {fileID: 176628004}
+  m_waitingDurationWhenEveryoneIsReady: 1.5
 --- !u!1 &576341872
 GameObject:
   m_ObjectHideFlags: 0
@@ -1162,6 +1162,7 @@ MonoBehaviour:
   <LoadingManager>k__BackingField: {fileID: 500346807}
   <FlowMachine>k__BackingField: {fileID: 1179210594}
   <PauseMenuManager>k__BackingField: {fileID: 1675403270}
+  <UIManager>k__BackingField: {fileID: 1461136245}
 --- !u!4 &1038352970
 Transform:
   m_ObjectHideFlags: 0
@@ -1499,6 +1500,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1461136244}
+  - component: {fileID: 1461136245}
   m_Layer: 0
   m_Name: UIManager
   m_TagString: Untagged
@@ -1526,6 +1528,20 @@ Transform:
   - {fileID: 977805815}
   m_Father: {fileID: 1038352970}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1461136245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1461136243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff973b938ce02524e9a49218c545f8e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.ArchitectureTools.FlowMachine.UIManager
+  m_registeredPanels:
+  - {fileID: 1195977328051096388}
 --- !u!1 &1621802091 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4119907679209593977, guid: f27a6524dace8d04b9daea3aa60ddc41, type: 3}
@@ -2560,15 +2576,15 @@ PrefabInstance:
   m_SourcePrefab: {fileID: 100100000, guid: a6264fd3a63561844a84754d2ca2eb3b, type: 3}
 --- !u!114 &1195977328051096388 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6502196248806734773, guid: a6264fd3a63561844a84754d2ca2eb3b, type: 3}
+  m_CorrespondingSourceObject: {fileID: 5933584932448412620, guid: a6264fd3a63561844a84754d2ca2eb3b, type: 3}
   m_PrefabInstance: {fileID: 1195977328051096387}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 977805814}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 23a17553f70196f4a91184f724f83d93, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Gameplay.Flows.Tutorial.TutorialCanvas
 --- !u!224 &2469851347055339534 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2951091349919722828, guid: a6ceaa126e2059d4c81f393a1ae54fca, type: 3}

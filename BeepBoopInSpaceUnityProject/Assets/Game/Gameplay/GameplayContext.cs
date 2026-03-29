@@ -1,4 +1,5 @@
 using System.Collections;
+using Game.ArchitectureTools.FlowMachine;
 using Game.ArchitectureTools.Manager;
 using Game.Gameplay.Flows._0_Load;
 using Game.Gameplay.Levels._0_Core;
@@ -15,6 +16,8 @@ namespace Game.Gameplay
         public ArchitectureTools.FlowMachine.FlowMachine FlowMachine { get; private set; }
         [field: SerializeField]
         public PauseMenuManager PauseMenuManager { get; private set; }
+        [field: SerializeField]
+        public UIManager UIManager { get; private set; }
         
         public CurrentLevelInfoManager CurrentLevelInfoManager { get; private set; }
 
