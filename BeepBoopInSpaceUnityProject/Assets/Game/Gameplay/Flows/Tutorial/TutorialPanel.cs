@@ -76,6 +76,14 @@ namespace Game.Gameplay.Flows.Tutorial
             OnPlayerStatusUpdated?.Invoke(this);
         }
 
+        public void TogglePlayerStatus(AbstractPlayer player)
+        {
+            m_playerStatus[player] = !m_playerStatus[player];
+            m_playerWidgets[player].SetStatus(m_playerStatus[player]);
+            
+            OnPlayerStatusUpdated?.Invoke(this);
+        }
+
         public void PlayWaitingBarFor(float duration)
         {
             ResetWaitingBar();

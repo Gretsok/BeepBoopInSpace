@@ -2,6 +2,7 @@ using System;
 using Game.ArchitectureTools.Exception;
 using Game.Global.Save;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Game.Global.Settings.UI
@@ -57,6 +58,7 @@ namespace Game.Global.Settings.UI
             gameObject.SetActive(true);
             
             m_backButton.onClick.AddListener(HandleBackButtonClicked);
+            EventSystem.current.SetSelectedGameObject(m_masterVolumeWidget.Slider.gameObject);
         }
 
         public void Hide()

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Game.ArchitectureTools.FlowMachine;
 using Game.Global;
@@ -16,19 +17,48 @@ namespace Game.Gameplay.Flows.Tutorial
 
         private TutorialPanel m_tutorialPanel;
 
+        private readonly List<TutorialPlayerController> m_tutorialPlayerControllers = new();
+
         protected override void HandleEnter()
         {
             base.HandleEnter();
             m_tutorialPanel = GameplayContext.Instance.UIManager.GetPanel<TutorialPanel>();
             var players = GlobalContext.Instance.PlayerManager.Players;
+            
+            m_tutorialPlayerControllers.Clear();
+            for (int i = 0; i < players.Count; i++)
+            {
+                var player = players[i];
+
+                var tutorialPlayerController = gameObject.AddComponent<TutorialPlayerController>();
+                tutorialPlayerController.Initialize(player);
+                m_tutorialPlayerControllers.Add(tutorialPlayerController);
+
+                tutorialPlayerController.OnPlayerStatusToggleRequested += HandlePlayerStatusToggleRequested;
+            }
+            
             m_tutorialPanel.OnPlayerStatusUpdated += HandlePlayerStatusUpdated;
             m_tutorialPanel.InflatePlayers(players);
             m_tutorialPanel.ResetWaitingBar();
         }
 
+        private void HandlePlayerStatusToggleRequested(TutorialPlayerController obj)
+        {
+            m_tutorialPanel.TogglePlayerStatus(obj.Player);
+        }
+
         protected override void HandleLeave()
         {
             base.HandleLeave();
+
+            for (int i = m_tutorialPlayerControllers.Count - 1; i >= 0; i--)
+            {
+                var player = m_tutorialPlayerControllers[i];
+                Destroy(player);
+            }
+            
+            m_tutorialPlayerControllers.Clear();
+            
             m_tutorialPanel.OnPlayerStatusUpdated -= HandlePlayerStatusUpdated;
         }
 
