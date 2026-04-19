@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d417bc4ec4929314090516fe8460bfbb, type: 3}
+  m_Name: SwampArena - Shooters - LevelDataAsset
+  m_EditorClassIdentifier: 
+  <NameKey>k__BackingField: Tir
+  <Thumbnail>k__BackingField: {fileID: 21300000, guid: 7ab0fbc3dd781c543bc26c91310c82a8, type: 3}
+  <GameModeScene>k__BackingField:
+    m_AssetGUID: 0bc3d4077faf5744081b93e5c2a7de5f
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  <EnvironmentScene>k__BackingField:
+    m_AssetGUID: ef1b6793c07bbc84a8d5153bb77a7c5b
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  <LevelScene>k__BackingField:
+    m_AssetGUID: 8a9149f399c80ba4c988ae031c74599b
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  <AdditionalScenes>k__BackingField: []
+  <ObjectiveManagerPrefab>k__BackingField:
+    m_AssetGUID: e01f34049b694954c8d3436fd26d2b31
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  <SpecialActionPrefab>k__BackingField:
+    m_AssetGUID: 63c5df9df3cc2b94b94d89490d122b4d
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  <AdditionalSystemsToInstantiate>k__BackingField: []
+  <GlobalGameplayDataAsset>k__BackingField: {fileID: 11400000, guid: 305a0817062c4b14abc1152956d025f9, type: 2}

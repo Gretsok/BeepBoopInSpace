@@ -426,6 +426,7 @@ GameObject:
   - component: {fileID: 244141073667360030}
   - component: {fileID: 4030592165777126419}
   - component: {fileID: 6524856208359535132}
+  - component: {fileID: 5669942553106137044}
   m_Layer: 0
   m_Name: Scroll View
   m_TagString: Untagged
@@ -522,6 +523,19 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5669942553106137044
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3847962459580996876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17dce1f7f8fe1db4891715df9f3248fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.UITools.ScrollingToSelectedHandler
+  _scrollSpeed: 10
 --- !u!1 &3859467200894041773
 GameObject:
   m_ObjectHideFlags: 0

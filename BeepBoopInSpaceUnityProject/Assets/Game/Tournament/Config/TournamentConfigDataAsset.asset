@@ -14,4 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <ScoreToReach>k__BackingField: 3
   <LevelDataAssets>k__BackingField:
-  - {fileID: 11400000, guid: 3dccdb5a039f0504696a5ef3c5009927, type: 2}
+  - {fileID: 11400000, guid: 453df94c6dacc2e49ab978f513b32e1c, type: 2}
+  - {fileID: 11400000, guid: a3c144a4d7a67914da4fc3ff6e934a22, type: 2}
+  - {fileID: 11400000, guid: f0a00b63ab479ae40a0bc9d3c69e7782, type: 2}
+  - {fileID: 11400000, guid: 88859f78a49c678409f70b5d0848c5e0, type: 2}
+  - {fileID: 11400000, guid: 1cfc6d5ac0841c542ba880fea543d3b3, type: 2}
+  - {fileID: 11400000, guid: 89b94ad9665b4014b83e7475ddc1d99c, type: 2}
+  - {fileID: 11400000, guid: 8d8dfbca4f5768f4cba00a764157913d, type: 2}
