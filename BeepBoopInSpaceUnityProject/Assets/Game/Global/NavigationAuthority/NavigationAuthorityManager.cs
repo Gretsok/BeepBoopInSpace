@@ -14,6 +14,10 @@ namespace Game.Global.NavigationAuthority
         private EventSystem m_eventSystem;
         private int m_mainPlayerID = 0;
         public int MainPlayerID => m_mainPlayerID;
+        
+        public delegate void DInputRegistrationCallback(InputActionAsset actionAsset);
+        private DInputRegistrationCallback m_inputRegistrationCallback;
+        private DInputRegistrationCallback m_inputUnregistrationCallback;
         private InputActionAsset m_actionAsset;
 
         public void SetDependencies(PlayerManagement.PlayerManager playerManager, EventSystem eventSystem)
@@ -32,9 +36,28 @@ namespace Game.Global.NavigationAuthority
             UpdatePlayerDevicesOnEventSystem();
         }
 
+        public void SetInputRegistrationsCallbacks(DInputRegistrationCallback registrationCallback,
+            DInputRegistrationCallback unregistrationCallback)
+        {
+            m_inputRegistrationCallback += registrationCallback;
+            m_inputUnregistrationCallback += unregistrationCallback;
+            
+            registrationCallback?.Invoke(m_actionAsset);
+        }
+        
+        public void UnsetInputRegistrationsCallbacks(DInputRegistrationCallback registrationCallback,
+            DInputRegistrationCallback unregistrationCallback)
+        {
+            m_inputRegistrationCallback -= registrationCallback;
+            m_inputUnregistrationCallback -= unregistrationCallback;
+            
+            unregistrationCallback?.Invoke(m_actionAsset);
+        }
+
         private void OnDestroy()
         {
-            m_playerManager.OnPlayersChanged -= HandlePlayersChanged;
+            if (m_playerManager)
+                m_playerManager.OnPlayersChanged -= HandlePlayersChanged;
         }
 
         private void HandlePlayersChanged(PlayerManager obj)
@@ -53,8 +76,10 @@ namespace Game.Global.NavigationAuthority
             var player = m_playerManager.Players.FirstOrDefault(player => player.PlayerInput.playerIndex == m_mainPlayerID);
             if (!player)
                 return;
+            m_inputUnregistrationCallback?.Invoke(m_actionAsset);
             m_actionAsset.devices = 
                 player.PlayerInput.devices;
+            m_inputRegistrationCallback?.Invoke(m_actionAsset);
         }
         
     }

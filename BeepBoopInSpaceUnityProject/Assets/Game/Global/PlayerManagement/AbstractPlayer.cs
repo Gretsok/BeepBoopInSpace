@@ -1,8 +1,10 @@
+using System.Linq;
 using Game.Characters;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Users;
 
-namespace Game.PlayerManagement
+namespace Game.Global.PlayerManagement
 {
     [RequireComponent(typeof(PlayerInput))]
     public class AbstractPlayer : MonoBehaviour
@@ -11,6 +13,34 @@ namespace Game.PlayerManagement
         
         [field: SerializeField]
         public CharacterDataAsset CharacterDataAsset { get; private set; }
+
+        private void Start()
+        {
+            MakeKBMCompletePairingIfNeeded();
+        }
+
+        private void MakeKBMCompletePairingIfNeeded()
+        {
+            var playerInput = PlayerInput;
+
+            var mouse = InputSystem.GetDevice<Mouse>();
+            var keyboard = InputSystem.GetDevice<Keyboard>();
+            
+            if (keyboard == null || mouse == null)
+                return;
+
+            if (playerInput.devices.Contains(keyboard) && !playerInput.devices.Contains(mouse))
+            {
+                InputUser.PerformPairingWithDevice(mouse, user: playerInput.user);
+                return;
+            }
+            
+            if (playerInput.devices.Contains(mouse) && !playerInput.devices.Contains(keyboard))
+            {
+                InputUser.PerformPairingWithDevice(keyboard, user: playerInput.user);
+                return;
+            }
+        }
 
         public void SetCharacterData(CharacterDataAsset characterDataAsset)
         {

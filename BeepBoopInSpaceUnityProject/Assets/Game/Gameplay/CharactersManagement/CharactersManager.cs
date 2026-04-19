@@ -4,7 +4,7 @@ using Game.ArchitectureTools.Manager;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using Game.Gameplay.Levels._0_Core;
 using Game.Global;
-using Game.PlayerManagement;
+using Game.Global.PlayerManagement;
 using UnityEngine;
 
 namespace Game.Gameplay.CharactersManagement

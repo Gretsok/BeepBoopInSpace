@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Game.Gameplay.Flows.Results;
-using Game.PlayerManagement;
+using Game.Global.PlayerManagement;
 using Game.Tournament.Config;
 using UnityEngine;
 

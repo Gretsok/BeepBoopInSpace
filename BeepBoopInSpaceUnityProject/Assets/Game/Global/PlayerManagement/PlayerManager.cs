@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Game.PlayerManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -46,6 +45,11 @@ namespace Game.Global.PlayerManagement
                 OnPlayerLeft?.Invoke(this, player);
                 OnPlayersChanged?.Invoke(this);
             }
+        }
+
+        public AbstractPlayer GetPlayerByIndex(int playerIndex)
+        {
+            return m_players.Find(player => player.PlayerInput.playerIndex == playerIndex);
         }
 
         public PlayerInput AddPlayerFromDevice(InputDevice device)

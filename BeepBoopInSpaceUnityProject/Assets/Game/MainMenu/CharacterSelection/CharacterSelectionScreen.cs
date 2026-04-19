@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Game.Global.PlayerManagement;
 using Game.MainMenu.ZoneManagement;
-using Game.PlayerManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
