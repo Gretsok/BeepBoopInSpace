@@ -1,6 +1,7 @@
 using System;
 using Game.Global.PlayerManagement;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Game.Gameplay.Flows.Tutorial
@@ -23,6 +24,22 @@ namespace Game.Gameplay.Flows.Tutorial
         {
             Player = player;
             m_avatarImage.sprite = player.CharacterDataAsset.AvatarSprite;
+
+            var hasAMouse = player.PlayerInput.GetDevice<Mouse>() != null;
+            if (hasAMouse)
+            {
+                m_getReadyButton.image.color = Color.white;
+                m_getReadyButton.enabled = true;
+                m_unreadyButton.image.color = Color.white;
+                m_unreadyButton.enabled = true;
+            }
+            else
+            {
+                m_getReadyButton.image.color = m_getReadyButton.colors.normalColor;
+                m_getReadyButton.enabled = false;
+                m_unreadyButton.image.color = m_unreadyButton.colors.normalColor;
+                m_unreadyButton.enabled = false;
+            }
         }
 
         public void SetStatus(bool status)

@@ -1,17 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Game.ArchitectureTools.Manager;
 using Game.Gameplay.Flows._0_Load;
 using Game.Gameplay.Flows.Gameplay;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.GridSystem.GenericComponents;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace Game.Gameplay.GameModes.Meteorites
+namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
 {
-    public class MeteoritesManager : AManager<MeteoritesManager>
+    public class MeteoritesModifier : AGameplayModifier
     {
         [SerializeField]
         private MeteoriteSystem m_meteoriteSystemPrefab;
@@ -39,13 +37,13 @@ namespace Game.Gameplay.GameModes.Meteorites
 
         public bool IsSpawning { get; private set; }
         public float TimePassedSpawning { get; private set; }
-
+        
         private bool IsMeteoritesManagerInitialized()
         {
             return IsInitialized;
         }
-        
-        protected override IEnumerator Initialize()
+
+        protected override IEnumerator HandleInitializationRoutine()
         {
             yield return new WaitUntil(() => LoadEventsHooker.Instance);
             LoadEventsHooker.Instance.AddLoadingRequirement(IsMeteoritesManagerInitialized);
@@ -97,7 +95,7 @@ namespace Game.Gameplay.GameModes.Meteorites
             m_lastSpawnTime = TimePassedSpawning;
             
             var meteoriteSystem = PrepareAndGetReadyMeteoriteSystem();
-            meteoriteSystem.Drop(m_gridBuilder.GetRandomAvailableWalkableCell(cell => !cell.TryGetComponent<KillingCellComponent>(out _)), DropTime);
+            meteoriteSystem.Drop(m_gridBuilder.GetRandomWalkableCell(cell => !cell.TryGetComponent<KillingCellComponent>(out _)), DropTime);
             Debug.Log($"Spawn meteorite at {m_lastSpawnTime}", meteoriteSystem.gameObject);
         }
 

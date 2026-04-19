@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Game.ArchitectureTools.FlowMachine;
+using Game.Gameplay.GameModes.GameplayModifiers.Meteorites;
+using Game.Gameplay.Levels._0_Core;
 using Game.Global;
 using UnityEngine;
 
@@ -22,7 +24,8 @@ namespace Game.Gameplay.Flows.Tutorial
         protected override void HandleEnter()
         {
             base.HandleEnter();
-            m_tutorialPanel = GameplayContext.Instance.UIManager.GetPanel<TutorialPanel>();
+            var gameplayContext = GameplayContext.Instance;
+            m_tutorialPanel = gameplayContext.UIManager.GetPanel<TutorialPanel>();
             var players = GlobalContext.Instance.PlayerManager.Players;
             
             m_tutorialPlayerControllers.Clear();
@@ -39,6 +42,10 @@ namespace Game.Gameplay.Flows.Tutorial
             
             m_tutorialPanel.OnPlayerStatusUpdated += HandlePlayerStatusUpdated;
             m_tutorialPanel.InflatePlayers(players);
+            m_tutorialPanel.InflateGameData(
+                gameplayContext.ObjectiveManager.ObjectiveLabelKey, 
+                gameplayContext.SpecialActionPrefab.SpecialActionLabelKey, 
+                gameplayContext.HasGameplayModifier<MeteoritesModifier>());
             m_tutorialPanel.ResetWaitingBar();
         }
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using Game.Gameplay.GameModes;
+using Game.Gameplay.GameModes.GameplayModifiers;
 using Game.Gameplay.GameModes.ObjectiveManagement;
 using Game.Gameplay.GlobalGameplayData;
 using UnityEngine;
@@ -31,7 +32,8 @@ namespace Game.Gameplay.Levels._0_Core
         public SpecialActionAssetReference SpecialActionPrefab { get; private set; }
         
         [field: SerializeField]
-        public List<AssetReference> AdditionalSystemsToInstantiate { get; private set; }
+        [field: Tooltip("They must inherit from \"AGameplayModifier\"")]
+        public List<GameplayModifierAssetReference> AdditionalSystemsToInstantiate { get; private set; }
         
         [field: SerializeField]
         public GlobalGameplayDataAsset GlobalGameplayDataAsset { get; private set; }

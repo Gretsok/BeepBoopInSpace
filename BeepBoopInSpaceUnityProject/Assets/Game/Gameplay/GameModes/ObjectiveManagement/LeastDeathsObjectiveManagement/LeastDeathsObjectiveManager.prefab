@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35726b00a70a9b446a5b91b0ab42c09a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <ObjectiveLabelKey>k__BackingField: Accumuler le moins de morts
   m_timerManager: {fileID: 4637706345942686963}
 --- !u!1001 &6603096090892192242
 PrefabInstance:

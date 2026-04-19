@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Game.Characters;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
+using Game.Gameplay.GameModes.GameplayModifiers;
+using Game.Gameplay.GameModes.ObjectiveManagement;
 using Game.Gameplay.GlobalGameplayData;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.Levels._0_Core;
@@ -104,6 +106,7 @@ namespace Game.Gameplay.Flows._0_Load
             yield return SettingGameInfosInStandaloneRoutine();
 #endif
             
+            var gameplayContext = GameplayContext.Instance;
             var currentLevelInfoManager = FetchCurrentLevelInfoManager();
             var currentLevelDataAsset = currentLevelInfoManager?.CurrentLevelDataAsset;
             var charactersManager = CharactersManager.Instance;
@@ -115,16 +118,22 @@ namespace Game.Gameplay.Flows._0_Load
             }
 
             m_objectiveManagerOp = currentLevelDataAsset.ObjectiveManagerPrefab.InstantiateAsync();
-            yield return m_objectiveManagerOp.WaitForCompletion();
-            
             m_specialActionOp = currentLevelDataAsset.SpecialActionPrefab.LoadAssetAsync<GameObject>();
+            
+            yield return m_objectiveManagerOp.WaitForCompletion();
             yield return m_specialActionOp.WaitForCompletion();
             
+            var gameplayModifiers = new List<AGameplayModifier>();
+            var gameplayModifiersInitRoutines = new List<Coroutine>();
             for (int i = 0; i < currentLevelDataAsset.AdditionalSystemsToInstantiate.Count; i++)
             {
                 var additionalSystemOp = currentLevelDataAsset.AdditionalSystemsToInstantiate[i].InstantiateAsync();
                 m_additionalSystemOp.Add(additionalSystemOp);
                 yield return additionalSystemOp.WaitForCompletion();
+                var gameplayModifier = additionalSystemOp.Result.GetComponent<AGameplayModifier>();
+                gameplayModifiers.Add(gameplayModifier);
+                gameplayModifiersInitRoutines.Add(StartCoroutine(gameplayModifier.Initialize()));
+                gameplayContext.RegisterGameplayModifier(gameplayModifier);
             }
             
             charactersManager.CreateCharactersAndPlayerControllers(m_specialActionOp.Result.GetComponent<SpecialAction>());
@@ -167,6 +176,15 @@ namespace Game.Gameplay.Flows._0_Load
             yield return new WaitUntil(() => GridBuilder.IsInitialized);
 
             yield return new WaitUntil(() => GetComponent<LoadEventsHooker>().AllRequirementsMet);
+
+            gameplayContext.RegisterObjectiveManager(m_objectiveManagerOp.Result.GetComponent<AObjectiveManager>());
+            gameplayContext.RegisterSpecialActionPrefab(m_specialActionOp.Result.GetComponent<SpecialAction>());
+
+            for (int i = 0; i < gameplayModifiersInitRoutines.Count; i++)
+            {
+                var gameplayModifiersInitRoutine = gameplayModifiersInitRoutines[i];
+                yield return gameplayModifiersInitRoutine;
+            }
             
             LoadingScreenManager.Instance?.HideLoadingScreen();
             

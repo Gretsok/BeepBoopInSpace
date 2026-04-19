@@ -3,7 +3,7 @@ using Game.Gameplay.Cells.Default;
 using Game.Gameplay.GridSystem.GenericComponents;
 using UnityEngine;
 
-namespace Game.Gameplay.GameModes.Meteorites
+namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
 {
     public class MeteoriteSystem : MonoBehaviour
     {

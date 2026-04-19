@@ -14,9 +14,12 @@ namespace Game.Global.PlayerManagement
         [field: SerializeField]
         public CharacterDataAsset CharacterDataAsset { get; private set; }
 
-        private void Start()
+        public bool Initialized { get; private set; } = false;
+
+        private void Awake()
         {
             MakeKBMCompletePairingIfNeeded();
+            Initialized = true;
         }
 
         private void MakeKBMCompletePairingIfNeeded()

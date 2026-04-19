@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67129127e3f390649924214378368328, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <SpecialActionLabelKey>k__BackingField: Tirer une balle pour tuer vos adversaires
   m_onActionPressed:
     m_PersistentCalls:
       m_Calls:
@@ -73,6 +74,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aed4ec7392cc5db4599fbc30fb67216f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_cooldown: 1
   m_bulletPrefab: {fileID: 7673947369115396451, guid: 62aeac359ca47934fac0b15925b39941, type: 3}
   m_bulletHeight: 0.75
   m_bulletStartingForwardPosition: 0.5

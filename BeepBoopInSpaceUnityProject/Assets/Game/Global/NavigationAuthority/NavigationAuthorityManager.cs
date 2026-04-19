@@ -1,4 +1,5 @@
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Game.Global.PlayerManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,7 +10,7 @@ namespace Game.Global.NavigationAuthority
 {
     public class NavigationAuthorityManager : MonoBehaviour
     {
-        private PlayerManagement.PlayerManager m_playerManager;
+        private PlayerManager m_playerManager;
         private InputSystemUIInputModule m_inputModule;
         private EventSystem m_eventSystem;
         private int m_mainPlayerID = 0;
@@ -33,7 +34,7 @@ namespace Game.Global.NavigationAuthority
         private void Start()
         {
             m_playerManager.OnPlayersChanged += HandlePlayersChanged;
-            UpdatePlayerDevicesOnEventSystem();
+            _ = UpdatePlayerDevicesOnEventSystem();
         }
 
         public void SetInputRegistrationsCallbacks(DInputRegistrationCallback registrationCallback,
@@ -62,25 +63,27 @@ namespace Game.Global.NavigationAuthority
 
         private void HandlePlayersChanged(PlayerManager obj)
         {
-            UpdatePlayerDevicesOnEventSystem();
+            _ = UpdatePlayerDevicesOnEventSystem();
         }
 
         public void ChangeMainPlayer(int playerID)
         {
             m_mainPlayerID = playerID;
-            UpdatePlayerDevicesOnEventSystem();
+            _ = UpdatePlayerDevicesOnEventSystem();
         }
         
-        private void UpdatePlayerDevicesOnEventSystem()
+        private async UniTask UpdatePlayerDevicesOnEventSystem()
         {
             var player = m_playerManager.Players.FirstOrDefault(player => player.PlayerInput.playerIndex == m_mainPlayerID);
             if (!player)
                 return;
+            
+            await UniTask.WaitUntil(() => player.Initialized, cancellationToken: destroyCancellationToken);
+
             m_inputUnregistrationCallback?.Invoke(m_actionAsset);
             m_actionAsset.devices = 
                 player.PlayerInput.devices;
             m_inputRegistrationCallback?.Invoke(m_actionAsset);
         }
-        
     }
 }
