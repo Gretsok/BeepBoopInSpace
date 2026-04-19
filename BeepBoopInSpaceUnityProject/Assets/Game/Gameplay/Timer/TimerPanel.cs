@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 
@@ -9,10 +8,34 @@ namespace Game.Gameplay.Timer
         [SerializeField] 
         private TMP_Text m_timerText;
 
+        [SerializeField] 
         private TimerManager m_timerManager;
-        private void Start()
+
+        private void Awake()
         {
-            TimerManager.RegisterPostInitializationCallback(manager => m_timerManager = manager);
+            m_timerManager.OnTimerResumed += HandleTimerResumed;
+            m_timerManager.OnTimerPaused += HandleTimerPaused;
+            // We must be active right before here for Awake() to be called
+            gameObject.SetActive(false);
+        }
+
+        private void OnDestroy()
+        {
+            if (m_timerManager)
+            {
+                m_timerManager.OnTimerResumed -= HandleTimerResumed;
+                m_timerManager.OnTimerPaused -= HandleTimerPaused;
+            }
+        }
+
+        private void HandleTimerResumed(TimerManager obj)
+        {
+            gameObject.SetActive(true);
+        }
+
+        private void HandleTimerPaused(TimerManager obj)
+        {
+            gameObject.SetActive(false);
         }
 
         private void Update()

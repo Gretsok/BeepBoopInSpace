@@ -1,18 +1,16 @@
 using System.Collections;
-using Game.ArchitectureTools.Manager;
 using Game.Gameplay.Cells.Default;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.CharactersManagement.Movement;
 using Game.Gameplay.Flows._1_SetUp;
-using Game.Gameplay.Flows.NewRoundAnnouncement;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.GridSystem.GenericComponents;
+using Game.Gameplay.Timer;
 using Game.Global.SFXManagement;
-using Game.SFXManagement;
 using NaughtyAttributes;
 using UnityEngine;
 
-namespace Game.Gameplay.GameModes.PointsRush.PointsRushObjectiveManagement
+namespace Game.Gameplay.GameModes.ObjectiveManagement.PointsRushObjectiveManagement
 {
     public class PointsRushObjectiveManager : AObjectiveManager
     {
@@ -20,6 +18,9 @@ namespace Game.Gameplay.GameModes.PointsRush.PointsRushObjectiveManagement
         private AudioPlayer m_objectiveCollectedAudioPlayer;
         [SerializeField] private GameObject m_objectiveIndicationPrefab;
         private GameObject m_currentObjectiveIndication;
+        [SerializeField]
+        private TimerManager m_timerManager;
+        
         public Cell CurrentObjectiveCell { get; private set; }
         
         private GridBuilder m_gridBuilder;

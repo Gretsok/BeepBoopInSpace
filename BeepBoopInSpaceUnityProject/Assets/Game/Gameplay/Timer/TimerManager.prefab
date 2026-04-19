@@ -59,7 +59,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cdcfdbf4a089704c906093f3b0a7480, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_stateToRequest: {fileID: 0}
 --- !u!1001 &457932094822857328
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -74,8 +73,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 513044099527774578, guid: 9122ac38c3aeabc469dc753d69db6f21, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5519222617799381594, guid: 9122ac38c3aeabc469dc753d69db6f21, type: 3}
+      propertyPath: m_timerManager
+      value: 
+      objectReference: {fileID: 2017218670360220929}
     - target: {fileID: 8333060396586042175, guid: 9122ac38c3aeabc469dc753d69db6f21, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -126,15 +129,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8333060396586042175, guid: 9122ac38c3aeabc469dc753d69db6f21, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8333060396586042175, guid: 9122ac38c3aeabc469dc753d69db6f21, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8333060396586042175, guid: 9122ac38c3aeabc469dc753d69db6f21, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8333060396586042175, guid: 9122ac38c3aeabc469dc753d69db6f21, type: 3}
       propertyPath: m_AnchoredPosition.x

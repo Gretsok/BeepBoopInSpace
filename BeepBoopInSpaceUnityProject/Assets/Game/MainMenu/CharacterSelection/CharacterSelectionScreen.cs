@@ -4,6 +4,7 @@ using Game.Global.PlayerManagement;
 using Game.MainMenu.ZoneManagement;
 using Game.PlayerManagement;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Game.MainMenu.CharacterSelection
@@ -50,6 +51,7 @@ namespace Game.MainMenu.CharacterSelection
             InflateWithPlayers();
             m_playerManager.ListenForNewPlayers();
             
+            EventSystem.current.SetSelectedGameObject(null);
             UpdateStartButtonState();
             
             m_zoneManager.SwitchToCharacterSelectionCamera();
@@ -58,6 +60,8 @@ namespace Game.MainMenu.CharacterSelection
         private void UpdateStartButtonState()
         {
             m_startGameButton.interactable = m_playerManager.Players.Count >= 2 && m_widgets.TrueForAll(widget => widget.CanPlay || !widget.IsActivated);
+            if (m_startGameButton.interactable)
+                EventSystem.current.SetSelectedGameObject(m_startGameButton.gameObject);
         }
 
         private void HandleCharacterDataUpdated()

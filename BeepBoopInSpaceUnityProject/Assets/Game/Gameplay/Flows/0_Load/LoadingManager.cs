@@ -84,7 +84,7 @@ namespace Game.Gameplay.Flows._0_Load
 
         public static CurrentLevelInfoManager FetchCurrentLevelInfoManager()
         {
-            var tournamentContext = TournamentContext.Instance;
+            var tournamentContext = Game.Tournament.TournamentContext.Instance;
             if (tournamentContext)
                 return tournamentContext.CurrentLevelInfoManager;
             var trainingContext = TrainingContext.Instance;

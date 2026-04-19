@@ -36,8 +36,6 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
             var eventsHooker = GetComponent<SetUpEventsHooker>();
             eventsHooker.NotifySetUp();
             
-            TimerManager.Instance.ResetTimer();
-            
             CameraManager.Instance.SwitchToGameplayCamera();
             
             RequestState(m_nextState);

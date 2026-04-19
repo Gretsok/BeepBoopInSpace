@@ -1,0 +1,165 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AM_UpperBody
+  m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: RIG_Alien
+    m_Weight: 0
+  - m_Path: RIG_Alien/P-STR-arm_01.L
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-arm_01.L/STR-arm_01.L
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-arm_01.L/STR-arm_01.L/DEF-arm_01.L
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-arm_01.L/STR-arm_01.L/DEF-arm_01.L/DEF-arm_02.L
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-arm_01.L/STR-arm_01.L/DEF-arm_01.L/DEF-arm_02.L/DEF-arm_03.L
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-arm_01.L/STR-arm_01.L/DEF-arm_01.L/DEF-arm_02.L/DEF-arm_03.L/DEF-arm_04.L
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-arm_01.L/STR-arm_01.L/DEF-arm_01.L/DEF-arm_02.L/DEF-arm_03.L/DEF-arm_04.L/DEF-arm_05.L
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-arm_01.R
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-arm_01.R/STR-arm_01.R
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-arm_01.R/STR-arm_01.R/DEF-arm_01.R
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-arm_01.R/STR-arm_01.R/DEF-arm_01.R/DEF-arm_02.R
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-arm_01.R/STR-arm_01.R/DEF-arm_01.R/DEF-arm_02.R/DEF-arm_03.R
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-arm_01.R/STR-arm_01.R/DEF-arm_01.R/DEF-arm_02.R/DEF-arm_03.R/DEF-arm_04.R
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-arm_01.R/STR-arm_01.R/DEF-arm_01.R/DEF-arm_02.R/DEF-arm_03.R/DEF-arm_04.R/DEF-arm_05.R
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-head
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-head/STR-head
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-head/STR-head/DEF-head
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-pelvis
+    m_Weight: 0
+  - m_Path: RIG_Alien/P-STR-pelvis/STR-pelvis
+    m_Weight: 0
+  - m_Path: RIG_Alien/P-STR-pelvis/STR-pelvis/DEF-pelvis
+    m_Weight: 0
+  - m_Path: RIG_Alien/P-STR-pelvis/STR-pelvis/DEF-pelvis/DEF-spine_01
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-pelvis/STR-pelvis/DEF-pelvis/DEF-spine_01/DEF-spine_02
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-pelvis/STR-pelvis/DEF-pelvis/DEF-spine_01/DEF-spine_02/DEF-spine_03
+    m_Weight: 1
+  - m_Path: RIG_Alien/P-STR-thigh.L
+    m_Weight: 0
+  - m_Path: RIG_Alien/P-STR-thigh.L/STR-thigh.L
+    m_Weight: 0
+  - m_Path: RIG_Alien/P-STR-thigh.L/STR-thigh.L/DEF-thigh.L
+    m_Weight: 0
+  - m_Path: RIG_Alien/P-STR-thigh.R
+    m_Weight: 0
+  - m_Path: RIG_Alien/P-STR-thigh.R/STR-thigh.R
+    m_Weight: 0
+  - m_Path: RIG_Alien/P-STR-thigh.R/STR-thigh.R/DEF-thigh.R
+    m_Weight: 0
+  - m_Path: RIG_Alien/root
+    m_Weight: 0
+  - m_Path: RIG_Alien/root/TORSO-pelvis
+    m_Weight: 0
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-arm_01.L
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-arm_01.L/arm_01.L
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-arm_01.L/arm_01.L/arm_02.L
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-arm_01.L/arm_01.L/arm_02.L/arm_03.L
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-arm_01.L/arm_01.L/arm_02.L/arm_03.L/arm_04.L
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-arm_01.L/arm_01.L/arm_02.L/arm_03.L/arm_04.L/arm_05.L
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-arm_01.L/arm_01.L/arm_02.L/arm_03.L/arm_04.L/arm_05.L/arm_06.L
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-arm_01.L/arm_01.L/arm_02.L/arm_03.L/arm_04.L/arm_05.L/arm_06.L/DEF-arm_06.L
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-arm_01.R
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-arm_01.R/arm_01.R
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-arm_01.R/arm_01.R/arm_02.R
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-arm_01.R/arm_01.R/arm_02.R/arm_03.R
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-arm_01.R/arm_01.R/arm_02.R/arm_03.R/arm_04.R
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-arm_01.R/arm_01.R/arm_02.R/arm_03.R/arm_04.R/arm_05.R
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-arm_01.R/arm_01.R/arm_02.R/arm_03.R/arm_04.R/arm_05.R/arm_06.R
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-arm_01.R/arm_01.R/arm_02.R/arm_03.R/arm_04.R/arm_05.R/arm_06.R/DEF-arm_06.R
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-head
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-head/head
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-head/head/eye.L
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-head/head/eye.L/DEF-eye.L
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-head/head/eye.M
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-head/head/eye.M/DEF-eye.M
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-head/head/eye.R
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/FK-spine_01/FK-spine_02/FK-spine_03/spine_03/ROOT-head/head/eye.R/DEF-eye.R
+    m_Weight: 1
+  - m_Path: RIG_Alien/root/TORSO-pelvis/HIP-pelvis
+    m_Weight: 0
+  - m_Path: RIG_Alien/root/TORSO-pelvis/HIP-pelvis/HipsLower-pelvis
+    m_Weight: 0
+  - m_Path: RIG_Alien/root/TORSO-pelvis/HIP-pelvis/HipsLower-pelvis/pelvis
+    m_Weight: 0
+  - m_Path: RIG_Alien/root/TORSO-pelvis/HIP-pelvis/HipsLower-pelvis/pelvis/ROOT-thigh.L
+    m_Weight: 0
+  - m_Path: RIG_Alien/root/TORSO-pelvis/HIP-pelvis/HipsLower-pelvis/pelvis/ROOT-thigh.L/thigh.L
+    m_Weight: 0
+  - m_Path: RIG_Alien/root/TORSO-pelvis/HIP-pelvis/HipsLower-pelvis/pelvis/ROOT-thigh.L/thigh.L/calf.L
+    m_Weight: 0
+  - m_Path: RIG_Alien/root/TORSO-pelvis/HIP-pelvis/HipsLower-pelvis/pelvis/ROOT-thigh.L/thigh.L/calf.L/DEF-calf.L
+    m_Weight: 0
+  - m_Path: RIG_Alien/root/TORSO-pelvis/HIP-pelvis/HipsLower-pelvis/pelvis/ROOT-thigh.R
+    m_Weight: 0
+  - m_Path: RIG_Alien/root/TORSO-pelvis/HIP-pelvis/HipsLower-pelvis/pelvis/ROOT-thigh.R/thigh.R
+    m_Weight: 0
+  - m_Path: RIG_Alien/root/TORSO-pelvis/HIP-pelvis/HipsLower-pelvis/pelvis/ROOT-thigh.R/thigh.R/calf.R
+    m_Weight: 0
+  - m_Path: RIG_Alien/root/TORSO-pelvis/HIP-pelvis/HipsLower-pelvis/pelvis/ROOT-thigh.R/thigh.R/calf.R/DEF-calf.R
+    m_Weight: 0
+  - m_Path: SKM_ALIEN_Anom
+    m_Weight: 0
+  - m_Path: SKM_ALIEN_Body
+    m_Weight: 0
+  - m_Path: SKM_ALIEN_Cyram
+    m_Weight: 0
+  - m_Path: SKM_ALIEN_Fyrom
+    m_Weight: 0
+  - m_Path: SKM_ALIEN_Vaelam
+    m_Weight: 0

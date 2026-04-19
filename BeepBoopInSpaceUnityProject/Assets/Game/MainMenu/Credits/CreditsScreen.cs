@@ -1,6 +1,7 @@
 using System;
 using Game.MainMenu.ZoneManagement;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Game.MainMenu.Credits
@@ -17,6 +18,7 @@ namespace Game.MainMenu.Credits
             gameObject.SetActive(true);
             
             m_backButton.onClick.AddListener(HandleBackButtonClicked);
+            EventSystem.current.SetSelectedGameObject(m_backButton.gameObject);
         }
 
         public Action OnBackRequested;

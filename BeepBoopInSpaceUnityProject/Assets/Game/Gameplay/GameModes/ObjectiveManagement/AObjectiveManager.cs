@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-namespace Game.Gameplay.GameModes
+namespace Game.Gameplay.GameModes.ObjectiveManagement
 {
     public class AObjectiveManager : MonoBehaviour
     {

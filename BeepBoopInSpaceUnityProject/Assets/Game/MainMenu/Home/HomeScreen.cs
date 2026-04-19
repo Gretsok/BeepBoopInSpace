@@ -1,6 +1,7 @@
 using System;
 using Game.MainMenu.ZoneManagement;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Game.MainMenu
@@ -32,6 +33,8 @@ namespace Game.MainMenu
             m_settingsButton.onClick.AddListener(HandleSettingsButtonClicked);
             
             m_zoneManager.SwitchToEntranceCamera();
+            
+            EventSystem.current.SetSelectedGameObject(m_playButton.gameObject);
         }
 
         private void HandlePlayButtonClicked()
