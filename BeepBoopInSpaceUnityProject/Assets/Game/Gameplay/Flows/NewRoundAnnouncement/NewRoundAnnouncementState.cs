@@ -4,7 +4,6 @@ using Game.ArchitectureTools.FlowMachine;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.MusicsManagement;
 using Game.Global.SFXManagement;
-using Game.SFXManagement;
 using UnityEngine;
 
 namespace Game.Gameplay.Flows.NewRoundAnnouncement

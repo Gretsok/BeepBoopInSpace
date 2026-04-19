@@ -51,5 +51,10 @@ namespace Game.Gameplay.CharactersManagement
                 return;
             m_animator.SetBool(m_victoryAnimationKey, true);
         }
+
+        public void PlayItsMeAnimation()
+        {
+            
+        }
     }
 }

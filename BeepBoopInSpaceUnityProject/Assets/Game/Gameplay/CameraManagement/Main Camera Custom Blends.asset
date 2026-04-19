@@ -16,7 +16,7 @@ MonoBehaviour:
   - From: GameplayCineCamera
     To: IntroCineCamera
     Blend:
-      Style: 0
+      Style: 1
       Time: 0.2
       CustomCurve:
         serializedVersion: 2
@@ -81,6 +81,17 @@ MonoBehaviour:
         m_RotationOrder: 4
   - From: ResultsCineCamera
     To: GlobalViewCineCamera
+    Blend:
+      Style: 1
+      Time: 0.2
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 4
+  - From: GlobalViewCineCamera
+    To: IntroCineCamera
     Blend:
       Style: 1
       Time: 0.2
