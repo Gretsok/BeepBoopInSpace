@@ -1,6 +1,5 @@
 using System;
 using Game.Global;
-using Game.PlayerManagement;
 using UnityEngine;
 using UnityEngine.UI;
 

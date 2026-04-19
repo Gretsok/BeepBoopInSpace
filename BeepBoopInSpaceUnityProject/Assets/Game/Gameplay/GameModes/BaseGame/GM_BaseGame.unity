@@ -1541,6 +1541,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.ArchitectureTools.FlowMachine.UIManager
   m_registeredPanels:
   - {fileID: 1195977328051096388}
+  - {fileID: 6866765645722848648}
 --- !u!1 &1621802091 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4119907679209593977, guid: f27a6524dace8d04b9daea3aa60ddc41, type: 3}
@@ -3106,6 +3107,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7933185375216962129, guid: 93da4f6cf9481fd40b46f1c9f7ccfff6, type: 3}
   m_PrefabInstance: {fileID: 6866765645722848645}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6866765645722848648 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4923560760422459829, guid: 93da4f6cf9481fd40b46f1c9f7ccfff6, type: 3}
+  m_PrefabInstance: {fileID: 6866765645722848645}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6866765645722848647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eba384add1fa2f247bcbee18c8c8750c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8221626187746911376 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7602479401103048981, guid: a6ceaa126e2059d4c81f393a1ae54fca, type: 3}

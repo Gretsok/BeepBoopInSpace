@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Game.Gameplay.Levels._0_Core;
-using Game.PlayerManagement;
+using Game.Global.PlayerManagement;
 
 namespace Game.Gameplay.Flows.Results
 {

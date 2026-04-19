@@ -1,20 +1,21 @@
 using System.Collections;
+using Game.ArchitectureTools.FlowMachine;
 using Game.ArchitectureTools.Manager;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Game.Gameplay.Flows.Results
 {
-    public class ResultsPanel : AManager<ResultsPanel>
+    public class ResultsPanel : Panel
     {
         [SerializeField]
         private Button m_backToMenuButton;
 
-        protected override IEnumerator Initialize()
+        private void Awake()
         {
             HideButton();
-            return base.Initialize();
         }
 
         private void OnEnable()
@@ -31,6 +32,11 @@ namespace Game.Gameplay.Flows.Results
         {
             m_backToMenuButton.onClick.AddListener(buttonCallback);
             m_backToMenuButton.gameObject.SetActive(true);
+        }
+
+        public void ManualClickButton()
+        {
+            ExecuteEvents.Execute(m_backToMenuButton.gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
         }
 
         public void HideButton()
