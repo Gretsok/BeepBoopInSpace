@@ -32,15 +32,15 @@ MonoBehaviour:
   Build:
   - 0.1
   SelectedPlatformOrganization:
-  - 
+  - Equipe BeepBoop
   SelectedPlatformStudio:
-  - 
+  - Studio
   SelectedPlatformGame:
-  - 
-  SelectedPlatformGameID: ffffffff
-  SelectedOrganization: 00000000
-  SelectedStudio: 00000000
-  SelectedGame: 00000000
+  - Beep Boop in space
+  SelectedPlatformGameID: 96370500
+  SelectedOrganization: 01000000
+  SelectedStudio: 01000000
+  SelectedGame: 01000000
   NewVersion: 
   Changes: 
   SignUpOpen: 0
@@ -61,9 +61,9 @@ MonoBehaviour:
   CustomDimensions03: []
   ResourceItemTypes: []
   ResourceCurrencies: []
-  LastCreatedGamePlatform: 0
+  LastCreatedGamePlatform: -1
   Platforms: 02000000
-  CurrentInspectorState: 3
+  CurrentInspectorState: 1
   ClosedHints: 
   DisplayHints: 0
   DisplayHintsScrollState: {x: 0, y: 0}

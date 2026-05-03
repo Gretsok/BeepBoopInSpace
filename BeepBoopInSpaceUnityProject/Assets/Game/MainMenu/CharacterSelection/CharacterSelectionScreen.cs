@@ -115,8 +115,8 @@ namespace Game.MainMenu.CharacterSelection
                 
                 var playerController = gameObject.AddComponent<CharacterSelectionPlayerController>();
                 var characterWidget = m_widgets[i];
-                playerController.SetDependencies(player, characterWidget);
                 characterWidget.Activate();
+                playerController.SetDependencies(player, characterWidget);
                 playerController.Activate();
                 m_playerJoiningPlayers.Add(playerController);
             }
@@ -160,6 +160,12 @@ namespace Game.MainMenu.CharacterSelection
                     continue;
                 controller.Deactivate();
                 Destroy(controller);
+            }
+
+            for (int i = 0; i < m_widgets.Count; i++)
+            {
+                var characterWidget = m_widgets[i];
+                characterWidget.Deactivate();
             }
         }
 

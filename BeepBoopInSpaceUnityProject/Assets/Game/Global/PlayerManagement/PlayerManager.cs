@@ -10,7 +10,7 @@ namespace Game.Global.PlayerManagement
     {
         public PlayerInputManager PlayerInputManager { get; private set; }
 
-        private readonly List<AbstractPlayer> m_players = new();
+        private List<AbstractPlayer> m_players = new();
         public IReadOnlyList<AbstractPlayer> Players => m_players;
 
         public void Initialize()

@@ -1,10 +1,13 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Game.ArchitectureTools.Manager;
 using Game.Characters;
+using Game.Global;
+using Game.Global.PlayerManagement;
 using UnityEngine;
 
-namespace Game.MainMenu
+namespace Game.MainMenu.CharacterManagement
 {
     public class CharacterBankManager : AManager<CharacterBankManager>
     {
@@ -31,6 +34,11 @@ namespace Game.MainMenu
                 m_associations[widget] = characterDataAsset;
             else
                 m_associations.Add(widget, characterDataAsset);
+        }
+
+        public void UnregisterWidget(CharacterWidget widget)
+        {
+            m_associations.Remove(widget);
         }
 
         public bool IsCharacterAlreadyTakenByAnotherWidget(CharacterDataAsset characterDataAssetToFind, CharacterWidget widgetOwner)
