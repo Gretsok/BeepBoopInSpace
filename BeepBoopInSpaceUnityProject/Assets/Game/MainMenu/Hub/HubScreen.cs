@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Game.MainMenu.Hub
@@ -44,6 +45,8 @@ namespace Game.MainMenu.Hub
             m_settingsButton.onClick.AddListener(HandleSettingsButtonClicked);
             m_characterSelectionButton.onClick.AddListener(HandleCharacterSelectionButtonClicked);
             m_quitGameButton.onClick.AddListener(HandleQuitGameButtonClicked);
+            
+            EventSystem.current.SetSelectedGameObject(m_tournamentButton.gameObject);
         }
 
         protected override void HandleDeactivation()

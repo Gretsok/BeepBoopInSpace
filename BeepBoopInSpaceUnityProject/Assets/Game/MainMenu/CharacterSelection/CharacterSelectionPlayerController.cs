@@ -1,4 +1,4 @@
-using Game.PlayerManagement;
+using Game.Global.PlayerManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

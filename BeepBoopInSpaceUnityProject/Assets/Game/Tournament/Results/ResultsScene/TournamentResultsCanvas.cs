@@ -1,7 +1,7 @@
 using System;
 using Game.Global;
-using Game.PlayerManagement;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Game.Tournament.Results.ResultsScene
@@ -41,6 +41,11 @@ namespace Game.Tournament.Results.ResultsScene
         {
             m_quitCallback?.Invoke();
             m_quitCallback = null;
+        }
+
+        public void ManualClickButton()
+        {
+            ExecuteEvents.Execute(m_okButton.gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
         }
     }
 }

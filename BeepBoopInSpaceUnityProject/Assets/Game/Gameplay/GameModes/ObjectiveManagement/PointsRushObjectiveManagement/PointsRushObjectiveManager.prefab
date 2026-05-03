@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf805a1d69049484c8f44eeedb3f3043, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <ObjectiveLabelKey>k__BackingField: Accumuler le plus de points
   m_objectiveCollectedAudioPlayer: {fileID: 4798612096289949211}
   m_objectiveIndicationPrefab: {fileID: 5689017140711785693, guid: a0a8021f379c8f34e90b431b11ee45ac, type: 3}
   m_timerManager: {fileID: 6709959918331806521}

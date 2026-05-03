@@ -5,7 +5,9 @@ using Game.Gameplay.CameraManagement;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.Flows.Results.ResultsPlacementManagement;
 using Game.Gameplay.MusicsManagement;
+using Game.Global;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Game.Gameplay.Flows.Results
 {
@@ -26,10 +28,13 @@ namespace Game.Gameplay.Flows.Results
 
         private int m_currentViewedCharacterIndex = -1;
         private ResultsCharacterPositionner m_currentPositionner;
+        private ResultsPanel m_resultsPanel;
 
         protected override void HandleEnter()
         {
             base.HandleEnter();
+            m_resultsPanel = GameplayContext.Instance.UIManager.GetPanel<ResultsPanel>();
+            
             m_cameraManager = CameraManager.Instance;
             m_cameraManager.SwitchToGlobalViewResultsCamera();
             
@@ -105,7 +110,29 @@ namespace Game.Gameplay.Flows.Results
             }
             CameraManager.Instance.SwitchToGlobalViewResultsCamera();
             MusicsManager.Instance.StartPlayingResultsMusic();
-            ResultsPanel.Instance.ShowButton(() => RequestState(m_nextState));
+
+            m_resultsPanel.ShowButton(() => RequestState(m_nextState));
+
+            var globalContext = GlobalContext.Instance;
+            globalContext.NavigationAuthorityManager.SetInputRegistrationsCallbacks(RegisterMainPlayerActions, UnregisterMainPlayerAction);
+        }
+
+        private void RegisterMainPlayerActions(InputActionAsset actionAsset)
+        {
+            actionAsset.FindActionMap("UI").FindAction("Submit").started += HandleSubmitStartedByMainPlayer;
+        }
+
+        private void UnregisterMainPlayerAction(InputActionAsset actionAsset)
+        {
+            actionAsset.FindActionMap("UI").FindAction("Submit").started -= HandleSubmitStartedByMainPlayer;
+        }
+
+        private void HandleSubmitStartedByMainPlayer(InputAction.CallbackContext obj)
+        {
+            m_resultsPanel.ManualClickButton();
+            
+            var globalContext = GlobalContext.Instance;
+            globalContext.NavigationAuthorityManager.UnsetInputRegistrationsCallbacks(RegisterMainPlayerActions, UnregisterMainPlayerAction);
         }
     }
 }

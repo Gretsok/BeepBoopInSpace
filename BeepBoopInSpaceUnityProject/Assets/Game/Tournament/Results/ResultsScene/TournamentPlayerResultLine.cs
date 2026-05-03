@@ -1,5 +1,5 @@
 using System.Linq;
-using Game.PlayerManagement;
+using Game.Global.PlayerManagement;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

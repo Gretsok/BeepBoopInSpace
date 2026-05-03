@@ -1,5 +1,5 @@
 using Game.Gameplay.CharactersManagement.ReferencesHolding;
-using Game.PlayerManagement;
+using Game.Global.PlayerManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

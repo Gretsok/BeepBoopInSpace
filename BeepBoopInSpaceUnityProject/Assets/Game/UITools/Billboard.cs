@@ -18,7 +18,7 @@ namespace Game.UITools
 
         protected virtual Transform FetchCameraTransform()
         {
-            return Camera.main.transform;
+            return Camera.main?.transform;
         }
 
         private void LateUpdate()

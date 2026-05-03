@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Game.Gameplay.Levels._0_Core;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Game.MainMenu.LevelSelection
@@ -53,6 +54,8 @@ namespace Game.MainMenu.LevelSelection
             }
             
             m_backButton.onClick.AddListener(HandleBackButton);
+            
+            EventSystem.current.SetSelectedGameObject(m_instantiatedWidgets.Count > 0 ? m_instantiatedWidgets[0].gameObject : m_backButton.gameObject);
         }
 
         protected override void HandleDeactivation()

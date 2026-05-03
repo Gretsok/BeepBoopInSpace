@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Game.PlayerManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -21,8 +20,10 @@ namespace Game.Global.PlayerManagement
             PlayerInputManager.onPlayerJoined += HandlePlayerJoined;
             PlayerInputManager.onPlayerLeft += HandlePlayerLeft;
         }
+
+        public event Action<PlayerManager> OnPlayersChanged;
         
-        public Action<PlayerManager, AbstractPlayer> OnPlayerJoined;
+        public event Action<PlayerManager, AbstractPlayer> OnPlayerJoined;
         private void HandlePlayerJoined(PlayerInput obj)
         {
             if (obj.TryGetComponent(out AbstractPlayer player)
@@ -31,17 +32,24 @@ namespace Game.Global.PlayerManagement
                 m_players.Add(player);
                 obj.transform.SetParent(transform);
                 OnPlayerJoined?.Invoke(this, player);
+                OnPlayersChanged?.Invoke(this);
             }
         }
         
-        public Action<PlayerManager, AbstractPlayer> OnPlayerLeft;
+        public event Action<PlayerManager, AbstractPlayer> OnPlayerLeft;
         private void HandlePlayerLeft(PlayerInput obj)
         {
             if (obj.TryGetComponent(out AbstractPlayer player))
             {
                 m_players.RemoveAll(p => p == player);
                 OnPlayerLeft?.Invoke(this, player);
+                OnPlayersChanged?.Invoke(this);
             }
+        }
+
+        public AbstractPlayer GetPlayerByIndex(int playerIndex)
+        {
+            return m_players.Find(player => player.PlayerInput.playerIndex == playerIndex);
         }
 
         public PlayerInput AddPlayerFromDevice(InputDevice device)

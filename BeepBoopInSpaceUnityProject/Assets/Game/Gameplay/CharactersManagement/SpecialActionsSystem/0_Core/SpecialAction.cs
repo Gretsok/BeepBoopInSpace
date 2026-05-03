@@ -7,6 +7,8 @@ namespace Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core
 {
     public class SpecialAction : MonoBehaviour
     {
+        [field: SerializeField]
+        public string SpecialActionLabelKey { get; private set; }
         [SerializeField]
         private UnityEvent m_onActionPressed;
 

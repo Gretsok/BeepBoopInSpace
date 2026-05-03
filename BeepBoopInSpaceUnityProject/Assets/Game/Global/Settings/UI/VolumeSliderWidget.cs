@@ -10,6 +10,7 @@ namespace Game.Global.Settings.UI
         private TMP_Text m_title;
         [SerializeField]
         private Slider m_slider;
+        public Slider Slider => m_slider;
         
         public delegate void DVolumeSliderValueChangedDelegate(float value);
         private DVolumeSliderValueChangedDelegate m_volumeSliderValueChangedDelegate;

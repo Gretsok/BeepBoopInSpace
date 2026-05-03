@@ -44,3 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 184a483f2da093f4f91658c4dbec7970, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <ObjectiveLabelKey>k__BackingField: "\xCAtre le dernier en vie"
+  m_playTimeAfterLastDeath: 5

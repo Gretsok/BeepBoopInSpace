@@ -2,6 +2,7 @@ using System;
 using DG.Tweening;
 using Game.ArchitectureTools.Manager;
 using Game.Gameplay.CharactersManagement;
+using Game.Gameplay.CharactersManagement.Movement;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -64,6 +65,19 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
             }
             
             characterPawn.ReferencesHolder.RumbleHandler.PlayItsMeRumble();
+            
+            characterPawn.ReferencesHolder.AnimationsHandler.PlayItsMeAnimation();
+            var defaultCharacterRotation = characterPawn.transform.rotation;
+            Sequence sequence = DOTween.Sequence();
+            var cameraDirection =
+                CharacterMovementController.GetWorldDirectionFrom(CharacterMovementController.EDirection.MinusZ); 
+            sequence.Append(characterPawn.transform.DOLookAt(characterPawn.transform.position + cameraDirection,
+                .5f, up: Vector3.up));
+            sequence.AppendInterval(1f);
+            sequence.Append(characterPawn.transform.DORotateQuaternion(
+                defaultCharacterRotation, .5f));
+            sequence.Play();
+            
             m_canvasPositionnerRoot.transform.position = characterPawn.transform.position;
             m_nameCanvas.GetComponent<Image>().sprite = characterPawn.ReferencesHolder.CharacterDataAsset.NameplateSprite;
             m_nameCanvas.transform.DOKill(true);

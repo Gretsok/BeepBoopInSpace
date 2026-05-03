@@ -6,6 +6,8 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement
 {
     public class AObjectiveManager : MonoBehaviour
     {
+        [field: SerializeField]
+        public string ObjectiveLabelKey { get; private set; }
         private void Awake()
         {
             StartCoroutine(Initialize_Internal());
