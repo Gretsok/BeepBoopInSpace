@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Game.ArchitectureTools.Manager;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
-using Game.Gameplay.Levels._0_Core;
 using Game.Global;
 using Game.Global.PlayerManagement;
 using UnityEngine;

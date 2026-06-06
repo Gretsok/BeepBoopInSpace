@@ -2037,11 +2037,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7405c822746933e49b4f355aaa1d243d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_startingCells:
-  - {fileID: 469176444}
-  - {fileID: 1763828296}
-  - {fileID: 1440186612}
-  - {fileID: 1923005195}
+  m_startingCellsData:
+  - Cell: {fileID: 469176444}
+    Direction: 0
+  - Cell: {fileID: 1923005195}
+    Direction: 1
+  - Cell: {fileID: 1440186612}
+    Direction: 3
+  - Cell: {fileID: 1763828296}
+    Direction: 2
 --- !u!4 &1116749150
 Transform:
   m_ObjectHideFlags: 0
