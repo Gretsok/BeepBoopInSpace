@@ -10,6 +10,7 @@ namespace Game.Gameplay.CharactersManagement
         private readonly int m_squashAnimationKey = Animator.StringToHash("Squash");
         private readonly int m_victoryAnimationKey = Animator.StringToHash("Victory");
         private readonly int m_loseAnimationKey = Animator.StringToHash("Lose");
+        private readonly int m_helloAnimationKey = Animator.StringToHash("Hello");
         
         private Animator m_animator;
 
@@ -54,7 +55,9 @@ namespace Game.Gameplay.CharactersManagement
 
         public void PlayItsMeAnimation()
         {
-            
+            if (!m_animator)
+                return;
+            m_animator.SetTrigger(m_helloAnimationKey);
         }
     }
 }
