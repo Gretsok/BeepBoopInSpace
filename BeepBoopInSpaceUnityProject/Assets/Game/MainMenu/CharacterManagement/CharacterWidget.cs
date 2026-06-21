@@ -1,6 +1,7 @@
 using System;
 using DG.Tweening;
 using Game.Characters;
+using Game.MainMenu.CharacterManagement;
 using TMPro;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
@@ -82,6 +83,9 @@ namespace Game.MainMenu
             {
                 Destroy(ModelContainer.GetChild(i).gameObject);
             }
+            
+            CharacterDataAsset = null;
+            m_characterBankManager.UnregisterWidget(this);
             
             IsActivated = false;
             OnDeactivated?.Invoke(this);

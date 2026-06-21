@@ -80,6 +80,9 @@ namespace Game.Global.NavigationAuthority
             
             await UniTask.WaitUntil(() => player.Initialized, cancellationToken: destroyCancellationToken);
 
+            if (!player)
+                return;
+
             m_inputUnregistrationCallback?.Invoke(m_actionAsset);
             m_actionAsset.devices = 
                 player.PlayerInput.devices;
