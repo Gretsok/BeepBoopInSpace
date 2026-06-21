@@ -651,6 +651,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: P_Turbyo
       objectReference: {fileID: 0}
+    - target: {fileID: 4385228027169082515, guid: 6713b253c738e914d87e35267f6d7272, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.99996865
+      objectReference: {fileID: 0}
+    - target: {fileID: 4385228027169082515, guid: 6713b253c738e914d87e35267f6d7272, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.007927952
+      objectReference: {fileID: 0}
+    - target: {fileID: 4385228027169082515, guid: 6713b253c738e914d87e35267f6d7272, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0.908
+      objectReference: {fileID: 0}
     - target: {fileID: 7653843529686184715, guid: 6713b253c738e914d87e35267f6d7272, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.542
