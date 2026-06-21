@@ -8,6 +8,7 @@ using Game.Gameplay.GameModes.GameplayModifiers;
 using Game.Gameplay.GameModes.ObjectiveManagement;
 using Game.Gameplay.Levels._0_Core;
 using Game.Gameplay.PauseMenu;
+using Game.Gameplay.RoundsManagement;
 using UnityEngine;
 
 namespace Game.Gameplay
@@ -22,6 +23,9 @@ namespace Game.Gameplay
         public PauseMenuManager PauseMenuManager { get; private set; }
         [field: SerializeField]
         public UIManager UIManager { get; private set; }
+        [field: SerializeField]
+        public RoundsManager RoundsManager { get; private set; }
+        
         public AObjectiveManager ObjectiveManager { get; private set; } 
         public SpecialAction SpecialActionPrefab { get; private set; }
         private List<AGameplayModifier> m_gameplayModifiers = new();

@@ -6,7 +6,7 @@ using Game.Gameplay.Flows._1_SetUp;
 using Game.Gameplay.Flows.Finish;
 using Game.Gameplay.Flows.Gameplay;
 using Game.Gameplay.Flows.Results;
-using Game.Gameplay.Timer;
+using Game.Gameplay.RoundsManagement;
 using UnityEngine;
 
 namespace Game.Gameplay.GameModes.ObjectiveManagement.LastManStandingObjectiveManagement
@@ -17,12 +17,19 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LastManStandingObjectiveMa
 
         [SerializeField]
         private float m_playTimeAfterLastDeath = 5f;
+        [field: SerializeField]
+        public int PointsObjective { get; private set; } = 3;
+        private RoundsManager m_roundsManager;
         
         public float TimePassed { get; private set; } = 0f;
         public bool IsTicking { get; private set; } = false;
         
         protected override IEnumerator Initialize()
         {
+            GameplayContext.RegisterPostInitializationCallback(context =>
+            {
+                m_roundsManager = context.RoundsManager;
+            });
             CharactersManager.RegisterPostInitializationCallback(manager =>
             {
                 m_charactersManager = manager;
@@ -53,7 +60,7 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LastManStandingObjectiveMa
         
         private void HandleSetUpCompleted()
         {
-            
+            SetUpEventsHooker.Instance.OnSetUpCompleted -= HandleSetUpCompleted;
         }
 
         private void SetUp(CharactersManager obj)
@@ -69,12 +76,22 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LastManStandingObjectiveMa
         
         private void HandlePlayedDeath(DeathController obj)
         {
-            obj.CharacterReferencesHolder.ScoringController.SetScore((int)(TimePassed * 10f));
-
             var alivePlayersCount = m_charactersManager.CharacterPawns.Count(pawn => pawn.ReferencesHolder.DeathController.IsAlive);
             if (alivePlayersCount == 1)
             {
+                TriggerEndOfRound();
+            }
+        }
+
+        private void TriggerEndOfRound()
+        {
+            var lastPawn = m_charactersManager.CharacterPawns.First(pawn => pawn.ReferencesHolder.DeathController.IsAlive);
+            lastPawn.ReferencesHolder.ScoringController.IncreaseScore();
+            if (lastPawn.ReferencesHolder.ScoringController.Score >= PointsObjective)
                 StartCoroutine(TriggerEndOfGame());
+            else
+            {
+                m_roundsManager.TriggerNewRound();
             }
         }
 
@@ -82,8 +99,6 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LastManStandingObjectiveMa
         {
             yield return new WaitForSeconds(m_playTimeAfterLastDeath);
             GameplayContext.Instance.FlowMachine.RequestState(FinishStateGrabber.Instance.FinishState);
-            m_charactersManager.CharacterPawns.First(pawn => pawn.ReferencesHolder.DeathController.IsAlive)
-                .ReferencesHolder.ScoringController.SetScore((int)(TimePassed * 10f));
         }
 
         private void Update()

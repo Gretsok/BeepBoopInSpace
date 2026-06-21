@@ -1,6 +1,7 @@
 using System.Collections;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem.SniperRifle;
+using Game.Gameplay.ConfigurationsManagement;
 using Game.Gameplay.Timer;
 using UnityEngine;
 
@@ -12,6 +13,8 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.MostKillsObjectiveManageme
 
         [SerializeField]
         private TimerManager m_timerManager;
+        [SerializeField]
+        private PeriodicConfigurationChangesManager m_periodicConfigurationChangesManager;
 
         protected override IEnumerator Initialize()
         {

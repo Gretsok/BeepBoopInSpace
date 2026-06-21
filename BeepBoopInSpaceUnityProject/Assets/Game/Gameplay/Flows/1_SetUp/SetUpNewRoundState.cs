@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace Game.Gameplay.Flows._1_SetUp
 {
-    [RequireComponent(typeof(SetUpEventsHooker))]
     public class SetUpNewRoundState : AFlowState
     {
         [SerializeField]
@@ -24,6 +23,9 @@ namespace Game.Gameplay.Flows._1_SetUp
             {
                 var character = charactersManager.CharacterPawns[i];
 
+                var deathController = character.ReferencesHolder.DeathController;
+                deathController.Resurrect();
+                
                 var startingCellData = levelManager.StartingCellsData[i];
                 var movementController = character.ReferencesHolder.MovementController;
                 movementController.TeleportToCell(startingCellData.Cell);
@@ -31,13 +33,13 @@ namespace Game.Gameplay.Flows._1_SetUp
             }
 
             var eventsHooker = GetComponent<SetUpEventsHooker>();
-            eventsHooker.NotifySetUp();
+            eventsHooker?.NotifySetUp();
             
             CameraManager.Instance.SwitchToGameplayCamera();
             
             RequestState(m_nextState);
             
-            eventsHooker.NotifySetUpCompleted();
+            eventsHooker?.NotifySetUpCompleted();
         }
     }
 }
