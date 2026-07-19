@@ -311,6 +311,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_nextState: {fileID: 645081847}
+  m_newRoundState: {fileID: 822562158}
   m_waitDurationOnStart: 1
   m_showDurationPerCharacter: 2
   m_audioPlayer1: {fileID: 615105055}
@@ -1131,7 +1132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf24d9776e2f84e4f93c2497174ab97a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_nextState: {fileID: 822562156}
+  m_nextState: {fileID: 822562158}
 --- !u!1 &822562152
 GameObject:
   m_ObjectHideFlags: 0
@@ -1141,9 +1142,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 822562153}
-  - component: {fileID: 822562156}
-  - component: {fileID: 822562155}
+  - component: {fileID: 822562158}
   - component: {fileID: 822562154}
+  - component: {fileID: 822562157}
   m_Layer: 0
   m_Name: 'NewRoundAnnouncementState '
   m_TagString: Untagged
@@ -1180,7 +1181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e3562856a412b749b8e05c296a5d6f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &822562155
+--- !u!114 &822562157
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1189,12 +1190,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 822562152}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4279be6ebb8e93a4cbc4d6b262cc9c45, type: 3}
+  m_Script: {fileID: 11500000, guid: 89625635c76dcbd4a8dfec53efd2b739, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  m_gameObjectsToActivateDuringState:
-  - {fileID: 8900246315270475475}
---- !u!114 &822562156
+  m_EditorClassIdentifier: Assembly-CSharp::Game.ArchitectureTools.FlowMachine.PanelsActivatorStateComponent
+  m_panels:
+  - {fileID: 6325133238178051761}
+--- !u!114 &822562158
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1203,10 +1204,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 822562152}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d9c9a5725f6ff94482b75f8bf5315b5, type: 3}
+  m_Script: {fileID: 11500000, guid: 0b2cdd97e57df4b49ab0b3e96fdbf860, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  m_duration: 1
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Gameplay.RoundsManagement.RoundAnnouncementState
+  m_duration: 2
   m_nextState: {fileID: 518909295}
   m_pauseAudioPlayer: {fileID: 527466131}
   m_resumeAudioPlayer: {fileID: 458457435}
@@ -1772,6 +1773,7 @@ MonoBehaviour:
   m_registeredPanels:
   - {fileID: 1195977328051096388}
   - {fileID: 6866765645722848648}
+  - {fileID: 6325133238178051761}
 --- !u!1 &1621802091 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4119907679209593977, guid: f27a6524dace8d04b9daea3aa60ddc41, type: 3}
@@ -3296,6 +3298,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d7ea0c8d6b4c77f48b195ed802966212, type: 3}
+--- !u!114 &6325133238178051761 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4076021970258722226, guid: d7ea0c8d6b4c77f48b195ed802966212, type: 3}
+  m_PrefabInstance: {fileID: 6325133238178051760}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a834e291dab23940bad9e5a0185ef1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Gameplay.RoundsManagement.NewRoundPanel
 --- !u!1001 &6866765645722848645
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3536,11 +3549,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 879878d19b5185d40bfa8d7550fa71fa, type: 3}
---- !u!1 &8900246315270475475 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3738350501854780348, guid: d7ea0c8d6b4c77f48b195ed802966212, type: 3}
-  m_PrefabInstance: {fileID: 6325133238178051760}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

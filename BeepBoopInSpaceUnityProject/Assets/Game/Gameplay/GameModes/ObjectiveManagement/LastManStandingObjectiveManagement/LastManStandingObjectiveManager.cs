@@ -29,6 +29,8 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LastManStandingObjectiveMa
             GameplayContext.RegisterPostInitializationCallback(context =>
             {
                 m_roundsManager = context.RoundsManager;
+                
+                m_roundsManager.SetActive(true);
             });
             CharactersManager.RegisterPostInitializationCallback(manager =>
             {
@@ -61,6 +63,8 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LastManStandingObjectiveMa
         private void HandleSetUpCompleted()
         {
             SetUpEventsHooker.Instance.OnSetUpCompleted -= HandleSetUpCompleted;
+            
+            
         }
 
         private void SetUp(CharactersManager obj)
