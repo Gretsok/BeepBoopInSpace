@@ -17,6 +17,9 @@ namespace Game.Gameplay.CharactersManagement.Death
             OnResurrection = 0,
             OnDeath = 1
         }
+
+        [SerializeField]
+        private DeathPlacementFX m_deathPlacementFXPrefab;
         [SerializeField]
         private EReplacementTime m_replacementTime = EReplacementTime.OnDeath;
         private DeathController m_deathController;
@@ -51,6 +54,9 @@ namespace Game.Gameplay.CharactersManagement.Death
 
         private void Replace()
         {
+            var deathPlacementFX = Instantiate(m_deathPlacementFXPrefab, m_deathController.CharacterReferencesHolder.ModelSource.position, Quaternion.identity);
+            // Source position must be gathered before teleportation.
+            var sourcePosition = m_deathController.CharacterReferencesHolder.ModelSource.position;
             var dataAsset = m_globalGameplayDataManager.Data;
             // On invalid cell
             if (!CellIsValid(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell)) 
@@ -86,6 +92,10 @@ namespace Game.Gameplay.CharactersManagement.Death
                         throw new NotImplementedException("Checkpoints not implemented.");
                 }
             }
+            deathPlacementFX.SetUp(m_deathController.CharacterReferencesHolder.CharacterDataAsset, 
+                sourcePosition,
+                m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell.transform.position,
+                m_deathController.WaitDurationToResurrect);
         }
 
         private void TeleportToRandomCell()

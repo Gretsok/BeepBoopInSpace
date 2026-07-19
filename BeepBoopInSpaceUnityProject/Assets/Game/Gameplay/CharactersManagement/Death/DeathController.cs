@@ -25,6 +25,9 @@ namespace Game.Gameplay.CharactersManagement.Death
 
         [SerializeField]
         private float m_defaultWaitDurationToResurrect = 2f;
+        public float DefaultWaitDurationToResurrect => m_defaultWaitDurationToResurrect;
+        private float m_waitDurationToResurrect = 3f;
+        public float WaitDurationToResurrect => m_waitDurationToResurrect;
         
         public bool IsAlive { get; private set; } = true;
 
@@ -37,8 +40,10 @@ namespace Game.Gameplay.CharactersManagement.Death
             if (a_waitDurationToResurrect < 0f)
                 a_waitDurationToResurrect = m_defaultWaitDurationToResurrect;
             
+            m_waitDurationToResurrect = a_waitDurationToResurrect;
+            
             if (CanResurrect)
-                Invoke(nameof(Resurrect), a_waitDurationToResurrect);
+                Invoke(nameof(Resurrect), m_waitDurationToResurrect);
             else
             {
                 CharacterReferencesHolder.GridWalker.MoveToCell(null);
