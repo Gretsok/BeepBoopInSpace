@@ -32,6 +32,7 @@ Transform:
   m_Children:
   - {fileID: 4437863758480713425}
   - {fileID: 1920026251036324063}
+  - {fileID: 4635563198059733606}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6167260455618612372
@@ -46,9 +47,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf805a1d69049484c8f44eeedb3f3043, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <ObjectiveLabelKey>k__BackingField: Accumuler le plus de points
   m_objectiveCollectedAudioPlayer: {fileID: 4798612096289949211}
   m_objectiveIndicationPrefab: {fileID: 5689017140711785693, guid: a0a8021f379c8f34e90b431b11ee45ac, type: 3}
   m_timerManager: {fileID: 6709959918331806521}
+  m_periodicConfigurationChangesManager: {fileID: 8523336366268037317}
 --- !u!1 &2474609329517886292
 GameObject:
   m_ObjectHideFlags: 0
@@ -168,3 +171,76 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f60d967d3f135448bb3bbbb465d07d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1001 &7693716263152900984
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3831502442006856382}
+    m_Modifications:
+    - target: {fileID: 401958640376785292, guid: b9549cac7eb21b645b8b758d44382d90, type: 3}
+      propertyPath: m_Name
+      value: PeriodicConfigurationsChangesManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 3067309815918672158, guid: b9549cac7eb21b645b8b758d44382d90, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3067309815918672158, guid: b9549cac7eb21b645b8b758d44382d90, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3067309815918672158, guid: b9549cac7eb21b645b8b758d44382d90, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3067309815918672158, guid: b9549cac7eb21b645b8b758d44382d90, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3067309815918672158, guid: b9549cac7eb21b645b8b758d44382d90, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3067309815918672158, guid: b9549cac7eb21b645b8b758d44382d90, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3067309815918672158, guid: b9549cac7eb21b645b8b758d44382d90, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3067309815918672158, guid: b9549cac7eb21b645b8b758d44382d90, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3067309815918672158, guid: b9549cac7eb21b645b8b758d44382d90, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3067309815918672158, guid: b9549cac7eb21b645b8b758d44382d90, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b9549cac7eb21b645b8b758d44382d90, type: 3}
+--- !u!4 &4635563198059733606 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3067309815918672158, guid: b9549cac7eb21b645b8b758d44382d90, type: 3}
+  m_PrefabInstance: {fileID: 7693716263152900984}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8523336366268037317 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2057418706166539197, guid: b9549cac7eb21b645b8b758d44382d90, type: 3}
+  m_PrefabInstance: {fileID: 7693716263152900984}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a0e77a072572ec42b2915d7da67447b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Gameplay.ConfigurationsManagement.PeriodicConfigurationChangesManager

@@ -36,7 +36,8 @@ namespace Game.Gameplay.Flows.Results
 
         public void ManualClickButton()
         {
-            ExecuteEvents.Execute(m_backToMenuButton.gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+            if (m_backToMenuButton)
+                ExecuteEvents.Execute(m_backToMenuButton.gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
         }
 
         public void HideButton()

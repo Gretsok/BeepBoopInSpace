@@ -1,10 +1,12 @@
 using System.Collections;
 using Game.ArchitectureTools.Manager;
+using Game.Global.Analytics;
 using Game.Global.NavigationAuthority;
 using Game.Global.PlayerManagement;
 using Game.Global.Settings;
 using Game.Global.Save;
 using Game.Global.SFXManagement;
+using GameAnalyticsSDK;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -24,10 +26,15 @@ namespace Game.Global
         public EventSystem EventSystem { get; private set; }
         [field: SerializeField]
         public NavigationAuthorityManager NavigationAuthorityManager { get; private set; }
+        [field: SerializeField]
+        public AnalyticsManager AnalyticsManager { get; private set; }
 
         protected override IEnumerator Initialize()
         {
             DontDestroyOnLoad(gameObject);
+            
+            AnalyticsManager.Initialize();
+            
             bool settingsManagerInitialized = false;
             SaveManager.LoadProfile(_ =>
             {

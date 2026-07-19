@@ -43,6 +43,8 @@ namespace Game.MainMenu.CharacterSelection
 
         public void Deactivate()
         {
+            if (m_widget)
+                m_widget.OnActivated -= HandleWidgetActivated;
             m_player.PlayerInput.actions.FindActionMap("MainMenu").FindAction("Pop").started -= HandlePopStarted;
             m_player.PlayerInput.actions.FindActionMap("MainMenu").FindAction("SwitchToNextCharacter").started -= HandleSwitchToNextCharacterStarted;
         }

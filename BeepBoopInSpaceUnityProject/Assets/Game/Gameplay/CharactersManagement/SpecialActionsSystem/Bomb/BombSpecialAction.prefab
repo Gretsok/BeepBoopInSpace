@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67129127e3f390649924214378368328, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <SpecialActionLabelKey>k__BackingField: Bombe auto-destructrice
   m_onActionPressed:
     m_PersistentCalls:
       m_Calls:

@@ -51,6 +51,8 @@ namespace Game.Gameplay.CharactersManagement.Death
 
         public void Resurrect()
         {
+            if (IsAlive)
+                return;
             IsAlive = true;
             
             m_onResurrection?.Invoke();

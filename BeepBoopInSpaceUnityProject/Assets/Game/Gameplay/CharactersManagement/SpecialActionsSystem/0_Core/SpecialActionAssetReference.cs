@@ -12,12 +12,6 @@ namespace Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core
         {
         }
 
-        /*public override bool ValidateAsset(Object obj)
-        {
-            
-            return base.ValidateAsset(obj) && ((GameObject)obj).GetComponent<SpecialAction>();
-        }*/
-
         public override bool ValidateAsset(string mainAssetPath)
         {
 #if UNITY_EDITOR

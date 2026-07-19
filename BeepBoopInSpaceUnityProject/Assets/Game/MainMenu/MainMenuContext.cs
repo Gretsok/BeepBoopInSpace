@@ -20,7 +20,7 @@ namespace Game.MainMenu
 
         protected override IEnumerator Initialize()
         {
-            yield return new WaitUntil(() => GlobalContext.IsInitialized);
+            yield return new WaitUntil(() => GlobalContext.Instance && GlobalContext.Instance.IsInitialized);
             MainMenuOrchestrator.Initialize(GlobalContext.Instance, this);
             FlowMachine.Run();
         }

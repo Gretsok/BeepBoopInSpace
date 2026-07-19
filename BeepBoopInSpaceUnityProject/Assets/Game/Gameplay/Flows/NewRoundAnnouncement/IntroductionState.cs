@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Game.Gameplay.Flows.NewRoundAnnouncement
 {
-    public class NewRoundAnnouncementState : AFlowState
+    public class IntroductionState : AFlowState
     {
         [SerializeField]
         private AFlowState m_nextState;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using Game.ArchitectureTools.FlowMachine;
+using Game.Gameplay.Levels._0_Core;
 using Game.Global.PlayerManagement;
 using TMPro;
 using UnityEngine;
@@ -15,6 +16,8 @@ namespace Game.Gameplay.Flows.Tutorial
         private TMP_Text m_objectiveLabelText;
         [SerializeField]
         private TMP_Text m_specialActionLabelText;
+        [SerializeField]
+        private GameObject m_meteoriteWidget;
 
         [SerializeField]
         private Image m_waitingBar;
@@ -54,6 +57,13 @@ namespace Game.Gameplay.Flows.Tutorial
                 widget.OnReadyRequested += HandleReadyRequested;
                 widget.OnUnreadyRequested += HandleUnreadyRequested;
             }
+        }
+
+        public void InflateGameData(string objectiveLabelKey, string specialActionLabelKey, bool hasMeteorites)
+        {
+            m_objectiveLabelText.text = objectiveLabelKey;
+            m_specialActionLabelText.text = specialActionLabelKey;
+            m_meteoriteWidget.SetActive(hasMeteorites);
         }
 
         private void HandleReadyRequested(TutorialPlayerWidget obj)

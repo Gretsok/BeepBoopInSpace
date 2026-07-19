@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6520788737371100737}
   - component: {fileID: 8708899259569940491}
   m_Layer: 0
-  m_Name: MeteoriteManager
+  m_Name: MeteoritesModifier
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

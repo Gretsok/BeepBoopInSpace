@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Game.Gameplay.ConfigurationsManagement
 {
-    public class NewConfigurationAnnouncementState : AFlowState
+    public class AnnouncementState : AFlowState
     {
         [SerializeField] 
         private float m_duration = 2f;

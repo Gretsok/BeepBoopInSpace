@@ -11,13 +11,10 @@ namespace Game.Gameplay.ConfigurationsManagement
     public class ConfigurationsManager : AManager<ConfigurationsManager>
     {
         [SerializeField]
-        private ArchitectureTools.FlowMachine.FlowMachine m_flowMachine;
+        private FlowMachine m_flowMachine;
 
         [SerializeField] private AFlowState m_configurationChangeAnnouncementState;
-        [SerializeField] private float m_changePeriod = 10f;
-        public float TimePassedSinceLastChange { get; private set; }
 
-        public bool IsRunning { get; private set; } = false;
 
         protected override IEnumerator Initialize()
         {
@@ -25,34 +22,8 @@ namespace Game.Gameplay.ConfigurationsManagement
             yield return null;
         }
 
-        public Action<ConfigurationsManager> OnPauseRunning;
-        public void PauseRunning()
+        public void PerformChange(bool skipState = false)
         {
-            IsRunning = false;
-            OnPauseRunning?.Invoke(this);
-        }
-
-        public Action<ConfigurationsManager> OnResumeRunning;
-        public void ResumeRunning()
-        {
-            IsRunning = true;
-            OnResumeRunning?.Invoke(this);
-        }
-
-        private void Update()
-        {
-            if (!IsRunning)
-                return;
-            TimePassedSinceLastChange += Time.deltaTime;
-
-            if (TimePassedSinceLastChange >= m_changePeriod)
-                PerformChange();
-        }
-
-        private void PerformChange(bool skipState = false)
-        {
-            TimePassedSinceLastChange = 0f;
-            
             CurrentConfiguration.Clear();
 
             int maxIndex = 5;
