@@ -161,6 +161,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6937776749444148860}
+  - component: {fileID: 4076021970258722226}
   - component: {fileID: 2306408390186685809}
   - component: {fileID: 6624677118162347890}
   - component: {fileID: 6600600853236545758}
@@ -191,6 +192,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &4076021970258722226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3738350501854780348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a834e291dab23940bad9e5a0185ef1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Gameplay.RoundsManagement.NewRoundPanel
+  m_roundText: Le tour {0} commence
+  m_text: {fileID: 3363974995081784330}
 --- !u!223 &2306408390186685809
 Canvas:
   m_ObjectHideFlags: 0
@@ -319,7 +334,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Round 1 is about to start
+  m_text: Round 9 is about to start
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f85038d5416588b43970f2d7f77f83cf, type: 2}
   m_sharedMaterial: {fileID: 5037126915920855447, guid: f85038d5416588b43970f2d7f77f83cf, type: 2}

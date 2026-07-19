@@ -2,10 +2,9 @@ using System;
 using System.Collections;
 using Game.ArchitectureTools.FlowMachine;
 using Game.Global.SFXManagement;
-using Game.SFXManagement;
 using UnityEngine;
 
-namespace Game.Gameplay.ConfigurationsManagement
+namespace Game.Gameplay.Announcement
 {
     public class AnnouncementState : AFlowState
     {
