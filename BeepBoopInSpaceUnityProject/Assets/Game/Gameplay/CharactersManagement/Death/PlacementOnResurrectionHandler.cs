@@ -37,15 +37,20 @@ namespace Game.Gameplay.CharactersManagement.Death
 
         private void HandleDeath(DeathController obj)
         {
-            var deathPlacementFX = Instantiate(m_deathPlacementFXPrefab, m_deathController.CharacterReferencesHolder.ModelSource.position, Quaternion.identity);
-            var sourcePosition = m_deathController.CharacterReferencesHolder.ModelSource.position;
-            m_respawnCell = DecideAndReturnRespawnCell(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell);
-            m_respawnCell.OnCellStateUpdated += HandleRespawnCellUpdated;
-            deathPlacementFX.SetUp(m_deathController.CharacterReferencesHolder.CharacterDataAsset, 
-                sourcePosition,
-                m_respawnCell.transform.position,
-                m_deathController.WaitDurationToResurrect);
+            var deathPosition = m_deathController.CharacterReferencesHolder.ModelSource.position;
             m_deathController.CharacterReferencesHolder.MovementController.DistachFromCurrentCell();
+            
+            if (m_deathController.CanResurrect)
+            {
+                m_respawnCell = DecideAndReturnRespawnCell(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell);
+                m_respawnCell.OnCellStateUpdated += HandleRespawnCellUpdated;
+
+                var deathPlacementFX = Instantiate(m_deathPlacementFXPrefab, deathPosition, Quaternion.identity);
+                deathPlacementFX.SetUp(m_deathController.CharacterReferencesHolder.CharacterDataAsset, 
+                    deathPosition,
+                    m_respawnCell.transform.position,
+                    m_deathController.WaitDurationToResurrect);
+            }
         }
 
         private void HandleRespawnCellUpdated(Cell cell)
@@ -101,13 +106,16 @@ namespace Game.Gameplay.CharactersManagement.Death
 
         private void HandleResurrection(DeathController obj)
         {
-            m_respawnCell.OnCellStateUpdated -= HandleRespawnCellUpdated;
-            while (!CellIsValid(m_respawnCell))
+            if (m_respawnCell)
             {
-                m_respawnCell = ReturnClosestCellFrom(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell);
+                m_respawnCell.OnCellStateUpdated -= HandleRespawnCellUpdated;
+                while (!CellIsValid(m_respawnCell))
+                {
+                    m_respawnCell = ReturnClosestCellFrom(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell);
+                }
+                TeleportToRespawnCell();
+                m_respawnCell = null;
             }
-            TeleportToRespawnCell();
-            m_respawnCell = null;
 
             StartCoroutine(HandleInvincibilityDuration());
         }

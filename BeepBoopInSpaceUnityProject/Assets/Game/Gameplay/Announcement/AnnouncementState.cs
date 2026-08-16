@@ -4,7 +4,6 @@ using Game.ArchitectureTools.FlowMachine;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.CharactersManagement.Death.Invincibility;
 using Game.Global.SFXManagement;
-using Unity.Cinemachine;
 using UnityEngine;
 
 namespace Game.Gameplay.Announcement
