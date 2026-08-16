@@ -83,7 +83,7 @@ namespace Game.Gameplay.CharactersManagement.Movement
                 return;
 
             if (cell == null || !cell.TryGetComponent(out CanBeWalkedOnCellComponent comp) ||
-                comp.MovementControllerOnCell)
+                (comp.MovementControllerOnCell && comp.MovementControllerOnCell != this))
             {
                 Debug.LogError($"Cannot teleport to cell.");
                 return;
