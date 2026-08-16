@@ -18,6 +18,11 @@ namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
         [SerializeField]
         private Transform m_imminentImpactVisualScaler;
 
+        [SerializeField]
+        private Ease m_meteoriteTransformEase = Ease.InQuad;
+        [SerializeField]
+        private Ease m_imminentImpactVisualScalerEase = Ease.InSine;
+
         public bool ReadyToBeUsed { get; private set; } = false;
 
         public Cell Target { get; private set; } = null;
@@ -49,8 +54,8 @@ namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
             m_meteoriteTransform.gameObject.SetActive(true);
             m_imminentImpactVisualContainer.gameObject.SetActive(true);
             m_imminentImpactVisualScaler.localScale = Vector3.zero;
-            m_meteoriteTransform.DOLocalMoveY(0f, dropTime).SetEase(Ease.InQuad).onComplete += Explode;
-            m_imminentImpactVisualScaler.DOScale(1f, dropTime).SetEase(Ease.InQuart);
+            m_meteoriteTransform.DOLocalMoveY(0f, dropTime).SetEase(m_meteoriteTransformEase).onComplete += Explode;
+            m_imminentImpactVisualScaler.DOScale(1f, dropTime).SetEase(m_imminentImpactVisualScalerEase);
         }
 
         private void Explode()

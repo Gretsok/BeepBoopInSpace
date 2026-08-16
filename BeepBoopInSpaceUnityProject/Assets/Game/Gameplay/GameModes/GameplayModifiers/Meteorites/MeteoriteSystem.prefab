@@ -371,3 +371,5 @@ MonoBehaviour:
   m_startingHeight: 10
   m_imminentImpactVisualContainer: {fileID: 6981427309997268176}
   m_imminentImpactVisualScaler: {fileID: 2539906439957396363}
+  m_meteoriteTransformEase: 5
+  m_imminentImpactVisualScalerEase: 2
