@@ -16,7 +16,7 @@ namespace Game.Global.Analytics
         }
 
 
-        public async void NotifyLevelStarted(string levelID)
+        public void NotifyLevelStarted(string levelID)
         {
             try
             {
