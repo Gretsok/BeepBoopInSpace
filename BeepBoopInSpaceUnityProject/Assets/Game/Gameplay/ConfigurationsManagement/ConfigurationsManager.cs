@@ -15,7 +15,6 @@ namespace Game.Gameplay.ConfigurationsManagement
 
         [SerializeField] private AFlowState m_configurationChangeAnnouncementState;
 
-
         protected override IEnumerator Initialize()
         {
             PerformChange(true);

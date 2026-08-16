@@ -88,7 +88,8 @@ namespace Game.Gameplay.CharactersManagement.Movement
                 Debug.LogError($"Cannot teleport to cell.");
                 return;
             }
-            
+
+            m_referencesHolder.Root.transform.DOKill();
             m_referencesHolder.GridWalker.MoveToCell(cell, this);
             m_referencesHolder.Root.transform.position = m_referencesHolder.GridWalker.transform.position;
             m_targetPosition = transform.position;

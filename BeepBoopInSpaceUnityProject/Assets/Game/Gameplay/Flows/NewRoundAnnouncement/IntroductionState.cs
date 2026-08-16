@@ -12,6 +12,8 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
     {
         [SerializeField]
         private AFlowState m_nextState;
+        [SerializeField]
+        private AFlowState m_newRoundState;
 
         [SerializeField]
         private float m_waitDurationOnStart = 1f;
@@ -57,7 +59,12 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
             var audioSource = m_audioPlayer2.PlayWithAudioSourceReturned();
             StartCoroutine(WaitForAudioSourceToEnd(audioSource,() => MusicsManager.Instance.StartPlayingGameplayMusics()));
             introductionManager.Stop();
-            RequestState(m_nextState);
+            
+            var roundsManager = GameplayContext.Instance.RoundsManager;
+            if (roundsManager.IsActive)
+                RequestState(m_newRoundState);
+            else
+                RequestState(m_nextState);
         }
 
         private IEnumerator WaitForAudioSourceToEnd(AudioSource source, Action onComplete)

@@ -1,17 +1,27 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Game.Gameplay.Cells.Default;
 using Game.Gameplay.GlobalGameplayData;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.GridSystem.GenericComponents;
 using UnityEngine;
-using Random = System.Random;
 
 namespace Game.Gameplay.CharactersManagement.Death
 {
     [RequireComponent(typeof(DeathController))]
     public class PlacementOnResurrectionHandler : MonoBehaviour
     {
+        private enum EReplacementTime
+        {
+            OnResurrection = 0,
+            OnDeath = 1
+        }
+
+        [SerializeField]
+        private DeathPlacementFX m_deathPlacementFXPrefab;
+        [SerializeField]
+        private EReplacementTime m_replacementTime = EReplacementTime.OnDeath;
         private DeathController m_deathController;
         private GridBuilder m_gridBuilder;
         private GlobalGameplayDataManager m_globalGameplayDataManager;
@@ -20,13 +30,33 @@ namespace Game.Gameplay.CharactersManagement.Death
             m_deathController = GetComponent<DeathController>();
 
             m_deathController.OnResurrection += HandleResurrection;
+            m_deathController.OnDeath += HandleDeath;
             
             GridBuilder.RegisterPostInitializationCallback(builder => m_gridBuilder = builder);
             GlobalGameplayDataManager.RegisterPostInitializationCallback(manager => m_globalGameplayDataManager = manager);
         }
 
+        private void HandleDeath(DeathController obj)
+        {
+            if (m_replacementTime != EReplacementTime.OnDeath)
+                return;
+
+            // Death feedback need death position, so we wait a frame before moving.
+            UniTask.WaitForEndOfFrame().ContinueWith(Replace);
+        }
+
         private void HandleResurrection(DeathController obj)
         {
+            if (m_replacementTime != EReplacementTime.OnResurrection)
+                return;
+            Replace();
+        }
+
+        private void Replace()
+        {
+            var deathPlacementFX = Instantiate(m_deathPlacementFXPrefab, m_deathController.CharacterReferencesHolder.ModelSource.position, Quaternion.identity);
+            // Source position must be gathered before teleportation.
+            var sourcePosition = m_deathController.CharacterReferencesHolder.ModelSource.position;
             var dataAsset = m_globalGameplayDataManager.Data;
             // On invalid cell
             if (!CellIsValid(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell)) 
@@ -62,6 +92,10 @@ namespace Game.Gameplay.CharactersManagement.Death
                         throw new NotImplementedException("Checkpoints not implemented.");
                 }
             }
+            deathPlacementFX.SetUp(m_deathController.CharacterReferencesHolder.CharacterDataAsset, 
+                sourcePosition,
+                m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell.transform.position,
+                m_deathController.WaitDurationToResurrect);
         }
 
         private void TeleportToRandomCell()

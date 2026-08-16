@@ -103,6 +103,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a15fa1e4db8fa774fb294d79a723f880, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_deathPlacementFXPrefab: {fileID: 7422693439100885718, guid: a0a524f314c012746959b88c7a092a03, type: 3}
+  m_replacementTime: 1
 --- !u!1 &961321939369364563
 GameObject:
   m_ObjectHideFlags: 0
