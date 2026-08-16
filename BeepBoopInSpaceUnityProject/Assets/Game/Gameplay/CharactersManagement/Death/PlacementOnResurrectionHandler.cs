@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Gameplay.Cells.Default;
-using Game.Gameplay.CharactersManagement.Movement;
 using Game.Gameplay.GlobalGameplayData;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.GridSystem.GenericComponents;
@@ -35,25 +34,38 @@ namespace Game.Gameplay.CharactersManagement.Death
         {
             var deathPlacementFX = Instantiate(m_deathPlacementFXPrefab, m_deathController.CharacterReferencesHolder.ModelSource.position, Quaternion.identity);
             var sourcePosition = m_deathController.CharacterReferencesHolder.ModelSource.position;
-            m_respawnCell = DecideAndReturnRespawnCell();
+            m_respawnCell = DecideAndReturnRespawnCell(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell);
+            m_respawnCell.OnCellStateUpdated += HandleRespawnCellUpdated;
             deathPlacementFX.SetUp(m_deathController.CharacterReferencesHolder.CharacterDataAsset, 
                 sourcePosition,
                 m_respawnCell.transform.position,
                 m_deathController.WaitDurationToResurrect);
         }
 
-        private Cell DecideAndReturnRespawnCell()
+        private void HandleRespawnCellUpdated(Cell cell)
+        {
+            m_respawnCell.OnCellStateUpdated -= HandleRespawnCellUpdated;
+
+            if (!CellIsValid(m_respawnCell))
+            {
+                m_respawnCell = ReturnClosestCellFrom(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell);
+            }
+
+            m_respawnCell.OnCellStateUpdated += HandleRespawnCellUpdated;
+        }
+
+        private Cell DecideAndReturnRespawnCell(Cell sourceCell)
         {
             // Source position must be gathered before teleportation.
             var dataAsset = m_globalGameplayDataManager.Data;
             // On invalid cell
-            if (!CellIsValid(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell)) 
+            if (!CellIsValid(sourceCell)) 
             {
                 Debug.Log($"Current cell is invalid.");
                 switch (dataAsset.ResurrectionPlacementOnInvalidCell)
                 {
                     case GlobalGameplayDataAsset.EResurrectionPlacement.Closest:
-                        return ReturnClosestCellFrom(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell);
+                        return ReturnClosestCellFrom(sourceCell);
                     case GlobalGameplayDataAsset.EResurrectionPlacement.Random:
                         return ReturnRandomCell();
                     case GlobalGameplayDataAsset.EResurrectionPlacement.Checkpoint:
@@ -69,7 +81,7 @@ namespace Game.Gameplay.CharactersManagement.Death
                 {
                     case GlobalGameplayDataAsset.EResurrectionPlacement.Closest:
                         // We stay on place
-                        return m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell; 
+                        return sourceCell; 
                     case GlobalGameplayDataAsset.EResurrectionPlacement.Random:
                         return ReturnRandomCell();
                     case GlobalGameplayDataAsset.EResurrectionPlacement.Checkpoint:
@@ -83,11 +95,13 @@ namespace Game.Gameplay.CharactersManagement.Death
 
         private void HandleResurrection(DeathController obj)
         {
+            m_respawnCell.OnCellStateUpdated -= HandleRespawnCellUpdated;
             while (!CellIsValid(m_respawnCell))
             {
                 m_respawnCell = ReturnClosestCellFrom(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell);
             }
             TeleportToRespawnCell();
+            m_respawnCell = null;
         }
 
         private Cell ReturnRandomCell()
