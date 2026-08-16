@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
+using System.Linq;
 using Game.Gameplay.Cells.Default;
 using Game.Gameplay.GlobalGameplayData;
 using Game.Gameplay.GridSystem;
@@ -12,19 +12,13 @@ namespace Game.Gameplay.CharactersManagement.Death
     [RequireComponent(typeof(DeathController))]
     public class PlacementOnResurrectionHandler : MonoBehaviour
     {
-        private enum EReplacementTime
-        {
-            OnResurrection = 0,
-            OnDeath = 1
-        }
-
         [SerializeField]
         private DeathPlacementFX m_deathPlacementFXPrefab;
-        [SerializeField]
-        private EReplacementTime m_replacementTime = EReplacementTime.OnDeath;
         private DeathController m_deathController;
         private GridBuilder m_gridBuilder;
         private GlobalGameplayDataManager m_globalGameplayDataManager;
+        private Cell m_respawnCell;
+        
         private void Awake()
         {
             m_deathController = GetComponent<DeathController>();
@@ -38,38 +32,43 @@ namespace Game.Gameplay.CharactersManagement.Death
 
         private void HandleDeath(DeathController obj)
         {
-            if (m_replacementTime != EReplacementTime.OnDeath)
-                return;
-
-            // Death feedback need death position, so we wait a frame before moving.
-            UniTask.WaitForEndOfFrame().ContinueWith(Replace);
-        }
-
-        private void HandleResurrection(DeathController obj)
-        {
-            if (m_replacementTime != EReplacementTime.OnResurrection)
-                return;
-            Replace();
-        }
-
-        private void Replace()
-        {
             var deathPlacementFX = Instantiate(m_deathPlacementFXPrefab, m_deathController.CharacterReferencesHolder.ModelSource.position, Quaternion.identity);
-            // Source position must be gathered before teleportation.
             var sourcePosition = m_deathController.CharacterReferencesHolder.ModelSource.position;
+            m_respawnCell = DecideAndReturnRespawnCell(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell);
+            m_respawnCell.OnCellStateUpdated += HandleRespawnCellUpdated;
+            deathPlacementFX.SetUp(m_deathController.CharacterReferencesHolder.CharacterDataAsset, 
+                sourcePosition,
+                m_respawnCell.transform.position,
+                m_deathController.WaitDurationToResurrect);
+            m_deathController.CharacterReferencesHolder.MovementController.DistachFromCurrentCell();
+        }
+
+        private void HandleRespawnCellUpdated(Cell cell)
+        {
+            m_respawnCell.OnCellStateUpdated -= HandleRespawnCellUpdated;
+
+            if (!CellIsValid(m_respawnCell))
+            {
+                m_respawnCell = ReturnClosestCellFrom(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell);
+            }
+
+            m_respawnCell.OnCellStateUpdated += HandleRespawnCellUpdated;
+        }
+
+        private Cell DecideAndReturnRespawnCell(Cell sourceCell)
+        {
+            // Source position must be gathered before teleportation.
             var dataAsset = m_globalGameplayDataManager.Data;
             // On invalid cell
-            if (!CellIsValid(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell)) 
+            if (!CellIsValid(sourceCell)) 
             {
                 Debug.Log($"Current cell is invalid.");
                 switch (dataAsset.ResurrectionPlacementOnInvalidCell)
                 {
                     case GlobalGameplayDataAsset.EResurrectionPlacement.Closest:
-                        TeleportToClosestCell();
-                        break;
+                        return ReturnClosestCellFrom(sourceCell);
                     case GlobalGameplayDataAsset.EResurrectionPlacement.Random:
-                        TeleportToRandomCell();
-                        break;
+                        return ReturnRandomCell();
                     case GlobalGameplayDataAsset.EResurrectionPlacement.Checkpoint:
                         throw new NotImplementedException("Checkpoints not implemented.");
                 }
@@ -83,62 +82,174 @@ namespace Game.Gameplay.CharactersManagement.Death
                 {
                     case GlobalGameplayDataAsset.EResurrectionPlacement.Closest:
                         // We stay on place
-                        Debug.Log($"We stay on place.");
-                        break;
+                        return sourceCell; 
                     case GlobalGameplayDataAsset.EResurrectionPlacement.Random:
-                        TeleportToRandomCell();
-                        break;
+                        return ReturnRandomCell();
                     case GlobalGameplayDataAsset.EResurrectionPlacement.Checkpoint:
                         throw new NotImplementedException("Checkpoints not implemented.");
                 }
             }
-            deathPlacementFX.SetUp(m_deathController.CharacterReferencesHolder.CharacterDataAsset, 
-                sourcePosition,
-                m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell.transform.position,
-                m_deathController.WaitDurationToResurrect);
+
+            Debug.LogError($"Could not find strategy for respawn placement.");
+            return ReturnRandomCell();
         }
 
-        private void TeleportToRandomCell()
+        private void HandleResurrection(DeathController obj)
         {
-            Debug.Log($"Teleport to a random cell.");
-            m_deathController.CharacterReferencesHolder.MovementController.TeleportToCell(
-                m_gridBuilder.GetRandomAvailableWalkableCell(cell => !cell.TryGetComponent<KillingCellComponent>(out _))
-            );
+            m_respawnCell.OnCellStateUpdated -= HandleRespawnCellUpdated;
+            while (!CellIsValid(m_respawnCell))
+            {
+                m_respawnCell = ReturnClosestCellFrom(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell);
+            }
+            TeleportToRespawnCell();
+            m_respawnCell = null;
         }
 
-        /// <summary>
-        /// Naive approach: Randomly teleporting to one of the valid neighbour cells.
-        /// </summary>
-        private void TeleportToClosestCell()
+        private Cell ReturnRandomCell()
         {
-            Debug.Log($"Teleport to the closest cell.");
-            var currentCell = m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell;
-            List<Cell> validNeighbourCells = new();
-            if (CellIsValid(currentCell.ForwardCell))
-                validNeighbourCells.Add(currentCell.ForwardCell);
-            if (CellIsValid(currentCell.BackwardCell))
-                validNeighbourCells.Add(currentCell.BackwardCell);
-            if (CellIsValid(currentCell.RightCell))
-                validNeighbourCells.Add(currentCell.RightCell);
-            if (CellIsValid(currentCell.LeftCell))
-                validNeighbourCells.Add(currentCell.LeftCell);
+            return m_gridBuilder.GetRandomAvailableWalkableCell(cell =>
+                !cell.TryGetComponent<KillingCellComponent>(out _));
+        }
+
+        private Cell ReturnClosestCellFrom(Cell a_sourceCell, HashSet<Cell> exploredCells = null)
+        {
+            if (exploredCells == null)
+                exploredCells = new HashSet<Cell>();
+            
+            HashSet<Cell> validNeighbourCells = new();
+            HashSet<Cell> surroundingToExploreThisRoundCells = new HashSet<Cell>();
+            surroundingToExploreThisRoundCells.Add(a_sourceCell);
+
+            do
+            {
+                var cellsToExploreNextRound = new HashSet<Cell>();
+                var enumerator = surroundingToExploreThisRoundCells.GetEnumerator();
+                while (enumerator.MoveNext())
+                {
+                    var rootCellToExplore = enumerator.Current;
+
+                    if (!rootCellToExplore)
+                        continue;
+                    
+                    if (!exploredCells.Contains(rootCellToExplore.ForwardCell))
+                    {
+                        var neighbourCellToExplore = rootCellToExplore.ForwardCell;
+                        if (CellIsValid(neighbourCellToExplore))
+                        {
+                            validNeighbourCells.Add(neighbourCellToExplore);
+                        }
+                        else if (neighbourCellToExplore)
+                        {
+                            if (neighbourCellToExplore.ForwardCell && !exploredCells.Contains(neighbourCellToExplore.ForwardCell))
+                                cellsToExploreNextRound.Add(neighbourCellToExplore.ForwardCell);
+                            if (neighbourCellToExplore.BackwardCell && !exploredCells.Contains(neighbourCellToExplore.BackwardCell))
+                                cellsToExploreNextRound.Add(neighbourCellToExplore.BackwardCell);
+                            if (neighbourCellToExplore.RightCell && !exploredCells.Contains(neighbourCellToExplore.RightCell))
+                                cellsToExploreNextRound.Add(neighbourCellToExplore.RightCell);
+                            if (neighbourCellToExplore.LeftCell && !exploredCells.Contains(neighbourCellToExplore.LeftCell))
+                                cellsToExploreNextRound.Add(neighbourCellToExplore.LeftCell);
+                        }
+                        
+                        if (neighbourCellToExplore)
+                            exploredCells.Add(neighbourCellToExplore);
+                    }
+                    
+                    if (!exploredCells.Contains(rootCellToExplore.BackwardCell))
+                    {
+                        var neighbourCellToExplore = rootCellToExplore.BackwardCell;
+                        if (CellIsValid(neighbourCellToExplore))
+                        {
+                            validNeighbourCells.Add(neighbourCellToExplore);
+                        }
+                        else if (neighbourCellToExplore)
+                        {
+                            if (neighbourCellToExplore.ForwardCell && !exploredCells.Contains(neighbourCellToExplore.ForwardCell))
+                                cellsToExploreNextRound.Add(neighbourCellToExplore.ForwardCell);
+                            if (neighbourCellToExplore.BackwardCell && !exploredCells.Contains(neighbourCellToExplore.BackwardCell))
+                                cellsToExploreNextRound.Add(neighbourCellToExplore.BackwardCell);
+                            if (neighbourCellToExplore.RightCell && !exploredCells.Contains(neighbourCellToExplore.RightCell))
+                                cellsToExploreNextRound.Add(neighbourCellToExplore.RightCell);
+                            if (neighbourCellToExplore.LeftCell && !exploredCells.Contains(neighbourCellToExplore.LeftCell))
+                                cellsToExploreNextRound.Add(neighbourCellToExplore.LeftCell);
+                        }
+                        
+                        if (neighbourCellToExplore)
+                            exploredCells.Add(neighbourCellToExplore);
+                    }
+                    
+                    if (!exploredCells.Contains(rootCellToExplore.RightCell))
+                    {
+                        var neighbourCellToExplore = rootCellToExplore.RightCell;
+                        if (CellIsValid(neighbourCellToExplore))
+                        {
+                            validNeighbourCells.Add(neighbourCellToExplore);
+                        }
+                        else if (neighbourCellToExplore)
+                        {
+                            if (neighbourCellToExplore.ForwardCell && !exploredCells.Contains(neighbourCellToExplore.ForwardCell))
+                                cellsToExploreNextRound.Add(neighbourCellToExplore.ForwardCell);
+                            if (neighbourCellToExplore.BackwardCell && !exploredCells.Contains(neighbourCellToExplore.BackwardCell))
+                                cellsToExploreNextRound.Add(neighbourCellToExplore.BackwardCell);
+                            if (neighbourCellToExplore.RightCell && !exploredCells.Contains(neighbourCellToExplore.RightCell))
+                                cellsToExploreNextRound.Add(neighbourCellToExplore.RightCell);
+                            if (neighbourCellToExplore.LeftCell && !exploredCells.Contains(neighbourCellToExplore.LeftCell))
+                                cellsToExploreNextRound.Add(neighbourCellToExplore.LeftCell);
+                        }
+                        
+                        if (neighbourCellToExplore)
+                            exploredCells.Add(neighbourCellToExplore);
+                    }
+                    
+                    if (!exploredCells.Contains(rootCellToExplore.LeftCell))
+                    {
+                        var neighbourCellToExplore = rootCellToExplore.LeftCell;
+                        if (CellIsValid(neighbourCellToExplore))
+                        {
+                            validNeighbourCells.Add(neighbourCellToExplore);
+                        }
+                        else if (neighbourCellToExplore)
+                        {
+                            if (neighbourCellToExplore.ForwardCell && !exploredCells.Contains(neighbourCellToExplore.ForwardCell))
+                                cellsToExploreNextRound.Add(neighbourCellToExplore.ForwardCell);
+                            if (neighbourCellToExplore.BackwardCell && !exploredCells.Contains(neighbourCellToExplore.BackwardCell))
+                                cellsToExploreNextRound.Add(neighbourCellToExplore.BackwardCell);
+                            if (neighbourCellToExplore.RightCell && !exploredCells.Contains(neighbourCellToExplore.RightCell))
+                                cellsToExploreNextRound.Add(neighbourCellToExplore.RightCell);
+                            if (neighbourCellToExplore.LeftCell && !exploredCells.Contains(neighbourCellToExplore.LeftCell))
+                                cellsToExploreNextRound.Add(neighbourCellToExplore.LeftCell);
+                        }
+                        
+                        if (neighbourCellToExplore)
+                            exploredCells.Add(neighbourCellToExplore);
+                    }
+                }
+                
+                // Should update cells to explore here
+                surroundingToExploreThisRoundCells = cellsToExploreNextRound;
+
+            } while (validNeighbourCells.Count == 0 && surroundingToExploreThisRoundCells.Count > 0);
 
             if (validNeighbourCells.Count == 0)
             {
                 Debug.LogError($"Could not find a neighbour valid cell. Respawning at a random position.");
-                TeleportToRandomCell();
-                return;
+                
+                return ReturnRandomCell();
             }
-            
-            m_deathController.CharacterReferencesHolder.MovementController.TeleportToCell(
-                validNeighbourCells[UnityEngine.Random.Range(0, validNeighbourCells.Count)]
-            );
+
+            return validNeighbourCells.ElementAt(UnityEngine.Random.Range(0, validNeighbourCells.Count));
+        }
+
+        private void TeleportToRespawnCell()
+        {
+            m_deathController.CharacterReferencesHolder.MovementController.TeleportToCell(m_respawnCell);
         }
 
         public bool CellIsValid(Cell cell)
         {
             return cell && !cell.GetComponent<KillingCellComponent>() &&
-                   cell.GetComponent<CanBeWalkedOnCellComponent>();
+                   cell.TryGetComponent(out CanBeWalkedOnCellComponent canBeWalkedOnComp) &&
+                    (!canBeWalkedOnComp.MovementControllerOnCell || 
+                     canBeWalkedOnComp.MovementControllerOnCell == m_deathController.CharacterReferencesHolder.MovementController);
         }
     }
 }

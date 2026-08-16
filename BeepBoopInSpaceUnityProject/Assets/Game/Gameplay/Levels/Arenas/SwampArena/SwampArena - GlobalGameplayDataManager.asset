@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: SwampArena - GlobalGameplayDataManager
   m_EditorClassIdentifier: 
   <ResurrectionPlacementOnValidCell>k__BackingField: 2
-  <ResurrectionPlacementOnInvalidCell>k__BackingField: 2
+  <ResurrectionPlacementOnInvalidCell>k__BackingField: 1
