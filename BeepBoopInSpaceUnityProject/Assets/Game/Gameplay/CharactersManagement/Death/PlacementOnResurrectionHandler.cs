@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Gameplay.Cells.Default;
+using Game.Gameplay.CharactersManagement.Death.Invincibility;
 using Game.Gameplay.GlobalGameplayData;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.GridSystem.GenericComponents;
@@ -10,10 +12,13 @@ using UnityEngine;
 namespace Game.Gameplay.CharactersManagement.Death
 {
     [RequireComponent(typeof(DeathController))]
-    public class PlacementOnResurrectionHandler : MonoBehaviour
+    public class PlacementOnResurrectionHandler : MonoBehaviour, IInvincibilityGiver
     {
         [SerializeField]
         private DeathPlacementFX m_deathPlacementFXPrefab;
+        [SerializeField]
+        private float m_invincibilityDurationAfterResurrection = 2f;
+
         private DeathController m_deathController;
         private GridBuilder m_gridBuilder;
         private GlobalGameplayDataManager m_globalGameplayDataManager;
@@ -103,6 +108,15 @@ namespace Game.Gameplay.CharactersManagement.Death
             }
             TeleportToRespawnCell();
             m_respawnCell = null;
+
+            StartCoroutine(HandleInvincibilityDuration());
+        }
+
+        private IEnumerator HandleInvincibilityDuration()
+        {
+            m_deathController.RegisterInvincibilityGiver(this);
+            yield return new WaitForSeconds(m_invincibilityDurationAfterResurrection);
+            m_deathController.UnregisterInvincibilityGiver(this);
         }
 
         private Cell ReturnRandomCell()
