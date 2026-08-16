@@ -40,6 +40,7 @@ namespace Game.Gameplay.CharactersManagement.Death
                 sourcePosition,
                 m_respawnCell.transform.position,
                 m_deathController.WaitDurationToResurrect);
+            m_deathController.CharacterReferencesHolder.MovementController.DistachFromCurrentCell();
         }
 
         private void HandleRespawnCellUpdated(Cell cell)
