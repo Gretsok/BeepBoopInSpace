@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53eba915f8225ee49b42f3984ff81794, type: 3}
+  m_Name: Action_4 - InputSpriteDataAsset
+  m_EditorClassIdentifier: Assembly-CSharp::Game.Global.InputIndicationsManagement.InputIndicationActionDataAsset
+  <KBM_InputSpriteDataAsset>k__BackingField: {fileID: 11400000, guid: 95906aa899c961a469374389686c56e9, type: 2}
+  <XboxGamepad_InputSpriteDataAsset>k__BackingField: {fileID: 11400000, guid: 9773ed7dab196df46ba2adf53741c858, type: 2}
+  <PSGamepad_InputSpriteDataAsset>k__BackingField: {fileID: 11400000, guid: 85589b09c78c5d24db44bddd758e0069, type: 2}
