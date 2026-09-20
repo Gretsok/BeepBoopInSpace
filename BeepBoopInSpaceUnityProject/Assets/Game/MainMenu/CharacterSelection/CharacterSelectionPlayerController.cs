@@ -1,4 +1,5 @@
 using Game.Global.PlayerManagement;
+using Game.MainMenu.CharacterManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,6 +16,7 @@ namespace Game.MainMenu.CharacterSelection
             m_widget = widget;
             
             m_player.SetCharacterData(widget.CharacterDataAsset);
+            widget.SetPlayer(m_player);
             widget.OnActivated -= HandleWidgetActivated;
             widget.OnActivated += HandleWidgetActivated;
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Game.Global.PlayerManagement;
+using Game.MainMenu.CharacterManagement;
 using Game.MainMenu.ZoneManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;

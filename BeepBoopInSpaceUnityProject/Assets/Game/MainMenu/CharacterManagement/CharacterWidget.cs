@@ -1,13 +1,14 @@
 using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using Game.Characters;
-using Game.MainMenu.CharacterManagement;
+using Game.Global.InputIndicationsManagement;
+using Game.Global.PlayerManagement;
 using TMPro;
-using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Game.MainMenu
+namespace Game.MainMenu.CharacterManagement
 {
     public class CharacterWidget : MonoBehaviour
     {
@@ -26,6 +27,17 @@ namespace Game.MainMenu
         
         [SerializeField]
         private AudioSource m_playerPopAudioSource;
+
+        [SerializeField]
+        private List<InputIndicationWidget> m_inputIndicationWidgets = new();
+        
+        public AbstractPlayer Player { get; private set; }
+
+        public void SetPlayer(AbstractPlayer player)
+        {
+            Player = player;
+            m_inputIndicationWidgets?.ForEach(widget => widget.SetPlayer(Player));
+        }
 
         public bool CanPlay => !CharacterBankManager.Instance.IsCharacterAlreadyTakenByAnotherWidget(CharacterDataAsset, this);
         
