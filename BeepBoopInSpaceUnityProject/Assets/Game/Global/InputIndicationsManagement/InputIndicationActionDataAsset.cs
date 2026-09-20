@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace Game.Global.InputIndicationsManagement
 {
@@ -8,8 +10,11 @@ namespace Game.Global.InputIndicationsManagement
     [CreateAssetMenu(fileName = "{name} - " + nameof(InputSpriteDataAsset), menuName = "Game/Global/InputIndicationsManagement/InputIndicationActionDataAsset")]
     public class InputIndicationActionDataAsset : ScriptableObject
     {
+        [field: FormerlySerializedAs("<KBM_InputSpriteDataAsset>k__BackingField")]
         [field: SerializeField]
-        public InputSpriteDataAsset KBM_InputSpriteDataAsset { get; set; }
+        public InputSpriteDataAsset KBM_Qwerty_InputSpriteDataAsset { get; set; }
+        [field: SerializeField]
+        public InputSpriteDataAsset KBM_Azerty_InputSpriteDataAsset { get; set; }
         [field: SerializeField]
         public InputSpriteDataAsset XboxGamepad_InputSpriteDataAsset { get; set; }
         [field: SerializeField]
@@ -20,7 +25,9 @@ namespace Game.Global.InputIndicationsManagement
             switch (controlScheme)
             {
                 case "KBM":
-                    return KBM_InputSpriteDataAsset.InputSprite;
+                    if (Keyboard.current.keyboardLayout == "AZERTY")
+                        return KBM_Azerty_InputSpriteDataAsset.InputSprite;
+                    return KBM_Qwerty_InputSpriteDataAsset.InputSprite;
                 case "XboxGamepad":
                     return XboxGamepad_InputSpriteDataAsset.InputSprite;
                 case "PSGamepad":

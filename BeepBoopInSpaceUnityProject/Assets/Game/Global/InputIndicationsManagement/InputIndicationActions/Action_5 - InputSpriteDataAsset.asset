@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53eba915f8225ee49b42f3984ff81794, type: 3}
   m_Name: Action_5 - InputSpriteDataAsset
   m_EditorClassIdentifier: Assembly-CSharp::Game.Global.InputIndicationsManagement.InputIndicationActionDataAsset
-  <KBM_InputSpriteDataAsset>k__BackingField: {fileID: 11400000, guid: 9a5c6a955bf38e148959aee66f59b0c0, type: 2}
+  <KBM_Qwerty_InputSpriteDataAsset>k__BackingField: {fileID: 11400000, guid: 9a5c6a955bf38e148959aee66f59b0c0, type: 2}
+  <KBM_Azerty_InputSpriteDataAsset>k__BackingField: {fileID: 11400000, guid: 9a5c6a955bf38e148959aee66f59b0c0, type: 2}
   <XboxGamepad_InputSpriteDataAsset>k__BackingField: {fileID: 11400000, guid: f5bd91818d9f0b34a855201dd93c3486, type: 2}
   <PSGamepad_InputSpriteDataAsset>k__BackingField: {fileID: 11400000, guid: a134dfb0bbed1fc40ba5b030c29f74de, type: 2}
