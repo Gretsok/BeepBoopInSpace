@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using DG.Tweening;
 using Game.Gameplay.Cells.Default;
 using Game.Gameplay.CharactersManagement.ReferencesHolding;
-using Game.Gameplay.GridSystem;
 using Game.Gameplay.GridSystem.GenericComponents;
 using UnityEngine;
 
@@ -77,18 +76,27 @@ namespace Game.Gameplay.CharactersManagement.Movement
 
         private Vector3 m_targetPosition;
 
+        public void DistachFromCurrentCell()
+        {
+            if (m_referencesHolder.GridWalker.CurrentCell != null)
+            {
+                m_referencesHolder.GridWalker.MoveToCell(null, this);
+            }
+        }
+
         public void TeleportToCell(Cell cell)
         {
             if (IsBlocked)
                 return;
 
             if (cell == null || !cell.TryGetComponent(out CanBeWalkedOnCellComponent comp) ||
-                comp.MovementControllerOnCell)
+                (comp.MovementControllerOnCell && comp.MovementControllerOnCell != this))
             {
                 Debug.LogError($"Cannot teleport to cell.");
                 return;
             }
-            
+
+            m_referencesHolder.Root.transform.DOKill();
             m_referencesHolder.GridWalker.MoveToCell(cell, this);
             m_referencesHolder.Root.transform.position = m_referencesHolder.GridWalker.transform.position;
             m_targetPosition = transform.position;

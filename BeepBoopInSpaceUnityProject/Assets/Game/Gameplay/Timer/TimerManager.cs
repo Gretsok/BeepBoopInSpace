@@ -1,13 +1,12 @@
 using System;
-using Game.Gameplay.ConfigurationsManagement;
 using Game.Gameplay.Flows._1_SetUp;
+using Game.Gameplay.Flows.Gameplay;
 using UnityEngine;
 
 namespace Game.Gameplay.Timer
 {
     public class TimerManager : MonoBehaviour
     {
-        private ConfigurationsManager m_configurationsManager;
         [SerializeField] 
         private float m_gameDuration = 60f;
 
@@ -15,38 +14,48 @@ namespace Game.Gameplay.Timer
 
         private void Start()
         {
-            m_configurationsManager = ConfigurationsManager.Instance;
-            m_configurationsManager.OnResumeRunning += HandleResumeRunning;
-            m_configurationsManager.OnPauseRunning += HandlePauseRunning;
-            
             SetUpEventsHooker.RegisterPostInitializationCallback(eventsHooker =>
             {
                 eventsHooker.OnSetUpCompleted += HandleSetUpCompleted;
             });
-        }
-
-        private void HandleSetUpCompleted()
-        {
-            ResetTimer();
+            
+            GameplayEventsHooker.RegisterPostInitializationCallback(hooker =>
+            {
+                hooker.OnGameplayResumed += HandleGameplayResumed;
+                hooker.OnGameplayPaused += HandleGameplayPaused;
+            });
         }
 
         private void OnDestroy()
         {
-            if (m_configurationsManager)
+            var setUpEventsHooker = SetUpEventsHooker.Instance;
+            if (setUpEventsHooker)
             {
-                m_configurationsManager.OnResumeRunning -= HandleResumeRunning;
-                m_configurationsManager.OnPauseRunning -= HandlePauseRunning;
+                setUpEventsHooker.OnSetUpCompleted -= HandleSetUpCompleted; 
+            }
+            
+            var gameplayEventsHooker = GameplayEventsHooker.Instance;
+            if (gameplayEventsHooker)
+            {
+                gameplayEventsHooker.OnGameplayResumed -= HandleGameplayResumed;
+                gameplayEventsHooker.OnGameplayPaused -= HandleGameplayPaused;
             }
         }
 
-        private void HandleResumeRunning(ConfigurationsManager obj)
+        private void HandleGameplayResumed()
         {
             ResumeTimer();
         }
 
-        private void HandlePauseRunning(ConfigurationsManager obj)
+        private void HandleGameplayPaused()
         {
             PauseTimer();
+        }
+
+        private void HandleSetUpCompleted()
+        {
+            SetUpEventsHooker.Instance.OnSetUpCompleted -= HandleSetUpCompleted; 
+            ResetTimer();
         }
 
         public void ResetTimer()

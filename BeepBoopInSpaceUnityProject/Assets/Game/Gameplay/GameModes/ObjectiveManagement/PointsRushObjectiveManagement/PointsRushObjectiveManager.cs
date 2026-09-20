@@ -2,6 +2,7 @@ using System.Collections;
 using Game.Gameplay.Cells.Default;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.CharactersManagement.Movement;
+using Game.Gameplay.ConfigurationsManagement;
 using Game.Gameplay.Flows._1_SetUp;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.GridSystem.GenericComponents;
@@ -20,6 +21,8 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.PointsRushObjectiveManagem
         private GameObject m_currentObjectiveIndication;
         [SerializeField]
         private TimerManager m_timerManager;
+        [SerializeField]
+        private PeriodicConfigurationChangesManager m_periodicConfigurationChangesManager;
         
         public Cell CurrentObjectiveCell { get; private set; }
         
@@ -49,6 +52,8 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.PointsRushObjectiveManagem
 
         private void SetUp()
         {
+            SetUpEventsHooker.Instance.OnTimeToSetUpDependencies -= SetUp;
+            
             foreach (var pawn in m_charactersManager.CharacterPawns)
             {
                 pawn.ReferencesHolder.MovementController.OnPositionUpdated += HandlePawnMove;

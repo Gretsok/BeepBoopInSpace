@@ -26,7 +26,7 @@ namespace Game.Gameplay.GridSystem.GenericComponents
             if (arg1 != m_canBeWalkedOnCellComponent.MovementControllerOnCell)
                 return;
             arg1.OnMoveAnimationDone -= HandleTargetMoveAnimationDone;
-            arg1?.ReferencesHolder.DeathController.Kill();
+            arg1?.ReferencesHolder.DeathController.Kill(a_cannotCounter: true);
         }
     }
 }

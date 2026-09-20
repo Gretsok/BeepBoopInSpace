@@ -1,6 +1,7 @@
 using System.Collections;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.CharactersManagement.Death;
+using Game.Gameplay.ConfigurationsManagement;
 using Game.Gameplay.Flows.Results;
 using Game.Gameplay.Timer;
 using UnityEngine;
@@ -13,6 +14,8 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LeastDeathsObjectiveManage
 
         [SerializeField]
         private TimerManager m_timerManager;
+        [SerializeField]
+        private PeriodicConfigurationChangesManager m_periodicConfigurationChangesManager;
 
         protected override IEnumerator Initialize()
         {

@@ -1,7 +1,6 @@
 using Game.ArchitectureTools.FlowMachine;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.ConfigurationsManagement;
-using Game.Gameplay.Timer;
 
 namespace Game.Gameplay.Flows.Gameplay
 {
@@ -14,8 +13,6 @@ namespace Game.Gameplay.Flows.Gameplay
             var charactersManager = CharactersManager.Instance;
             m_configurationsManager = ConfigurationsManager.Instance;
             
-            m_configurationsManager.ResumeRunning();
-            
             
             foreach (var pair in charactersManager.CharacterPlayerControllersAssociation)
             {
@@ -27,8 +24,6 @@ namespace Game.Gameplay.Flows.Gameplay
         protected override void HandleLeave()
         {
             base.HandleLeave();
-            
-            m_configurationsManager.PauseRunning();
             
             var charactersManager = CharactersManager.Instance;
 

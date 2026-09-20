@@ -2,6 +2,7 @@ using DG.Tweening;
 using Game.Gameplay.Cells.Default;
 using Game.Gameplay.GridSystem.GenericComponents;
 using UnityEngine;
+using UnityEngine.VFX;
 
 namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
 {
@@ -9,6 +10,10 @@ namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
     {
         [SerializeField]
         private Transform m_meteoriteTransform;
+        [SerializeField]
+        private VisualEffect m_meteoriteVFX;
+        [SerializeField]
+        private VisualEffect m_impactVFX;
 
         [SerializeField]
         private float m_startingHeight = 10f;
@@ -17,6 +22,11 @@ namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
         private Transform m_imminentImpactVisualContainer;
         [SerializeField]
         private Transform m_imminentImpactVisualScaler;
+
+        [SerializeField]
+        private Ease m_meteoriteTransformEase = Ease.InQuad;
+        [SerializeField]
+        private Ease m_imminentImpactVisualScalerEase = Ease.InSine;
 
         public bool ReadyToBeUsed { get; private set; } = false;
 
@@ -45,12 +55,16 @@ namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
             Target = target;
             
             transform.position = target.transform.position;
+            m_meteoriteVFX.SetFloat("MeteorLifetime", dropTime + 1f);
+            m_meteoriteVFX.SetVector3("InitialPosition", new Vector3(0f, m_startingHeight, 0f));
+            m_meteoriteVFX.SetFloat("Speed", -m_startingHeight / dropTime);
+            m_meteoriteVFX.Play();
             
-            m_meteoriteTransform.gameObject.SetActive(true);
+            //m_meteoriteTransform.gameObject.SetActive(true);
             m_imminentImpactVisualContainer.gameObject.SetActive(true);
             m_imminentImpactVisualScaler.localScale = Vector3.zero;
-            m_meteoriteTransform.DOLocalMoveY(0f, dropTime).SetEase(Ease.InQuad).onComplete += Explode;
-            m_imminentImpactVisualScaler.DOScale(1f, dropTime).SetEase(Ease.InQuart);
+            m_meteoriteTransform.DOLocalMoveY(0f, dropTime).SetEase(m_meteoriteTransformEase).onComplete += Explode;
+            m_imminentImpactVisualScaler.DOScale(1f, dropTime).SetEase(m_imminentImpactVisualScalerEase);
         }
 
         private void Explode()
@@ -61,6 +75,8 @@ namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
             {
                 component.MovementControllerOnCell?.ReferencesHolder.DeathController.Kill();
             }
+
+            m_impactVFX.Play();
             
             ResetMeteorite();
         }
