@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using Game.Global.PlayerManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -24,8 +25,15 @@ namespace Game.Global.InputIndicationsManagement
             GlobalContext.RegisterPostInitializationCallback(context =>
             {
                 m_playerManager = context.PlayerManager;
-                RefreshIndication();
+                // m_abstractPlayer must be defaulted to the first player, so we have to wait for it to be created.
+                _ = WaitForPlayerAndRefreshIndication();
             });
+        }
+
+        private async UniTask WaitForPlayerAndRefreshIndication()
+        {
+            await UniTask.WaitUntil(() => m_playerManager.Players.Count > 0);
+            RefreshIndication();
         }
 
         public void SetPlayer(AbstractPlayer player)
@@ -48,12 +56,16 @@ namespace Game.Global.InputIndicationsManagement
             RefreshIndication();
         }
         
+        /// <summary>
+        /// Also sets the associated player to the first one if it is null.
+        /// </summary>
         private void RefreshIndication()
         {
             if (!m_abstractPlayer && m_playerManager.Players.Count > 0)
             {
                 SetPlayer(m_playerManager.Players[0]);
             }
+            // Code above may be moved outside of this method to get something cleaner, but I don't care for now.
             
             var abstractPlayer = m_abstractPlayer;
             if (!abstractPlayer)
