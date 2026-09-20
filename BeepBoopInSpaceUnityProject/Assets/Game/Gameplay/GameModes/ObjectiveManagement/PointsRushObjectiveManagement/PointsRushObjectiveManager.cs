@@ -1,4 +1,5 @@
 using System.Collections;
+using Game.ArchitectureTools.FlowMachine;
 using Game.Gameplay.Cells.Default;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.CharactersManagement.Movement;
@@ -8,8 +9,10 @@ using Game.Gameplay.GridSystem;
 using Game.Gameplay.GridSystem.GenericComponents;
 using Game.Gameplay.Timer;
 using Game.Global.SFXManagement;
+using Game.UITools.WorldOverlay;
 using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Gameplay.GameModes.ObjectiveManagement.PointsRushObjectiveManagement
 {
@@ -17,6 +20,8 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.PointsRushObjectiveManagem
     {
         [SerializeField]
         private AudioPlayer m_objectiveCollectedAudioPlayer;
+        [FormerlySerializedAs("m_pointWidgetPrefab")] [SerializeField]
+        private FloatingPointWidget m_floatingPointWidgetPrefab;
         [SerializeField] private GameObject m_objectiveIndicationPrefab;
         private GameObject m_currentObjectiveIndication;
         [SerializeField]
@@ -28,12 +33,17 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.PointsRushObjectiveManagem
         
         private GridBuilder m_gridBuilder;
         private CharactersManager m_charactersManager;
+        private GameplayContext m_gameplayContext;
         protected override IEnumerator Initialize()
         {
             GridBuilder.RegisterPostInitializationCallback(manager => m_gridBuilder = manager);
             CharactersManager.RegisterPostInitializationCallback(manager =>
             {
                 m_charactersManager = manager;
+            });
+            GameplayContext.RegisterPostInitializationCallback(manager =>
+            {
+                m_gameplayContext = manager;
             });
 
             SetUpEventsHooker.RegisterPostInitializationCallback(setUpManager => setUpManager.OnTimeToSetUpDependencies += SetUp);
@@ -46,8 +56,20 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.PointsRushObjectiveManagem
             if (cell == CurrentObjectiveCell)
             {
                 characterMovementController.ReferencesHolder.ScoringController.IncreaseScore();
+
+                PlayPointFeedback(characterMovementController, cell);
+
                 UpdateObjective();
             }
+        }
+
+        private void PlayPointFeedback(CharacterMovementController characterMovementController, Cell cell)
+        {
+            Debug.Log($"About to play point feedback for {characterMovementController.ReferencesHolder.CharacterDataAsset.Name}");
+            var worldOverlayPanel = m_gameplayContext.UIManager.GetPanel<WorldOverlayPanel>();
+            var floatingPointWidget = Instantiate(m_floatingPointWidgetPrefab, worldOverlayPanel.transform);
+            worldOverlayPanel.AddToWorldOverlay(floatingPointWidget.GetComponent<RectTransform>(), cell.transform.position);
+            _ = floatingPointWidget.SetPointAndPlayTween("+1", characterMovementController.ReferencesHolder.CharacterDataAsset.CharacterColor);
         }
 
         private void SetUp()
