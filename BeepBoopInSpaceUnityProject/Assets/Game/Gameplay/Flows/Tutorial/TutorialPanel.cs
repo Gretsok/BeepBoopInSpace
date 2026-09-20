@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using Game.ArchitectureTools.FlowMachine;
-using Game.Gameplay.Levels._0_Core;
 using Game.Global.PlayerManagement;
 using TMPro;
 using UnityEngine;
