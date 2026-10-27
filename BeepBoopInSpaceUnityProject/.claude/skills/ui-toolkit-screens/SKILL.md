@@ -30,7 +30,8 @@ Lire l'UXML, le script et la section du USS ensemble. Règles :
 
 - **Noms** : le code retrouve les éléments par `name` (`play-button`) ; les tests aussi
   (`credits-button`, `settings-button`, `master-volume`, et les champs `m_trainingButton`,
-  `m_tournamentButton`, `m_startGameButton`, `LevelWidgets`). Renommer partout, ou garder.
+  `m_tournamentButton`, `LevelWidgets`, `m_widgets` avec `IsReady` et `CharacterDataAsset` des
+  `CharacterWidget`). Renommer partout, ou garder.
 - **Lier à chaque activation** : l'arbre est neuf à chaque ouverture, ses callbacks partent avec lui.
   Dans `HandleDeactivation`, ne se désabonner que de ce qui vit hors de l'arbre (`PlayerManager`...).
 - **Boutons** : toujours par `BindButton` (il retire la classe `unity-button` : tout le style vient
@@ -50,8 +51,17 @@ Lire l'UXML, le script et la section du USS ensemble. Règles :
 - **Retour** : surcharger `HandleCancel` (son retour + même action que le bouton Retour). Ne pas
   écouter en plus l'action Cancel via `NavigationAuthorityManager` : deux `RequestBack`, et la
   FlowMachine ne dédoublonne pas.
-- Un bouton qui doit attendre une condition (Lancer la partie) : `SetEnabled`, et `DefaultFocus` à
-  null tant qu'il est désactivé (rien n'a le focus : le A des joueurs qui rejoignent ne clique rien).
+- Un bouton qui doit attendre une condition : `SetEnabled`, et `DefaultFocus` à null tant qu'il est
+  désactivé. Sans focus, Annuler n'arrive pas à l'écran (`PanelEventHandler` vise la racine du panel) :
+  un écran sans bouton à atteindre garde le focus sur sa racine (`focusable`, `DefaultFocus`), comme
+  la sélection des personnages.
+- **Sélection des personnages** : chaque joueur agit avec ses propres actions (carte `MainMenu` :
+  Move, Ready, Back, Random, Call, `CharacterSelectionPlayerController`), pas par le focus ; le
+  Annuler du joueur principal passe par `HandleCancel` (il annule d'abord son « prêt »). On rejoint
+  avec Y/A/Espace/Entrée (action créée par l'écran), on lance quand tous sont prêts (2 au moins).
+  Couleurs, icône et aperçu viennent du `CharacterDataAsset` (section Character selection) ; le
+  motion design de la validation est dans `CharacterWidget.PlayReady` (tweens DOTween des styles,
+  `UITools/UIToolkitTweens`) et les transitions `.cs-slot--ready` du USS.
 
 ## Ajouter un écran au menu principal
 

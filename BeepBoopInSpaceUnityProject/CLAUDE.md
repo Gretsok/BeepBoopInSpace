@@ -28,7 +28,7 @@ L'utilisateur écrit en français ou en anglais : répondre dans la langue de so
 | Partie | `Gameplay/Flows` | Load → SetUp → Introduction → Tutorial (Ready) → Gameplay (→ annonces de manche / configuration) → Finish → Results → End |
 | Scènes | Seul `MainMenu` est dans les Build Settings | Tout le reste passe par Addressables. `LoadingManager` charge les scènes et prefabs du mode, `EndState` les libère : toute sortie de partie doit passer par `LoadingManager.Unload` |
 | Modes de jeu | `Gameplay/Levels`, `Gameplay/GameModes` | Un mode = un `LevelDataAsset` (objectif + action spéciale + modificateurs + arène) : skill `game-mode-variants` |
-| Joueurs | `Global/PlayerManagement`, `Global/NavigationAuthority` | `PlayerInputManager` (rejoindre en appuyant, dans la sélection des personnages), schémas Xbox / PS / clavier-souris ; l'UI suit les manettes du joueur principal |
+| Joueurs | `Global/PlayerManagement`, `Global/NavigationAuthority` | `PlayerInputManager` (rejoindre avec Y/A/Espace dans la sélection des personnages, puis chacun se déclare prêt), schémas Xbox / PS / clavier-souris ; l'UI suit les manettes du joueur principal |
 
 ## Conventions
 

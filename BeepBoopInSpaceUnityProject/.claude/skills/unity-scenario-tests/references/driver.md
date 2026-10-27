@@ -72,7 +72,9 @@ capturer (`WaitForCameraBlend()` dans les tests). Lire les PNG pour vérifier un
   `Gamepad` générique ne pourrait pas rejoindre.
 - Les manettes sont créées une fois pour toute la classe (`OneTimeSetUp`) : les joueurs restent
   appairés entre deux scénarios, comme dans le vrai jeu. L'écran de sélection des personnages
-  retire tous les joueurs à chaque entrée, puis chaque manette rejoint à nouveau.
+  retire tous les joueurs à chaque entrée, puis chaque manette rejoint à nouveau (A) et se déclare
+  prête (Y, `GetReady` tente Aléatoire avec X si le personnage est déjà pris) ; le hub s'ouvre
+  1,2 s après le dernier « prêt ».
 - **Clavier et souris en batchmode** : l'application n'a jamais le focus et il n'y a pas de vue Game,
   donc l'Input System ignore clavier et souris par défaut. `AddKeyboardAndMouse()` passe
   `backgroundBehavior` à `IgnoreFocus` et `editorInputBehaviorInPlayMode` à
