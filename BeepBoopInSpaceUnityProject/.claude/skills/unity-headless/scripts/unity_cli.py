@@ -83,6 +83,49 @@ def persistent_data_dir():
     return Path.home() / "AppData" / "LocalLow" / company / product
 
 
+def player_prefs_key():
+    company, product = player_settings()
+    return rf"Software\{company}\{product}"
+
+
+def snapshot_player_prefs():
+    """The built game's PlayerPrefs (HKCU registry values: screen mode, resolution, sessions...), or None."""
+    import winreg
+    values = {}
+    try:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, player_prefs_key()) as key:
+            index = 0
+            while True:
+                try:
+                    name, data, kind = winreg.EnumValue(key, index)
+                except OSError:
+                    break
+                values[name] = (data, kind)
+                index += 1
+    except FileNotFoundError:
+        return None
+    return values
+
+
+def restore_player_prefs(snapshot):
+    """A check run must not change the user's settings: Unity saves the screen options it was launched with."""
+    import winreg
+    current = snapshot_player_prefs()
+    if current == snapshot:
+        return False
+    if snapshot is None:
+        winreg.DeleteKey(winreg.HKEY_CURRENT_USER, player_prefs_key())
+        return True
+    with winreg.CreateKey(winreg.HKEY_CURRENT_USER, player_prefs_key()) as key:
+        for name in (current or {}):
+            if name not in snapshot:
+                winreg.DeleteValue(key, name)
+        for name, (data, kind) in snapshot.items():
+            if (current or {}).get(name) != (data, kind):
+                winreg.SetValueEx(key, name, 0, kind, data)
+    return True
+
+
 def editor_open():
     """True when an editor holds the project lock (a stale lockfile can be opened, a held one cannot)."""
     lock = PROJECT / "Temp" / "UnityLockfile"
@@ -510,6 +553,7 @@ def cmd_run_build(args):
     else:
         player_args = ["-screen-fullscreen", "0", "-screen-width", "960", "-screen-height", "540"]
     player_args = ["-logFile", str(log)] + player_args
+    prefs = snapshot_player_prefs()
     process = subprocess.Popen([str(exe), *player_args], cwd=exe.parent)
     print(f"Running {exe.name} (PID {process.pid}) for {args.seconds}s. Log: {log}")
     try:
@@ -517,8 +561,10 @@ def cmd_run_build(args):
         print(f"The player exited by itself with code {code}.")
     except subprocess.TimeoutExpired:
         subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"], capture_output=True)
-        print("Stopped the player.")
+        print("Stopped the player (forced: its log ends abruptly, that is not a crash).")
     time.sleep(1)
+    if restore_player_prefs(prefs):
+        print("Restored the game's preferences (registry) to their state before the run.")
     if not log.is_file():
         print("No player log was written.")
         return 1

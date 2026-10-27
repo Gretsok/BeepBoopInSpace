@@ -71,6 +71,10 @@ build :
   devient `C:/Program Files/Git/nostdlib`). L'outil Python évite le problème. Pour un appel manuel,
   utiliser `-nostdlib` ou préfixer avec `MSYS_NO_PATHCONV=1`.
 - **Ne jamais passer `-quit` avec `-runTests`** : Unity quitterait avant d'avoir lancé les tests.
+- **Les écritures dans le registre faites depuis l'outil PowerShell restent dans son bac à sable** :
+  la commande « réussit » et relire depuis PowerShell montre le changement, mais le vrai registre
+  (celui que lit le jeu) n'a pas bougé. Modifier le registre de l'utilisateur depuis Python
+  (`winreg`, lancé par l'outil Bash), puis vérifier avec `reg query` lancé depuis Bash.
 - `quick-compile` ne voit que ce que Unity a déjà compilé une fois : sans `Library/Bee` (projet
   fraîchement cloné), lancer `compile` d'abord.
 - Un projet ouvert pour la première fois dans une nouvelle version de Unity ré-écrit des centaines

@@ -57,6 +57,15 @@ Lance le jeu **dans une petite fenêtre** (960×540, fenêtré) pendant 20 s, l'
 dernier état atteint et liste les erreurs de son log (`Logs/claude-runs/<date>-player/player.log`).
 Prévenir l'utilisateur qu'une fenêtre va s'ouvrir quelques secondes.
 
+- Unity enregistre les options d'écran avec lesquelles le jeu est lancé dans ses préférences
+  (registre `HKCU\Software\Confiture De Jeux\Beep Boop dans l'espace`, valeurs `Screenmanager ...`) :
+  sans précaution, le jeu de l'utilisateur rouvrirait en fenêtre 960×540 (arrivé le 27/10/2026).
+  `run-build` copie ces préférences avant le lancement et les remet à l'identique après.
+- Le jeu est arrêté de force : son log s'arrête net, ce n'est pas un crash. Un vrai crash laisse
+  `Crash!!!` dans le log et un dossier `%LOCALAPPDATA%\Temp\Confiture De Jeux\Beep Boop dans l'espace\Crashes`.
+- Chaque lancement envoie une session à GameAnalytics (le jeu buildé envoie ses événements) : ne
+  pas multiplier les lancements de contrôle inutiles.
+
 La fenêtre est indispensable : un joueur en `-batchmode` ne fait pas tourner sa boucle de rendu,
 donc un build qui n'affiche qu'un **écran noir** (pipeline URP qui ne se crée pas) y passe sans
 erreur. C'est arrivé le 27/10/2026 avec le build de 12h44 : contrôle `-batchmode` vert, écran noir
