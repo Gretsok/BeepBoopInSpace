@@ -53,10 +53,18 @@ complet est dans `Logs/claude-runs/<date>-build/editor.log`.
 python .claude/skills/unity-headless/scripts/unity_cli.py run-build "Builds/<dossier>/Beep Boop dans l'espace.exe" --seconds 20
 ```
 
-Lance le jeu sans fenêtre (`-batchmode -nographics`) pendant 20 s, l'arrête, puis liste les
-erreurs de son log (`Logs/claude-runs/<date>-player/player.log`). `--window` pour le voir à l'écran
-(l'utilisateur verra une fenêtre s'ouvrir : le prévenir). Ce contrôle couvre le démarrage et le
-menu, pas une partie : les parties se vérifient avec les tests de scénario, dans l'éditeur.
+Lance le jeu **dans une petite fenêtre** (960×540, fenêtré) pendant 20 s, l'arrête, affiche le
+dernier état atteint et liste les erreurs de son log (`Logs/claude-runs/<date>-player/player.log`).
+Prévenir l'utilisateur qu'une fenêtre va s'ouvrir quelques secondes.
+
+La fenêtre est indispensable : un joueur en `-batchmode` ne fait pas tourner sa boucle de rendu,
+donc un build qui n'affiche qu'un **écran noir** (pipeline URP qui ne se crée pas) y passe sans
+erreur. C'est arrivé le 27/10/2026 avec le build de 12h44 : contrôle `-batchmode` vert, écran noir
+chez l'utilisateur. `--headless` (`-batchmode -nographics`) reste disponible pour un contrôle sans
+fenêtre, mais il ne vérifie que le démarrage logique.
+
+Ce contrôle couvre le démarrage et le menu, pas une partie : les parties se vérifient avec les
+tests de scénario, dans l'éditeur (où les ressources ne sont pas strippées comme dans un build).
 
 ## 4. Rendre compte
 
@@ -67,9 +75,10 @@ sans accord.
 ## Repères
 
 - 27/10/2026, Unity 6000.6.7f1, premier build après la migration : 1034 s (dont 982 s de build,
-  surtout des shaders), 268 Mo, zip de 148 Mo, 0 erreur, 2 warnings. Lancement de contrôle :
-  menu principal atteint (`Orchestrator -> HomeState`) en 20 s, sans erreur.
-- `run-build` sur un build sans fenêtre atteint le menu ; il ne prouve rien sur les parties
-  elles-mêmes (pas de joueurs) : ce sont les tests de scénario qui les couvrent.
+  surtout des shaders), 268 Mo, zip de 148 Mo. Écran noir au lancement : URP 17.6 strippe les
+  ressources des render features **désactivées** (ici le SSAO de `PC_Renderer`) mais les initialise
+  quand même, d'où une exception à la création du pipeline puis `Blitter is already initialized` à
+  chaque frame. Corrigé en retirant la feature désactivée. Une render feature désactivée qui ne sert
+  plus doit être retirée du renderer, pas seulement décochée.
 - Pendant le build, Unity peut ré-écrire `Assets/Settings/PC_RPAsset.asset` (nouveaux champs
   d'URP) : c'est la mise à jour du format, à commiter avec le reste.

@@ -142,8 +142,14 @@ NOISE = ("UnityEngine.Debug:", "UnityEngine.StackTraceUtility", "UnityEngine.Deb
          "(Filename:", "UnityEngine.SetupCoroutine", "UnityEngineInternal.", "System.")
 
 
+def as_path(value):
+    """Accepts Git Bash paths (/c/Users/...) as well as Windows ones."""
+    match = re.match(r"^/([a-zA-Z])/(.*)$", str(value))
+    return Path(f"{match.group(1)}:/{match.group(2)}") if match else Path(value)
+
+
 def read_log(path):
-    return Path(path).read_text(encoding="utf-8", errors="replace").splitlines()
+    return as_path(path).read_text(encoding="utf-8", errors="replace").splitlines()
 
 
 def log_blocks(lines):
@@ -196,6 +202,7 @@ def analyze_log(path, include_warnings=False):
             compile_errors[line.strip()] += 1
     counts = collections.Counter()
     where = {}
+    first_error = None
     for block in log_blocks(lines):
         kind, message = classify(block)
         if kind is None or (kind == "warning" and not include_warnings):
@@ -203,15 +210,22 @@ def analyze_log(path, include_warnings=False):
         key = (kind, message.strip()[:220])
         counts[key] += 1
         where.setdefault(key, first_project_frame(block))
-    return list(compile_errors), counts, where
+        if kind == "error" and first_error is None:
+            # Outside the project too (e.g. a URP render feature): the first frame says which system failed first.
+            frame = next((l.strip() for l in block if l.strip().startswith("at ") or "(at " in l), None)
+            first_error = (key[1], frame)
+    return list(compile_errors), counts, where, first_error
 
 
 def print_log_analysis(path, include_warnings=False, top=25):
-    compile_errors, counts, where = analyze_log(path, include_warnings)
+    compile_errors, counts, where, first_error = analyze_log(path, include_warnings)
     if compile_errors:
         print(f"{len(compile_errors)} distinct compile error(s):")
         for line in compile_errors[:top]:
             print(f"  {line}")
+    if first_error and len([k for k in counts if k[0] == "error"]) > 1:
+        print(f"First error logged (often the cause of the others): {first_error[0]}"
+              + (f"\n         {first_error[1][:200]}" if first_error[1] else ""))
     if counts:
         total = sum(n for (kind, _), n in counts.items() if kind == "error")
         print(f"{total} runtime error(s)/exception(s) logged ({len([k for k in counts if k[0] == 'error'])} distinct)"
@@ -231,7 +245,7 @@ def as_float(value):
 
 
 def summarize_results(xml_path, log_path=None):
-    root = ET.parse(xml_path).getroot()
+    root = ET.parse(as_path(xml_path)).getroot()
     print(f"Result: {root.get('result')} - {root.get('passed')}/{root.get('total')} passed, "
           f"{root.get('failed')} failed, {as_float(root.get('duration')):.0f}s")
     for case in root.iter("test-case"):
@@ -248,7 +262,7 @@ def summarize_results(xml_path, log_path=None):
         if output is not None and output.text:
             for line in sorted({l.strip() for l in output.text.splitlines() if "Known issue" in l and l.startswith("[")}):
                 print(f"           {line}")
-    if log_path and Path(log_path).is_file():
+    if log_path and as_path(log_path).is_file():
         scores = [l for l in read_log(log_path) if l.startswith("[Scenario]") and ("Scores:" in l or "Tournament over" in l)]
         if scores:
             print("Games played:")
@@ -469,7 +483,7 @@ def cmd_build(args):
 
 
 def zip_build(folder):
-    folder = Path(folder).resolve()
+    folder = as_path(folder).resolve()
     archive = folder.parent / f"{folder.name}.zip"
     if archive.exists():
         archive.unlink()
@@ -486,10 +500,16 @@ def cmd_zip(args):
 
 
 def cmd_run_build(args):
-    exe = Path(args.exe).resolve()
+    exe = as_path(args.exe).resolve()
     run = new_run_dir("player")
     log = run / "player.log"
-    player_args = ["-logFile", str(log)] + ([] if args.window else ["-batchmode", "-nographics"])
+    # Default: a small window. Only a windowed player runs its render loop, so only it reports render pipeline
+    # errors (in -batchmode, a build that shows a black screen still passes).
+    if args.headless:
+        player_args = ["-batchmode", "-nographics"]
+    else:
+        player_args = ["-screen-fullscreen", "0", "-screen-width", "960", "-screen-height", "540"]
+    player_args = ["-logFile", str(log)] + player_args
     process = subprocess.Popen([str(exe), *player_args], cwd=exe.parent)
     print(f"Running {exe.name} (PID {process.pid}) for {args.seconds}s. Log: {log}")
     try:
@@ -563,7 +583,8 @@ def main():
     p = sub.add_parser("run-build", help="launch a built player, then triage its log")
     p.add_argument("exe")
     p.add_argument("--seconds", type=int, default=20)
-    p.add_argument("--window", action="store_true", help="show the game window (default: headless, -batchmode -nographics)")
+    p.add_argument("--headless", action="store_true",
+                   help="no window (-batchmode -nographics): faster, but rendering is not checked at all")
     p.add_argument("--warnings", action="store_true")
     p.set_defaults(func=cmd_run_build)
 

@@ -92,7 +92,10 @@ garder LF pour que le diff ne montre que le vrai changement (`git ls-files --eol
    d'obsolescence : ils deviennent des erreurs à la version suivante).
 2. `compile` : 0 erreur.
 3. Tests de scénario complets (skill `unity-scenario-tests`).
-4. Si l'utilisateur partage des builds : un build de contrôle (skill `unity-build`).
+4. **Un build et son lancement en fenêtre** (skill `unity-build`), même si l'utilisateur ne
+   demande pas de build : le stripping ne s'applique qu'aux builds, l'éditeur ne voit pas ces
+   problèmes. Exemple : après le passage en 6.6, URP 17.6 a strippé les ressources du SSAO
+   désactivé de `PC_Renderer`, et le build restait sur un écran noir.
 
 ## 8. Commit
 

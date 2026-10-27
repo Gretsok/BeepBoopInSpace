@@ -68,6 +68,10 @@ Causes déjà rencontrées dans ce projet (vérifier d'abord celles-ci) :
 | `ArgumentOutOfRangeException` dans `ResultsState` | Écran de résultats rejoué : une fin de partie demandée deux fois |
 | `Could not find a neighbour valid cell` | Recherche de respawn partie d'une case nulle ou grille pleine |
 | `NullReferenceException` dans un `*ObjectiveManager.SetUp`, partie bloquée au chargement | Mode qui combine un objectif et une action spéciale incompatibles (ex. `MostKills` sans le fusil de sniper) : skill `game-mode-variants` |
+| Build : **écran noir**, `Blitter is already initialized` à chaque frame | Le pipeline URP n'a pas pu se créer : regarder la **première** erreur du log (`log-errors` l'affiche en tête). Déjà vu : une render feature désactivée dont URP 17.6 a strippé les ressources (`ScreenSpaceAmbientOcclusion.TryPrepareResources`) : retirer la feature du renderer |
+
+`log-errors` affiche en tête la **première erreur loguée** : quand une erreur se répète des
+milliers de fois, c'est souvent la conséquence d'une autre, plus ancienne.
 
 ## 5. Reproduire et vérifier
 
