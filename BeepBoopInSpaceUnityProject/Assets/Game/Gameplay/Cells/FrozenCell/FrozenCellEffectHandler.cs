@@ -97,6 +97,19 @@ namespace Game.Gameplay.Cells.FrozenCell
             characterRoot.DOMove(targetDestination, 0.2f).SetEase(isTargetCellAFrozenCell ? Ease.Linear : Ease.OutCubic).onComplete += () => isComplete = true;
             yield return new WaitUntil(() => isComplete);
             var controller = m_blockedController;
+
+            // Another character may have stepped onto the target cell during the slide: bounce back onto this cell,
+            // which the sliding character still occupies on the grid.
+            if (cell.TryGetComponent(out CanBeWalkedOnCellComponent targetComp) &&
+                targetComp.MovementControllerOnCell && targetComp.MovementControllerOnCell != controller)
+            {
+                isComplete = false;
+                characterRoot.DOMove(transform.position, 0.2f).SetEase(Ease.OutCubic).onComplete += () => isComplete = true;
+                yield return new WaitUntil(() => isComplete);
+                UnblockController();
+                yield break;
+            }
+
             UnblockController();
             controller.TeleportToCell(cell);
         }

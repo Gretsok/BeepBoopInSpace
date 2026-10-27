@@ -23,7 +23,8 @@ namespace Game.Gameplay.CharactersManagement.Death
         private GridBuilder m_gridBuilder;
         private GlobalGameplayDataManager m_globalGameplayDataManager;
         private Cell m_respawnCell;
-        
+        private Cell m_deathCell;
+
         private void Awake()
         {
             m_deathController = GetComponent<DeathController>();
@@ -38,11 +39,13 @@ namespace Game.Gameplay.CharactersManagement.Death
         private void HandleDeath(DeathController obj)
         {
             var deathPosition = m_deathController.CharacterReferencesHolder.ModelSource.position;
+            // Detaching clears the walker's current cell, so the death cell must be read first.
+            m_deathCell = m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell;
             m_deathController.CharacterReferencesHolder.MovementController.DistachFromCurrentCell();
-            
+
             if (m_deathController.CanResurrect)
             {
-                m_respawnCell = DecideAndReturnRespawnCell(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell);
+                m_respawnCell = DecideAndReturnRespawnCell(m_deathCell);
                 m_respawnCell.OnCellStateUpdated += HandleRespawnCellUpdated;
 
                 var deathPlacementFX = Instantiate(m_deathPlacementFXPrefab, deathPosition, Quaternion.identity);
@@ -59,7 +62,7 @@ namespace Game.Gameplay.CharactersManagement.Death
 
             if (!CellIsValid(m_respawnCell))
             {
-                m_respawnCell = ReturnClosestCellFrom(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell);
+                m_respawnCell = ReturnClosestCellFrom(m_deathCell);
             }
 
             m_respawnCell.OnCellStateUpdated += HandleRespawnCellUpdated;
@@ -111,7 +114,7 @@ namespace Game.Gameplay.CharactersManagement.Death
                 m_respawnCell.OnCellStateUpdated -= HandleRespawnCellUpdated;
                 while (!CellIsValid(m_respawnCell))
                 {
-                    m_respawnCell = ReturnClosestCellFrom(m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell);
+                    m_respawnCell = ReturnClosestCellFrom(m_deathCell);
                 }
                 TeleportToRespawnCell();
                 m_respawnCell = null;
@@ -133,132 +136,42 @@ namespace Game.Gameplay.CharactersManagement.Death
                 !cell.TryGetComponent<KillingCellComponent>(out _));
         }
 
-        private Cell ReturnClosestCellFrom(Cell a_sourceCell, HashSet<Cell> exploredCells = null)
+        // Breadth-first search on the grid: returns one of the closest valid cells, walking through invalid ones.
+        private Cell ReturnClosestCellFrom(Cell a_sourceCell)
         {
-            if (exploredCells == null)
-                exploredCells = new HashSet<Cell>();
-            
-            HashSet<Cell> validNeighbourCells = new();
-            HashSet<Cell> surroundingToExploreThisRoundCells = new HashSet<Cell>();
-            surroundingToExploreThisRoundCells.Add(a_sourceCell);
+            if (!a_sourceCell)
+                return ReturnRandomCell();
 
-            do
+            var exploredCells = new HashSet<Cell> { a_sourceCell };
+            var cellsToExplore = new List<Cell> { a_sourceCell };
+
+            while (cellsToExplore.Count > 0)
             {
-                var cellsToExploreNextRound = new HashSet<Cell>();
-                var enumerator = surroundingToExploreThisRoundCells.GetEnumerator();
-                while (enumerator.MoveNext())
-                {
-                    var rootCellToExplore = enumerator.Current;
+                var validNeighbourCells = new List<Cell>();
+                var cellsToExploreNextRound = new List<Cell>();
 
-                    if (!rootCellToExplore)
-                        continue;
-                    
-                    if (!exploredCells.Contains(rootCellToExplore.ForwardCell))
+                foreach (var cell in cellsToExplore)
+                {
+                    foreach (var neighbourCell in new[] { cell.ForwardCell, cell.BackwardCell, cell.RightCell, cell.LeftCell })
                     {
-                        var neighbourCellToExplore = rootCellToExplore.ForwardCell;
-                        if (CellIsValid(neighbourCellToExplore))
-                        {
-                            validNeighbourCells.Add(neighbourCellToExplore);
-                        }
-                        else if (neighbourCellToExplore)
-                        {
-                            if (neighbourCellToExplore.ForwardCell && !exploredCells.Contains(neighbourCellToExplore.ForwardCell))
-                                cellsToExploreNextRound.Add(neighbourCellToExplore.ForwardCell);
-                            if (neighbourCellToExplore.BackwardCell && !exploredCells.Contains(neighbourCellToExplore.BackwardCell))
-                                cellsToExploreNextRound.Add(neighbourCellToExplore.BackwardCell);
-                            if (neighbourCellToExplore.RightCell && !exploredCells.Contains(neighbourCellToExplore.RightCell))
-                                cellsToExploreNextRound.Add(neighbourCellToExplore.RightCell);
-                            if (neighbourCellToExplore.LeftCell && !exploredCells.Contains(neighbourCellToExplore.LeftCell))
-                                cellsToExploreNextRound.Add(neighbourCellToExplore.LeftCell);
-                        }
-                        
-                        if (neighbourCellToExplore)
-                            exploredCells.Add(neighbourCellToExplore);
-                    }
-                    
-                    if (!exploredCells.Contains(rootCellToExplore.BackwardCell))
-                    {
-                        var neighbourCellToExplore = rootCellToExplore.BackwardCell;
-                        if (CellIsValid(neighbourCellToExplore))
-                        {
-                            validNeighbourCells.Add(neighbourCellToExplore);
-                        }
-                        else if (neighbourCellToExplore)
-                        {
-                            if (neighbourCellToExplore.ForwardCell && !exploredCells.Contains(neighbourCellToExplore.ForwardCell))
-                                cellsToExploreNextRound.Add(neighbourCellToExplore.ForwardCell);
-                            if (neighbourCellToExplore.BackwardCell && !exploredCells.Contains(neighbourCellToExplore.BackwardCell))
-                                cellsToExploreNextRound.Add(neighbourCellToExplore.BackwardCell);
-                            if (neighbourCellToExplore.RightCell && !exploredCells.Contains(neighbourCellToExplore.RightCell))
-                                cellsToExploreNextRound.Add(neighbourCellToExplore.RightCell);
-                            if (neighbourCellToExplore.LeftCell && !exploredCells.Contains(neighbourCellToExplore.LeftCell))
-                                cellsToExploreNextRound.Add(neighbourCellToExplore.LeftCell);
-                        }
-                        
-                        if (neighbourCellToExplore)
-                            exploredCells.Add(neighbourCellToExplore);
-                    }
-                    
-                    if (!exploredCells.Contains(rootCellToExplore.RightCell))
-                    {
-                        var neighbourCellToExplore = rootCellToExplore.RightCell;
-                        if (CellIsValid(neighbourCellToExplore))
-                        {
-                            validNeighbourCells.Add(neighbourCellToExplore);
-                        }
-                        else if (neighbourCellToExplore)
-                        {
-                            if (neighbourCellToExplore.ForwardCell && !exploredCells.Contains(neighbourCellToExplore.ForwardCell))
-                                cellsToExploreNextRound.Add(neighbourCellToExplore.ForwardCell);
-                            if (neighbourCellToExplore.BackwardCell && !exploredCells.Contains(neighbourCellToExplore.BackwardCell))
-                                cellsToExploreNextRound.Add(neighbourCellToExplore.BackwardCell);
-                            if (neighbourCellToExplore.RightCell && !exploredCells.Contains(neighbourCellToExplore.RightCell))
-                                cellsToExploreNextRound.Add(neighbourCellToExplore.RightCell);
-                            if (neighbourCellToExplore.LeftCell && !exploredCells.Contains(neighbourCellToExplore.LeftCell))
-                                cellsToExploreNextRound.Add(neighbourCellToExplore.LeftCell);
-                        }
-                        
-                        if (neighbourCellToExplore)
-                            exploredCells.Add(neighbourCellToExplore);
-                    }
-                    
-                    if (!exploredCells.Contains(rootCellToExplore.LeftCell))
-                    {
-                        var neighbourCellToExplore = rootCellToExplore.LeftCell;
-                        if (CellIsValid(neighbourCellToExplore))
-                        {
-                            validNeighbourCells.Add(neighbourCellToExplore);
-                        }
-                        else if (neighbourCellToExplore)
-                        {
-                            if (neighbourCellToExplore.ForwardCell && !exploredCells.Contains(neighbourCellToExplore.ForwardCell))
-                                cellsToExploreNextRound.Add(neighbourCellToExplore.ForwardCell);
-                            if (neighbourCellToExplore.BackwardCell && !exploredCells.Contains(neighbourCellToExplore.BackwardCell))
-                                cellsToExploreNextRound.Add(neighbourCellToExplore.BackwardCell);
-                            if (neighbourCellToExplore.RightCell && !exploredCells.Contains(neighbourCellToExplore.RightCell))
-                                cellsToExploreNextRound.Add(neighbourCellToExplore.RightCell);
-                            if (neighbourCellToExplore.LeftCell && !exploredCells.Contains(neighbourCellToExplore.LeftCell))
-                                cellsToExploreNextRound.Add(neighbourCellToExplore.LeftCell);
-                        }
-                        
-                        if (neighbourCellToExplore)
-                            exploredCells.Add(neighbourCellToExplore);
+                        if (!neighbourCell || !exploredCells.Add(neighbourCell))
+                            continue;
+
+                        if (CellIsValid(neighbourCell))
+                            validNeighbourCells.Add(neighbourCell);
+                        else
+                            cellsToExploreNextRound.Add(neighbourCell);
                     }
                 }
-                
-                // Should update cells to explore here
-                surroundingToExploreThisRoundCells = cellsToExploreNextRound;
 
-            } while (validNeighbourCells.Count == 0 && surroundingToExploreThisRoundCells.Count > 0);
+                if (validNeighbourCells.Count > 0)
+                    return validNeighbourCells[UnityEngine.Random.Range(0, validNeighbourCells.Count)];
 
-            if (validNeighbourCells.Count == 0)
-            {
-                Debug.LogError($"Could not find a neighbour valid cell. Respawning at a random position.");
-                
-                return ReturnRandomCell();
+                cellsToExplore = cellsToExploreNextRound;
             }
 
-            return validNeighbourCells.ElementAt(UnityEngine.Random.Range(0, validNeighbourCells.Count));
+            Debug.LogError($"Could not find a neighbour valid cell. Respawning at a random position.");
+            return ReturnRandomCell();
         }
 
         private void TeleportToRespawnCell()

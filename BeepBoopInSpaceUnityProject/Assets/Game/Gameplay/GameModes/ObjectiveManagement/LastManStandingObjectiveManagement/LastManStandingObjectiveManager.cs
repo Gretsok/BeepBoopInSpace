@@ -80,6 +80,10 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LastManStandingObjectiveMa
         
         private void HandlePlayedDeath(DeathController obj)
         {
+            // Deaths outside of gameplay (e.g. meteorites falling on the results screen) must not end a round.
+            if (!IsTicking)
+                return;
+
             var alivePlayersCount = m_charactersManager.CharacterPawns.Count(pawn => pawn.ReferencesHolder.DeathController.IsAlive);
             if (alivePlayersCount == 1)
             {
@@ -102,6 +106,9 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LastManStandingObjectiveMa
         private IEnumerator TriggerEndOfGame()
         {
             yield return new WaitForSeconds(m_playTimeAfterLastDeath);
+            // The timer may have ended the game in the meantime.
+            if (!IsTicking)
+                yield break;
             GameplayContext.Instance.FlowMachine.RequestState(FinishStateGrabber.Instance.FinishState);
         }
 
