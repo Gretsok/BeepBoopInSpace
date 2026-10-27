@@ -12,13 +12,13 @@ using UnityEngine.InputSystem.DualShock;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem.XInput;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 
 namespace Game.Tests.PlayMode
 {
     /// <summary>
-    /// Plays the game like four local players would: virtual gamepads, UI navigation with the d-pad, and flow observation.
+    /// Plays the game like four local players would: virtual gamepads, menu navigation with the d-pad, and flow observation.
     /// Game code lives in Assembly-CSharp, which test assemblies can't reference, so game state is read by reflection.
     /// </summary>
     public class ScenarioDriver
@@ -73,6 +73,69 @@ namespace Game.Tests.PlayMode
         }
 
         public IEnumerator Submit() => Press(MainPad.buttonSouth);
+
+        public Keyboard Keyboard { get; private set; }
+        public Mouse Mouse { get; private set; }
+
+        private InputSettings.BackgroundBehavior m_backgroundBehavior;
+#if UNITY_EDITOR
+        private InputSettings.EditorInputBehaviorInPlayMode m_editorInputBehavior;
+#endif
+
+        // Keyboard and mouse drive the menus until a player joins; then only the main player's devices do.
+        public void AddKeyboardAndMouse()
+        {
+            // A batch mode application never has the focus: keep keyboard and mouse enabled anyway.
+            m_backgroundBehavior = InputSystem.settings.backgroundBehavior;
+            InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+#if UNITY_EDITOR
+            // By default the editor gives keyboard and mouse input to the game only while the Game view has the focus,
+            // and batch mode has no Game view.
+            m_editorInputBehavior = InputSystem.settings.editorInputBehaviorInPlayMode;
+            InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+#endif
+            Keyboard = InputSystem.AddDevice<Keyboard>("Scenario Keyboard");
+            Mouse = InputSystem.AddDevice<Mouse>("Scenario Mouse");
+        }
+
+        public void RemoveKeyboardAndMouse()
+        {
+            if (Keyboard == null)
+                return;
+            if (Keyboard.added)
+                InputSystem.RemoveDevice(Keyboard);
+            if (Mouse.added)
+                InputSystem.RemoveDevice(Mouse);
+            Keyboard = null;
+            Mouse = null;
+            InputSystem.settings.backgroundBehavior = m_backgroundBehavior;
+#if UNITY_EDITOR
+            InputSystem.settings.editorInputBehaviorInPlayMode = m_editorInputBehavior;
+#endif
+        }
+
+        /// <summary>Moves the virtual mouse over the middle of <paramref name="element"/>.</summary>
+        public IEnumerator PointAt(VisualElement element) => PointAt(element.panel, element.worldBound.center);
+
+        /// <summary>Moves the virtual mouse to a position of the panel (1920 wide, y growing downward).</summary>
+        public IEnumerator PointAt(IPanel panel, Vector2 panelPosition)
+        {
+            // Screen coordinates are in pixels and grow upward from the bottom left.
+            var scale = Screen.width / panel.visualTree.layout.width;
+            var position = new Vector2(panelPosition.x * scale, Screen.height - panelPosition.y * scale);
+            InputSystem.QueueStateEvent(Mouse, new MouseState { position = position });
+            yield return Frames(3);
+        }
+
+        public IEnumerator Click()
+        {
+            var position = Mouse.position.ReadValue();
+            // WithButton changes the state it's called on: the release needs a state of its own.
+            InputSystem.QueueStateEvent(Mouse, new MouseState { position = position }.WithButton(UnityEngine.InputSystem.LowLevel.MouseButton.Left));
+            yield return Frames(2);
+            InputSystem.QueueStateEvent(Mouse, new MouseState { position = position });
+            yield return Frames(2);
+        }
 
         #endregion
 
@@ -170,73 +233,155 @@ namespace Game.Tests.PlayMode
 
         #region UI navigation
 
-        public static GameObject CurrentSelection => EventSystem.current ? EventSystem.current.currentSelectedGameObject : null;
+        private const int k_MaxNavigationPresses = 20;
+
+        /// <summary>The focused element of the UI Toolkit menus: the selection that gamepads, keyboard and mouse share.</summary>
+        public static Focusable FocusedElement
+        {
+            get
+            {
+                foreach (var document in Object.FindObjectsByType<UIDocument>(FindObjectsInactive.Exclude))
+                {
+                    var focused = document.rootVisualElement?.focusController?.focusedElement;
+                    if (focused != null)
+                        return focused;
+                }
+                return null;
+            }
+        }
+
+        public static string NameOf(Focusable focusable) => focusable is VisualElement element ? element.name : null;
 
         private static readonly MoveDirection[] s_directions = { MoveDirection.Up, MoveDirection.Down, MoveDirection.Left, MoveDirection.Right };
 
-        /// <summary>Moves the UI selection to <paramref name="target"/> with d-pad presses, following Unity's navigation graph.</summary>
-        public IEnumerator Select(Selectable target)
+        /// <summary>
+        /// Moves the focus to <paramref name="target"/> with d-pad presses. UI Toolkit navigates by position on screen, so
+        /// each press goes the way the target is; a press that doesn't move the focus is retried in another direction.
+        /// </summary>
+        public IEnumerator Select(VisualElement target)
         {
-            yield return WaitUntil($"'{target.name}' and a current selection",
-                () => target.IsActive() && target.IsInteractable() && CurrentSelection);
+            yield return WaitUntil($"'{target.name}' and a focused element",
+                () => target.panel != null && target.canGrabFocus && FocusedElement != null);
 
-            var from = CurrentSelection.GetComponent<Selectable>();
-            var path = FindPath(from, target);
-            if (path == null)
-                Fail($"No UI navigation path from '{CurrentSelection.name}' to '{target.name}'.");
-
-            foreach (var (direction, next) in path)
+            var tried = new HashSet<(Focusable, MoveDirection)>();
+            for (int presses = 0; FocusedElement != target; presses++)
             {
+                var from = FocusedElement;
+                var direction = DirectionsTowards((VisualElement)from, target)
+                    .Where(d => !tried.Contains((from, d))).DefaultIfEmpty(MoveDirection.None).First();
+                if (direction == MoveDirection.None || presses >= k_MaxNavigationPresses)
+                    Fail($"No UI navigation path from '{NameOf(from)}' to '{target.name}'.");
+                tried.Add((from, direction));
+
                 yield return Press(DpadButton(direction));
-                yield return WaitUntil($"'{next.name}' to be selected after pressing {direction}",
-                    () => CurrentSelection == next.gameObject, 5f);
+                var pressed = Time.realtimeSinceStartup;
+                while (FocusedElement == from && Time.realtimeSinceStartup - pressed < 1f)
+                    yield return null;
             }
         }
 
-        private static List<(MoveDirection, Selectable)> FindPath(Selectable from, Selectable to)
+        // The main axis toward the target first, then the other directions.
+        private static IEnumerable<MoveDirection> DirectionsTowards(VisualElement from, VisualElement to)
         {
-            if (!from)
-                return null;
-            var previous = new Dictionary<Selectable, (Selectable, MoveDirection)> { [from] = (null, MoveDirection.None) };
-            var queue = new Queue<Selectable>();
-            queue.Enqueue(from);
-            while (queue.Count > 0 && !previous.ContainsKey(to))
-            {
-                var current = queue.Dequeue();
-                foreach (var direction in s_directions)
-                {
-                    var neighbour = Neighbour(current, direction);
-                    if (neighbour && !previous.ContainsKey(neighbour))
-                    {
-                        previous[neighbour] = (current, direction);
-                        queue.Enqueue(neighbour);
-                    }
-                }
-            }
-            if (!previous.ContainsKey(to))
-                return null;
-
-            var path = new List<(MoveDirection, Selectable)>();
-            for (var node = to; node != from; node = previous[node].Item1)
-                path.Insert(0, (previous[node].Item2, node));
-            return path;
+            var delta = to.worldBound.center - from.worldBound.center; // y grows downward in panel space
+            var horizontal = delta.x < 0 ? MoveDirection.Left : MoveDirection.Right;
+            var vertical = delta.y < 0 ? MoveDirection.Up : MoveDirection.Down;
+            var main = Mathf.Abs(delta.x) >= Mathf.Abs(delta.y) ? horizontal : vertical;
+            var second = main == horizontal ? vertical : horizontal;
+            return new[] { main, second }.Concat(s_directions.Where(direction => direction != main && direction != second));
         }
 
-        private static Selectable Neighbour(Selectable selectable, MoveDirection direction) => direction switch
-        {
-            MoveDirection.Up => selectable.FindSelectableOnUp(),
-            MoveDirection.Down => selectable.FindSelectableOnDown(),
-            MoveDirection.Left => selectable.FindSelectableOnLeft(),
-            _ => selectable.FindSelectableOnRight(),
-        };
-
-        private ButtonControl DpadButton(MoveDirection direction) => direction switch
+        public ButtonControl DpadButton(MoveDirection direction) => direction switch
         {
             MoveDirection.Up => MainPad.dpad.up,
             MoveDirection.Down => MainPad.dpad.down,
             MoveDirection.Left => MainPad.dpad.left,
             _ => MainPad.dpad.right,
         };
+
+        /// <summary>An element of the active main menu screen of this type, by name.</summary>
+        public static VisualElement ScreenElement(string screenTypeName, string elementName) =>
+            FindActive(screenTypeName)?.GetComponent<UIDocument>().rootVisualElement.Q(elementName)
+            ?? throw new InvalidOperationException($"No element '{elementName}' in an active {screenTypeName}.");
+
+        #endregion
+
+        #region Screenshots
+
+        private static Camera s_capturedCamera;
+        private static PanelSettings s_capturedPanel;
+        private static RenderTexture s_sceneTexture;
+        private static RenderTexture s_uiTexture;
+
+        /// <summary>
+        /// Batch mode has no game view, and its screen isn't 16:9: until <see cref="StopRenderingToTextures"/>, the main
+        /// camera and the menus' panel render into 1920x1080 textures, so the menus lay out as on a player's screen.
+        /// </summary>
+        public static void StartRenderingToTextures()
+        {
+            s_capturedCamera = Camera.main;
+            s_capturedPanel = Object.FindAnyObjectByType<UIDocument>().panelSettings;
+            s_sceneTexture = new RenderTexture(1920, 1080, 24);
+            s_uiTexture = new RenderTexture(1920, 1080, 24);
+            s_capturedCamera.targetTexture = s_sceneTexture;
+            s_capturedPanel.targetTexture = s_uiTexture;
+            s_capturedPanel.clearColor = true;
+            s_capturedPanel.colorClearValue = Color.clear;
+        }
+
+        public static void StopRenderingToTextures()
+        {
+            if (s_capturedPanel)
+            {
+                s_capturedPanel.targetTexture = null;
+                s_capturedPanel.clearColor = false;
+            }
+            if (s_capturedCamera)
+                s_capturedCamera.targetTexture = null;
+            if (s_sceneTexture)
+                Object.Destroy(s_sceneTexture);
+            if (s_uiTexture)
+                Object.Destroy(s_uiTexture);
+            s_capturedPanel = null;
+            s_capturedCamera = null;
+        }
+
+        /// <summary>Saves what the player sees to Logs/screenshots/<paramref name="fileName"/>.png (see <see cref="StartRenderingToTextures"/>).</summary>
+        public static IEnumerator CaptureScreen(string fileName)
+        {
+            yield return Frames(2);
+            var scene = ReadPixels(s_sceneTexture);
+            var ui = ReadPixels(s_uiTexture);
+
+            // The panel renders premultiplied colors: UI over scene.
+            var pixels = scene.GetPixels();
+            var uiPixels = ui.GetPixels();
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                var background = pixels[i] * (1f - uiPixels[i].a);
+                pixels[i] = new Color(uiPixels[i].r + background.r, uiPixels[i].g + background.g, uiPixels[i].b + background.b, 1f);
+            }
+            scene.SetPixels(pixels);
+
+            var folder = System.IO.Path.Combine(Application.dataPath, "..", "Logs", "screenshots");
+            System.IO.Directory.CreateDirectory(folder);
+            var path = System.IO.Path.GetFullPath(System.IO.Path.Combine(folder, fileName + ".png"));
+            System.IO.File.WriteAllBytes(path, scene.EncodeToPNG());
+            Object.Destroy(scene);
+            Object.Destroy(ui);
+            Debug.Log($"[Scenario] Screenshot saved to {path}");
+        }
+
+        private static Texture2D ReadPixels(RenderTexture renderTexture)
+        {
+            var previous = RenderTexture.active;
+            RenderTexture.active = renderTexture;
+            var texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGBA32, false);
+            texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+            texture.Apply();
+            RenderTexture.active = previous;
+            return texture;
+        }
 
         #endregion
 
@@ -384,7 +529,7 @@ namespace Game.Tests.PlayMode
 
             return $"Scene='{SceneManager.GetActiveScene().name}', menu state={Safe(() => MenuState)}, " +
                    $"game state={Safe(() => GameplayState)}, level={Safe(() => CurrentLevelName)}, " +
-                   $"players={Safe(() => PlayerCount)}, selected={Safe(() => CurrentSelection ? CurrentSelection.name : null)}";
+                   $"players={Safe(() => PlayerCount)}, focused={Safe(() => NameOf(FocusedElement))}";
         }
 
         #endregion

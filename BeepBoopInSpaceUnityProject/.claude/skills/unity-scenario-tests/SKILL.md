@@ -6,16 +6,21 @@ description: Lancer, lire, déboguer et étendre les tests de scénario de Beep 
 # Tests de scénario (4 manettes virtuelles)
 
 But : vérifier soi-même, en jeu, qu'un changement ne casse rien, du menu jusqu'au retour au menu.
-Validé sous Unity 6000.6.7f1 : la suite complète passe (8/8) en ~12 minutes.
+Validé sous Unity 6000.6.7f1 : la suite complète passe (9/9) en ~10 minutes.
 
 Fichiers (dans `Assets/Tests/PlayMode/`, assembly `BeepBoop.Tests.PlayMode`) :
 
 | Fichier | Rôle |
 | --- | --- |
-| `GameModesScenarioTests.cs` | Les scénarios : `Training_PlaysAGameThenReturnsToMenu(mode)` × 7, `Tournament_PlaysUntilAChampionThenReturnsToMenu` |
-| `ScenarioDriver.cs` | Manettes virtuelles, navigation UI à la croix, attente avec délai, lecture de l'état du jeu par réflexion, collecte des erreurs |
+| `GameModesScenarioTests.cs` | Les scénarios : `MainMenu_EveryScreenWorksWithGamepadKeyboardAndMouse`, `Training_PlaysAGameThenReturnsToMenu(mode)` × 7, `Tournament_PlaysUntilAChampionThenReturnsToMenu` |
+| `ScenarioDriver.cs` | Manettes, clavier et souris virtuels, navigation dans les menus UI Toolkit, captures d'écran, attente avec délai, lecture de l'état du jeu par réflexion, collecte des erreurs |
 
-Chaque scénario : Home → Play → les 4 manettes rejoignent (A/Croix) → Start → Hub → Training (ou
+`MainMenu_EveryScreenWorksWithGamepadKeyboardAndMouse` (~5 s, à lancer après toute modification des menus) :
+clavier et souris sur l'accueil (si aucun joueur n'a encore rejoint), puis à la manette Crédits et
+Annuler, volume au d-pad, verrou d'un personnage pris deux fois, Hub, défilement du choix du niveau ;
+il enregistre une capture de chaque écran dans `Logs/screenshots/` : les regarder.
+
+Chaque scénario de partie : Home → Play → les 4 manettes rejoignent (A/Croix) → Start → Hub → Training (ou
 Tournoi) → map choisie à la croix → les 4 joueurs font Ready → appuis aléatoires sur les 6 boutons
 d'action jusqu'aux résultats → Submit → retour au Home. Le jeu tourne en ×4 (`k_TimeScale`).
 Un scénario échoue sur un délai dépassé **ou sur toute erreur/exception loguée**.
@@ -26,9 +31,10 @@ L'éditeur doit être fermé (sinon code 3 : voir le skill `unity-headless`).
 
 ```bash
 CLI=".claude/skills/unity-headless/scripts/unity_cli.py"
+python $CLI test --filter MainMenu_EveryScreen          # les menus + captures (~1 min avec le démarrage)
 python $CLI test --filter 'Training.*"Shooters"'      # un mode (~1,5 min)
 python $CLI test --filter Tournament                    # le tournoi seul (3 à 9 parties, 3-7 min)
-python $CLI test --filter Game.Tests.PlayMode --detach  # toute la suite (~12 min) : en détaché
+python $CLI test --filter Game.Tests.PlayMode --detach  # toute la suite (~10 min) : en détaché
 ```
 
 `--filter` est le `-testFilter` de Unity : un nom complet ou une regex sur le nom complet
@@ -54,7 +60,7 @@ attend la fin du PID affiché, puis la commande `results ...` que `--detach` a a
 | --- | --- |
 | Erreurs loguées pendant `playing` | Vrai bug de jeu : skill `unity-error-triage` sur le log du run |
 | Délai dépassé sur un écran de menu | Le menu a changé : nom d'un champ lu par réflexion (`m_trainingButton`, `m_startGameButton`...), état renommé, navigation UI modifiée. Relire l'écran concerné |
-| `No UI navigation path from X to Y` | La navigation Unity (`Selectable` Up/Down/Left/Right) ne relie pas les deux boutons |
+| `No UI navigation path from X to Y` | La croix n'amène pas le focus de X à Y : navigation directionnelle de `AMainMenuScreen` (élément le plus proche dans la direction), élément non focalisable ou désactivé, ou l'EventSystem ne sélectionne pas le panel |
 | Délai dépassé sur `the game to load` | Chargement Addressables bloqué : `log-errors` sur le log, souvent une erreur au `LoadState` |
 | Échec qui disparaît au run suivant | Bug dépendant du hasard (positions, météorites) : relancer le même filtre 2-3 fois avant de conclure, et le signaler comme bug intermittent |
 | Échecs en cascade | Un scénario cassé en pleine partie pollue le suivant ; `GoToMainMenuHome` décharge le niveau pour l'éviter. Relancer le test suivant seul pour confirmer |
