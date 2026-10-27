@@ -50,7 +50,8 @@ L'utilisateur ne doit pas avoir à tester à notre place :
 1. Toute modification C# : `python .claude/skills/unity-headless/scripts/unity_cli.py quick-compile`
    (5 s, viser 0 erreur et 0 warning dans `Assets/`).
 2. Gameplay, menus, flow, chargement : tests de scénario filtrés sur ce qui est touché, la suite
-   complète avant un commit important (skill `unity-scenario-tests`).
+   complète avant un commit important (skill `unity-scenario-tests`). Écran modifié : regarder ses
+   captures (`unity_cli.py screenshots`, skill `ui-toolkit-screens`).
 3. Avant de partager une version : build + lancement de contrôle (skill `unity-build`).
 
 Unity en headless exige l'éditeur fermé : le demander à l'utilisateur en disant pourquoi.
@@ -65,6 +66,9 @@ Unity en headless exige l'éditeur fermé : le demander à l'utilisateur en disa
 | `unity-build` | Build Windows, zip, lancement de contrôle |
 | `unity-upgrade` | Nouvelle version de Unity ou des packages |
 | `game-mode-variants` | Créer ou modifier un mode de jeu |
+| `ui-toolkit-screens` | Modifier, créer ou migrer (depuis uGUI) un écran UI Toolkit, et le vérifier en captures |
+| `unity-yaml` | Lire ou modifier scènes, prefabs, `.asset` et `.meta` sans l'éditeur (arbre, surcharges, références, conversion d'un prefab uGUI) |
+| `unity-api-check` | Vérifier une API dans la version de Unity du projet avant de coder dessus |
 
 ## Git
 

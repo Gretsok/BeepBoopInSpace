@@ -12,6 +12,7 @@ Run `python unity_cli.py <command> --help` for the options of each command:
   log-flow        FlowMachine transitions and [Scenario] steps of a log, in order
   build           Windows player build via Game.Tools.Build.Editor.CommandLineBuild, optional zip
   run-build       launch a built player for N seconds, then triage its log
+  screenshots     run the main menu scenario, which captures every menu screen, and list the PNGs
 
 Runs go to <project>/Logs/claude-runs/<timestamp>-<name>/ (Logs/ is ignored by git).
 Exit codes: 0 success, 1 failure (errors, failed tests, build failed), 3 the editor has the project open.
@@ -542,6 +543,17 @@ def cmd_zip(args):
     return 0
 
 
+def cmd_screenshots(args):
+    """The menu scenario renders each screen to Logs/screenshots (ScenarioDriver.CaptureScreen): run it, list them."""
+    start = time.time()
+    code = cmd_test(argparse.Namespace(platform="PlayMode", filter=args.filter, name="screenshots", detach=False))
+    shots = sorted(p for p in (PROJECT / "Logs" / "screenshots").glob("*.png") if p.stat().st_mtime >= start)
+    print(f"{len(shots)} screenshot(s), 1920x1080 (read them to check the screens):" if shots else "No screenshot taken.")
+    for shot in shots:
+        print(f"  {shot}")
+    return code if shots else 1
+
+
 def cmd_run_build(args):
     exe = as_path(args.exe).resolve()
     run = new_run_dir("player")
@@ -633,6 +645,10 @@ def main():
                    help="no window (-batchmode -nographics): faster, but rendering is not checked at all")
     p.add_argument("--warnings", action="store_true")
     p.set_defaults(func=cmd_run_build)
+
+    p = sub.add_parser("screenshots", help="run the main menu scenario, then list its screenshots")
+    p.add_argument("--filter", default="MainMenu_EveryScreen", help="scenario that captures (default: the menu test)")
+    p.set_defaults(func=cmd_screenshots)
 
     args = parser.parse_args()
     sys.exit(args.func(args))

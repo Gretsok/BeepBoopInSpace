@@ -26,6 +26,7 @@ python .claude/skills/unity-headless/scripts/unity_cli.py <commande>
 | `log-errors <log>` | Erreurs distinctes d'un log Unity, avec leur nombre et leur ligne de code | instantané |
 | `log-flow <log>` | Transitions des FlowMachine et étapes de scénario, dans l'ordre | instantané |
 | `build` / `zip` / `run-build` | Build Windows, archive, lancement de contrôle (skill `unity-build`) | jusqu'à 17 min |
+| `screenshots` | Joue le test des menus, qui capture chaque écran en 1920×1080, et liste les PNG de `Logs/screenshots/` à lire (skill `ui-toolkit-screens`) | ~2 min |
 
 Chaque lancement de Unity écrit son log dans `Logs/claude-runs/<date>-<nom>/` (ignoré par git).
 Codes de sortie : 0 succès, 1 échec, 3 projet déjà ouvert par Unity.
@@ -85,3 +86,10 @@ build :
 - Les lignes `[Licensing::...] Error` en tête de log sont du bruit, pas des erreurs du projet.
 - Le dossier `Library/` est un cache : en cas d'erreurs incompréhensibles après un changement de
   version, le supprimer (projet fermé) force un ré-import complet, long (10+ min).
+- **Fins de ligne** : les `.cs` sont en CRLF, le YAML de Unity et les skills en LF. `sed -i` de Git
+  Bash retire les `\r` d'un `.cs` ; `Path.write_text` de Python sous Windows écrit `\r\n` partout.
+  Modifier avec l'outil Edit (il garde les fins de ligne), ou en Python lire et écrire en octets en
+  respectant celles du fichier. Vérifier avec `git ls-files --eol <fichier>` (`i/` dépôt, `w/` copie).
+- Ne pas enchaîner `test` après un `quick-compile` en échec (une minute perdue) :
+  `quick-compile | grep -v ": ok" && echo "erreurs" || test ...`.
+- Ne pas modifier de `.cs` pendant un `test --detach` ou un build : attendre la fin du run.

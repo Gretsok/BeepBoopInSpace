@@ -31,7 +31,7 @@ L'éditeur doit être fermé (sinon code 3 : voir le skill `unity-headless`).
 
 ```bash
 CLI=".claude/skills/unity-headless/scripts/unity_cli.py"
-python $CLI test --filter MainMenu_EveryScreen          # les menus + captures (~1 min avec le démarrage)
+python $CLI screenshots                                 # les menus + liste des captures (~2 min avec le démarrage)
 python $CLI test --filter 'Training.*"Shooters"'      # un mode (~1,5 min)
 python $CLI test --filter Tournament                    # le tournoi seul (3 à 9 parties, 3-7 min)
 python $CLI test --filter Game.Tests.PlayMode --detach  # toute la suite (~10 min) : en détaché
