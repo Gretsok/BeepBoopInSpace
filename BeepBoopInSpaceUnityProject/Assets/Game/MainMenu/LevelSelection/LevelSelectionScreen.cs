@@ -1,67 +1,56 @@
 using System;
 using System.Collections.Generic;
 using Game.Gameplay.Levels._0_Core;
+using Game.Global.SFXManagement;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace Game.MainMenu.LevelSelection
 {
     public class LevelSelectionScreen : AMainMenuScreen
     {
         [SerializeField]
-        private LevelWidget m_levelWidgetPrefab;
+        private VisualTreeAsset m_levelWidgetTemplate;
         [SerializeField]
         private LevelsListDataAsset m_levelsListDataAsset;
-        
-        [SerializeField]
-        private Transform m_levelsContainer;
 
+        [Header("Sounds")]
         [SerializeField]
-        private Button m_backButton;
+        private AudioPlayer m_levelSelectedAudioPlayer;
+        [SerializeField]
+        private AudioPlayer m_backAudioPlayer;
 
         private readonly List<LevelWidget> m_instantiatedWidgets = new();
         public IReadOnlyList<LevelWidget> LevelWidgets => m_instantiatedWidgets;
-        
+
         public Action<LevelDataAsset> OnLevelSelected;
-        
+
         protected override void HandleActivation()
         {
-            base.HandleActivation();
-
-            for (int i = m_levelsContainer.childCount - 1; i >= 0; i--)
-            {
-                if (Application.isPlaying)
-                {
-                    Destroy(m_levelsContainer.GetChild(i).gameObject);
-                }
-                else
-                {
-                    DestroyImmediate(m_levelsContainer.GetChild(i).gameObject);
-                }
-            }
-
+            var levelsScrollView = Query<ScrollView>("levels");
             m_instantiatedWidgets.Clear();
             for (int i = 0; i < m_levelsListDataAsset.LevelDataList.Count; i++)
             {
-                LevelDataAsset levelDataAsset = m_levelsListDataAsset.LevelDataList[i];
-                
-                var newWidget = Instantiate(m_levelWidgetPrefab, m_levelsContainer);
-                newWidget.Initialize(levelDataAsset);
-                m_instantiatedWidgets.Add(newWidget);
-
+                var newWidget = new LevelWidget(m_levelWidgetTemplate, m_levelsListDataAsset.LevelDataList[i]);
                 newWidget.OnLevelSelected += HandleLevelSelected;
+                levelsScrollView.Add(newWidget.Element);
+                m_instantiatedWidgets.Add(newWidget);
             }
-            
-            m_backButton.onClick.AddListener(HandleBackButton);
-            
-            EventSystem.current.SetSelectedGameObject(m_instantiatedWidgets.Count > 0 ? m_instantiatedWidgets[0].gameObject : m_backButton.gameObject);
+            // Keeps the focused level in view while the gamepad or the keyboard moves through the list.
+            levelsScrollView.RegisterCallback<FocusInEvent>(evt =>
+            {
+                if (evt.target is VisualElement level && level.layout.height > 0)
+                    ScrollIntoView(levelsScrollView, level);
+            });
+
+            var backButton = BindButton("back-button", HandleBackButton, m_backAudioPlayer);
+            DefaultFocus = m_instantiatedWidgets.Count > 0 ? m_instantiatedWidgets[0].Element : backButton;
         }
 
-        protected override void HandleDeactivation()
+        protected override void HandleCancel()
         {
-            base.HandleDeactivation();
-            m_backButton.onClick.RemoveListener(HandleBackButton);
+            m_backAudioPlayer.Play();
+            HandleBackButton();
         }
 
         private void HandleBackButton()
@@ -69,8 +58,24 @@ namespace Game.MainMenu.LevelSelection
             MainMenuContext.Instance.FlowMachine.RequestBack();
         }
 
+        // Like ScrollView.ScrollTo, margins included: they leave room for the focused level to grow.
+        private static void ScrollIntoView(ScrollView scrollView, VisualElement element)
+        {
+            var bounds = element.ChangeCoordinatesTo(scrollView.contentContainer, new Rect(Vector2.zero, element.layout.size));
+            var top = bounds.yMin - element.resolvedStyle.marginTop;
+            var bottom = bounds.yMax + element.resolvedStyle.marginBottom;
+            var viewportHeight = scrollView.contentViewport.layout.height;
+            var offset = scrollView.scrollOffset;
+            if (top < offset.y)
+                offset.y = top;
+            else if (bottom > offset.y + viewportHeight)
+                offset.y = bottom - viewportHeight;
+            scrollView.scrollOffset = offset;
+        }
+
         private void HandleLevelSelected(LevelDataAsset obj)
         {
+            m_levelSelectedAudioPlayer.Play();
             OnLevelSelected?.Invoke(obj);
         }
     }

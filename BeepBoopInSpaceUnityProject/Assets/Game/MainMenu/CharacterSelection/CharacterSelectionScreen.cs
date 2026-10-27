@@ -1,24 +1,21 @@
 using System;
 using System.Collections.Generic;
 using Game.Global.PlayerManagement;
+using Game.Global.SFXManagement;
 using Game.MainMenu.CharacterManagement;
 using Game.MainMenu.ZoneManagement;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace Game.MainMenu.CharacterSelection
 {
     public class CharacterSelectionScreen : AMainMenuScreen
     {
-        [SerializeField] 
-        private CanvasGroup m_container;
-
+        // Each widget drives the "player-slot-<n>" element of the screen, n starting at 1.
         [SerializeField] private List<CharacterWidget> m_widgets;
 
-        [SerializeField] private Button m_backButton;
-        [SerializeField] private Button m_startGameButton;
-        
+        private Button m_startGameButton;
+
         private PlayerManager m_playerManager;
         private ZoneManager m_zoneManager;
         private MainMenuOrchestrator m_orchestrator;
@@ -26,6 +23,10 @@ namespace Game.MainMenu.CharacterSelection
         [Header("Sounds")]
         [SerializeField]
         private AudioSource m_playerConnectedAudioSource;
+        [SerializeField]
+        private AudioPlayer m_startGameAudioPlayer;
+        [SerializeField]
+        private AudioPlayer m_backAudioPlayer;
 
         public void Initialize(ZoneManager zoneManager, PlayerManager playerManager, MainMenuOrchestrator orchestrator)
         {
@@ -33,35 +34,40 @@ namespace Game.MainMenu.CharacterSelection
             m_playerManager = playerManager;
             m_orchestrator = orchestrator;
         }
-        
+
         protected override void HandleActivation()
         {
-            gameObject.SetActive(true);
-
             m_playerManager.RemoveAllPlayers();
-            
+
             m_playerManager.OnPlayerJoined += HandlePlayerJoined;
             m_playerManager.OnPlayerLeft += HandlePlayerLeft;
-            
-            m_backButton.onClick.AddListener(HandleBackButtonClicked);
-            m_startGameButton.onClick.AddListener(HandleStartGameButtonClicked);
 
-            m_widgets.ForEach(widget => widget.OnCharacterDataUpdated += HandleCharacterDataUpdated);
-            
+            BindButton("back-button", HandleBackButtonClicked, m_backAudioPlayer);
+            m_startGameButton = BindButton("start-button", HandleStartGameButtonClicked, m_startGameAudioPlayer);
+
+            for (int i = 0; i < m_widgets.Count; i++)
+            {
+                m_widgets[i].SetView(Query<VisualElement>($"player-slot-{i + 1}"));
+                m_widgets[i].OnCharacterDataUpdated += HandleCharacterDataUpdated;
+            }
+
             InflateWithPlayers();
             m_playerManager.ListenForNewPlayers();
-            
-            EventSystem.current.SetSelectedGameObject(null);
-            UpdateStartButtonState();
-            
+
             m_zoneManager.SwitchToCharacterSelectionCamera();
         }
 
         private void UpdateStartButtonState()
         {
-            m_startGameButton.interactable = m_playerManager.Players.Count >= 2 && m_widgets.TrueForAll(widget => widget.CanPlay || !widget.IsActivated);
-            if (m_startGameButton.interactable)
-                EventSystem.current.SetSelectedGameObject(m_startGameButton.gameObject);
+            var canStart = m_playerManager.Players.Count >= 2 && m_widgets.TrueForAll(widget => widget.CanPlay || !widget.IsActivated);
+            m_startGameButton.SetEnabled(canStart);
+
+            // Nothing has the focus until the game can start: the button players press to join must not click anything.
+            DefaultFocus = canStart ? m_startGameButton : null;
+            if (canStart)
+                FocusSilently(m_startGameButton);
+            else if (FocusedElement == m_startGameButton)
+                m_startGameButton.Blur();
         }
 
         private void HandleCharacterDataUpdated()
@@ -73,7 +79,7 @@ namespace Game.MainMenu.CharacterSelection
         {
             if (m_playerManager.Players.Count < 2)
                 return;
-            
+
             m_orchestrator.SwitchToHubScreen();
         }
 
@@ -83,13 +89,19 @@ namespace Game.MainMenu.CharacterSelection
             OnBack?.Invoke();
         }
 
+        protected override void HandleCancel()
+        {
+            m_backAudioPlayer.Play();
+            HandleBackButtonClicked();
+        }
+
         private void HandlePlayerJoined(PlayerManager playerManager, AbstractPlayer abstractPlayer)
         {
             UpdateStartButtonState();
             InflateWithPlayers();
             m_playerConnectedAudioSource.Play();
         }
-        
+
         private void HandlePlayerLeft(PlayerManager playerManager, AbstractPlayer abstractPlayer)
         {
             if (!gameObject)
@@ -109,11 +121,11 @@ namespace Game.MainMenu.CharacterSelection
                 Destroy(controller);
             }
             m_playerJoiningPlayers.Clear();
-            
+
             for (int i = 0; i < m_playerManager.Players.Count; i++)
             {
                 var player = m_playerManager.Players[i];
-                
+
                 var playerController = gameObject.AddComponent<CharacterSelectionPlayerController>();
                 var characterWidget = m_widgets[i];
                 characterWidget.Activate();
@@ -121,7 +133,7 @@ namespace Game.MainMenu.CharacterSelection
                 playerController.Activate();
                 m_playerJoiningPlayers.Add(playerController);
             }
-            
+
             for (int i = 0; i < m_playerManager.Players.Count; i++)
             {
                 var characterWidget = m_widgets[i];
@@ -131,29 +143,23 @@ namespace Game.MainMenu.CharacterSelection
             for (int i = m_playerManager.Players.Count; i < 4; i++)
             {
                 var characterWidget = m_widgets[i];
-                
+
                 characterWidget.Deactivate();
             }
-            
+
             UpdateStartButtonState();
         }
 
         protected override void HandleDeactivation()
         {
-            gameObject.SetActive(false);
-            
-            if (!m_playerManager) 
+            if (!m_playerManager)
                 return;
-            
+
             m_playerManager.StopListeningForNewPlayers();
-                
+
             m_playerManager.OnPlayerJoined -= HandlePlayerJoined;
             m_playerManager.OnPlayerLeft -= HandlePlayerLeft;
-            
-                        
-            m_backButton.onClick.RemoveListener(HandleBackButtonClicked);
-            m_startGameButton.onClick.RemoveListener(HandleStartGameButtonClicked);
-            
+
             for (int i = m_playerJoiningPlayers.Count - 1; i >= 0; i--)
             {
                 var controller = m_playerJoiningPlayers[i];
@@ -162,13 +168,14 @@ namespace Game.MainMenu.CharacterSelection
                 controller.Deactivate();
                 Destroy(controller);
             }
+            m_playerJoiningPlayers.Clear();
 
             for (int i = 0; i < m_widgets.Count; i++)
             {
                 var characterWidget = m_widgets[i];
+                characterWidget.OnCharacterDataUpdated -= HandleCharacterDataUpdated;
                 characterWidget.Deactivate();
             }
         }
-
     }
 }

@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Template name="PlayerSlot" src="PlayerSlot.uxml" />
+    <Style src="../UI/MainMenu.uss" />
+    <ui:VisualElement name="character-selection-screen" class="mm-screen" picking-mode="Ignore">
+        <ui:VisualElement class="player-slots" picking-mode="Ignore">
+            <ui:Instance template="PlayerSlot" name="player-slot-1" class="player-slots__column" picking-mode="Ignore" />
+            <ui:Instance template="PlayerSlot" name="player-slot-2" class="player-slots__column" picking-mode="Ignore" />
+            <ui:Instance template="PlayerSlot" name="player-slot-3" class="player-slots__column" picking-mode="Ignore" />
+            <ui:Instance template="PlayerSlot" name="player-slot-4" class="player-slots__column" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:Button name="back-button" text="Retour" class="mm-button mm-corner--bottom-left" />
+        <ui:Button name="start-button" text="Lancer la partie" class="mm-play-button character-selection__start" />
+    </ui:VisualElement>
+</ui:UXML>

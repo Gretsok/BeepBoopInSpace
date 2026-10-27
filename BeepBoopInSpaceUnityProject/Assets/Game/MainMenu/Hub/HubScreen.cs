@@ -1,29 +1,20 @@
+using Game.Global.SFXManagement;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace Game.MainMenu.Hub
 {
     public class HubScreen : AMainMenuScreen
     {
         [SerializeField]
+        private AudioPlayer m_confirmAudioPlayer;
+
         private Button m_tournamentButton;
-
-        [SerializeField]
         private Button m_trainingButton;
-
-        [SerializeField]
-        private Button m_settingsButton;
-
-        [SerializeField]
-        private Button m_characterSelectionButton;
-
-        [SerializeField]
-        private Button m_quitGameButton;
 
         private GameModesLauncher m_gameModesLauncher;
         private MainMenuOrchestrator m_orchestrator;
-        
+
         public void Initialize(GameModesLauncher gameModesLauncher, MainMenuOrchestrator mainMenuOrchestrator)
         {
             m_gameModesLauncher = gameModesLauncher;
@@ -32,32 +23,13 @@ namespace Game.MainMenu.Hub
 
         protected override void HandleActivation()
         {
-            base.HandleActivation();
-            m_tournamentButton.onClick.RemoveListener(HandleTournamentButtonClicked);
-            m_trainingButton.onClick.RemoveListener(HandleTrainingButtonClicked);
-            m_settingsButton.onClick.RemoveListener(HandleSettingsButtonClicked);
-            m_characterSelectionButton.onClick.RemoveListener(HandleCharacterSelectionButtonClicked);
-            m_quitGameButton.onClick.RemoveListener(HandleQuitGameButtonClicked);
-            
-            
-            m_tournamentButton.onClick.AddListener(HandleTournamentButtonClicked);
-            m_trainingButton.onClick.AddListener(HandleTrainingButtonClicked);
-            m_settingsButton.onClick.AddListener(HandleSettingsButtonClicked);
-            m_characterSelectionButton.onClick.AddListener(HandleCharacterSelectionButtonClicked);
-            m_quitGameButton.onClick.AddListener(HandleQuitGameButtonClicked);
-            
-            EventSystem.current.SetSelectedGameObject(m_tournamentButton.gameObject);
-        }
+            m_tournamentButton = BindButton("tournament-button", HandleTournamentButtonClicked, m_confirmAudioPlayer);
+            m_trainingButton = BindButton("training-button", HandleTrainingButtonClicked, m_confirmAudioPlayer);
+            BindButton("settings-button", HandleSettingsButtonClicked, m_confirmAudioPlayer);
+            BindButton("character-selection-button", HandleCharacterSelectionButtonClicked, m_confirmAudioPlayer);
+            BindButton("quit-button", HandleQuitGameButtonClicked);
 
-        protected override void HandleDeactivation()
-        {
-            base.HandleDeactivation();
-            
-            m_tournamentButton.onClick.RemoveListener(HandleTournamentButtonClicked);
-            m_trainingButton.onClick.RemoveListener(HandleTrainingButtonClicked);
-            m_settingsButton.onClick.RemoveListener(HandleSettingsButtonClicked);
-            m_characterSelectionButton.onClick.RemoveListener(HandleCharacterSelectionButtonClicked);
-            m_quitGameButton.onClick.RemoveListener(HandleQuitGameButtonClicked);
+            DefaultFocus = m_tournamentButton;
         }
 
         private void HandleTournamentButtonClicked()
