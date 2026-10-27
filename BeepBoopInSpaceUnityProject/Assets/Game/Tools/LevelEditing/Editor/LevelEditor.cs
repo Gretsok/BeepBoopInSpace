@@ -81,7 +81,7 @@ namespace Game.Tools.LevelEditing.Editor
                 m_cellsPrefabContainer.Add(previewWidget);
                 //AssetPreview.
                 var previewTexture = AssetPreview.GetAssetPreview(cellPrefab.gameObject); // Triggers loading of asset preview but returns null if the cache was null at this moment.
-                yield return new WaitUntil(() => !AssetPreview.IsLoadingAssetPreview(cellPrefab.GetInstanceID())); // So we wait
+                yield return new WaitUntil(() => !AssetPreview.IsLoadingAssetPreview(cellPrefab.GetEntityId())); // So we wait
                 previewTexture = AssetPreview.GetAssetPreview(cellPrefab.gameObject); // And we try to get it again... :clown:
                 Debug.Assert(previewTexture != null, "Preview texture is null."); 
                 previewWidget.style.backgroundImage = previewTexture;
