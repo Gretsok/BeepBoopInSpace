@@ -152,8 +152,8 @@ namespace Game.Tests.PlayMode
 
         /// <summary>
         /// The menus with the keyboard and the mouse, then every main menu screen with the main player's gamepad: d-pad,
-        /// Submit and Cancel, the volume sliders, the "already taken" lock of the character selection.
-        /// Saves a screenshot of each screen in Logs/screenshots.
+        /// Submit and Cancel, the volume sliders; the character selection with each pad: joining, getting ready, a
+        /// character already taken, Cancel. Saves a screenshot of each screen in Logs/screenshots.
         /// </summary>
         [UnityTest, Order(0), Timeout(5 * 60 * 1000)]
         public IEnumerator MainMenu_EveryScreenWorksWithGamepadKeyboardAndMouse()
@@ -203,24 +203,49 @@ namespace Game.Tests.PlayMode
             yield return m_driver.Press(cancel);
             yield return m_driver.WaitUntil("the home screen after Cancel", () => MenuState == "HomeState");
 
-            m_driver.Step("Character selection: a character taken twice locks the start");
+            m_driver.Step("Character selection: join, get ready");
             yield return m_driver.WaitUntil("the play button to be focused", () => NameOf(FocusedElement) == "play-button");
-            yield return JoinFourPlayers();
+            yield return m_driver.Submit();
+            yield return m_driver.WaitUntil("the character selection screen", () => MenuState == "CharacterSelectionState");
             yield return WaitForCameraBlend();
             yield return CaptureScreen("04-character-selection");
-            var startButton = (VisualElement)Get(FindActive("Game.MainMenu.CharacterSelection.CharacterSelectionScreen"), "m_startGameButton");
-            var switchCharacter = m_driver.Gamepads[1].buttonNorth;
-            for (int i = 0; i < 8 && startButton.enabledSelf; i++)
-                yield return m_driver.Press(switchCharacter);
-            Assert.IsFalse(startButton.enabledSelf, "Player 2 never got a character already taken.");
-            yield return CaptureScreen("05-character-taken");
-            for (int i = 0; i < 8 && !startButton.enabledSelf; i++)
-                yield return m_driver.Press(switchCharacter);
-            yield return m_driver.WaitUntil("the start button to be focused again", () => FocusedElement == startButton, 10f);
-            yield return m_driver.Submit();
-            yield return m_driver.WaitUntil("the hub", () => MenuState == "HubState");
+            var pads = m_driver.Gamepads;
+            yield return Join(0);
+            yield return CaptureScreen("05-character-selection-one-player");
+            yield return m_driver.Press(pads[0].buttonNorth);
+            yield return m_driver.WaitUntil("player 1 to be ready", () => IsReady(0), 5f);
+            yield return RealSeconds(1f);
+            yield return CaptureScreen("06-character-selection-ready");
+            yield return Join(1);
+            yield return CaptureScreen("07-character-selection-two-players");
+
+            // With an XInput pad: the d-pad of the DualShock 4 HID can't be pressed button by button.
+            m_driver.Step("Character selection: a character already chosen can't be taken");
+            yield return Join(2);
+            for (int i = 0; i < 10 && CharacterOf(2) != CharacterOf(0); i++)
+                yield return m_driver.Press(pads[2].dpad.right);
+            Assert.AreEqual(CharacterOf(0), CharacterOf(2), "Player 3's cursor never reached player 1's character.");
+            yield return m_driver.Press(pads[2].buttonNorth);
+            yield return RealSeconds(0.15f);
+            Assert.IsFalse(IsReady(2), "Player 3 got ready with player 1's character.");
+            yield return CaptureScreen("08-character-taken");
+            yield return GetReady(2);
+            yield return Join(3);
+            yield return RealSeconds(1f);
+            yield return CaptureScreen("09-character-selection-four-players");
+
+            m_driver.Step("Character selection: Cancel makes the main player not ready, then everybody gets ready");
+            yield return m_driver.Press(pads[0].buttonEast);
+            yield return m_driver.WaitUntil("player 1 to cancel being ready", () => !IsReady(0), 5f);
+            yield return RealSeconds(0.5f);
+            Assert.AreEqual("CharacterSelectionState", MenuState, "Cancel left the character selection while player 1 was ready.");
+            for (int i = 0; i < pads.Count; i++)
+                yield return GetReady(i);
+            yield return RealSeconds(0.5f);
+            yield return CaptureScreen("10-character-selection-all-ready");
+            yield return m_driver.WaitUntil("the hub once everybody is ready", () => MenuState == "HubState", 10f);
             yield return WaitForCameraBlend();
-            yield return CaptureScreen("06-hub");
+            yield return CaptureScreen("11-hub");
 
             m_driver.Step("Level selection: scroll to the last level, then Cancel");
             yield return m_driver.Select(HubButton("m_trainingButton"));
@@ -228,10 +253,10 @@ namespace Game.Tests.PlayMode
             yield return m_driver.WaitUntil("the level selection screen", () => MenuState == "LevelSelectionState");
             var levelSelection = FindActive("Game.MainMenu.LevelSelection.LevelSelectionScreen");
             yield return m_driver.WaitUntil("the level widgets", () => LevelWidgets(levelSelection).Any());
-            yield return CaptureScreen("07-level-selection");
+            yield return CaptureScreen("12-level-selection");
             yield return m_driver.Select((VisualElement)Get(LevelWidgets(levelSelection).Last(), "Element"));
             yield return RealSeconds(0.5f);
-            yield return CaptureScreen("08-level-selection-last");
+            yield return CaptureScreen("13-level-selection-last");
             yield return m_driver.Press(cancel);
             yield return m_driver.WaitUntil("the hub after Cancel", () => MenuState == "HubState");
 
@@ -299,29 +324,40 @@ namespace Game.Tests.PlayMode
 
         private IEnumerator JoinFourPlayersAndOpenHub()
         {
-            yield return JoinFourPlayers();
-
-            m_driver.Step("Character selection: start");
-            var startButton = (VisualElement)Get(FindActive("Game.MainMenu.CharacterSelection.CharacterSelectionScreen"), "m_startGameButton");
-            yield return m_driver.WaitUntil("the start button to be focused", () => FocusedElement == startButton, 10f);
-            yield return m_driver.Submit();
-            yield return m_driver.WaitUntil("the hub", () => MenuState == "HubState");
-        }
-
-        private IEnumerator JoinFourPlayers()
-        {
             m_driver.Step("Home: press Play");
             yield return m_driver.Submit();
             yield return m_driver.WaitUntil("the character selection screen", () => MenuState == "CharacterSelectionState");
 
-            m_driver.Step("Character selection: 4 players join");
+            m_driver.Step("Character selection: 4 players join and get ready");
             for (int i = 0; i < m_driver.Gamepads.Count; i++)
+                yield return Join(i);
+            for (int i = 0; i < m_driver.Gamepads.Count; i++)
+                yield return GetReady(i);
+            yield return m_driver.WaitUntil("the hub once everybody is ready", () => MenuState == "HubState", 10f);
+        }
+
+        private IEnumerator Join(int pad)
+        {
+            var expectedPlayers = PlayerCount + 1;
+            yield return m_driver.Press(m_driver.Gamepads[pad].buttonSouth);
+            yield return m_driver.WaitUntil($"player {expectedPlayers} to join with '{m_driver.Gamepads[pad].name}'",
+                () => PlayerCount == expectedPlayers, 10f);
+            // The circle pops in.
+            yield return RealSeconds(0.5f);
+        }
+
+        // Ready (Y), with Random (X) first while another player has the character.
+        private IEnumerator GetReady(int pad)
+        {
+            for (int attempt = 0; attempt < 8 && !IsReady(pad); attempt++)
             {
-                var expectedPlayers = i + 1;
-                yield return m_driver.Press(m_driver.Gamepads[i].buttonSouth);
-                yield return m_driver.WaitUntil($"player {expectedPlayers} to join with '{m_driver.Gamepads[i].name}'",
-                    () => PlayerCount == expectedPlayers, 10f);
+                if (attempt > 0)
+                    yield return m_driver.Press(m_driver.Gamepads[pad].buttonWest);
+                yield return m_driver.Press(m_driver.Gamepads[pad].buttonNorth);
+                yield return Frames(2);
             }
+            if (!IsReady(pad))
+                m_driver.Fail($"Player {pad + 1} never got ready.");
         }
 
         /// <summary>From the game scene loading to the end of its results screen.</summary>
@@ -354,6 +390,13 @@ namespace Game.Tests.PlayMode
                 yield return RealSeconds(0.5f);
             }
         }
+
+        private static IList CharacterWidgets =>
+            (IList)Get(FindActive("Game.MainMenu.CharacterSelection.CharacterSelectionScreen"), "m_widgets");
+
+        private static bool IsReady(int slot) => (bool)Get(CharacterWidgets[slot], "IsReady");
+
+        private static object CharacterOf(int slot) => Get(CharacterWidgets[slot], "CharacterDataAsset");
 
         private static VisualElement HubButton(string field) =>
             (VisualElement)Get(FindActive("Game.MainMenu.Hub.HubScreen"), field);
