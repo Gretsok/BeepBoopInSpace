@@ -1,14 +1,12 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Game.ArchitectureTools.Manager;
 using Game.Characters;
-using Game.Global;
-using Game.Global.PlayerManagement;
 using UnityEngine;
 
 namespace Game.MainMenu.CharacterManagement
 {
+    /// <summary>The playable characters, and which one each player's widget points at in the character selection.</summary>
     public class CharacterBankManager : AManager<CharacterBankManager>
     {
         [SerializeField]
@@ -16,24 +14,19 @@ namespace Game.MainMenu.CharacterManagement
 
         private readonly Dictionary<CharacterWidget, CharacterDataAsset> m_associations = new();
 
+        public IReadOnlyList<CharacterDataAsset> Characters => m_charactersData;
+
+        /// <summary>A character nobody points at, else one nobody has chosen yet.</summary>
         public CharacterDataAsset GetFirstAvailableCharacterData()
         {
-            return m_charactersData.First(data => !m_associations.ContainsValue(data));
-        }
-        
-        public CharacterDataAsset GetNextCharacterDataAfter(CharacterDataAsset characterDataAsset)
-        {
-            var index = m_charactersData.FindIndex(data => data == characterDataAsset);
-            
-            return m_charactersData[(index + 1) % m_charactersData.Count];
+            return m_charactersData.FirstOrDefault(data => !m_associations.ContainsValue(data))
+                ?? m_charactersData.FirstOrDefault(data => !IsCharacterAlreadyTakenByAnotherWidget(data, null))
+                ?? m_charactersData[0];
         }
 
         public void NotifyAssociation(CharacterWidget widget, CharacterDataAsset characterDataAsset)
         {
-            if (m_associations.ContainsKey(widget))
-                m_associations[widget] = characterDataAsset;
-            else
-                m_associations.Add(widget, characterDataAsset);
+            m_associations[widget] = characterDataAsset;
         }
 
         public void UnregisterWidget(CharacterWidget widget)
@@ -41,15 +34,19 @@ namespace Game.MainMenu.CharacterManagement
             m_associations.Remove(widget);
         }
 
+        /// <summary>Whether a player other than <paramref name="widgetOwner"/>'s has chosen the character.</summary>
         public bool IsCharacterAlreadyTakenByAnotherWidget(CharacterDataAsset characterDataAssetToFind, CharacterWidget widgetOwner)
         {
-            foreach (var (widget, characterData) in m_associations)
-            {
-                if (characterData == characterDataAssetToFind && widget != widgetOwner)
-                    return true;
-            }
-            
-            return false;
+            return m_associations.Any(association => association.Value == characterDataAssetToFind
+                                                     && association.Key != widgetOwner && association.Key.IsReady);
+        }
+
+        /// <summary>The widgets pointing at the character, in player order.</summary>
+        public IEnumerable<CharacterWidget> GetWidgetsOn(CharacterDataAsset characterDataAsset)
+        {
+            return m_associations.Where(association => association.Value == characterDataAsset)
+                .Select(association => association.Key)
+                .OrderBy(widget => widget.SlotIndex);
         }
     }
 }

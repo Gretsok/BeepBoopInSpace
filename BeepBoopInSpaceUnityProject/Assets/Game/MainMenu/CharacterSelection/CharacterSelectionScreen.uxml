@@ -1,14 +1,41 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <ui:Template name="PlayerSlot" src="PlayerSlot.uxml" />
     <Style src="../UI/MainMenu.uss" />
-    <ui:VisualElement name="character-selection-screen" class="mm-screen" picking-mode="Ignore">
-        <ui:VisualElement class="player-slots" picking-mode="Ignore">
-            <ui:Instance template="PlayerSlot" name="player-slot-1" class="player-slots__column" picking-mode="Ignore" />
-            <ui:Instance template="PlayerSlot" name="player-slot-2" class="player-slots__column" picking-mode="Ignore" />
-            <ui:Instance template="PlayerSlot" name="player-slot-3" class="player-slots__column" picking-mode="Ignore" />
-            <ui:Instance template="PlayerSlot" name="player-slot-4" class="player-slots__column" picking-mode="Ignore" />
+    <ui:VisualElement name="character-selection-screen" class="mm-screen cs-screen" picking-mode="Ignore">
+        <ui:VisualElement class="cs-background" picking-mode="Ignore" />
+        <ui:VisualElement class="cs-title" picking-mode="Ignore">
+            <ui:VisualElement class="cs-title__fill" picking-mode="Ignore" />
+            <ui:VisualElement class="cs-title__border" picking-mode="Ignore" />
+            <ui:Label text="CHARACTER SELECTION" class="cs-title__label" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:Button name="back-button" text="Retour" class="mm-button mm-corner--bottom-left" />
-        <ui:Button name="start-button" text="Lancer la partie" class="mm-play-button character-selection__start" />
+        <ui:VisualElement class="cs-insert cs-insert--left" picking-mode="Ignore">
+            <ui:VisualElement class="cs-insert__fill" picking-mode="Ignore" />
+            <ui:VisualElement class="cs-insert__border" picking-mode="Ignore" />
+            <ui:VisualElement name="random-glyph" class="cs-glyph cs-insert__glyph cs-insert__glyph--first" picking-mode="Ignore" />
+            <ui:Label text="Aléatoire" class="cs-text cs-insert__label cs-insert__label--random" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement class="cs-insert cs-insert--right" picking-mode="Ignore">
+            <ui:VisualElement class="cs-insert__fill" picking-mode="Ignore" />
+            <ui:VisualElement class="cs-insert__border" picking-mode="Ignore" />
+            <ui:VisualElement name="call-left-glyph" class="cs-glyph cs-insert__glyph cs-insert__glyph--first" picking-mode="Ignore" />
+            <ui:Label text="Appeler" class="cs-text cs-insert__label cs-insert__label--call" picking-mode="Ignore" />
+            <ui:VisualElement name="call-right-glyph" class="cs-glyph cs-insert__glyph cs-insert__glyph--last" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement name="player-slots" class="cs-slots" picking-mode="Ignore">
+            <ui:Instance template="PlayerSlot" name="player-slot-1" class="cs-slots__slot cs-slot--p1" picking-mode="Ignore" />
+            <ui:Instance template="PlayerSlot" name="player-slot-2" class="cs-slots__slot cs-slot--p2" picking-mode="Ignore" />
+            <ui:Instance template="PlayerSlot" name="player-slot-3" class="cs-slots__slot cs-slot--p3" picking-mode="Ignore" />
+            <ui:Instance template="PlayerSlot" name="player-slot-4" class="cs-slots__slot cs-slot--p4" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement name="roster" class="cs-roster" picking-mode="Ignore" />
+        <ui:Button name="back-button" focusable="false" class="cs-legend cs-legend--back">
+            <ui:Label text="Retour" class="cs-text cs-legend__label" picking-mode="Ignore" />
+            <ui:VisualElement name="back-glyph" class="cs-glyph cs-legend__glyph--after" picking-mode="Ignore" />
+        </ui:Button>
+        <ui:VisualElement name="ready-legend" class="cs-legend cs-legend--ready" picking-mode="Ignore">
+            <ui:VisualElement name="ready-glyph" class="cs-glyph" picking-mode="Ignore" />
+            <ui:Label text="Prêts ?" class="cs-text cs-legend__label cs-legend__label--ready" picking-mode="Ignore" />
+            <ui:Label text="C'est parti !" class="cs-text cs-legend__label cs-legend__label--launch" picking-mode="Ignore" />
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

@@ -50,9 +50,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9eae1866d5fca704b999ecc06e8f5492, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <ModelContainer>k__BackingField: {fileID: 0}
   m_playerPopAudioSource: {fileID: 4117531487512797540}
-  m_popIndicationAction: {fileID: 11400000, guid: 83820f9e3cb65aa4fa6bee20e2578df2, type: 2}
+  m_joinIndicationAction: {fileID: 11400000, guid: 68434c2d2a934e2eb51f802ccabf04d0, type: 2}
   m_onCharacterDataUpdated:
     m_PersistentCalls:
       m_Calls:

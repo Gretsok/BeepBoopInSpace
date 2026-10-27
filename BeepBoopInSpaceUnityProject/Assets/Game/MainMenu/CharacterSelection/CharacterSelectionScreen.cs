@@ -1,24 +1,55 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using DG.Tweening;
+using Game.Global.InputIndicationsManagement;
+using Game.Global.NavigationAuthority;
 using Game.Global.PlayerManagement;
 using Game.Global.SFXManagement;
 using Game.MainMenu.CharacterManagement;
 using Game.MainMenu.ZoneManagement;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 namespace Game.MainMenu.CharacterSelection
 {
+    /// <summary>
+    /// Players join, each picks a character in the grid and gets ready; once every player (2 at least) is ready, the
+    /// game moves on to the hub. Each player's circle is a <see cref="CharacterWidget"/>, the grid a <see cref="CharacterRoster"/>.
+    /// </summary>
     public class CharacterSelectionScreen : AMainMenuScreen
     {
+        private const int k_MinPlayers = 2;
+        private const string k_LaunchingClass = "cs-screen--launching";
+
         // Each widget drives the "player-slot-<n>" element of the screen, n starting at 1.
         [SerializeField] private List<CharacterWidget> m_widgets;
 
-        private Button m_startGameButton;
+        [SerializeField, Tooltip("Cells of the character grid. Those past the characters show locked robots.")]
+        private int m_rosterCellCount = 20;
+
+        [SerializeField, Tooltip("Time between the last player getting ready and the hub, in seconds.")]
+        private float m_launchDelay = 1.2f;
+
+        [Header("Input indications")]
+        [SerializeField] private InputIndicationActionDataAsset m_randomIndicationAction;
+        [SerializeField] private InputIndicationActionDataAsset m_callLeftIndicationAction;
+        [SerializeField] private InputIndicationActionDataAsset m_callRightIndicationAction;
+        [SerializeField] private InputIndicationActionDataAsset m_backIndicationAction;
+        [SerializeField] private InputIndicationActionDataAsset m_readyIndicationAction;
 
         private PlayerManager m_playerManager;
         private ZoneManager m_zoneManager;
         private MainMenuOrchestrator m_orchestrator;
+        private NavigationAuthorityManager m_navigationAuthority;
+
+        private VisualElement m_screenElement;
+        private CharacterRoster m_roster;
+        private readonly List<InputIndicationView> m_indications = new();
+        private readonly List<CharacterSelectionPlayerController> m_playerControllers = new();
+        private InputAction m_joinAction;
+        private Tween m_launch;
 
         [Header("Sounds")]
         [SerializeField]
@@ -27,12 +58,20 @@ namespace Game.MainMenu.CharacterSelection
         private AudioPlayer m_startGameAudioPlayer;
         [SerializeField]
         private AudioPlayer m_backAudioPlayer;
+        [SerializeField]
+        private AudioPlayer m_readyAudioPlayer;
+        [SerializeField]
+        private AudioPlayer m_unreadyAudioPlayer;
+        [SerializeField]
+        private AudioPlayer m_refusedAudioPlayer;
 
-        public void Initialize(ZoneManager zoneManager, PlayerManager playerManager, MainMenuOrchestrator orchestrator)
+        public void Initialize(ZoneManager zoneManager, PlayerManager playerManager, MainMenuOrchestrator orchestrator,
+            NavigationAuthorityManager navigationAuthority)
         {
             m_zoneManager = zoneManager;
             m_playerManager = playerManager;
             m_orchestrator = orchestrator;
+            m_navigationAuthority = navigationAuthority;
         }
 
         protected override void HandleActivation()
@@ -42,44 +81,111 @@ namespace Game.MainMenu.CharacterSelection
             m_playerManager.OnPlayerJoined += HandlePlayerJoined;
             m_playerManager.OnPlayerLeft += HandlePlayerLeft;
 
+            // Nothing on this screen is a button players move to: the screen itself keeps the focus, so that the main
+            // player's Cancel reaches HandleCancel.
+            m_screenElement = Query<VisualElement>("character-selection-screen");
+            m_screenElement.focusable = true;
+            DefaultFocus = m_screenElement;
             BindButton("back-button", HandleBackButtonClicked, m_backAudioPlayer);
-            m_startGameButton = BindButton("start-button", HandleStartGameButtonClicked, m_startGameAudioPlayer);
 
+            m_roster = new CharacterRoster(Query<VisualElement>("roster"), CharacterBankManager.Instance, m_rosterCellCount);
             for (int i = 0; i < m_widgets.Count; i++)
             {
-                m_widgets[i].SetView(Query<VisualElement>($"player-slot-{i + 1}"));
-                m_widgets[i].OnCharacterDataUpdated += HandleCharacterDataUpdated;
+                var widget = m_widgets[i];
+                widget.SetView(Query<VisualElement>($"player-slot-{i + 1}"), i);
+                widget.OnCharacterDataUpdated += HandleCharacterDataUpdated;
+                widget.OnReadyChanged += HandleReadyChanged;
+                widget.OnRefused += HandleRefused;
             }
 
+            AddIndication("random-glyph", m_randomIndicationAction);
+            AddIndication("call-left-glyph", m_callLeftIndicationAction);
+            AddIndication("call-right-glyph", m_callRightIndicationAction);
+            AddIndication("back-glyph", m_backIndicationAction);
+            AddIndication("ready-glyph", m_readyIndicationAction);
+
+            m_joinAction = CreateJoinAction();
             InflateWithPlayers();
-            m_playerManager.ListenForNewPlayers();
 
             m_zoneManager.SwitchToCharacterSelectionCamera();
         }
 
-        private void UpdateStartButtonState()
+        // Players join with the buttons of the "Rejoindre" and "Prêts ?" indications, or A. Not with any button: B on a
+        // gamepad that hasn't joined goes back to the home screen.
+        private static InputAction CreateJoinAction()
         {
-            var canStart = m_playerManager.Players.Count >= 2 && m_widgets.TrueForAll(widget => widget.CanPlay || !widget.IsActivated);
-            m_startGameButton.SetEnabled(canStart);
-
-            // Nothing has the focus until the game can start: the button players press to join must not click anything.
-            DefaultFocus = canStart ? m_startGameButton : null;
-            if (canStart)
-                FocusSilently(m_startGameButton);
-            else if (FocusedElement == m_startGameButton)
-                m_startGameButton.Blur();
+            var action = new InputAction("Join", InputActionType.Button);
+            action.AddBinding("<Gamepad>/buttonNorth");
+            action.AddBinding("<Gamepad>/buttonSouth");
+            action.AddBinding("<Keyboard>/space");
+            action.AddBinding("<Keyboard>/enter");
+            return action;
         }
+
+        private void AddIndication(string elementName, InputIndicationActionDataAsset actionDataAsset)
+        {
+            m_indications.Add(new InputIndicationView(Query<VisualElement>(elementName), actionDataAsset) { ShowsLikelyDeviceWithoutPlayer = true });
+        }
+
+        private AbstractPlayer MainPlayer => m_playerManager.Players.FirstOrDefault(player =>
+            player && player.PlayerInput.playerIndex == (m_navigationAuthority ? m_navigationAuthority.MainPlayerID : 0));
+
+        private CharacterWidget WidgetOf(AbstractPlayer player) => m_widgets.FirstOrDefault(widget => widget.IsActivated && widget.Player == player);
 
         private void HandleCharacterDataUpdated()
         {
-            InflateWithPlayers();
+            m_roster.Refresh(m_widgets);
         }
 
-        private void HandleStartGameButtonClicked()
+        private void HandleReadyChanged(CharacterWidget widget)
         {
-            if (m_playerManager.Players.Count < 2)
-                return;
+            if (widget.IsReady)
+            {
+                m_readyAudioPlayer.Play();
+                m_roster.PlayTaken(widget.CharacterDataAsset);
+            }
+            else
+                m_unreadyAudioPlayer.Play();
+            m_roster.Refresh(m_widgets);
+            UpdateLaunch();
+        }
 
+        private void HandleRefused(CharacterWidget widget)
+        {
+            m_refusedAudioPlayer.Play();
+            m_roster.PlayRefused(widget.CharacterDataAsset);
+        }
+
+        private bool AreAllPlayersReady => m_playerManager.Players.Count >= k_MinPlayers
+                                           && m_widgets.TrueForAll(widget => widget.CanPlay || !widget.IsActivated);
+
+        // Everybody ready: the hub opens after a short celebration, unless someone changes their mind or joins meanwhile.
+        private void UpdateLaunch()
+        {
+            var isLaunching = m_launch != null && m_launch.IsActive();
+            if (AreAllPlayersReady == isLaunching)
+                return;
+            m_screenElement.EnableInClassList(k_LaunchingClass, !isLaunching);
+            if (isLaunching)
+            {
+                m_launch.Kill();
+                m_launch = null;
+                return;
+            }
+
+            for (int i = 0; i < m_widgets.Count; i++)
+                m_widgets[i].PlayLaunch(0.35f + i * 0.08f);
+            m_launch = DOVirtual.DelayedCall(m_launchDelay, Launch, ignoreTimeScale: true)
+                .SetLink(gameObject, LinkBehaviour.KillOnDisable);
+        }
+
+        private void Launch()
+        {
+            m_launch = null;
+            if (!IsActivated || !AreAllPlayersReady)
+                return;
+            m_startGameAudioPlayer.Play();
+            m_playerManager.StopListeningForNewPlayers();
             m_orchestrator.SwitchToHubScreen();
         }
 
@@ -89,15 +195,21 @@ namespace Game.MainMenu.CharacterSelection
             OnBack?.Invoke();
         }
 
+        // B, Circle or Escape of the main player: first cancels being ready, then goes back to the home screen.
         protected override void HandleCancel()
         {
+            var mainPlayerWidget = WidgetOf(MainPlayer);
+            if (mainPlayerWidget && mainPlayerWidget.IsReady)
+            {
+                mainPlayerWidget.CancelReady();
+                return;
+            }
             m_backAudioPlayer.Play();
             HandleBackButtonClicked();
         }
 
         private void HandlePlayerJoined(PlayerManager playerManager, AbstractPlayer abstractPlayer)
         {
-            UpdateStartButtonState();
             InflateWithPlayers();
             m_playerConnectedAudioSource.Play();
         }
@@ -106,48 +218,60 @@ namespace Game.MainMenu.CharacterSelection
         {
             if (!gameObject)
                 return;
-            UpdateStartButtonState();
             InflateWithPlayers();
         }
 
-        private List<CharacterSelectionPlayerController> m_playerJoiningPlayers = new ();
-
         private void InflateWithPlayers()
         {
-            for (int i = m_playerJoiningPlayers.Count - 1; i >= 0; i--)
+            ClearPlayerControllers();
+
+            var players = m_playerManager.Players;
+            var mainPlayer = MainPlayer;
+            for (int i = 0; i < m_widgets.Count; i++)
             {
-                var controller = m_playerJoiningPlayers[i];
+                var widget = m_widgets[i];
+                if (i >= players.Count)
+                {
+                    widget.Deactivate();
+                    widget.SetJoinSlot(i == players.Count);
+                    widget.SetJoinIndicationPlayer(mainPlayer);
+                    continue;
+                }
+
+                if (widget.Player != players[i])
+                {
+                    widget.Deactivate();
+                    widget.SetPlayer(players[i]);
+                    widget.Activate();
+                }
+                var playerController = gameObject.AddComponent<CharacterSelectionPlayerController>();
+                playerController.SetDependencies(players[i], widget, m_roster, handlesBack: players[i] != mainPlayer);
+                playerController.Activate();
+                m_playerControllers.Add(playerController);
+            }
+
+            // Four players at most: one per circle.
+            if (players.Count >= m_widgets.Count)
+                m_playerManager.StopListeningForNewPlayers();
+            else if (IsActivated && m_joinAction != null)
+                m_playerManager.ListenForNewPlayers(m_joinAction);
+
+            foreach (var indication in m_indications)
+                indication.SetPlayer(mainPlayer);
+            m_roster.Refresh(m_widgets);
+            UpdateLaunch();
+        }
+
+        private void ClearPlayerControllers()
+        {
+            foreach (var controller in m_playerControllers)
+            {
+                if (controller == null)
+                    continue;
                 controller.Deactivate();
                 Destroy(controller);
             }
-            m_playerJoiningPlayers.Clear();
-
-            for (int i = 0; i < m_playerManager.Players.Count; i++)
-            {
-                var player = m_playerManager.Players[i];
-
-                var playerController = gameObject.AddComponent<CharacterSelectionPlayerController>();
-                var characterWidget = m_widgets[i];
-                characterWidget.Activate();
-                playerController.SetDependencies(player, characterWidget);
-                playerController.Activate();
-                m_playerJoiningPlayers.Add(playerController);
-            }
-
-            for (int i = 0; i < m_playerManager.Players.Count; i++)
-            {
-                var characterWidget = m_widgets[i];
-                characterWidget.UpdateModel();
-            }
-
-            for (int i = m_playerManager.Players.Count; i < 4; i++)
-            {
-                var characterWidget = m_widgets[i];
-
-                characterWidget.Deactivate();
-            }
-
-            UpdateStartButtonState();
+            m_playerControllers.Clear();
         }
 
         protected override void HandleDeactivation()
@@ -156,25 +280,27 @@ namespace Game.MainMenu.CharacterSelection
                 return;
 
             m_playerManager.StopListeningForNewPlayers();
+            m_joinAction?.Dispose();
+            m_joinAction = null;
 
             m_playerManager.OnPlayerJoined -= HandlePlayerJoined;
             m_playerManager.OnPlayerLeft -= HandlePlayerLeft;
 
-            for (int i = m_playerJoiningPlayers.Count - 1; i >= 0; i--)
-            {
-                var controller = m_playerJoiningPlayers[i];
-                if (controller == null)
-                    continue;
-                controller.Deactivate();
-                Destroy(controller);
-            }
-            m_playerJoiningPlayers.Clear();
+            m_launch?.Kill();
+            m_launch = null;
+            ClearPlayerControllers();
+            foreach (var indication in m_indications)
+                indication.Dispose();
+            m_indications.Clear();
 
             for (int i = 0; i < m_widgets.Count; i++)
             {
                 var characterWidget = m_widgets[i];
                 characterWidget.OnCharacterDataUpdated -= HandleCharacterDataUpdated;
+                characterWidget.OnReadyChanged -= HandleReadyChanged;
+                characterWidget.OnRefused -= HandleRefused;
                 characterWidget.Deactivate();
+                characterWidget.SetJoinSlot(false);
             }
         }
     }

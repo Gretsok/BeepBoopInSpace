@@ -57,9 +57,17 @@ namespace Game.Global.PlayerManagement
             return PlayerInputManager.JoinPlayer(-1, -1, null, device);
         }
 
-        public void ListenForNewPlayers()
+        /// <summary>Lets new players join with <paramref name="joinAction"/>, or with any button when it is null.</summary>
+        public void ListenForNewPlayers(InputAction joinAction = null)
         {
-            PlayerInputManager.joinBehavior = PlayerJoinBehavior.JoinPlayersWhenButtonIsPressed;
+            if (joinAction == null)
+            {
+                PlayerInputManager.joinBehavior = PlayerJoinBehavior.JoinPlayersWhenButtonIsPressed;
+                return;
+            }
+            StopListeningForNewPlayers();
+            PlayerInputManager.joinAction = new InputActionProperty(joinAction);
+            PlayerInputManager.joinBehavior = PlayerJoinBehavior.JoinPlayersWhenJoinActionIsTriggered;
         }
 
         public void StopListeningForNewPlayers()

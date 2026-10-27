@@ -1,14 +1,26 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
-    <ui:VisualElement class="player-slot" picking-mode="Ignore">
-        <ui:VisualElement class="player-slot__banner" picking-mode="Ignore">
-            <ui:Label name="character-name" class="player-slot__name" picking-mode="Ignore" />
+    <ui:VisualElement name="slot" class="cs-slot" picking-mode="Ignore">
+        <ui:VisualElement class="cs-slot__circle" picking-mode="Ignore" />
+        <ui:VisualElement class="cs-slot__circle-pattern" picking-mode="Ignore">
+            <ui:VisualElement class="cs-filigree" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:VisualElement name="pop-indication" class="player-slot__indication" picking-mode="Ignore" />
-        <ui:VisualElement name="already-selected" class="player-slot__lock" picking-mode="Ignore">
-            <ui:VisualElement class="player-slot__lock-icon" picking-mode="Ignore">
-                <ui:VisualElement class="player-slot__lock-icon-overlay" picking-mode="Ignore" />
+        <ui:VisualElement name="ready-layer" class="cs-slot__ready-layer" picking-mode="Ignore">
+            <ui:VisualElement class="cs-slot__scallop" picking-mode="Ignore" />
+            <ui:VisualElement class="cs-slot__scallop-pattern" picking-mode="Ignore">
+                <ui:VisualElement class="cs-filigree" picking-mode="Ignore" />
             </ui:VisualElement>
-            <ui:Label text="Choisi par un autre joueur" class="player-slot__lock-label" picking-mode="Ignore" />
+            <ui:VisualElement class="cs-slot__scallop-line cs-slot__tinted" picking-mode="Ignore" />
+            <ui:VisualElement class="cs-slot__ready-ring cs-slot__tinted" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement class="cs-slot__ring" picking-mode="Ignore" />
+        <ui:VisualElement name="burst" class="cs-slot__burst" picking-mode="Ignore" />
+        <ui:VisualElement name="preview" class="cs-slot__preview" picking-mode="Ignore" />
+        <ui:VisualElement class="cs-slot__join" picking-mode="Ignore">
+            <ui:VisualElement name="join-glyph" class="cs-glyph" picking-mode="Ignore" />
+            <ui:Label text="Rejoindre" class="cs-text cs-slot__join-label" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement name="badge" class="cs-slot__badge" picking-mode="Ignore">
+            <ui:Label name="badge-label" class="cs-slot__badge-label" picking-mode="Ignore" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

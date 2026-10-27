@@ -4165,18 +4165,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1835104887}
     m_Modifications:
-    - target: {fileID: 672801060483618991, guid: 2a9135dce43dece4fb230f74f0d45441, type: 3}
-      propertyPath: <ModelContainer>k__BackingField
-      value: 
-      objectReference: {fileID: 1203580899}
     - target: {fileID: 1085042591320910531, guid: 2a9135dce43dece4fb230f74f0d45441, type: 3}
       propertyPath: <CharacterData>k__BackingField
       value: 
       objectReference: {fileID: 11400000, guid: 90f8c4801b806d34aa100e818206b8e9, type: 2}
-    - target: {fileID: 1085042591320910531, guid: 2a9135dce43dece4fb230f74f0d45441, type: 3}
-      propertyPath: <ModelContainer>k__BackingField
-      value: 
-      objectReference: {fileID: 1123746311}
     - target: {fileID: 1627355958420257306, guid: 2a9135dce43dece4fb230f74f0d45441, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -4209,10 +4201,6 @@ PrefabInstance:
       propertyPath: <CharacterData>k__BackingField
       value: 
       objectReference: {fileID: 11400000, guid: c703a2161e4689f42952f4e918664f29, type: 2}
-    - target: {fileID: 3294401831751615001, guid: 2a9135dce43dece4fb230f74f0d45441, type: 3}
-      propertyPath: <ModelContainer>k__BackingField
-      value: 
-      objectReference: {fileID: 901098621}
     - target: {fileID: 3637732443564499116, guid: 2a9135dce43dece4fb230f74f0d45441, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -4333,10 +4321,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4711858665282606595, guid: 2a9135dce43dece4fb230f74f0d45441, type: 3}
-      propertyPath: <ModelContainer>k__BackingField
-      value: 
-      objectReference: {fileID: 747419601}
     - target: {fileID: 8813110027980549632, guid: 2a9135dce43dece4fb230f74f0d45441, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1

@@ -268,103 +268,600 @@
     font-size: 36px;
 }
 
-/* Character selection: four columns, each centered on a character model of the 3D scene behind. */
+/*
+ * Character selection. Positions and colors come from the mockup (RawAssets/UI/Menus/UI_CharacterSelection.psd),
+ * whose sprites are drawn at half their size and tinted. Each circle is a PlayerSlot: join, selecting or ready.
+ */
 
-.player-slots {
+.cs-screen {
+    --cs-navy: rgb(22, 79, 108);
+    --cs-navy-faded: rgba(22, 79, 108, 0.2);
+    --cs-ink: rgb(3, 27, 38);
+    --cs-outline: rgb(189, 219, 226);
+    --cs-text: rgb(188, 223, 237);
+    --cs-locked: rgb(189, 189, 189);
+    --cs-filigree: rgb(25, 90, 124);
+}
+
+.cs-background {
     position: absolute;
     left: 0;
     top: 0;
     right: 0;
     bottom: 0;
-    flex-direction: row;
+    background-image: url("/Assets/RawAssets/UI/Menus/Communs/SPR_Background.png");
+    -unity-background-scale-mode: stretch-to-fill;
 }
 
-.player-slots__column {
-    flex-grow: 1;
-    flex-basis: 0;
-    align-items: center;
-    justify-content: center;
+.mm-screen .cs-text {
+    margin: 0;
+    padding: 0;
+    -unity-font-definition: url("/Assets/RawAssets/UI/Fonts/Boogaloo-Regular.ttf");
+    font-size: 40px;
+    color: var(--cs-text);
+    text-shadow: 0 2px 1px rgba(0, 0, 0, 0.45);
+    -unity-text-align: middle-left;
+    white-space: nowrap;
 }
 
-.player-slot {
-    width: 300px;
-    height: 800px;
-    opacity: 0;
-    transition-property: opacity;
-    transition-duration: 0.15s;
+/* Next to a button, Boogaloo's ink sits higher than the middle of its line. */
+.mm-screen .cs-legend__label,
+.mm-screen .cs-slot__join-label {
+    translate: 0 -5px;
 }
 
-.player-slot--active .player-slot {
-    opacity: 1;
+/* An input sprite: its button is 3/4 of the sprite, tinted like the mockup's buttons. */
+.cs-glyph {
+    width: 57px;
+    height: 57px;
+    flex-shrink: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--cs-outline);
 }
 
-.player-slot__banner {
+/*
+ * The background's pattern seen through the dark circles: a full screen texture moved by CharacterWidget so that it
+ * lines up with the background, clipped by its round parent.
+ */
+.cs-filigree {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1920px;
+    height: 1080px;
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_Filigree.png");
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: var(--cs-filigree);
+}
+
+/* Title and the inserts of the corners */
+
+.cs-title {
+    position: absolute;
+    left: 495px;
+    top: 0;
+    width: 935px;
+    height: 121px;
+}
+
+.cs-title__fill,
+.cs-title__border,
+.cs-insert__fill,
+.cs-insert__border {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+.cs-title__fill {
+    background-image: url("/Assets/RawAssets/UI/Menus/Communs/SPR_UpperBorderInt.png");
+    -unity-background-image-tint-color: var(--cs-ink);
+}
+
+.cs-title__border {
+    background-image: url("/Assets/RawAssets/UI/Menus/Communs/SPR_UpperBorderExt.png");
+    -unity-background-image-tint-color: var(--cs-outline);
+}
+
+.mm-screen .cs-title__label {
     position: absolute;
     left: 0;
     right: 0;
-    top: -33px;
-    height: 80px;
-    border-width: 5px;
-    border-color: rgb(234, 191, 255);
-    background-color: rgb(193, 130, 221);
-    justify-content: center;
-}
-
-.player-slot__name {
-    font-size: 36px;
+    top: 0;
+    height: 95px;
+    margin: 0;
+    padding: 0;
+    -unity-font-definition: url("/Assets/RawAssets/UI/Fonts/BeepBoop.otf");
+    -unity-font-style: bold;
+    font-size: 46px;
+    letter-spacing: 5px;
+    color: var(--cs-text);
+    text-shadow: 0 2px 1px rgba(0, 0, 0, 0.45);
     -unity-text-align: middle-center;
 }
 
-.player-slot__indication {
+.cs-insert {
     position: absolute;
-    left: 100px;
-    top: 143px;
-    width: 100px;
-    height: 100px;
-    -unity-background-scale-mode: scale-to-fit;
+    top: 22px;
+    width: 280px;
+    height: 68.5px;
 }
 
-.player-slot__lock {
+.cs-insert--left {
+    left: 26.5px;
+}
+
+.cs-insert--right {
+    right: 26.5px;
+}
+
+.cs-insert__fill {
+    background-image: url("/Assets/RawAssets/UI/Menus/Communs/SPR_ButtonInterior.png");
+    -unity-background-image-tint-color: var(--cs-ink);
+}
+
+.cs-insert__border {
+    background-image: url("/Assets/RawAssets/UI/Menus/Communs/SPR_ButtonExterior.png");
+    -unity-background-image-tint-color: var(--cs-outline);
+}
+
+.cs-insert__glyph {
     position: absolute;
-    left: -50px;
-    right: -50px;
-    top: 225px;
+    top: 8px;
+}
+
+.cs-insert--left .cs-insert__glyph--first {
+    left: 26.5px;
+}
+
+.cs-insert--right .cs-insert__glyph--first {
+    left: 22.5px;
+}
+
+.cs-insert__glyph--last {
+    left: 195.5px;
+}
+
+.mm-screen .cs-insert__label {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    font-size: 35px;
+}
+
+.cs-insert__label--random {
+    left: 108px;
+}
+
+.cs-insert__label--call {
+    left: 90px;
+}
+
+/* Legends of the bottom corners. Retour is also a button, for the mouse. */
+
+.cs-legend {
+    position: absolute;
+    height: 57px;
+    flex-direction: row;
     align-items: center;
 }
 
-.player-slot__lock-icon {
-    width: 400px;
-    height: 350px;
-    background-image: url("/Assets/RawAssets/UI/Menus/UI_LockA.png");
-    -unity-background-image-tint-color: rgb(255, 0, 7);
-    -unity-background-scale-mode: scale-to-fit;
+.cs-legend--back {
+    left: 82px;
+    top: 991.5px;
+    margin: 0;
+    padding: 0;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    transition-property: scale;
+    transition-duration: 0.1s;
 }
 
-.player-slot__lock-icon-overlay {
-    flex-grow: 1;
-    background-image: url("/Assets/RawAssets/UI/Menus/UI_LockB.png");
-    -unity-background-scale-mode: scale-to-fit;
+.cs-legend--back:hover {
+    scale: 1.08 1.08;
 }
 
-.player-slot__lock-label {
-    width: 260px;
-    height: 60px;
-    margin-top: -18px;
-    padding: 10px;
-    background-color: rgb(236, 210, 228);
+.cs-legend__glyph--after {
+    margin-left: 12px;
+}
+
+.cs-legend--ready {
+    right: 63px;
+    top: 990px;
+}
+
+.mm-screen .cs-legend--ready .cs-legend__label {
+    margin-left: 19px;
+}
+
+.cs-legend__label--launch,
+.cs-screen--launching .cs-legend__label--ready,
+.cs-screen--launching .cs-legend--ready .cs-glyph {
+    display: none;
+}
+
+.cs-screen--launching .cs-legend__label--launch {
+    display: flex;
+}
+
+/* The players' circles, centered in a row: the players, then the circle of the next player to join. */
+
+/* A little right of the center, like the mockup. */
+.cs-slots {
+    position: absolute;
+    left: 8px;
+    right: -8px;
+    top: 206px;
+    height: 440px;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.cs-slots__slot {
+    width: 440px;
+    height: 440px;
+    margin: 0 19px;
+    flex-shrink: 0;
+}
+
+.cs-slot {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 440px;
+    height: 440px;
+}
+
+.cs-slot__circle {
+    position: absolute;
+    left: 1px;
+    top: 1px;
+    width: 438px;
+    height: 438px;
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_CircleBackground.png");
+    -unity-background-image-tint-color: var(--cs-navy);
+    transition-property: -unity-background-image-tint-color;
+    transition-duration: 0.3s;
+}
+
+.cs-slot--ready .cs-slot__circle {
+    -unity-background-image-tint-color: var(--cs-navy-faded);
+}
+
+.cs-slot__circle-pattern {
+    position: absolute;
+    left: 1px;
+    top: 1px;
+    width: 438px;
+    height: 438px;
+    border-radius: 219px;
+    overflow: hidden;
+    transition-property: opacity;
+    transition-duration: 0.3s;
+}
+
+.cs-slot--ready .cs-slot__circle-pattern {
+    opacity: 0;
+}
+
+/* Selecting: a dashed ring. Ready: the ring is stamped away by a scalloped disc in the character's color. */
+
+.cs-slot__ring {
+    position: absolute;
+    left: 27px;
+    top: 27px;
+    width: 385px;
+    height: 385px;
+    transition-property: opacity, scale, rotate;
+    transition-duration: 0.3s, 0.3s, 0.3s;
+    transition-timing-function: ease-out-sine, ease-out-back, ease-out-sine;
+}
+
+.cs-slot--p1 .cs-slot__ring {
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_BorderIntPlayer1NoReady.psd.png");
+}
+
+.cs-slot--p2 .cs-slot__ring {
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_BorderIntPlayer2NoReady.psd.png");
+}
+
+.cs-slot--p3 .cs-slot__ring {
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_BorderIntPlayer3NoReady.psd.png");
+}
+
+.cs-slot--p4 .cs-slot__ring {
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_BorderIntPlayer4NoReady.psd.png");
+}
+
+.cs-slot--ready .cs-slot__ring {
+    opacity: 0;
+    scale: 0.8 0.8;
+    rotate: 90deg;
+    transition-duration: 0.25s, 0.25s, 0.25s;
+    transition-timing-function: ease-in-sine, ease-in-sine, ease-in-sine;
+}
+
+.cs-slot__ready-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 440px;
+    height: 440px;
+    opacity: 0;
+    scale: 1.35 1.35;
+    rotate: -45deg;
+    transition-property: opacity, scale, rotate;
+    transition-duration: 0.15s, 0.15s, 0.15s;
+    transition-timing-function: ease-in-sine, ease-in-sine, ease-in-sine;
+}
+
+.cs-slot--ready .cs-slot__ready-layer {
+    opacity: 1;
+    scale: 1 1;
+    rotate: 0deg;
+    transition-duration: 0.15s, 0.5s, 0.5s;
+    transition-timing-function: ease-out-sine, ease-out-back, ease-out-back;
+}
+
+.cs-slot__scallop {
+    position: absolute;
+    left: 31.5px;
+    top: 32.5px;
+    width: 375px;
+    height: 375px;
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_CircleBackgroundPlayerReady.png");
+    -unity-background-image-tint-color: var(--cs-navy);
+}
+
+.cs-slot__scallop-pattern {
+    position: absolute;
+    left: 41px;
+    top: 42px;
+    width: 356px;
+    height: 356px;
+    border-radius: 178px;
+    overflow: hidden;
+}
+
+.cs-slot__scallop-line {
+    position: absolute;
+    left: 29px;
+    top: 30px;
+    width: 380px;
+    height: 380px;
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_BorderExtPlayerReady.png");
+}
+
+.cs-slot__ready-ring {
+    position: absolute;
+    left: 54px;
+    top: 54.5px;
+    width: 330px;
+    height: 330px;
+}
+
+.cs-slot--p1 .cs-slot__ready-ring {
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_BorderIntPlayer1Ready.psd.png");
+}
+
+.cs-slot--p2 .cs-slot__ready-ring {
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_BordureIntJoueur2Ready.psd.png");
+}
+
+.cs-slot--p3 .cs-slot__ready-ring {
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_BorderIntPlayer3Ready.psd.png");
+}
+
+.cs-slot--p4 .cs-slot__ready-ring {
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_BordureIntJoueur4Ready.psd.png");
+}
+
+/* The shockwave and confetti of getting ready start from the center of the circle. */
+.cs-slot__burst {
+    position: absolute;
+    left: 220px;
+    top: 220px;
+    width: 0;
+    height: 0;
+}
+
+.cs-slot__shockwave {
+    position: absolute;
+    left: -190px;
+    top: -190px;
+    width: 380px;
+    height: 380px;
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_BorderExtPlayerReady.png");
+}
+
+.cs-slot__flash {
+    position: absolute;
+    left: -187.5px;
+    top: -187.5px;
+    width: 375px;
+    height: 375px;
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_CircleBackgroundPlayerReady.png");
+}
+
+.cs-slot__particle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_IconeNumberPlayerReady.png");
+}
+
+/* The character's picture; a grey robot stands in for a missing one. */
+.cs-slot__preview {
+    position: absolute;
+    left: 70px;
+    top: 85px;
+    width: 300px;
+    height: 300px;
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterIcones/SPR_MiloIconeGrey.png");
+    background-position-x: center;
+    background-position-y: bottom;
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform-origin: center bottom;
+}
+
+.cs-slot--join .cs-slot__preview {
+    display: none;
+}
+
+.cs-slot__join {
+    position: absolute;
+    left: 108px;
+    top: 200px;
+    height: 57px;
+    flex-direction: row;
+    align-items: center;
+    display: none;
+}
+
+.cs-slot--join .cs-slot__join {
+    display: flex;
+}
+
+.mm-screen .cs-slot__join-label {
+    margin-left: 18px;
+}
+
+/* The player's number ("+" in the circle to join), white until ready. */
+.cs-slot__badge {
+    position: absolute;
+    left: -12.5px;
+    top: 111px;
+    width: 62.5px;
+    height: 62.5px;
+    justify-content: center;
+    align-items: center;
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_IconeNumberPlayerNoReady.png");
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    transition-property: left, top, width, height, -unity-background-image-tint-color;
+    transition-duration: 0.35s, 0.35s, 0.35s, 0.35s, 0.2s;
+    transition-timing-function: ease-out-back, ease-out-back, ease-out-back, ease-out-back, ease-out-sine;
+}
+
+.cs-slot--ready .cs-slot__badge {
+    left: 21.5px;
+    top: 127px;
+    width: 54px;
+    height: 54px;
+}
+
+.mm-screen .cs-slot__badge-label {
+    margin: 0;
+    padding: 0;
+    -unity-font-definition: url("/Assets/RawAssets/UI/Fonts/Boogaloo-Regular.ttf");
+    font-size: 38px;
     color: rgb(0, 0, 0);
-    font-size: 18px;
-    white-space: normal;
+    -unity-text-align: middle-center;
+    transition-property: font-size, color;
+    transition-duration: 0.3s, 0.2s;
+}
+
+.mm-screen .cs-slot--ready .cs-slot__badge-label {
+    font-size: 32px;
+    color: rgb(255, 255, 255);
+}
+
+/* The character grid: a badge per player on the character they point at, white until ready. */
+
+.cs-roster {
+    position: absolute;
+    left: 347.5px;
+    top: 735px;
+    width: 1240px;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.cs-cell {
+    width: 104px;
+    height: 104px;
+    margin: 0 9.65px 47px 9.65px;
+}
+
+.cs-cell__background {
+    position: absolute;
+    left: -5.5px;
+    top: -5px;
+    width: 115px;
+    height: 115px;
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_BotSelectionCircleBackground.png");
+    -unity-background-image-tint-color: var(--cs-locked);
+    transition-property: -unity-background-image-tint-color;
+    transition-duration: 0.25s;
+}
+
+.cs-cell__contour {
+    position: absolute;
+    left: -5.5px;
+    top: -5.5px;
+    width: 115px;
+    height: 115px;
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_BotSelectionContourPlayerSelected.png");
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    opacity: 0;
+    transition-property: opacity, -unity-background-image-tint-color;
+    transition-duration: 0.15s, 0.25s;
+}
+
+.cs-cell--hovered .cs-cell__contour,
+.cs-cell--taken .cs-cell__contour {
+    opacity: 1;
+}
+
+.cs-cell__icon {
+    position: absolute;
+    left: 2px;
+    top: -40px;
+    width: 100px;
+    height: 125px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.cs-cell--locked .cs-cell__icon {
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterIcones/SPR_MiloIconeGrey.png");
+}
+
+.cs-cell__badges {
+    position: absolute;
+    left: 0;
+    top: 68.5px;
+    width: 98.5px;
+    height: 37.5px;
+    flex-direction: row-reverse;
+}
+
+.cs-cell__badge {
+    width: 37.5px;
+    height: 37.5px;
+    margin-left: -6px;
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_BotSelectionPlayerNumber.png");
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    transition-property: -unity-background-image-tint-color;
+    transition-duration: 0.2s;
+}
+
+.mm-screen .cs-cell__badge-label {
+    margin: 0;
+    padding: 0;
+    -unity-font-definition: url("/Assets/RawAssets/UI/Fonts/Boogaloo-Regular.ttf");
+    font-size: 23px;
+    color: rgb(0, 0, 0);
     -unity-text-align: middle-center;
 }
 
-.character-selection__start {
-    position: absolute;
-    right: 30px;
-    bottom: 20px;
-    width: 900px;
-    height: 270px;
-    font-size: 72px;
+.mm-screen .cs-cell__badge--ready .cs-cell__badge-label {
+    color: rgb(255, 255, 255);
 }
 
 /* Level selection */

@@ -1,6 +1,7 @@
 using System;
 using Game.Global.PlayerManagement;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.DualShock;
 using UnityEngine.UIElements;
 
 namespace Game.Global.InputIndicationsManagement
@@ -14,6 +15,9 @@ namespace Game.Global.InputIndicationsManagement
         private readonly VisualElement m_element;
         private readonly InputIndicationActionDataAsset m_actionDataAsset;
         private AbstractPlayer m_player;
+
+        /// <summary>Without a player, shows the sprite of the device players are the most likely to use instead of nothing.</summary>
+        public bool ShowsLikelyDeviceWithoutPlayer { get; set; }
 
         public InputIndicationView(VisualElement element, InputIndicationActionDataAsset actionDataAsset)
         {
@@ -43,8 +47,19 @@ namespace Game.Global.InputIndicationsManagement
 
         private void Refresh()
         {
-            var sprite = m_player ? m_actionDataAsset.GetSpriteFor(m_player.PlayerInput.currentControlScheme) : null;
+            var controlScheme = m_player ? m_player.PlayerInput.currentControlScheme
+                : ShowsLikelyDeviceWithoutPlayer ? LikelyControlScheme() : null;
+            var sprite = controlScheme != null ? m_actionDataAsset.GetSpriteFor(controlScheme) : null;
             m_element.style.backgroundImage = sprite ? new StyleBackground(sprite) : new StyleBackground(StyleKeyword.None);
+        }
+
+        // The game is played with gamepads: the keyboard only when none is plugged in.
+        private static string LikelyControlScheme()
+        {
+            var gamepad = Gamepad.current;
+            if (gamepad == null)
+                return Keyboard.current != null ? "KBM" : null;
+            return gamepad is DualShockGamepad ? "PSGamepad" : "XboxGamepad";
         }
     }
 }
