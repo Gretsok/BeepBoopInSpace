@@ -316,6 +316,7 @@ namespace Game.Tests.PlayMode
         /// <summary>
         /// Batch mode has no game view, and its screen isn't 16:9: until <see cref="StopRenderingToTextures"/>, the main
         /// camera and the menus' panel render into 1920x1080 textures, so the menus lay out as on a player's screen.
+        /// A scene without a main camera (tournament results) gives the panel alone.
         /// </summary>
         public static void StartRenderingToTextures()
         {
@@ -323,7 +324,8 @@ namespace Game.Tests.PlayMode
             s_capturedPanel = Object.FindAnyObjectByType<UIDocument>().panelSettings;
             s_sceneTexture = new RenderTexture(1920, 1080, 24);
             s_uiTexture = new RenderTexture(1920, 1080, 24);
-            s_capturedCamera.targetTexture = s_sceneTexture;
+            if (s_capturedCamera)
+                s_capturedCamera.targetTexture = s_sceneTexture;
             s_capturedPanel.targetTexture = s_uiTexture;
             s_capturedPanel.clearColor = true;
             s_capturedPanel.colorClearValue = Color.clear;

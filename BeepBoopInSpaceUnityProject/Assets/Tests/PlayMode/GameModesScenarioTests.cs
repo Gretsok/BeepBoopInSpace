@@ -17,7 +17,7 @@ namespace Game.Tests.PlayMode
     /// and back to the main menu. Everything is driven through input, the way players would.
     /// Run from Window > General > Test Runner > PlayMode, or headless with -runTests -testPlatform PlayMode.
     /// </summary>
-    public class GameModesScenarioTests
+    public partial class GameModesScenarioTests
     {
         // Speeds up the 120s game timer and the results close-ups. Set to 1 to watch a scenario in real time.
         private const float k_TimeScale = 4f;
@@ -83,20 +83,7 @@ namespace Game.Tests.PlayMode
             var random = new System.Random(Array.IndexOf(TrainingModes, mode) + 1);
 
             yield return JoinFourPlayersAndOpenHub();
-
-            m_driver.Step("Hub: open Training");
-            yield return m_driver.Select(HubButton("m_trainingButton"));
-            yield return m_driver.Submit();
-            yield return m_driver.WaitUntil("the level selection screen", () => MenuState == "LevelSelectionState");
-
-            m_driver.Step($"Level selection: pick '{mode}'");
-            var levelSelection = FindActive("Game.MainMenu.LevelSelection.LevelSelectionScreen");
-            yield return m_driver.WaitUntil("the level widgets", () => LevelWidgets(levelSelection).Any());
-            var widget = LevelWidgets(levelSelection).FirstOrDefault(w => LevelNameOf(w).Contains($" - {mode} - "));
-            if (widget == null)
-                m_driver.Fail($"No level for '{mode}'. Available: {string.Join(", ", LevelWidgets(levelSelection).Select(LevelNameOf))}");
-            yield return m_driver.Select((VisualElement)Get(widget, "Element"));
-            yield return m_driver.Submit();
+            yield return StartTraining(mode);
 
             var played = new List<string>();
             yield return PlayOneGame(random, played);
@@ -133,6 +120,8 @@ namespace Game.Tests.PlayMode
                 yield return m_driver.WaitUntil("the tournament results screen",
                     () => IsInitialized(Manager(k_TournamentResultsContext)));
                 yield return RealSeconds(0.5f);
+                if (played.Count == 1)
+                    yield return CaptureGameScreen("30-tournament-results");
                 while (Manager(k_TournamentResultsContext) != null)
                 {
                     yield return m_driver.Submit();
