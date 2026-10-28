@@ -1,15 +1,15 @@
-using TMPro;
+using Game.UITools.Screens;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Game.Gameplay.Timer
 {
-    public class TimerPanel : MonoBehaviour
+    public class TimerPanel : AUIToolkitScreen
     {
-        [SerializeField] 
-        private TMP_Text m_timerText;
-
-        [SerializeField] 
+        [SerializeField]
         private TimerManager m_timerManager;
+
+        private Label m_timerLabel;
 
         private void Awake()
         {
@@ -38,12 +38,24 @@ namespace Game.Gameplay.Timer
             gameObject.SetActive(false);
         }
 
-        private void Update()
+        protected override void HandleShown()
         {
-            if (!m_timerManager) 
+            m_timerLabel = Query<Label>("timer-label");
+            RefreshTime();
+        }
+
+        protected override void HandleUpdate()
+        {
+            RefreshTime();
+        }
+
+        private void RefreshTime()
+        {
+            if (!m_timerManager)
                 return;
 
-            m_timerText.text = $"{(int)(m_timerManager.TimeLeft / 60)}:{(int)(m_timerManager.TimeLeft % 60)}";
+            var secondsLeft = Mathf.CeilToInt(Mathf.Max(0f, m_timerManager.TimeLeft));
+            m_timerLabel.text = $"{secondsLeft / 60}:{secondsLeft % 60:00}";
         }
     }
 }

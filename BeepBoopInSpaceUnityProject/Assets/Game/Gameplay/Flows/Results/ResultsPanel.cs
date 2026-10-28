@@ -1,49 +1,67 @@
-using System.Collections;
-using Game.ArchitectureTools.FlowMachine;
-using Game.ArchitectureTools.Manager;
+using System;
+using Game.Global.InputIndicationsManagement;
+using Game.Global.SFXManagement;
+using Game.UITools.Screens;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace Game.Gameplay.Flows.Results
 {
-    public class ResultsPanel : Panel
+    /// <summary>
+    /// The button to leave the results, shown once the close-ups are over. It takes the focus: the main player's
+    /// Submit (A, Cross or Enter) presses it, as does a click.
+    /// </summary>
+    public class ResultsPanel : AUIToolkitScreen
     {
+        private const string k_ButtonShownClass = "results__continue--shown";
+
         [SerializeField]
+        private AudioPlayer m_clickAudioPlayer;
+        [SerializeField]
+        private InputIndicationActionDataAsset m_submitIndicationAction;
+
         private Button m_backToMenuButton;
+        private Action m_buttonCallback;
 
-        private void Awake()
+        protected override void HandleShown()
         {
+            m_backToMenuButton = BindButton("back-to-menu-button", HandleBackToMenuButtonClicked, m_clickAudioPlayer);
+            AddIndication("back-to-menu-glyph", m_submitIndicationAction);
             HideButton();
         }
 
-        private void OnEnable()
+        protected override void HandleHidden()
         {
-            HideButton();
+            m_buttonCallback = null;
+            m_backToMenuButton = null;
         }
 
-        private void OnDisable()
+        public void ShowButton(Action buttonCallback)
         {
-            HideButton();
-        }
-
-        public void ShowButton(UnityAction buttonCallback)
-        {
-            m_backToMenuButton.onClick.AddListener(buttonCallback);
-            m_backToMenuButton.gameObject.SetActive(true);
-        }
-
-        public void ManualClickButton()
-        {
-            if (m_backToMenuButton)
-                ExecuteEvents.Execute(m_backToMenuButton.gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+            m_buttonCallback = buttonCallback;
+            if (m_backToMenuButton == null)
+                return;
+            m_backToMenuButton.AddToClassList(k_ButtonShownClass);
+            // Focused once its style shows it (AUIToolkitScreen gives the default focus back every frame).
+            DefaultFocus = m_backToMenuButton;
         }
 
         public void HideButton()
         {
-            m_backToMenuButton.onClick.RemoveAllListeners();
-            m_backToMenuButton.gameObject.SetActive(false);
+            m_buttonCallback = null;
+            if (m_backToMenuButton == null)
+                return;
+            m_backToMenuButton.RemoveFromClassList(k_ButtonShownClass);
+            DefaultFocus = null;
+            ReleaseFocus();
+        }
+
+        private void HandleBackToMenuButtonClicked()
+        {
+            var callback = m_buttonCallback;
+            // Once only: the flow machine would take a second request too.
+            HideButton();
+            callback?.Invoke();
         }
     }
 }

@@ -12,7 +12,6 @@ using Game.Global.SFXManagement;
 using Game.UITools.WorldOverlay;
 using NaughtyAttributes;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Game.Gameplay.GameModes.ObjectiveManagement.PointsRushObjectiveManagement
 {
@@ -20,8 +19,6 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.PointsRushObjectiveManagem
     {
         [SerializeField]
         private AudioPlayer m_objectiveCollectedAudioPlayer;
-        [FormerlySerializedAs("m_pointWidgetPrefab")] [SerializeField]
-        private FloatingPointWidget m_floatingPointWidgetPrefab;
         [SerializeField] private GameObject m_objectiveIndicationPrefab;
         private GameObject m_currentObjectiveIndication;
         [SerializeField]
@@ -65,11 +62,8 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.PointsRushObjectiveManagem
 
         private void PlayPointFeedback(CharacterMovementController characterMovementController, Cell cell)
         {
-            Debug.Log($"About to play point feedback for {characterMovementController.ReferencesHolder.CharacterDataAsset.Name}");
             var worldOverlayPanel = m_gameplayContext.UIManager.GetPanel<WorldOverlayPanel>();
-            var floatingPointWidget = Instantiate(m_floatingPointWidgetPrefab, worldOverlayPanel.transform);
-            worldOverlayPanel.AddToWorldOverlay(floatingPointWidget.GetComponent<RectTransform>(), cell.transform.position);
-            _ = floatingPointWidget.SetPointAndPlayTween("+1", characterMovementController.ReferencesHolder.CharacterDataAsset.CharacterColor);
+            worldOverlayPanel.PlayFloatingText("+1", characterMovementController.ReferencesHolder.CharacterDataAsset.CharacterColor, cell.transform.position);
         }
 
         private void SetUp()

@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="/Assets/Game/UITools/Screens/Screens.uss" />
+    <ui:VisualElement name="results-screen" class="gs-screen" picking-mode="Ignore">
+        <ui:VisualElement class="results__continue-row" picking-mode="Ignore">
+            <ui:Button name="back-to-menu-button" class="gs-button gs-button--with-glyph results__continue">
+                <ui:VisualElement name="back-to-menu-glyph" class="gs-glyph" picking-mode="Ignore" />
+                <ui:Label text="Retour au menu" class="gs-text gs-button__label" picking-mode="Ignore" />
+            </ui:Button>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

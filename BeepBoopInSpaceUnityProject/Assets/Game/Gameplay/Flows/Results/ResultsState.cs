@@ -5,9 +5,7 @@ using Game.Gameplay.CameraManagement;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.Flows.Results.ResultsPlacementManagement;
 using Game.Gameplay.MusicsManagement;
-using Game.Global;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Game.Gameplay.Flows.Results
 {
@@ -119,27 +117,6 @@ namespace Game.Gameplay.Flows.Results
             MusicsManager.Instance.StartPlayingResultsMusic();
 
             m_resultsPanel.ShowButton(() => RequestState(m_nextState));
-
-            var globalContext = GlobalContext.Instance;
-            globalContext.NavigationAuthorityManager.SetInputRegistrationsCallbacks(RegisterMainPlayerActions, UnregisterMainPlayerAction);
-        }
-
-        private void RegisterMainPlayerActions(InputActionAsset actionAsset)
-        {
-            actionAsset.FindActionMap("UI").FindAction("Submit").started += HandleSubmitStartedByMainPlayer;
-        }
-
-        private void UnregisterMainPlayerAction(InputActionAsset actionAsset)
-        {
-            actionAsset.FindActionMap("UI").FindAction("Submit").started -= HandleSubmitStartedByMainPlayer;
-        }
-
-        private void HandleSubmitStartedByMainPlayer(InputAction.CallbackContext obj)
-        {
-            m_resultsPanel.ManualClickButton();
-            
-            var globalContext = GlobalContext.Instance;
-            globalContext.NavigationAuthorityManager.UnsetInputRegistrationsCallbacks(RegisterMainPlayerActions, UnregisterMainPlayerAction);
         }
     }
 }

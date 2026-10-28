@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="/Assets/Game/UITools/Screens/Screens.uss" />
+    <ui:VisualElement name="configuration-shuffled-screen" class="gs-screen" picking-mode="Ignore">
+        <ui:VisualElement class="gs-banner-row gs-banner-row--top" picking-mode="Ignore">
+            <ui:VisualElement class="gs-banner" picking-mode="Ignore">
+                <ui:Label text="NOUVELLE CONFIGURATION DE TOUCHES !" class="gs-text gs-heading gs-banner__label" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,73 +1,69 @@
 using System;
 using Game.Global.PlayerManagement;
-using UnityEngine;
+using Game.UITools.Screens;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace Game.Gameplay.Flows.Tutorial
 {
-    public class TutorialPlayerWidget : MonoBehaviour
+    /// <summary>
+    /// A player's card in the tutorial, cloned from the TutorialPlayerCard UXML: the robot, the player's badge, and
+    /// whether the player is ready, in the character's color once ready. Players with a mouse can click it.
+    /// </summary>
+    public class TutorialPlayerWidget
     {
-        [SerializeField]
-        private Image m_avatarImage;
-        [SerializeField]
-        private Button m_getReadyButton;
-        [SerializeField]
-        private Button m_unreadyButton;
+        private const string k_ReadyClass = "tutorial-card--ready";
+        private const string k_BadgeDoneClass = "gs-badge--done";
 
-        public AbstractPlayer Player { get; private set; }
-        
+        private readonly VisualElement m_badge;
+
+        public AbstractPlayer Player { get; }
+        public Button Element { get; }
+        public VisualElement ReadyGlyph { get; }
+        public bool IsReady { get; private set; }
+
         public event Action<TutorialPlayerWidget> OnReadyRequested;
         public event Action<TutorialPlayerWidget> OnUnreadyRequested;
 
-        public void SetPlayer(AbstractPlayer player)
+        public TutorialPlayerWidget(VisualTreeAsset template, AbstractPlayer player)
         {
             Player = player;
-            m_avatarImage.sprite = player.CharacterDataAsset.AvatarSprite;
 
-            var hasAMouse = player.PlayerInput.GetDevice<Mouse>() != null;
-            if (hasAMouse)
-            {
-                m_getReadyButton.image.color = Color.white;
-                m_getReadyButton.enabled = true;
-                m_unreadyButton.image.color = Color.white;
-                m_unreadyButton.enabled = true;
-            }
+            Element = template.Instantiate().Q<Button>("player-card");
+            // Styled by Screens.uss alone, without the default theme's button style.
+            Element.RemoveFromClassList(Button.ussClassName);
+            ReadyGlyph = Element.Q("ready-glyph");
+            m_badge = Element.Q("badge");
+
+            var character = player.CharacterDataAsset;
+            Element.Q("icon").style.backgroundImage = character.SelectionIcon
+                ? new StyleBackground(character.SelectionIcon)
+                : new StyleBackground(character.AvatarSprite);
+            Element.Q<Label>("badge-label").text = $"J{player.PlayerInput.playerIndex + 1}";
+
+            // Gamepad players press their Ready button (TutorialPlayerController): only the mouse clicks the card.
+            if (player.PlayerInput.GetDevice<Mouse>() == null)
+                Element.pickingMode = PickingMode.Ignore;
+            Element.clicked += HandleClicked;
+        }
+
+        public void SetStatus(bool isReady)
+        {
+            IsReady = isReady;
+            Element.EnableInClassList(k_ReadyClass, isReady);
+            m_badge.EnableInClassList(k_BadgeDoneClass, isReady);
+
+            var color = isReady ? new StyleColor(Player.CharacterDataAsset.SelectionColor) : new StyleColor(StyleKeyword.Null);
+            Element.style.SetBorderColor(color);
+            m_badge.style.backgroundColor = color;
+        }
+
+        private void HandleClicked()
+        {
+            if (IsReady)
+                OnUnreadyRequested?.Invoke(this);
             else
-            {
-                m_getReadyButton.image.color = m_getReadyButton.colors.normalColor;
-                m_getReadyButton.enabled = false;
-                m_unreadyButton.image.color = m_unreadyButton.colors.normalColor;
-                m_unreadyButton.enabled = false;
-            }
-        }
-
-        public void SetStatus(bool status)
-        {
-            m_getReadyButton.gameObject.SetActive(!status);
-            m_unreadyButton.gameObject.SetActive(status);
-        }
-
-        private void Awake()
-        {
-            m_getReadyButton.onClick.AddListener(HandleGetReadyButtonClicked);
-            m_unreadyButton.onClick.AddListener(HandleUnreadyButtonClicked);
-        }
-
-        private void OnDestroy()
-        {
-            m_getReadyButton.onClick.RemoveListener(HandleGetReadyButtonClicked);
-            m_unreadyButton.onClick.RemoveListener(HandleUnreadyButtonClicked);
-        }
-
-        private void HandleGetReadyButtonClicked()
-        {
-            OnReadyRequested?.Invoke(this);
-        }
-
-        private void HandleUnreadyButtonClicked()
-        {
-            OnUnreadyRequested?.Invoke(this);
+                OnReadyRequested?.Invoke(this);
         }
     }
 }

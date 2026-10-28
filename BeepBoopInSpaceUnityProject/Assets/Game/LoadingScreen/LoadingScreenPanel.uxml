@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="/Assets/Game/UITools/Screens/Screens.uss" />
+    <!-- Above everything, menus and games: the background takes the clicks too. -->
+    <ui:VisualElement name="loading-screen" class="gs-screen">
+        <ui:VisualElement class="gs-background" />
+        <ui:VisualElement name="walkers" class="loading__walkers" picking-mode="Ignore" />
+        <ui:VisualElement class="gs-legend loading__legend" picking-mode="Ignore">
+            <ui:Label name="loading-label" text="Chargement" class="gs-text loading__label" picking-mode="Ignore" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

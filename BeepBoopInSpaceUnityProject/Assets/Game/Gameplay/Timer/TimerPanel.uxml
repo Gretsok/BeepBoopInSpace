@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="/Assets/Game/UITools/Screens/Screens.uss" />
+    <ui:VisualElement name="timer-screen" class="gs-screen" picking-mode="Ignore">
+        <ui:VisualElement class="timer-row" picking-mode="Ignore">
+            <ui:VisualElement name="timer" class="timer" picking-mode="Ignore">
+                <ui:Label name="timer-label" text="1:00" class="gs-text timer__label" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

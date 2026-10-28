@@ -8,7 +8,7 @@ namespace Game.Global.InputIndicationsManagement
 {
     /// <summary>
     /// Shows, as the background of a UI Toolkit element, the input sprite of an action for the current device of a
-    /// player. UI Toolkit counterpart of <see cref="InputIndicationWidget"/>. Dispose it when the element goes away.
+    /// player. Dispose it when the element goes away.
     /// </summary>
     public class InputIndicationView : IDisposable
     {

@@ -25,6 +25,17 @@ namespace Game.UITools
         public static Tweener TweenScale(this VisualElement element, float to, float duration) =>
             element.TweenScale(new Vector2(to, to), duration);
 
+        /// <summary>From an explicit scale, for an element that has just been created (its resolved style isn't computed yet).</summary>
+        public static Tweener TweenScale(this VisualElement element, Vector2 from, Vector2 to, float duration)
+        {
+            element.style.scale = new Scale(new Vector3(from.x, from.y, 1f));
+            return Prepare(DOTween.To(() => from, value =>
+            {
+                from = value;
+                element.style.scale = new Scale(new Vector3(value.x, value.y, 1f));
+            }, to, duration), element);
+        }
+
         public static Tweener PunchScale(this VisualElement element, float punch, float duration, int vibrato = 6)
         {
             var scale = Vector3.one;
@@ -69,6 +80,17 @@ namespace Game.UITools
         public static Tweener TweenOpacity(this VisualElement element, float to, float duration)
         {
             var from = element.resolvedStyle.opacity;
+            return Prepare(DOTween.To(() => from, value =>
+            {
+                from = value;
+                element.style.opacity = value;
+            }, to, duration), element);
+        }
+
+        /// <summary>From an explicit opacity, for an element that has just been created (its resolved style isn't computed yet).</summary>
+        public static Tweener TweenOpacity(this VisualElement element, float from, float to, float duration)
+        {
+            element.style.opacity = from;
             return Prepare(DOTween.To(() => from, value =>
             {
                 from = value;
