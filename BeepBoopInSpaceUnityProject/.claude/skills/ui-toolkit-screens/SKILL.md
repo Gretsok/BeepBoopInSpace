@@ -1,6 +1,6 @@
 ---
 name: ui-toolkit-screens
-description: Créer, modifier ou migrer depuis uGUI un écran UI Toolkit de Beep Boop dans l'espace — UXML et USS, prefab avec UIDocument, sélection partagée manette/clavier/souris, navigation à la croix, entrées propres à chaque joueur, sons, retour avec B/Échap, charte graphique du menu (tirée de la maquette de la sélection des personnages), motion design, et captures d'écran pour vérifier soi-même le rendu. À utiliser dès qu'on touche à un écran du menu principal (accueil, sélection des personnages, hub, choix du niveau, crédits, paramètres), qu'on ajoute un écran, ou qu'on migre une UI uGUI restante (menu pause, résultats, tournoi, HUD), même si l'utilisateur dit seulement « change ce bouton », « ajoute une option », « le menu », « l'UI », « c'est moche », « ça ne marche pas à la manette ».
+description: Créer, modifier ou migrer depuis uGUI un écran UI Toolkit de Beep Boop dans l'espace — UXML et USS, prefab avec UIDocument, sélection partagée manette/clavier/souris, navigation à la croix, entrées propres à chaque joueur, sons, retour avec B/Échap, charte graphique du menu (tirée de la maquette de la sélection des personnages), motion design, et captures d'écran pour vérifier soi-même le rendu. À utiliser dès qu'on touche à un écran du menu principal (accueil, sélection des personnages, hub, choix du niveau, crédits, paramètres), qu'on ajoute un écran, qu'on touche aux écrans de partie (tutoriel, timer, annonces, pause, résultats), à l'écran de chargement ou aux résultats du tournoi, même si l'utilisateur dit seulement « change ce bouton », « ajoute une option », « le menu », « l'UI », « c'est moche », « ça ne marche pas à la manette ».
 ---
 
 # Écrans UI Toolkit
@@ -24,9 +24,22 @@ et le vérifier en image, sans ouvrir l'éditeur.
 | Polices | `RawAssets/Fonts/magnetar_2/Magnetar.otf` (écrans existants), `RawAssets/UI/Fonts/BeepBoop.otf` et `Boogaloo-Regular.ttf` (charte de la maquette) |
 | Test | `MainMenu_EveryScreenWorksWithGamepadKeyboardAndMouse` (skill `unity-scenario-tests`) |
 
-Encore en uGUI : menu pause (+ `Global/Settings/UI/SettingsScreen`), canvas de partie (`Gameplay/Flows/*Canvas`,
-`TimerCanvas`, `NewRoundCanvas`, `ConfigurationSuffledCanvas`), résultats du tournoi, écran de chargement,
-`WorldOverlayCanvas`. `InputIndicationWidget` (uGUI) n'est plus utilisé.
+### Écrans hors du menu principal
+
+Partie, pause, chargement et tournoi sont aussi en UI Toolkit, sur leur propre base et leurs propres
+styles (même charte, préfixe `gs-`) :
+
+| Quoi | Où |
+| --- | --- |
+| Base | `Assets/Game/UITools/Screens/AUIToolkitScreen.cs` (hérite de `Panel`, donc trouvée par `UIManager.GetPanel<T>`) : même mécanique que `AMainMenuScreen` (focus partagé, navigation, survol, sons, `HandleCancel`, `BindButton`, `AddIndication` pour le joueur principal ou un joueur donné), mais pilotée par l'activation du GameObject, comme le font les états du flow : `HandleShown` / `HandleHidden` / `HandleUpdate`, jamais `OnEnable` / `OnDisable` / `Update`. `BannerScreen` : annonce qui se déroule à l'apparition |
+| Styles et panel | `UITools/Screens/Screens.uss` (palette `--gs-*`, `gs-title`, `gs-legend`, `gs-button` (`--with-glyph`), `gs-tile`, `gs-badge`, `gs-banner`, `gs-shade`, puis une section par écran), `ScreensPanelSettings.asset` (`sortingOrder` 10, au-dessus du menu), `ScreensTheme.tss`. Ordre des documents (`m_SortingOrder` de l'UIDocument) : timer 0, overlay 5, annonces 10, tutoriel et résultats 20, pause 50, chargement 100 |
+| Écrans | Timer (`Gameplay/Timer/TimerPanel`), annonces (`NewRoundPanel`, `ConfigurationShuffledBanner`, `FinishBanner`, `GameStartBanner` caché comme l'ancien), tutoriel (`TutorialPanel` + gabarit `TutorialPlayerCard.uxml`), résultats (`ResultsPanel`), « +1 » au-dessus des cases (`UITools/WorldOverlay/WorldOverlayPanel.PlayFloatingText`), pause (`PauseMenuPanel`, avec les volumes), chargement (`LoadingScreen/LoadingScreenPanel`), résultats du tournoi (`TournamentResultsCanvas` + gabarit `TournamentPlayerResultLine.uxml`). Les prefabs gardent leur nom `*Canvas` |
+| Test | `GameScreens_WorkWithGamepadsAndKeyboard` (captures 20 à 29) et la capture 30 du test du tournoi |
+
+Restent en uGUI, à garder : les canvas **World Space** dans la scène 3D (noms des robots à
+l'introduction, `IntroSystem` ; podium des résultats, `ResultsCharacterPositionner` ;
+`MeteoriteSystem`). `AMainMenuScreen` recopie encore la mécanique de `AUIToolkitScreen` : à faire
+hériter d'elle quand le menu sera stable.
 
 ## Modifier un écran
 
@@ -111,8 +124,9 @@ lieu de l'inventer. Ses classes `cs-*` de `MainMenu.uss` sont à sortir vers la 
 Correspondances uGUI → UI Toolkit et étapes détaillées : [references/migration.md](references/migration.md).
 En bref : `unity_yaml.py tree <prefab> --fields --rect` pour relire l'existant, écrire UXML et USS,
 `unity_yaml.py uitk-prefab` pour convertir le prefab, remplacer le code uGUI, `clean-overrides` sur
-les scènes qui l'utilisent, adapter les tests. Hors du menu principal, extraire d'abord la mécanique
-de `AMainMenuScreen` dans une base de `Game.UITools` plutôt que la recopier.
+les scènes qui l'utilisent, adapter les tests. Hors du menu principal, hériter d'`AUIToolkitScreen`.
+Un canvas posé sur un enfant du prefab (écran de chargement) n'est pas géré par `uitk-prefab` :
+retirer ses composants uGUI et ajouter UIDocument + écran à la main (skill `unity-yaml`).
 
 ## Vérifier
 
@@ -120,8 +134,8 @@ de `AMainMenuScreen` dans une base de `Game.UITools` plutôt que la recopier.
 2. `unity_cli.py compile` : importe UXML/USS ; une erreur d'UXML ou de USS sort dans le log.
 3. `unity_cli.py screenshots` (~2 min) : joue le test des menus et liste les captures 1920×1080 de
    `Logs/screenshots/` ; **les lire toutes** (outil Read) : alignements, textes coupés, sélection
-   visible, défilement. Les captures montrent la caméra et le panel UI Toolkit, pas les canvas uGUI
-   (écran de chargement).
+   visible, défilement. Les captures montrent la caméra et le panel UI Toolkit, pas les canvas uGUI.
+   Écrans de partie : `unity_cli.py test --filter GameScreens` (~2 min), puis lire les captures 20 à 29.
 4. Tests de scénario du menu touché, puis la suite complète avant un commit important.
 5. Avant de partager une version : build + `run-build` (skill `unity-build`).
 
@@ -139,8 +153,18 @@ de `AMainMenuScreen` dans une base de `Game.UITools` plutôt que la recopier.
 - **Focus programmatique** : les événements de focus peuvent être différés ; reconnaître le focus
   silencieux par l'élément visé (`FocusSilently`), pas par un booléen posé autour de `Focus()`.
 - **`ScrollView.ScrollTo`** ignore les marges et l'agrandissement au focus : `ScrollIntoView`.
-- **Ordre d'affichage** panel UI Toolkit / canvas uGUI overlay (écran de chargement, `sortingOrder` 100)
-  : trié ensemble d'après la doc, **pas vérifié à l'écran**.
+- **Ordre d'affichage** entre panels : l'écran de chargement (panel des écrans, `sortingOrder` 10)
+  passe au-dessus du menu (0) d'après la doc, **pas vérifié à l'écran** (une capture ne rend qu'un panel).
+- **Données avant l'arbre** : un état du flow remplit son écran dans `HandleEnter`, avant que
+  `GameObjectActivatorStateComponent` ne l'active (l'arbre n'existe pas encore) : l'écran garde les
+  données et les applique dans `HandleShown` (`TutorialPanel`, `NewRoundPanel`).
+- **Un panel, un focus** : les écrans d'un même PanelSettings partagent le focus ; `FocusedElement`
+  ne rend que celui de l'écran, et `DefaultFocus` n'est rendu que si personne n'a le focus.
+- **Un bouton qui apparaît** (classe qui retire `display: none`) ne prend pas le focus dans la même
+  frame (`canGrabFocus` lit le style calculé) : poser `DefaultFocus`, la base le donne à la frame suivante.
+- **Échap** ouvre la pause (action `PauseControls`) et envoie aussi Annuler : `PauseMenuPanel`
+  ignore l'Annuler de la frame d'ouverture. Le joueur dont la carte du tutoriel n'a pas de souris ne
+  la clique pas (`pickingMode`) : les manettes passent par leur action Ready, pas par le focus.
 - **Batchmode** : écran virtuel 640×480 (4:3) ; les captures rendent donc le panel dans une texture
   1920×1080 pendant tout le test, et attendent la fin des transitions de caméra (Cinemachine).
 - **`Update` / `OnDestroy` dans un écran dérivé** : `AMainMenuScreen` a les siens en `private` ;

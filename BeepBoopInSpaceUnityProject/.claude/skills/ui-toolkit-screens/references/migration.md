@@ -36,17 +36,21 @@ servir de modèle (`git show a64c370 --stat`).
    change (tailles, textes, objets) ; les champs du script lus par les tests (`grep` dans `Assets/Tests`).
 2. **UXML + USS** : un UXML à côté du script, ses styles dans une section du USS commun (ou un USS
    par domaine hors du menu), `meta` pour chaque nouveau fichier.
-3. **Base** : dans le menu principal, hériter d'`AMainMenuScreen`. Ailleurs (pause, partie), extraire
-   d'abord sa mécanique (focus, navigation, panel dans l'EventSystem, sons, Cancel) dans une classe
-   de `Game.UITools` dont `AMainMenuScreen` hérite. À vérifier pour la pause : comportement des
-   transitions USS avec `Time.timeScale = 0`, et le curseur que `PauseMenuPanel` montre/verrouille.
-   Les réglages de volume de la pause : partager la logique de `BindVolume` et un gabarit UXML.
-4. **Prefab** : `unity_yaml.py uitk-prefab <prefab> --uxml <uxml> --keep "<lecteurs audio, prefabs imbriqués à garder>"`.
+3. **Base** : dans le menu principal, hériter d'`AMainMenuScreen`. Ailleurs (partie, pause,
+   chargement, tournoi), d'`AUIToolkitScreen` (`UITools/Screens`), qui suit l'activation du
+   GameObject. Les tweens de `UIToolkitTweens` tournent en temps non mis à l'échelle : la pause
+   (`Time.timeScale = 0`) s'ouvre et se ferme avec eux.
+4. **Prefab** : `unity_yaml.py uitk-prefab <prefab> --uxml <uxml> --panel-settings <ScreensPanelSettings hors du menu> --keep "<lecteurs audio, prefabs imbriqués à garder>"`.
    Il liste les champs qui pointaient vers des objets retirés : les remplacer par les nouveaux
-   (`AudioPlayer`...) ou les supprimer avec le code. Puis `refs <prefab>` et `clean-overrides` sur
-   chaque scène ou prefab qui l'utilise.
+   (`AudioPlayer`, gabarit UXML, indication d'input...) ou les supprimer avec le code. Un champ ajouté
+   au YAML se place après `m_EditorClassIdentifier`, qui n'est pas toujours vide : relire avec
+   `tree --fields`. Régler `m_SortingOrder` de l'UIDocument. Puis `refs <prefab>` et `clean-overrides`
+   sur chaque scène ou prefab qui l'utilise.
 5. **Code** : `using UnityEngine.UIElements;` (attention : `Button`, `Image`, `Cursor`, `MouseButton`
    existent aussi ailleurs), éléments liés dans `HandleActivation`, plus aucun `UnityEngine.UI`.
 6. **Tests** : `ScenarioDriver.Select(VisualElement)` remplace la navigation par `Selectable` ;
-   ajouter l'écran au test des menus avec une capture.
+   ajouter l'écran au test des menus avec une capture (écrans de partie :
+   `GameScreens_WorkWithGamepadsAndKeyboard`, `CaptureGameScreen` dans une autre scène que le menu).
+   Un bouton validé par le Submit du joueur principal passe par le focus : ne plus écouter Submit à
+   côté via `NavigationAuthorityManager` (double requête au flow).
 7. **Vérifier** (section du SKILL.md) et regarder chaque capture.
