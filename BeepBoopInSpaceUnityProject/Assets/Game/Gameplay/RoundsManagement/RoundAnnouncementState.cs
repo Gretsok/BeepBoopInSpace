@@ -22,7 +22,9 @@ namespace Game.Gameplay.RoundsManagement
         private AudioPlayer m_pauseAudioPlayer;
         [SerializeField]
         private AudioPlayer m_resumeAudioPlayer;
-        
+
+        private Coroutine m_nextStateRoutine;
+
         protected override void HandleEnter()
         {
             base.HandleEnter();
@@ -39,7 +41,11 @@ namespace Game.Gameplay.RoundsManagement
                 characterPawn.ReferencesHolder.DeathController.RegisterInvincibilityGiver(this);
             }
 
-            StartCoroutine(WaitAndDo(m_duration, () => RequestState(m_nextState)));
+            m_nextStateRoutine = StartCoroutine(WaitAndDo(m_duration, () =>
+            {
+                m_nextStateRoutine = null;
+                RequestState(m_nextState);
+            }));
         }
 
         private static IEnumerator WaitAndDo(float duration, Action action)
@@ -51,7 +57,14 @@ namespace Game.Gameplay.RoundsManagement
         protected override void HandleLeave()
         {
             base.HandleLeave();
-            
+
+            // Left before its end (the players quit from the pause): the next state mustn't follow.
+            if (m_nextStateRoutine != null)
+            {
+                StopCoroutine(m_nextStateRoutine);
+                m_nextStateRoutine = null;
+            }
+
             EndInvincibilityAfterAnnouncement();
 
             m_resumeAudioPlayer.Play();

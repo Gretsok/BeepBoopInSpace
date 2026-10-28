@@ -114,6 +114,54 @@ namespace Game.Tests.PlayMode
             m_driver.AssertNoErrors();
         }
 
+        /// <summary>
+        /// The pause's 'Menu principal' button, reached with the main player's d-pad: the game is left through the
+        /// loading screen for the main menu. A tournament is abandoned: no tournament results, no next game.
+        /// </summary>
+        [UnityTest, Order(1), Timeout(10 * 60 * 1000)]
+        public IEnumerator PauseMenu_BackToMenuLeavesTheGame([Values("Training", "Tournament")] string mode)
+        {
+            LogAssert.ignoreFailingMessages = true;
+
+            yield return JoinFourPlayersAndOpenHub();
+            if (mode == "Tournament")
+            {
+                m_driver.Step("Hub: start a Tournament");
+                yield return m_driver.Select(HubButton("m_tournamentButton"));
+                yield return m_driver.Submit();
+            }
+            else
+                yield return StartTraining(k_ScreensTestMode);
+
+            m_driver.Step("Game: loading, everyone presses Ready");
+            yield return m_driver.WaitUntil("the game to load", () => GameplayState is "TutorialState" or "GameplayState", 180f);
+            if (GameplayState == "TutorialState")
+            {
+                yield return Frames(5);
+                foreach (var pad in m_driver.Gamepads)
+                    yield return m_driver.Press(pad.buttonSouth);
+            }
+            yield return m_driver.WaitUntil("the game", () => GameplayState == "GameplayState", 60f);
+
+            m_driver.Step("Pause: P opens it, the main player's pad selects 'Menu principal' and submits");
+            m_driver.AddKeyboardAndMouse();
+            yield return m_driver.Press(m_driver.Keyboard.pKey);
+            yield return m_driver.WaitUntil("the pause", () => IsPaused, 5f);
+            yield return m_driver.WaitUntil("the resume button to be focused", () => NameOf(FocusedElement) == "resume-button", 5f);
+            yield return m_driver.Select(ScreenElement(k_PauseMenuPanel, "back-to-menu-button"));
+            yield return m_driver.Submit();
+
+            m_driver.Step("Loading screen, then the main menu");
+            yield return m_driver.WaitUntil("the loading screen", () => FindActive(k_LoadingScreenPanel) != null, 30f);
+            m_driver.RemoveKeyboardAndMouse();
+            yield return m_driver.WaitUntil("the main menu home screen",
+                () => IsOnMainMenuHome || Manager(k_TournamentResultsContext) != null, 120f);
+            Assert.IsNull(Manager(k_TournamentResultsContext), "Leaving a tournament from the pause led to its results.");
+            Assert.IsNull(Manager(k_TournamentContext), "The tournament left from the pause is still alive.");
+
+            m_driver.AssertNoErrors();
+        }
+
         private IEnumerator StartTraining(string mode)
         {
             m_driver.Step("Hub: open Training");

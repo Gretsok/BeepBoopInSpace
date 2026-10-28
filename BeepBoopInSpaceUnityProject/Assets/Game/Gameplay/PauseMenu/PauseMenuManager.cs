@@ -1,6 +1,7 @@
 using System;
 using DG.Tweening;
 using Game.ArchitectureTools.FlowMachine;
+using Game.Gameplay.Flows.End;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -34,7 +35,7 @@ namespace Game.Gameplay.PauseMenu
         public Action<PauseMenuManager> OnPause;
         public void Pause()
         {
-            if (IsPaused)
+            if (IsPaused || m_isQuitting)
                 return;
             if (!m_gameplayFlowMachine.CurrentState.GetComponent<CanBePausedTagStateComponent>())
                 return;
@@ -61,6 +62,20 @@ namespace Game.Gameplay.PauseMenu
             OnResume?.Invoke(this);
             
             IsPaused = false;
+        }
+
+        private bool m_isQuitting;
+        /// <summary>Leaves the game for the main menu through the end state, which unloads it. A tournament is abandoned.</summary>
+        public void QuitToMainMenu()
+        {
+            if (m_isQuitting)
+                return;
+            m_isQuitting = true;
+
+            Resume();
+            var endState = EndStateGrabber.Instance.EndState;
+            endState.IsQuittingToMainMenu = true;
+            m_gameplayFlowMachine.RequestState(endState);
         }
 
         private void OnDestroy()

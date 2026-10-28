@@ -27,8 +27,16 @@ namespace Game.Tournament
             DontDestroyOnLoad(gameObject);
             ResultsManager.InjectDependencies(ConfigDataAsset);
             FlowManager.InjectDependencies(ResultsManager, ConfigDataAsset, CurrentLevelInfoManager);
-            
+
             yield break;
+        }
+
+        /// <summary>Ends the tournament before it has a champion, without its results: the players leave for the main menu.</summary>
+        public void Abandon()
+        {
+            Debug.Log("[Tournament] Abandoned.");
+            FlowManager.Abandon();
+            Destroy(gameObject);
         }
     }
 }

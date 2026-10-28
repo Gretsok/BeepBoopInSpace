@@ -56,8 +56,7 @@ namespace Game.Gameplay.PauseMenu
             m_pause.EnableInClassList(k_HiddenClass, !m_isOpen);
 
             m_resumeButton = BindButton("resume-button", HandleResumeButtonClicked);
-            // Leaving a game from the pause isn't implemented yet: the button stays, disabled.
-            BindButton("back-to-menu-button", () => {}).SetEnabled(false);
+            BindButton("back-to-menu-button", HandleBackToMenuButtonClicked);
             BindButton("quit-game-button", HandleQuitGameButtonClicked);
             BindButton("back-button", HandleResumeButtonClicked);
             AddIndication("back-glyph", m_backIndicationAction);
@@ -131,6 +130,11 @@ namespace Game.Gameplay.PauseMenu
         private void HandleResumeButtonClicked()
         {
             m_manager.Resume();
+        }
+
+        private void HandleBackToMenuButtonClicked()
+        {
+            m_manager.QuitToMainMenu();
         }
 
         private void HandleQuitGameButtonClicked()

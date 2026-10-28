@@ -22,13 +22,19 @@ namespace Game.Gameplay.Announcement
         private AudioPlayer m_pauseAudioPlayer;
         [SerializeField]
         private AudioPlayer m_resumeAudioPlayer;
-        
+
+        private Coroutine m_nextStateRoutine;
+
         protected override void HandleEnter()
         {
             base.HandleEnter();
             m_pauseAudioPlayer.Play();
 
-            StartCoroutine(WaitAndDo(m_duration, () => RequestState(m_nextState)));
+            m_nextStateRoutine = StartCoroutine(WaitAndDo(m_duration, () =>
+            {
+                m_nextStateRoutine = null;
+                RequestState(m_nextState);
+            }));
 
             var charactersManager = CharactersManager.Instance;
             foreach (var characterPawn in charactersManager.CharacterPawns)
@@ -40,7 +46,14 @@ namespace Game.Gameplay.Announcement
         override protected void HandleLeave()
         {
             base.HandleLeave();
-            
+
+            // Left before its end (the players quit from the pause): the next state mustn't follow.
+            if (m_nextStateRoutine != null)
+            {
+                StopCoroutine(m_nextStateRoutine);
+                m_nextStateRoutine = null;
+            }
+
             EndInvincibilityAfterAnnouncement();
 
             m_resumeAudioPlayer.Play();

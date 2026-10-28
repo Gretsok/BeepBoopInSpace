@@ -47,6 +47,12 @@ namespace Game.Tournament.Flow
             op.Completed += HandleOnGameStartedLogic;
         }
 
+        public void Abandon()
+        {
+            // The game being unloaded mustn't lead to the tournament's results.
+            m_currentLevelInfoManager.OnCurrentLevelDataAssetChanged -= HandleCurrentLevelDataAssetChanged;
+        }
+
         private void HandleCurrentLevelDataAssetChanged(CurrentLevelInfoManager arg1, LevelDataAsset arg2)
         {
             if (arg2)
