@@ -17,7 +17,6 @@ namespace Game.MainMenu.Hub
         protected override void HandleEnter()
         {
             base.HandleEnter();
-            MainMenuContext.ZoneManager.SwitchToHubCamera();
             m_hubScreen.Activate();
         }
 

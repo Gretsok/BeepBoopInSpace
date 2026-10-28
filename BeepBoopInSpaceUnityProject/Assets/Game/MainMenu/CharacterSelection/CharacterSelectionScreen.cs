@@ -6,7 +6,6 @@ using Game.Global.InputIndicationsManagement;
 using Game.Global.PlayerManagement;
 using Game.Global.SFXManagement;
 using Game.MainMenu.CharacterManagement;
-using Game.MainMenu.ZoneManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -43,7 +42,6 @@ namespace Game.MainMenu.CharacterSelection
         [SerializeField] private InputIndicationActionDataAsset m_readyIndicationAction;
 
         private PlayerManager m_playerManager;
-        private ZoneManager m_zoneManager;
         private MainMenuOrchestrator m_orchestrator;
 
         private VisualElement m_screenElement;
@@ -66,9 +64,8 @@ namespace Game.MainMenu.CharacterSelection
         [SerializeField]
         private AudioPlayer m_refusedAudioPlayer;
 
-        public void Initialize(ZoneManager zoneManager, PlayerManager playerManager, MainMenuOrchestrator orchestrator)
+        public void Initialize(PlayerManager playerManager, MainMenuOrchestrator orchestrator)
         {
-            m_zoneManager = zoneManager;
             m_playerManager = playerManager;
             m_orchestrator = orchestrator;
         }
@@ -105,7 +102,6 @@ namespace Game.MainMenu.CharacterSelection
             m_joinAction = CreateJoinAction();
             InflateWithPlayers();
 
-            m_zoneManager.SwitchToCharacterSelectionCamera();
         }
 
         // Players join with the buttons of the "Rejoindre" and "Prêts ?" indications, or A. Not with any button: B on a

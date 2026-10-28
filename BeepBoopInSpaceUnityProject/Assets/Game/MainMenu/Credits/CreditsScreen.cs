@@ -1,6 +1,5 @@
 using System;
 using Game.Global.SFXManagement;
-using Game.MainMenu.ZoneManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -11,13 +10,11 @@ namespace Game.MainMenu.Credits
         [SerializeField]
         private AudioPlayer m_backAudioPlayer;
 
-        private ZoneManager m_zoneManager;
 
         public Action OnBackRequested;
 
-        public void Initialize(ZoneManager zoneManager)
+        public void Initialize()
         {
-            m_zoneManager = zoneManager;
         }
 
         protected override void HandleActivation()

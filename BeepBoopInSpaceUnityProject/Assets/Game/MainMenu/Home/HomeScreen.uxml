@@ -1,17 +1,17 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
-    <Style src="../UI/MainMenu.uss" />
-    <ui:VisualElement name="home-screen" class="ui-screen" picking-mode="Ignore">
-        <ui:VisualElement class="home-title" picking-mode="Ignore">
-            <ui:Label text="BEEP BOOP" class="home-title__line home-title__main" picking-mode="Ignore" />
-            <ui:Label text="DANS L&apos;ESPACE" class="home-title__line home-title__sub" picking-mode="Ignore" />
+    <Style src="project://database/Assets/Game/MainMenu/UI/MainMenu.uss?fileID=7433441132597879392&amp;guid=ea07ca713bdd44c997cab467f207503c&amp;type=3#MainMenu"/>
+    <ui:VisualElement name="home-screen" picking-mode="Ignore" class="ui-screen">
+        <ui:VisualElement picking-mode="Ignore" class="home-title">
+            <ui:Label text="BEEP BOOP" picking-mode="Ignore" class="home-title__line home-title__main"/>
+            <ui:Label text="DANS L&apos;ESPACE" picking-mode="Ignore" class="home-title__line home-title__sub"/>
         </ui:VisualElement>
-        <ui:VisualElement class="ui-centered-row home-play-row" picking-mode="Ignore">
-            <ui:Button name="play-button" text="Jouer" class="ui-button ui-button--big" />
+        <ui:VisualElement picking-mode="Ignore" class="ui-centered-row home-play-row">
+            <ui:Button name="play-button" text="Jouer" class="ui-button ui-button--big" style="-unity-font-definition: url(&quot;project://database/Assets/RawAssets/UI/Fonts/Boogaloo-Regular.ttf?fileID=12800000&amp;guid=69a1ac862ab915b41ab12d724d2a0557&amp;type=3#Boogaloo-Regular&quot;); -unity-font-style: normal;"/>
         </ui:VisualElement>
-        <ui:VisualElement class="ui-centered-row home-credits-row" picking-mode="Ignore">
-            <ui:Button name="credits-button" text="Crédits" class="ui-button" />
+        <ui:VisualElement picking-mode="Ignore" class="ui-centered-row home-credits-row">
+            <ui:Button name="credits-button" text="Crédits" class="ui-button"/>
         </ui:VisualElement>
-        <ui:Button name="settings-button" text="Paramètres" class="ui-button ui-corner--bottom-left" />
-        <ui:Button name="quit-button" text="Quitter" class="ui-button ui-corner--bottom-right" />
+        <ui:Button name="settings-button" text="Paramètres" class="ui-button ui-corner--bottom-left"/>
+        <ui:Button name="quit-button" text="Quitter" class="ui-button ui-corner--bottom-right"/>
     </ui:VisualElement>
 </ui:UXML>

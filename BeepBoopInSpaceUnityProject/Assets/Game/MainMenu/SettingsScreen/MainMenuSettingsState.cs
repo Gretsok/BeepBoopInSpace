@@ -11,7 +11,7 @@ namespace Game.MainMenu.SettingsScreen
         {
             base.HandleInitialization();
             m_mainMenuSettingsScreen.Deactivate(true);
-            m_mainMenuSettingsScreen.Initialize(MainMenuContext.ZoneManager, GlobalContext.SettingsManager, GlobalContext.SaveManager);
+            m_mainMenuSettingsScreen.Initialize(GlobalContext.SettingsManager, GlobalContext.SaveManager);
         }
 
         protected override void HandleEnter()

@@ -11,7 +11,7 @@ namespace Game.MainMenu.Credits
         {
             base.HandleInitialization();
             m_creditsScreen.Deactivate(true);
-            m_creditsScreen.Initialize(MainMenuContext.ZoneManager);
+            m_creditsScreen.Initialize();
         }
 
         protected override void HandleEnter()

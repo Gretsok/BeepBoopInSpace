@@ -12,7 +12,7 @@ namespace Game.MainMenu.Home
             base.HandleInitialization();
             
             m_homeScreen.Deactivate(true);
-            m_homeScreen.Initialize(MainMenuContext.MainMenuOrchestrator, MainMenuContext.ZoneManager);
+            m_homeScreen.Initialize(MainMenuContext.MainMenuOrchestrator);
         }
 
         protected override void HandleEnter()

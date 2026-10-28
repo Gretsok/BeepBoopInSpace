@@ -2,7 +2,6 @@ using System;
 using Game.Global.Save;
 using Game.Global.Settings;
 using Game.Global.SFXManagement;
-using Game.MainMenu.ZoneManagement;
 using Game.UITools.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -16,13 +15,11 @@ namespace Game.MainMenu.SettingsScreen
 
         public event Action OnBackRequested;
 
-        private ZoneManager m_zoneManager;
         private SettingsManager m_settingsManager;
         private SaveManager m_saveManager;
 
-        public void Initialize(ZoneManager zoneManager, SettingsManager settingsManager, SaveManager saveManager)
+        public void Initialize(SettingsManager settingsManager, SaveManager saveManager)
         {
-            m_zoneManager = zoneManager;
             m_settingsManager = settingsManager;
             m_saveManager = saveManager;
         }
@@ -33,8 +30,6 @@ namespace Game.MainMenu.SettingsScreen
             BindVolume("music-volume", m_settingsManager.GetMusicVolume(), m_settingsManager.SetMusicVolume);
             BindVolume("sfx-volume", m_settingsManager.GetSfxVolume(), m_settingsManager.SetSfxVolume);
             BindButton("back-button", HandleBackRequested, m_backAudioPlayer);
-
-            m_zoneManager.SwitchToOptionsCamera();
         }
 
         protected override void HandleCancel()

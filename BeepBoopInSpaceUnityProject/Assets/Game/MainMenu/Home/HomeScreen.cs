@@ -1,20 +1,17 @@
 using Game.Global.SFXManagement;
-using Game.MainMenu.ZoneManagement;
 using UnityEngine;
 
-namespace Game.MainMenu
+namespace Game.MainMenu.Home
 {
     public class HomeScreen : AMainMenuScreen
     {
         [SerializeField]
         private AudioPlayer m_playAudioPlayer;
 
-        private ZoneManager m_zoneManager;
         private MainMenuOrchestrator m_mainMenuOrchestrator;
 
-        public void Initialize(MainMenuOrchestrator orchestrator, ZoneManager zoneManager)
+        public void Initialize(MainMenuOrchestrator orchestrator)
         {
-            m_zoneManager = zoneManager;
             m_mainMenuOrchestrator = orchestrator;
         }
 
@@ -25,7 +22,6 @@ namespace Game.MainMenu
             BindButton("settings-button", HandleSettingsButtonClicked);
             BindButton("quit-button", HandleQuitButtonClicked);
 
-            m_zoneManager.SwitchToEntranceCamera();
         }
 
         private void HandlePlayButtonClicked()
