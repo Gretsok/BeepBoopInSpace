@@ -1,6 +1,6 @@
 ---
 name: ui-toolkit-screens
-description: Créer, modifier ou migrer depuis uGUI un écran UI Toolkit de Beep Boop dans l'espace — UXML et USS, prefab avec UIDocument, sélection partagée manette/clavier/souris, navigation à la croix, sons, retour avec B/Échap, et captures d'écran pour vérifier soi-même le rendu. À utiliser dès qu'on touche à un écran du menu principal (accueil, sélection des personnages, hub, choix du niveau, crédits, paramètres), qu'on ajoute un écran, ou qu'on migre une UI uGUI restante (menu pause, résultats, tournoi, HUD), même si l'utilisateur dit seulement « change ce bouton », « ajoute une option », « le menu », « l'UI », « c'est moche », « ça ne marche pas à la manette ».
+description: Créer, modifier ou migrer depuis uGUI un écran UI Toolkit de Beep Boop dans l'espace — UXML et USS, prefab avec UIDocument, sélection partagée manette/clavier/souris, navigation à la croix, entrées propres à chaque joueur, sons, retour avec B/Échap, charte graphique du menu (tirée de la maquette de la sélection des personnages), motion design, et captures d'écran pour vérifier soi-même le rendu. À utiliser dès qu'on touche à un écran du menu principal (accueil, sélection des personnages, hub, choix du niveau, crédits, paramètres), qu'on ajoute un écran, ou qu'on migre une UI uGUI restante (menu pause, résultats, tournoi, HUD), même si l'utilisateur dit seulement « change ce bouton », « ajoute une option », « le menu », « l'UI », « c'est moche », « ça ne marche pas à la manette ».
 ---
 
 # Écrans UI Toolkit
@@ -16,8 +16,12 @@ et le vérifier en image, sans ouvrir l'éditeur.
 | Styles | `Assets/Game/MainMenu/UI/MainMenu.uss` : variables `--mm-*`, boutons `mm-button` (`--primary`), `mm-play-button`, placements `mm-corner--*`, `mm-centered-row`, puis une section par écran |
 | Panel | `UI/MainMenuPanelSettings.asset` (1920×1080, suit la largeur, `sortingOrder` 0), thème `UI/MainMenuTheme.tss` = thème par défaut de Unity (pour ScrollView et Slider) |
 | Écrans | `<Dossier>/<Écran>.uxml` à côté de `<Écran>.cs` ; prefab `<Écran>.prefab` (racine : script + UIDocument, enfants : lecteurs audio) placé sous son état dans `MainMenu.unity`, inactif |
-| Gabarits | `LevelSelection/LevelWidget.uxml` (cloné par `LevelWidget`), `CharacterSelection/PlayerSlot.uxml` (`<ui:Instance>`) |
-| Indications d'input | `Global/InputIndicationsManagement/InputIndicationView.cs` (sprite du bouton selon le périphérique du joueur) |
+| Gabarits | `LevelSelection/LevelWidget.uxml` (cloné par `LevelWidget`), `CharacterSelection/PlayerSlot.uxml` (`<ui:Instance>`) ; éléments construits en code : `CharacterRoster` (grille des robots) |
+| Indications d'input | `Global/InputIndicationsManagement/InputIndicationView.cs` (sprite du bouton selon le périphérique du joueur ; `ShowsLikelyDeviceWithoutPlayer` pour une légende affichée avant que quiconque ait rejoint) |
+| Charte du menu | [references/main-menu-style.md](references/main-menu-style.md) + planche [main-menu-style.png](references/main-menu-style.png) : composition, couleurs, polices, composants et états, **tirés seulement** de `RawAssets/UI/Menus/UI_CharacterSelection.psd`, avec ce qu'elle ne définit pas |
+| Motion design | [references/motion.md](references/motion.md) : transitions USS ou tweens (`UITools/UIToolkitTweens.cs`), et planche de film pour vérifier une animation |
+| Maquettes PSD | skill `psd-mockups` : mesurer une maquette et comparer les captures avec elle |
+| Polices | `RawAssets/Fonts/magnetar_2/Magnetar.otf` (écrans existants), `RawAssets/UI/Fonts/BeepBoop.otf` et `Boogaloo-Regular.ttf` (charte de la maquette) |
 | Test | `MainMenu_EveryScreenWorksWithGamepadKeyboardAndMouse` (skill `unity-scenario-tests`) |
 
 Encore en uGUI : menu pause (+ `Global/Settings/UI/SettingsScreen`), canvas de partie (`Gameplay/Flows/*Canvas`,
@@ -55,6 +59,23 @@ Lire l'UXML, le script et la section du USS ensemble. Règles :
   désactivé. Sans focus, Annuler n'arrive pas à l'écran (`PanelEventHandler` vise la racine du panel) :
   un écran sans bouton à atteindre garde le focus sur sa racine (`focusable`, `DefaultFocus`), comme
   la sélection des personnages.
+- **Police** : `.mm-screen .unity-text-element` impose Magnetar à tous les textes ; une autre police
+  demande un sélecteur d'au moins deux classes placé après dans le USS (`.mm-screen .cs-text`).
+  Boogaloo encre ~5 px plus haut que le milieu de sa ligne : à côté d'un bouton de manette dans une
+  rangée `align-items: center`, `translate: 0 -5px` sur le texte.
+- **Sprites des maquettes** (`RawAssets/UI/Menus/<écran>`) : en double taille, souvent blancs à teinter
+  (`-unity-background-image-tint-color`), et parfois sans Sprite (mode Multiple vide) : les prendre
+  comme texture, `url("/Assets/....png")` dans le USS et champ `Texture2D` en C#. Glyphes Kenney
+  (64 px, bouton de 48 px) : élément de 57 px pour un disque de 43 px.
+- **Atlas des menus** (`SPRA_*`, un par dossier de `RawAssets/UI`) : tight packing avec rotation. Un
+  sprite pris par `url()` et dessiné avec `background-size` / `background-position` montre des
+  morceaux de ses voisins d'atlas dans ses coins transparents (vu : une main de robot dans la
+  silhouette grise). Une image aux coins vides passe en `Texture2D` depuis le C# (champ sérialisé,
+  comme `m_missingCharacterIcon`) ; une texture plein écran (filigrane) reste en type Default, hors
+  de l'atlas.
+- **Rond qui découpe son contenu** : `border-radius` + `overflow: hidden`. Pour caler un enfant sur
+  l'écran (texture plein écran qui raccorde avec le fond), additionner les `layout.position` des
+  parents : `worldBound` inclut les scale et rotate en cours d'animation.
 - **Sélection des personnages** : chaque joueur agit avec ses propres actions (carte `MainMenu` :
   Move, Ready, Back, Random, Call, `CharacterSelectionPlayerController`), pas par le focus ; le
   Annuler du joueur principal passe par `HandleCancel` (il annule d'abord son « prêt »). On rejoint
@@ -62,6 +83,14 @@ Lire l'UXML, le script et la section du USS ensemble. Règles :
   Couleurs, icône et aperçu viennent du `CharacterDataAsset` (section Character selection) ; le
   motion design de la validation est dans `CharacterWidget.PlayReady` (tweens DOTween des styles,
   `UITools/UIToolkitTweens`) et les transitions `.cs-slot--ready` du USS.
+
+## Intégrer une maquette
+
+Mesurer la maquette et comparer les captures avec elle : skill `psd-mockups`. Pour un écran sans
+maquette propre, suivre la charte ([references/main-menu-style.md](references/main-menu-style.md))
+et signaler ce qu'elle ne définit pas (états des boutons sélectionnables, sliders, listes...) au
+lieu de l'inventer. Ses classes `cs-*` de `MainMenu.uss` sont à sortir vers la partie commune
+(`mm-`) avant d'être réutilisées par un autre écran.
 
 ## Ajouter un écran au menu principal
 
@@ -114,6 +143,11 @@ de `AMainMenuScreen` dans une base de `Game.UITools` plutôt que la recopier.
   : trié ensemble d'après la doc, **pas vérifié à l'écran**.
 - **Batchmode** : écran virtuel 640×480 (4:3) ; les captures rendent donc le panel dans une texture
   1920×1080 pendant tout le test, et attendent la fin des transitions de caméra (Cinemachine).
-- **Outils** : un heredoc Bash contenant une apostrophe française casse la commande (écrire le
-  fichier avec l'outil Write) ; ne pas lancer `test` si `quick-compile` échoue :
+- **`Update` / `OnDestroy` dans un écran dérivé** : `AMainMenuScreen` a les siens en `private` ;
+  en déclarer dans l'écran masque ceux de la base (Unity n'appelle que le plus dérivé) : plus de
+  focus rendu, plus de `Deactivate` à la destruction. Délais : `DOVirtual.DelayedCall`.
+- **Tween et transition sur la même propriété** : le style inline du tween écrase le USS ; voir
+  [references/motion.md](references/motion.md).
+- **Outils** : un heredoc Bash contenant une apostrophe casse parfois la commande (écrire un script
+  avec l'outil Write et le lancer) ; ne pas lancer `test` si `quick-compile` échoue :
   `quick-compile | grep -v ": ok" && echo erreurs || test ...`.

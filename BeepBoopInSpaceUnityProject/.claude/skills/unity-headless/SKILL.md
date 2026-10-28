@@ -80,6 +80,12 @@ build :
   fraîchement cloné), lancer `compile` d'abord.
 - Un projet ouvert pour la première fois dans une nouvelle version de Unity ré-écrit des centaines
   de `.meta` et de `.asset` : ce n'est pas une régression (voir le skill `unity-upgrade`).
+- **Un import headless fait ce que ferait l'éditeur** : il crée le `.meta` d'un fichier déposé par
+  l'utilisateur (un `.psd`...) et complète ceux des textures livrées en mode Multiple sans sprite
+  (sprite `<nom>_0`, réglages Android, fins de ligne LF). Le dire à l'utilisateur et ne pas les
+  glisser dans un commit sans rapport.
+- Un test bloqué ne s'arrête qu'à son `Timeout` ; `log-flow` sur le log du run montre où il en est,
+  et le run laisse alors `Assets/InitTestScene<guid>.unity` à supprimer (skill `unity-scenario-tests`).
 - Le Test Runner copie `TestResults.xml` (plusieurs Mo) dans le dossier de données du jeu
   (`AppData/LocalLow/Confiture De Jeux/Beep Boop dans l'espace`) : `test`, `results` et
   `wait --cleanup-test-results` le suppriment.

@@ -26,7 +26,7 @@ servir de modèle (`git show a64c370 --stat`).
 | Slider | `SliderInt fill="true"` + `BindVolume` (`MainMenuSettingsScreen`) |
 | Prefab instancié par élément | gabarit UXML : `template.Instantiate().Q<Button>(...)` puis `Add` (`LevelWidget`), ou `<ui:Template>` + `<ui:Instance>` (`PlayerSlot`) |
 | InputIndicationWidget (Image) | `InputIndicationView` sur un `VisualElement` |
-| DOTween sur `transform` | DOTween sur une valeur appliquée à `style.scale` (`CharacterWidget.Pop`) |
+| DOTween sur `transform` | `UITools/UIToolkitTweens` (`PunchScale`, `TweenTranslate`...) sur le style de l'élément ; voir [motion.md](motion.md) |
 | Canvas World Space, TextMeshPro 3D | à garder tel quel (textes dans la scène 3D, ex. portes du hub) |
 
 ## Étapes

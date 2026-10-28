@@ -66,7 +66,8 @@ Unity en headless exige l'éditeur fermé : le demander à l'utilisateur en disa
 | `unity-build` | Build Windows, zip, lancement de contrôle |
 | `unity-upgrade` | Nouvelle version de Unity ou des packages |
 | `game-mode-variants` | Créer ou modifier un mode de jeu |
-| `ui-toolkit-screens` | Modifier, créer ou migrer (depuis uGUI) un écran UI Toolkit, et le vérifier en captures |
+| `ui-toolkit-screens` | Modifier, créer ou migrer (depuis uGUI) un écran UI Toolkit, et le vérifier en captures ; charte graphique du menu et motion design |
+| `psd-mockups` | Lire une maquette Photoshop (.psd), mesurer ses éléments, comparer les captures du jeu avec elle |
 | `unity-yaml` | Lire ou modifier scènes, prefabs, `.asset` et `.meta` sans l'éditeur (arbre, surcharges, références, conversion d'un prefab uGUI) |
 | `unity-api-check` | Vérifier une API dans la version de Unity du projet avant de coder dessus |
 

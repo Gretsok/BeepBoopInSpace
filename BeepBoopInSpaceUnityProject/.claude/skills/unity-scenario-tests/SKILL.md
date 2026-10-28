@@ -6,7 +6,7 @@ description: Lancer, lire, déboguer et étendre les tests de scénario de Beep 
 # Tests de scénario (4 manettes virtuelles)
 
 But : vérifier soi-même, en jeu, qu'un changement ne casse rien, du menu jusqu'au retour au menu.
-Validé sous Unity 6000.6.7f1 : la suite complète passe (9/9) en ~10 minutes.
+Validé sous Unity 6000.6.7f1 : la suite complète passe (9/9) en ~14 minutes (851 s le 2026-10-27).
 
 Fichiers (dans `Assets/Tests/PlayMode/`, assembly `BeepBoop.Tests.PlayMode`) :
 
@@ -15,13 +15,15 @@ Fichiers (dans `Assets/Tests/PlayMode/`, assembly `BeepBoop.Tests.PlayMode`) :
 | `GameModesScenarioTests.cs` | Les scénarios : `MainMenu_EveryScreenWorksWithGamepadKeyboardAndMouse`, `Training_PlaysAGameThenReturnsToMenu(mode)` × 7, `Tournament_PlaysUntilAChampionThenReturnsToMenu` |
 | `ScenarioDriver.cs` | Manettes, clavier et souris virtuels, navigation dans les menus UI Toolkit, captures d'écran, attente avec délai, lecture de l'état du jeu par réflexion, collecte des erreurs |
 
-`MainMenu_EveryScreenWorksWithGamepadKeyboardAndMouse` (~5 s, à lancer après toute modification des menus) :
+`MainMenu_EveryScreenWorksWithGamepadKeyboardAndMouse` (~13 s, à lancer après toute modification des menus) :
 clavier et souris sur l'accueil (si aucun joueur n'a encore rejoint), puis à la manette Crédits et
-Annuler, volume au d-pad, verrou d'un personnage pris deux fois, Hub, défilement du choix du niveau ;
-il enregistre une capture de chaque écran dans `Logs/screenshots/` : les regarder.
+Annuler, volume au d-pad, sélection des personnages (rejoindre, se déclarer prêt, un personnage déjà
+choisi refusé, Annuler qui retire d'abord le « prêt », départ vers le hub quand tous sont prêts),
+défilement du choix du niveau ; il enregistre une capture de chaque écran dans `Logs/screenshots/`
+(`04` à `10` : chaque configuration de la sélection des personnages) : les regarder.
 
-Chaque scénario de partie : Home → Play → les 4 manettes rejoignent (A/Croix) → Start → Hub → Training (ou
-Tournoi) → map choisie à la croix → les 4 joueurs font Ready → appuis aléatoires sur les 6 boutons
+Chaque scénario de partie : Home → Play → les 4 manettes rejoignent (A/Croix) puis se déclarent prêtes
+(Y/Triangle, Aléatoire avec X si le personnage est déjà pris) → Hub → Training (ou Tournoi) → map choisie à la croix → les 4 joueurs font Ready → appuis aléatoires sur les 6 boutons
 d'action jusqu'aux résultats → Submit → retour au Home. Le jeu tourne en ×4 (`k_TimeScale`).
 Un scénario échoue sur un délai dépassé **ou sur toute erreur/exception loguée**.
 
@@ -34,7 +36,7 @@ CLI=".claude/skills/unity-headless/scripts/unity_cli.py"
 python $CLI screenshots                                 # les menus + liste des captures (~2 min avec le démarrage)
 python $CLI test --filter 'Training.*"Shooters"'      # un mode (~1,5 min)
 python $CLI test --filter Tournament                    # le tournoi seul (3 à 9 parties, 3-7 min)
-python $CLI test --filter Game.Tests.PlayMode --detach  # toute la suite (~10 min) : en détaché
+python $CLI test --filter Game.Tests.PlayMode --detach  # toute la suite (~14 min) : en détaché
 ```
 
 `--filter` est le `-testFilter` de Unity : un nom complet ou une regex sur le nom complet
@@ -61,6 +63,7 @@ attend la fin du PID affiché, puis la commande `results ...` que `--detach` a a
 | Erreurs loguées pendant `playing` | Vrai bug de jeu : skill `unity-error-triage` sur le log du run |
 | Délai dépassé sur un écran de menu | Le menu a changé : nom d'un champ lu par réflexion (`m_trainingButton`, `m_widgets` de la sélection des personnages...), état renommé, navigation UI modifiée. Relire l'écran concerné |
 | `No UI navigation path from X to Y` | La croix n'amène pas le focus de X à Y : navigation directionnelle de `AMainMenuScreen` (élément le plus proche dans la direction), élément non focalisable ou désactivé, ou l'EventSystem ne sélectionne pas le panel |
+| Délai dépassé dans la sélection des personnages | On rejoint seulement avec Y/A/Espace/Entrée (action créée par l'écran) ; les boutons d'un joueur ne comptent qu'une fois tous relâchés après qu'il a rejoint ; la croix d'une manette PS virtuelle ne bouge pas le curseur (manettes 1 et 3 pour la grille) ; le hub s'ouvre 1,2 s après le dernier « prêt » |
 | Délai dépassé sur `the game to load` | Chargement Addressables bloqué : `log-errors` sur le log, souvent une erreur au `LoadState` |
 | Échec qui disparaît au run suivant | Bug dépendant du hasard (positions, météorites) : relancer le même filtre 2-3 fois avant de conclure, et le signaler comme bug intermittent |
 | Échecs en cascade | Un scénario cassé en pleine partie pollue le suivant ; `GoToMainMenuHome` décharge le niveau pour l'éviter. Relancer le test suivant seul pour confirmer |
@@ -89,3 +92,10 @@ attend la fin du PID affiché, puis la commande `results ...` que `--detach` a a
   le scénario appuie toutes les 0,5 s tant que l'état est `ResultsState`.
 - Les scores et l'issue des parties varient d'un run à l'autre (hasard du jeu non fixé), même si
   les appuis aléatoires du test sont reproductibles (graine fixe par mode).
+- **`WaitForEndOfFrame` ne revient jamais en batchmode** : le test reste bloqué jusqu'à son
+  `Timeout`. Attendre avec `yield return null`.
+- Juste après `StartRenderingToTextures()`, un `Submit` immédiat s'est perdu : laisser passer une
+  seconde (`RealSeconds(1f)`) avant le premier appui.
+- Un run interrompu (blocage, Unity tué) laisse `Assets/InitTestScene<guid>.unity` et son `.meta` :
+  les supprimer. Un fichier ajouté sous `Assets/` pendant un run produit l'avertissement « Files
+  generated by test without cleanup » : ne pas toucher au projet pendant un run.

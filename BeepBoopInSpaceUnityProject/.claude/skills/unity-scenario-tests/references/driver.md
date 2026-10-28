@@ -17,11 +17,18 @@
 | `MashButtonsUntil(stop, random, timeout)` | Chaque manette appuie au hasard sur les 6 boutons d'action jusqu'à `stop()` |
 | `Set(button, value)` | Écriture brute d'un bouton (fonctionne quel que soit le format mémoire de la manette) |
 
-Contrôles du jeu (`Global/PlayerManagement/PlayerControls.inputactions`) : MainMenu `Pop` (Ouest),
-`SwitchToNextCharacter` (Nord) ; FlowControl `Ready` (Sud) ; Gameplay `Action_1..6` (Sud, Nord,
-Est, Ouest, gâchette haute droite, gauche). L'UI utilise `DefaultInputActions` du package (Submit =
+Contrôles du jeu (`Global/PlayerManagement/PlayerControls.inputactions`) : MainMenu (sélection des
+personnages) `Move` (stick gauche, croix, WASD, flèches), `Ready` (Nord, Sud, Espace, Entrée), `Back`
+(Est, Échap, Retour arrière), `Random` (Ouest, R), `Call` (gâchettes hautes, Q, E) ; rejoindre =
+action créée par `CharacterSelectionScreen` (Nord, Sud, Espace, Entrée) ; FlowControl `Ready` (Sud) ;
+Gameplay `Action_1..6` (Sud, Nord, Est, Ouest, gâchette haute droite, gauche). L'UI utilise `DefaultInputActions` du package (Submit =
 Sud, Navigate = croix, sticks, flèches et ZQSD/WASD, Cancel = Est ou Échap). Tant qu'aucun joueur n'a
 rejoint, tous les périphériques pilotent l'UI ; ensuite, seuls ceux du joueur principal.
+
+Étapes de la sélection des personnages (dans `GameModesScenarioTests`) : `Join(pad)` (A, attend le
+joueur et l'apparition de son cercle), `GetReady(pad)` (Y, puis X + Y tant que le personnage est
+pris), `IsReady(slot)` et `CharacterOf(slot)` (lus dans `m_widgets` de l'écran, un `CharacterWidget`
+par cercle).
 
 ## Attendre et échouer
 
@@ -67,7 +74,8 @@ capturer (`WaitForCameraBlend()` dans les tests). Lire les PNG pour vérifier un
   même état de base, le second écrase le premier (un relâchement puis un appui = bouton resté
   enfoncé). `MashButtonsUntil` alterne appui et relâchement sur des frames différentes.
 - **La croix d'une DualShock 4 HID ne s'écrit pas bouton par bouton** (c'est un « hat switch ») :
-  naviguer avec la manette 1 (XInput).
+  naviguer avec la manette 1 (XInput), et déplacer un curseur de joueur (grille des robots) avec les
+  manettes 1 ou 3. `Press(pad.dpad.right)` sur une manette PS lève `NotSupportedException`.
 - Les schémas de contrôle exigent `<XInputController>` ou `<DualShockGamepad>` : une simple
   `Gamepad` générique ne pourrait pas rejoindre.
 - Les manettes sont créées une fois pour toute la classe (`OneTimeSetUp`) : les joueurs restent

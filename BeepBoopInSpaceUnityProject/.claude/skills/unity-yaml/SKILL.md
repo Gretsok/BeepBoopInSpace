@@ -48,13 +48,17 @@ Lire d'abord `tree --fields` et `overrides`, puis éditer les documents YAML (un
 `--- !u!<classe> &<fileID>`). Formats utiles : [references/formats.md](references/formats.md)
 (classes, fileID des scripts intégrés, UIDocument, PanelSettings, références, formule des fileID des
 objets de prefabs imbriqués, bloc de surcharge). Pour un nouvel objet, prendre un fileID aléatoire
-non utilisé dans le fichier.
+non utilisé dans le fichier ; ajouter un enfant à un prefab (ex. un `AudioPlayer`) : voir
+« Ajouter un GameObject enfant » dans `formats.md`.
 
 ## Pièges
 
 - Les objets d'un prefab imbriqué n'ont pas de document dans le fichier parent : leur fileID est
   `(fileID de l'instance ^ fileID dans le prefab source) & 0x7FFFFFFFFFFFFFFF`. `overrides` et
   `clean-overrides` le calculent ; ne pas les croire orphelins parce qu'on ne les trouve pas par grep.
-- Une surcharge sur un **champ** disparu (cible présente) n'est pas signalée : Unity l'ignore.
+- Une surcharge sur un **champ** disparu (cible présente) n'est pas signalée : Unity l'ignore. En
+  retirant un champ sérialisé d'un script, supprimer aussi sa ligne dans les prefabs et assets, et
+  ses surcharges (`propertyPath: <Champ>k__BackingField` ou `m_champ`) dans les scènes : `grep`,
+  puis retirer chaque bloc `- target ... objectReference` entier.
 - `m_IsActive: 0` en surcharge sur la racine d'une instance = objet inactif au chargement de la scène
   (c'est le cas des écrans du menu, activés par leur état).
