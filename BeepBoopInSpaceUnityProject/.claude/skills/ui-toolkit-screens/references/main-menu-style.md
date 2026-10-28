@@ -140,12 +140,34 @@ La maquette code l'avancement de la même façon partout :
 
 ## 8. Dans le code
 
-L'intégration de la sélection des personnages porte déjà ces valeurs (`UI/MainMenu.uss`, section
-« Character selection ») : variables `--cs-ink`, `--cs-outline`, `--cs-text`, `--cs-navy`,
-`--cs-navy-faded`, `--cs-locked`, `--cs-filigree` ; classes `cs-background`, `cs-title`
-(`__fill`, `__border`, `__label`), `cs-insert` (`--left`, `--right`, `__glyph`, `__label`),
-`cs-legend` (`--back`, `--ready`), `cs-glyph` (sprite Kenney de 57 px = disque de 43 px, teinté
-`#BDDBE2`), `cs-text` (Boogaloo). Pour un autre écran, les sortir de la section `cs-` vers la partie
-commune (`mm-`) plutôt que les recopier. Écarts assumés : gras synthétique + `letter-spacing: 5px`
-pour BeepBoop Bold, glyphes Kenney à la place des disques Cooper Black, lueurs des pastilles non
-reproduites.
+`UI/MainMenu.uss` porte ces valeurs dans sa partie commune : palette `--mm-ink`, `--mm-outline`,
+`--mm-text`, `--mm-navy`, `--mm-navy-faded`, `--mm-locked`, `--mm-filigree` ; classes `mm-background`,
+`mm-title` (`__fill`, `__border`, `__label`), `mm-legend` (`--back`, `--action`, `__label`,
+`__glyph--after`), `mm-glyph` (sprite Kenney de 57 px = disque de 43 px, teinté `#BDDBE2`), `mm-text`
+(Boogaloo, la police par défaut du menu), `mm-filigree`. Ce qui n'appartient qu'à la sélection des
+personnages reste en `cs-` (pastilles `cs-insert`, cercles, grille). Écarts assumés : gras synthétique +
+`letter-spacing: 5px` pour BeepBoop Bold, glyphes Kenney à la place des disques Cooper Black, lueurs
+des pastilles non reproduites.
+
+## 9. Application aux autres écrans (choix d'intégration, pas la maquette)
+
+Accueil, hub, paramètres, crédits et choix du niveau suivent la charte depuis octobre 2026. Ce que la
+maquette ne définit pas (section 7) y a été tranché ainsi, **à faire valider par la graphiste** :
+
+| Élément | Choix | Raison |
+| --- | --- | --- |
+| Fond | Fond de la maquette partout, sauf l'accueil qui garde la scène 3D du menu | Demande de l'utilisateur |
+| Titre d'écran | Cartouche, en français et en capitales (« PARAMÈTRES », « CRÉDITS », « CHOIX DU NIVEAU », « MODE DE JEU ») | Textes du jeu en français ; la sélection des personnages garde « CHARACTER SELECTION » de la maquette |
+| Titre du jeu (accueil) | BeepBoop gras 130 / 70 px, `#BCDFED`, contour encre 4 px + ombre | Lisible sur n'importe quel endroit de la scène 3D |
+| Bouton (`mm-button`) | Pastille : encre, contour 3 px `#BDDBE2`, rayon 24 px, 68 px de haut, Boogaloo 35 px. Sélectionné : contour blanc 5 px, fond `#164F6C`, texte blanc, pop ×1,1. Appuyé : encre. Désactivé : 50 % | Le blanc = « en cours » de la maquette (anneau blanc d'une case visée) |
+| Action principale (`mm-button--big`) | La même pastille en 150 px de haut, Boogaloo 88 px (« Jouer ») | |
+| Tuile (`mm-tile`, cartes de niveau, lignes des paramètres) | Forme sombre `#164F6C` + filigrane, rayon 30-48 px ; sélectionnée : anneau blanc 6 px, texte blanc, pop | Les cercles des joueurs : le contenu de l'écran est sombre et laisse voir le fond |
+| Retour | Légende « Retour (B) » en bas à gauche, cliquable ; plus de bouton Retour à atteindre à la croix | Composition de la maquette |
+| Curseur de volume | Rail encre 18 px, remplissage `#BDDBE2`, poignée `#BCDFED` cerclée d'encre (blanche et ×1,2 quand la ligne est sélectionnée) | |
+| Défilement (choix du niveau) | Barre de 16 px : rail encre à 60 %, poignée `#BDDBE2`, sans flèches | |
+| Crédits | Un panneau sombre, rubriques en BeepBoop gras 42 px capitales, noms en Boogaloo 40 px | |
+
+Sprites livrés sans maquette et non utilisés pour l'instant : `Menus/Training` (fond et contours de
+carte, icônes d'action), `Menus/Settings` (flèches, barres, `SPR_FunnyAlien`), `Menus/Credits`
+(`SPR_BackgroundText`, `SPR_PlayingAlien`), `UI_ButtonPlay.png`. Les formes simples (cartes, barres)
+sont dessinées en USS aux mêmes proportions.

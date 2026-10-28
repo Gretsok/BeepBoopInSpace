@@ -12,8 +12,8 @@ et le vérifier en image, sans ouvrir l'éditeur.
 
 | Quoi | Où |
 | --- | --- |
-| Base des écrans | `Assets/Game/MainMenu/AMainMenuScreen.cs` : `Activate` active le GameObject (l'UIDocument reclone l'UXML), puis `HandleActivation` lie les éléments ; `BindButton(nom, action, son)`, `Query<T>(nom)`, `DefaultFocus`, `FocusSilently`, `HandleCancel`. Gère seul : navigation directionnelle, focus au survol de la souris, clic sur le fond sans perte du focus, son de focus, sélection du panel dans l'EventSystem |
-| Styles | `Assets/Game/MainMenu/UI/MainMenu.uss` : variables `--mm-*`, boutons `mm-button` (`--primary`), `mm-play-button`, placements `mm-corner--*`, `mm-centered-row`, puis une section par écran |
+| Base des écrans | `Assets/Game/MainMenu/AMainMenuScreen.cs` : `Activate` active le GameObject (l'UIDocument reclone l'UXML), puis `HandleActivation` lie les éléments ; `BindButton(nom, action, son)`, `Query<T>(nom)`, `DefaultFocus`, `FocusSilently`, `HandleCancel`, `AddIndication` / `RefreshIndications` / `MainPlayer` (boutons de manette du joueur principal). Gère seul : navigation directionnelle, focus au survol de la souris, clic sur le fond sans perte du focus, son de focus, sélection du panel dans l'EventSystem, bouton de l'élément `back-glyph` (champ `m_backIndicationAction` du prefab), alignement des `.mm-filigree` sur le fond |
+| Styles | `Assets/Game/MainMenu/UI/MainMenu.uss` : palette `--mm-*` et composants de la charte (`mm-background`, `mm-title`, `mm-legend`, `mm-text`, `mm-glyph`, `mm-filigree`), boutons `mm-button` (`--big`), tuiles `mm-tile`, placements `mm-corner--*`, `mm-centered-row`, puis une section par écran (`cs-` : sélection des personnages) |
 | Panel | `UI/MainMenuPanelSettings.asset` (1920×1080, suit la largeur, `sortingOrder` 0), thème `UI/MainMenuTheme.tss` = thème par défaut de Unity (pour ScrollView et Slider) |
 | Écrans | `<Dossier>/<Écran>.uxml` à côté de `<Écran>.cs` ; prefab `<Écran>.prefab` (racine : script + UIDocument, enfants : lecteurs audio) placé sous son état dans `MainMenu.unity`, inactif |
 | Gabarits | `LevelSelection/LevelWidget.uxml` (cloné par `LevelWidget`), `CharacterSelection/PlayerSlot.uxml` (`<ui:Instance>`) ; éléments construits en code : `CharacterRoster` (grille des robots) |
@@ -21,7 +21,7 @@ et le vérifier en image, sans ouvrir l'éditeur.
 | Charte du menu | [references/main-menu-style.md](references/main-menu-style.md) + planche [main-menu-style.png](references/main-menu-style.png) : composition, couleurs, polices, composants et états, **tirés seulement** de `RawAssets/UI/Menus/UI_CharacterSelection.psd`, avec ce qu'elle ne définit pas |
 | Motion design | [references/motion.md](references/motion.md) : transitions USS ou tweens (`UITools/UIToolkitTweens.cs`), et planche de film pour vérifier une animation |
 | Maquettes PSD | skill `psd-mockups` : mesurer une maquette et comparer les captures avec elle |
-| Polices | `RawAssets/Fonts/magnetar_2/Magnetar.otf` (écrans existants), `RawAssets/UI/Fonts/BeepBoop.otf` et `Boogaloo-Regular.ttf` (charte de la maquette) |
+| Polices | `RawAssets/UI/Fonts/Boogaloo-Regular.ttf` (tous les textes du menu), `BeepBoop.otf` (titres, titre du jeu) ; `RawAssets/Fonts/magnetar_2/Magnetar.otf` ne reste que dans les canvas World Space de la scène 3D |
 | Test | `MainMenu_EveryScreenWorksWithGamepadKeyboardAndMouse` (skill `unity-scenario-tests`) |
 
 ### Écrans hors du menu principal
@@ -61,21 +61,28 @@ Lire l'UXML, le script et la section du USS ensemble. Règles :
   absolues ou flex ; centrer avec `mm-centered-row` ou `translate: 0 -50%`.
 - **Contre le thème par défaut** (contrôles Unity), sélecteurs d'au moins 3 classes :
   `.mm-screen .settings-row .settings-row__slider .unity-base-slider__dragger`.
-- **Textes en français** ; la police Magnetar n'a pas de majuscules accentuées (« Crédits »
-  s'affiche CREDITS) et ses chiffres sont stylisés : regarder la capture.
+- **Textes en français**, majuscule initiale (Boogaloo a minuscules et accents) ; titres en
+  capitales accentuées (« PARAMÈTRES ») : BeepBoop les a, son I majuscule est pointé (« iDÉATION »).
+  Texte clair seulement sur du sombre (cartouche, pastille, tuile, ou bas du fond, sous y ≈ 900) :
+  sur le haut du fond, clair, il ne se lit pas.
 - **Sons** : `m_focusAudioPlayer` joue à chaque focus donné par le joueur ; un focus donné par le
   code passe par `FocusSilently` (sinon son parasite, voire « No AudioManager found » à l'ouverture).
-- **Retour** : surcharger `HandleCancel` (son retour + même action que le bouton Retour). Ne pas
-  écouter en plus l'action Cancel via `NavigationAuthorityManager` : deux `RequestBack`, et la
-  FlowMachine ne dédoublonne pas.
+- **Retour** : légende « Retour (B) » en bas à gauche (`mm-legend--back`, `Button` non focalisable
+  nommé `back-button` pour la souris, avec un `back-glyph`), et surcharger `HandleCancel` (son retour
+  + même action). Ne pas écouter en plus l'action Cancel via `NavigationAuthorityManager` : deux
+  `RequestBack`, et la FlowMachine ne dédoublonne pas.
 - Un bouton qui doit attendre une condition : `SetEnabled`, et `DefaultFocus` à null tant qu'il est
   désactivé. Sans focus, Annuler n'arrive pas à l'écran (`PanelEventHandler` vise la racine du panel) :
   un écran sans bouton à atteindre garde le focus sur sa racine (`focusable`, `DefaultFocus`), comme
-  la sélection des personnages.
-- **Police** : `.mm-screen .unity-text-element` impose Magnetar à tous les textes ; une autre police
-  demande un sélecteur d'au moins deux classes placé après dans le USS (`.mm-screen .cs-text`).
-  Boogaloo encre ~5 px plus haut que le milieu de sa ligne : à côté d'un bouton de manette dans une
-  rangée `align-items: center`, `translate: 0 -5px` sur le texte.
+  la sélection des personnages et les crédits.
+- **Police** : `.mm-screen .unity-text-element` impose Boogaloo à tous les textes ; une autre police
+  (ou taille, couleur, marge sur un `mm-text`, qui remet ses marges à 0) demande un sélecteur d'au
+  moins deux classes placé après dans le USS (`.mm-screen .mm-title__label`). Boogaloo encre ~5 px plus haut que le milieu de sa ligne
+  (~12 % de sa taille) : `translate: 0 -5px` sur un texte à côté d'un bouton de manette, et dans un
+  bouton plus de `padding-top` que de `padding-bottom` (9 px pour 35 px).
+- **Sombre qui laisse voir le fond** (tuile, panneau) : fond `--mm-navy`, `border-radius` +
+  `overflow: hidden`, et un enfant `mm-filigree` en premier ; un texte au-dessus est un `Label`
+  enfant (le texte propre d'un `Button` est dessiné sous ses enfants).
 - **Sprites des maquettes** (`RawAssets/UI/Menus/<écran>`) : en double taille, souvent blancs à teinter
   (`-unity-background-image-tint-color`), et parfois sans Sprite (mode Multiple vide) : les prendre
   comme texture, `url("/Assets/....png")` dans le USS et champ `Texture2D` en C#. Glyphes Kenney
@@ -102,8 +109,10 @@ Lire l'UXML, le script et la section du USS ensemble. Règles :
 Mesurer la maquette et comparer les captures avec elle : skill `psd-mockups`. Pour un écran sans
 maquette propre, suivre la charte ([references/main-menu-style.md](references/main-menu-style.md))
 et signaler ce qu'elle ne définit pas (états des boutons sélectionnables, sliders, listes...) au
-lieu de l'inventer. Ses classes `cs-*` de `MainMenu.uss` sont à sortir vers la partie commune
-(`mm-`) avant d'être réutilisées par un autre écran.
+lieu de l'inventer. Les autres écrans du menu en ont tiré des choix d'intégration (bouton
+sélectionné, tuiles, curseurs, défilement) : les reprendre (section 9 de la charte) plutôt qu'en
+créer de nouveaux. Une classe `cs-*` de `MainMenu.uss` est à sortir vers la partie commune (`mm-`)
+avant d'être réutilisée par un autre écran.
 
 ## Ajouter un écran au menu principal
 
