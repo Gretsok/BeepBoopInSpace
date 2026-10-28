@@ -693,14 +693,13 @@
     background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_IconeNumberPlayerReady.png");
 }
 
-/* The character's picture; a grey robot stands in for a missing one. */
+/* The character's picture, set by CharacterWidget (a grey robot stands in for a missing one). */
 .cs-slot__preview {
     position: absolute;
     left: 70px;
     top: 85px;
     width: 300px;
     height: 300px;
-    background-image: url("/Assets/RawAssets/UI/Menus/CharacterIcones/SPR_MiloIconeGrey.png");
     background-position-x: center;
     background-position-y: bottom;
     background-size: contain;
@@ -823,10 +822,6 @@
     width: 100px;
     height: 125px;
     -unity-background-scale-mode: scale-to-fit;
-}
-
-.cs-cell--locked .cs-cell__icon {
-    background-image: url("/Assets/RawAssets/UI/Menus/CharacterIcones/SPR_MiloIconeGrey.png");
 }
 
 .cs-cell__badges {

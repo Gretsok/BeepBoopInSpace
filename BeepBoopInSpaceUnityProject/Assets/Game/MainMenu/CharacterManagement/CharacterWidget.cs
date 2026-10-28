@@ -41,6 +41,7 @@ namespace Game.MainMenu.CharacterManagement
         private VisualElement m_badge;
         private Label m_badgeLabel;
         private InputIndicationView m_joinIndication;
+        private Texture2D m_missingPreview;
 
         public AbstractPlayer Player { get; private set; }
         public int SlotIndex { get; private set; }
@@ -54,13 +55,17 @@ namespace Game.MainMenu.CharacterManagement
             Player = player;
         }
 
-        /// <summary>Binds the widget to its slot element. The screen clones a new visual tree each time it opens.</summary>
-        public void SetView(VisualElement view, int slotIndex)
+        /// <summary>
+        /// Binds the widget to its slot element. The screen clones a new visual tree each time it opens.
+        /// <paramref name="missingPreview"/> stands in for a character without a picture or an icon.
+        /// </summary>
+        public void SetView(VisualElement view, int slotIndex, Texture2D missingPreview)
         {
             m_joinIndication?.Dispose();
 
             m_view = view;
             SlotIndex = slotIndex;
+            m_missingPreview = missingPreview;
             m_slot = view.Q("slot");
             m_burst = view.Q("burst");
             m_preview = view.Q("preview");
@@ -177,10 +182,11 @@ namespace Game.MainMenu.CharacterManagement
             m_badge.style.unityBackgroundImageTintColor = IsReady ? color : StyleKeyword.Null;
 
             var hasPreview = CharacterDataAsset && CharacterDataAsset.SelectionPreview;
-            var preview = hasPreview ? CharacterDataAsset.SelectionPreview : CharacterDataAsset ? CharacterDataAsset.SelectionIcon : null;
+            var icon = CharacterDataAsset && CharacterDataAsset.SelectionIcon ? CharacterDataAsset.SelectionIcon : null;
+            var preview = hasPreview ? CharacterDataAsset.SelectionPreview : icon ? icon : m_missingPreview;
             m_preview.style.backgroundImage = preview ? new StyleBackground(preview) : StyleKeyword.Null;
             // The icon standing in for the preview is drawn 2.4 times its grid size: lower it as much.
-            m_preview.style.top = !hasPreview && preview ? k_PreviewTop + CharacterDataAsset.SelectionIconOffset * k_IconToPreviewScale : StyleKeyword.Null;
+            m_preview.style.top = !hasPreview && icon ? k_PreviewTop + CharacterDataAsset.SelectionIconOffset * k_IconToPreviewScale : StyleKeyword.Null;
         }
 
         /// <summary>Points at another character, while not ready.</summary>

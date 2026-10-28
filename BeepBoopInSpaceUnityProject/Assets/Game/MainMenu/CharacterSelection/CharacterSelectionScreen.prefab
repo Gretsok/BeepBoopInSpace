@@ -68,6 +68,7 @@ MonoBehaviour:
   - {fileID: 3294401831751615001}
   m_rosterCellCount: 20
   m_launchDelay: 1.2
+  m_missingCharacterIcon: {fileID: 2800000, guid: 08c90bb306c468c4797fec646294a2af, type: 3}
   m_randomIndicationAction: {fileID: 11400000, guid: d35986a134694b31a70714d5684ad627, type: 2}
   m_callLeftIndicationAction: {fileID: 11400000, guid: 513ecc6a7a8e47179217099acc1c48a5, type: 2}
   m_callRightIndicationAction: {fileID: 11400000, guid: 1e15d629222641d1bd7cce19cf7cd833, type: 2}

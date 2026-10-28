@@ -32,6 +32,11 @@ namespace Game.MainMenu.CharacterSelection
         [SerializeField, Tooltip("Time between the last player getting ready and the hub, in seconds.")]
         private float m_launchDelay = 1.2f;
 
+        // A texture, not a sprite: the menus' atlases are tightly packed, and UI Toolkit can draw the neighbors of a
+        // sprite in its transparent corners.
+        [SerializeField, Tooltip("Grey robot of the grid cells without a character, and of the characters without a picture.")]
+        private Texture2D m_missingCharacterIcon;
+
         [Header("Input indications")]
         [SerializeField] private InputIndicationActionDataAsset m_randomIndicationAction;
         [SerializeField] private InputIndicationActionDataAsset m_callLeftIndicationAction;
@@ -88,11 +93,11 @@ namespace Game.MainMenu.CharacterSelection
             DefaultFocus = m_screenElement;
             BindButton("back-button", HandleBackButtonClicked, m_backAudioPlayer);
 
-            m_roster = new CharacterRoster(Query<VisualElement>("roster"), CharacterBankManager.Instance, m_rosterCellCount);
+            m_roster = new CharacterRoster(Query<VisualElement>("roster"), CharacterBankManager.Instance, m_rosterCellCount, m_missingCharacterIcon);
             for (int i = 0; i < m_widgets.Count; i++)
             {
                 var widget = m_widgets[i];
-                widget.SetView(Query<VisualElement>($"player-slot-{i + 1}"), i);
+                widget.SetView(Query<VisualElement>($"player-slot-{i + 1}"), i, m_missingCharacterIcon);
                 widget.OnCharacterDataUpdated += HandleCharacterDataUpdated;
                 widget.OnReadyChanged += HandleReadyChanged;
                 widget.OnRefused += HandleRefused;

@@ -40,7 +40,7 @@ namespace Game.MainMenu.CharacterSelection
             public CharacterDataAsset Character;
         }
 
-        public CharacterRoster(VisualElement container, CharacterBankManager bank, int cellCount)
+        public CharacterRoster(VisualElement container, CharacterBankManager bank, int cellCount, Texture2D missingIcon)
         {
             m_bank = bank;
             m_characters = bank.Characters.ToList();
@@ -48,14 +48,14 @@ namespace Game.MainMenu.CharacterSelection
             for (int i = 0; i < Mathf.Max(cellCount, m_characters.Count); i++)
             {
                 var character = i < m_characters.Count ? m_characters[i] : null;
-                var cell = CreateCell(character);
+                var cell = CreateCell(character, missingIcon);
                 container.Add(cell.Element);
                 if (character)
                     m_cells[character] = cell;
             }
         }
 
-        private static Cell CreateCell(CharacterDataAsset character)
+        private static Cell CreateCell(CharacterDataAsset character, Texture2D missingIcon)
         {
             var cell = new Cell { Element = Create("cs-cell") };
             cell.Element.Add(Create("cs-cell__background"));
@@ -73,7 +73,10 @@ namespace Game.MainMenu.CharacterSelection
                 icon.style.top = k_IconTop + character.SelectionIconOffset;
             }
             else
+            {
+                icon.style.backgroundImage = missingIcon;
                 cell.Element.AddToClassList("cs-cell--locked");
+            }
             if (character)
                 cell.Element.AddToClassList("cs-cell--character");
             return cell;
