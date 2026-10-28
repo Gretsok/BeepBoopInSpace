@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <ui:Button name="level-card" class="level-card">
         <ui:VisualElement name="thumbnail" class="level-card__thumbnail" picking-mode="Ignore" />
-        <ui:Label name="level-name" class="level-card__name" picking-mode="Ignore" />
+        <ui:Label name="level-name" class="mm-text level-card__name" picking-mode="Ignore" />
     </ui:Button>
 </ui:UXML>

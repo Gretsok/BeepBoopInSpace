@@ -152,6 +152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_focusAudioPlayer: {fileID: 7830237775633484857}
+  m_backIndicationAction: {fileID: 11400000, guid: a76201ebfb354ce795cb6dd3d02706a9, type: 2}
   m_backAudioPlayer: {fileID: 2359439872417440962}
 --- !u!114 &476394865587933735
 MonoBehaviour:

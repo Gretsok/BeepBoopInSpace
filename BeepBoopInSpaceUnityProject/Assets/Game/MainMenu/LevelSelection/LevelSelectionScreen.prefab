@@ -103,6 +103,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_focusAudioPlayer: {fileID: 7023109628758691483}
+  m_backIndicationAction: {fileID: 11400000, guid: a76201ebfb354ce795cb6dd3d02706a9, type: 2}
   m_levelWidgetTemplate: {fileID: 9197481963319205126, guid: 58762d0e327c4066b328a09b028565ee, type: 3}
   m_levelsListDataAsset: {fileID: 11400000, guid: adaf472c7199c774b96fdb09ea2dcd8d, type: 2}
   m_levelSelectedAudioPlayer: {fileID: 7261417299140737749}

@@ -43,8 +43,18 @@ namespace Game.MainMenu.LevelSelection
                     ScrollIntoView(levelsScrollView, level);
             });
 
-            var backButton = BindButton("back-button", HandleBackButton, m_backAudioPlayer);
-            DefaultFocus = m_instantiatedWidgets.Count > 0 ? m_instantiatedWidgets[0].Element : backButton;
+            BindButton("back-button", HandleBackButton, m_backAudioPlayer);
+            if (m_instantiatedWidgets.Count > 0)
+            {
+                DefaultFocus = m_instantiatedWidgets[0].Element;
+            }
+            else
+            {
+                // No level to move to: the screen itself keeps the focus, for Cancel to reach HandleCancel.
+                var screen = Query<VisualElement>("level-selection-screen");
+                screen.focusable = true;
+                DefaultFocus = screen;
+            }
         }
 
         protected override void HandleCancel()

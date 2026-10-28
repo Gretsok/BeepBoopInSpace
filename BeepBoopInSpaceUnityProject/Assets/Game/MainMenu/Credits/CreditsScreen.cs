@@ -2,6 +2,7 @@ using System;
 using Game.Global.SFXManagement;
 using Game.MainMenu.ZoneManagement;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Game.MainMenu.Credits
 {
@@ -21,7 +22,11 @@ namespace Game.MainMenu.Credits
 
         protected override void HandleActivation()
         {
-            DefaultFocus = BindButton("back-button", HandleBackButtonClicked, m_backAudioPlayer);
+            BindButton("back-button", HandleBackButtonClicked, m_backAudioPlayer);
+            // Nothing to move to: the screen itself keeps the focus, for Cancel to reach HandleCancel.
+            var screen = Query<VisualElement>("credits-screen");
+            screen.focusable = true;
+            DefaultFocus = screen;
         }
 
         protected override void HandleCancel()

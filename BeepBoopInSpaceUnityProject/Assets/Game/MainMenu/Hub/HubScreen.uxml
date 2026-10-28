@@ -1,14 +1,26 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="../UI/MainMenu.uss" />
     <ui:VisualElement name="hub-screen" class="mm-screen" picking-mode="Ignore">
-        <ui:Button name="settings-button" text="Paramètres" class="mm-button mm-button--primary hub-settings" />
-        <ui:VisualElement class="mm-centered-row hub-tournament-row" picking-mode="Ignore">
-            <ui:Button name="tournament-button" text="Tournoi" class="mm-button mm-button--primary" />
+        <ui:VisualElement class="mm-background" picking-mode="Ignore" />
+        <ui:VisualElement class="mm-title" picking-mode="Ignore">
+            <ui:VisualElement class="mm-title__fill" picking-mode="Ignore" />
+            <ui:VisualElement class="mm-title__border" picking-mode="Ignore" />
+            <ui:Label text="MODE DE JEU" class="mm-title__label" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:Button name="character-selection-button" text="Sélection des personnages" class="mm-button mm-button--primary hub-side-button hub-character-selection" />
-        <ui:Button name="training-button" text="Entraînement" class="mm-button mm-button--primary hub-side-button hub-training" />
-        <ui:VisualElement class="mm-centered-row hub-quit-row" picking-mode="Ignore">
-            <ui:Button name="quit-button" text="Quitter" class="mm-button mm-button--primary" />
+        <ui:Button name="settings-button" text="Paramètres" class="mm-button mm-corner--top-left" />
+        <ui:Button name="quit-button" text="Quitter" class="mm-button mm-corner--top-right" />
+        <ui:VisualElement class="hub-modes" picking-mode="Ignore">
+            <ui:Button name="tournament-button" class="mm-tile hub-mode">
+                <ui:VisualElement class="mm-filigree" picking-mode="Ignore" />
+                <ui:Label text="Tournoi" class="mm-text mm-tile__label" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button name="training-button" class="mm-tile hub-mode">
+                <ui:VisualElement class="mm-filigree" picking-mode="Ignore" />
+                <ui:Label text="Entraînement" class="mm-text mm-tile__label" picking-mode="Ignore" />
+            </ui:Button>
+        </ui:VisualElement>
+        <ui:VisualElement class="mm-centered-row hub-character-selection-row" picking-mode="Ignore">
+            <ui:Button name="character-selection-button" text="Sélection des personnages" class="mm-button" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

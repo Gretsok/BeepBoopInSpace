@@ -72,22 +72,7 @@ namespace Game.MainMenu.CharacterManagement
             m_badge = view.Q("badge");
             m_badgeLabel = view.Q<Label>("badge-label");
             m_joinIndication = new InputIndicationView(view.Q("join-glyph"), m_joinIndicationAction) { ShowsLikelyDeviceWithoutPlayer = true };
-            view.RegisterCallback<GeometryChangedEvent>(_ => AlignFiligrees());
             RefreshView();
-        }
-
-        // The circles show the background's pattern: its texture covers the screen, wherever the circle is.
-        private void AlignFiligrees()
-        {
-            m_view.Query(className: "cs-filigree").ForEach(filigree =>
-            {
-                // Layout positions, not world bounds: these ignore the slot's ongoing scale and rotation tweens.
-                var position = Vector2.zero;
-                for (var element = filigree.hierarchy.parent; element != null; element = element.hierarchy.parent)
-                    position += element.layout.position;
-                filigree.style.left = -position.x;
-                filigree.style.top = -position.y;
-            });
         }
 
         /// <summary>The join button follows the main player's device, or the likeliest one before anyone joined.</summary>

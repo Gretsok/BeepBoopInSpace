@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using Game.Global.InputIndicationsManagement;
-using Game.Global.NavigationAuthority;
 using Game.Global.PlayerManagement;
 using Game.Global.SFXManagement;
 using Game.MainMenu.CharacterManagement;
@@ -41,17 +40,14 @@ namespace Game.MainMenu.CharacterSelection
         [SerializeField] private InputIndicationActionDataAsset m_randomIndicationAction;
         [SerializeField] private InputIndicationActionDataAsset m_callLeftIndicationAction;
         [SerializeField] private InputIndicationActionDataAsset m_callRightIndicationAction;
-        [SerializeField] private InputIndicationActionDataAsset m_backIndicationAction;
         [SerializeField] private InputIndicationActionDataAsset m_readyIndicationAction;
 
         private PlayerManager m_playerManager;
         private ZoneManager m_zoneManager;
         private MainMenuOrchestrator m_orchestrator;
-        private NavigationAuthorityManager m_navigationAuthority;
 
         private VisualElement m_screenElement;
         private CharacterRoster m_roster;
-        private readonly List<InputIndicationView> m_indications = new();
         private readonly List<CharacterSelectionPlayerController> m_playerControllers = new();
         private InputAction m_joinAction;
         private Tween m_launch;
@@ -70,13 +66,11 @@ namespace Game.MainMenu.CharacterSelection
         [SerializeField]
         private AudioPlayer m_refusedAudioPlayer;
 
-        public void Initialize(ZoneManager zoneManager, PlayerManager playerManager, MainMenuOrchestrator orchestrator,
-            NavigationAuthorityManager navigationAuthority)
+        public void Initialize(ZoneManager zoneManager, PlayerManager playerManager, MainMenuOrchestrator orchestrator)
         {
             m_zoneManager = zoneManager;
             m_playerManager = playerManager;
             m_orchestrator = orchestrator;
-            m_navigationAuthority = navigationAuthority;
         }
 
         protected override void HandleActivation()
@@ -106,7 +100,6 @@ namespace Game.MainMenu.CharacterSelection
             AddIndication("random-glyph", m_randomIndicationAction);
             AddIndication("call-left-glyph", m_callLeftIndicationAction);
             AddIndication("call-right-glyph", m_callRightIndicationAction);
-            AddIndication("back-glyph", m_backIndicationAction);
             AddIndication("ready-glyph", m_readyIndicationAction);
 
             m_joinAction = CreateJoinAction();
@@ -126,14 +119,6 @@ namespace Game.MainMenu.CharacterSelection
             action.AddBinding("<Keyboard>/enter");
             return action;
         }
-
-        private void AddIndication(string elementName, InputIndicationActionDataAsset actionDataAsset)
-        {
-            m_indications.Add(new InputIndicationView(Query<VisualElement>(elementName), actionDataAsset) { ShowsLikelyDeviceWithoutPlayer = true });
-        }
-
-        private AbstractPlayer MainPlayer => m_playerManager.Players.FirstOrDefault(player =>
-            player && player.PlayerInput.playerIndex == (m_navigationAuthority ? m_navigationAuthority.MainPlayerID : 0));
 
         private CharacterWidget WidgetOf(AbstractPlayer player) => m_widgets.FirstOrDefault(widget => widget.IsActivated && widget.Player == player);
 
@@ -261,8 +246,7 @@ namespace Game.MainMenu.CharacterSelection
             else if (IsActivated && m_joinAction != null)
                 m_playerManager.ListenForNewPlayers(m_joinAction);
 
-            foreach (var indication in m_indications)
-                indication.SetPlayer(mainPlayer);
+            RefreshIndications();
             m_roster.Refresh(m_widgets);
             UpdateLaunch();
         }
@@ -294,9 +278,6 @@ namespace Game.MainMenu.CharacterSelection
             m_launch?.Kill();
             m_launch = null;
             ClearPlayerControllers();
-            foreach (var indication in m_indications)
-                indication.Dispose();
-            m_indications.Clear();
 
             for (int i = 0; i < m_widgets.Count; i++)
             {

@@ -61,6 +61,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_focusAudioPlayer: {fileID: 424314897612804508}
+  m_backIndicationAction: {fileID: 11400000, guid: a76201ebfb354ce795cb6dd3d02706a9, type: 2}
   m_widgets:
   - {fileID: 1085042591320910531}
   - {fileID: 672801060483618991}
@@ -72,7 +73,6 @@ MonoBehaviour:
   m_randomIndicationAction: {fileID: 11400000, guid: d35986a134694b31a70714d5684ad627, type: 2}
   m_callLeftIndicationAction: {fileID: 11400000, guid: 513ecc6a7a8e47179217099acc1c48a5, type: 2}
   m_callRightIndicationAction: {fileID: 11400000, guid: 1e15d629222641d1bd7cce19cf7cd833, type: 2}
-  m_backIndicationAction: {fileID: 11400000, guid: a76201ebfb354ce795cb6dd3d02706a9, type: 2}
   m_readyIndicationAction: {fileID: 11400000, guid: 68434c2d2a934e2eb51f802ccabf04d0, type: 2}
   m_playerConnectedAudioSource: {fileID: 2423498302390193095}
   m_startGameAudioPlayer: {fileID: 4993956566656390230}

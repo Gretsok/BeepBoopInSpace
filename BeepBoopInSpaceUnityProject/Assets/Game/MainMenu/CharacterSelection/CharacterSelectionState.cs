@@ -12,7 +12,7 @@ namespace Game.MainMenu.CharacterSelection
             base.HandleInitialization();
             m_characterSelectionScreen.Deactivate(true);
             m_characterSelectionScreen.Initialize(MainMenuContext.ZoneManager, GlobalContext.PlayerManager,
-                MainMenuContext.MainMenuOrchestrator, GlobalContext.NavigationAuthorityManager);
+                MainMenuContext.MainMenuOrchestrator);
         }
 
         protected override void HandleEnter()

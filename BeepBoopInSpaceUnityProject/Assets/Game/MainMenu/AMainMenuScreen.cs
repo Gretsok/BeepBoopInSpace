@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Game.Global;
+using Game.Global.InputIndicationsManagement;
+using Game.Global.PlayerManagement;
 using Game.Global.SFXManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -16,17 +20,38 @@ namespace Game.MainMenu
     [RequireComponent(typeof(UIDocument))]
     public abstract class AMainMenuScreen : MonoBehaviour
     {
+        private const string k_BackGlyphName = "back-glyph";
+        private const string k_FiligreeClass = "mm-filigree";
+
         [SerializeField]
         private AudioPlayer m_focusAudioPlayer;
+
+        [SerializeField, Tooltip("Button shown by the \"back-glyph\" element of the screen's Retour legend, if it has one.")]
+        private InputIndicationActionDataAsset m_backIndicationAction;
 
         private UIDocument m_document;
         private Focusable m_silentFocusTarget;
         private GameObject m_panelGameObject;
+        private readonly List<InputIndicationView> m_indications = new();
 
         public bool IsActivated { get; private set; }
 
         protected VisualElement Root => m_document ? m_document.rootVisualElement : null;
         public Focusable FocusedElement => Root?.focusController?.focusedElement;
+
+        /// <summary>The player who has the navigation, null before anybody joins.</summary>
+        protected static AbstractPlayer MainPlayer
+        {
+            get
+            {
+                var globalContext = GlobalContext.Instance;
+                if (!globalContext || !globalContext.PlayerManager)
+                    return null;
+                var navigationAuthority = globalContext.NavigationAuthorityManager;
+                var mainPlayerId = navigationAuthority ? navigationAuthority.MainPlayerID : 0;
+                return globalContext.PlayerManager.Players.FirstOrDefault(player => player && player.PlayerInput.playerIndex == mainPlayerId);
+            }
+        }
 
         /// <summary>Focused when the screen opens, and again whenever nothing has the focus. Null leaves the screen unfocused.</summary>
         protected Focusable DefaultFocus { get; set; }
@@ -43,7 +68,10 @@ namespace Game.MainMenu
             IsActivated = true;
             gameObject.SetActive(true);
             SetUpRoot();
+            if (m_backIndicationAction && Root.Q(k_BackGlyphName) != null)
+                AddIndication(k_BackGlyphName, m_backIndicationAction);
             HandleActivation();
+            KeepFiligreesAligned();
             FocusSilently(DefaultFocus);
         }
 
@@ -56,6 +84,9 @@ namespace Game.MainMenu
                 return;
             IsActivated = false;
             HandleDeactivation();
+            foreach (var indication in m_indications)
+                indication.Dispose();
+            m_indications.Clear();
             DefaultFocus = null;
             gameObject.SetActive(false);
         }
@@ -118,6 +149,27 @@ namespace Game.MainMenu
             root.RegisterCallback<NavigationCancelEvent>(_ => HandleCancel());
         }
 
+        // The dark shapes show the background's pattern: a texture that covers the screen, wherever the shape is, so it
+        // moves whenever the shape or one of its parents does.
+        private void KeepFiligreesAligned()
+        {
+            Root.Query(className: k_FiligreeClass).ForEach(filigree =>
+            {
+                for (var element = filigree.hierarchy.parent; element != null && element != Root; element = element.hierarchy.parent)
+                    element.RegisterCallback<GeometryChangedEvent>(_ => AlignFiligree(filigree));
+            });
+        }
+
+        private static void AlignFiligree(VisualElement filigree)
+        {
+            // Layout positions, not world bounds: these ignore the ongoing scale and rotation transitions and tweens.
+            var position = Vector2.zero;
+            for (var element = filigree.hierarchy.parent; element != null; element = element.hierarchy.parent)
+                position += element.layout.position;
+            filigree.style.left = -position.x;
+            filigree.style.top = -position.y;
+        }
+
         protected T Query<T>(string name) where T : VisualElement
         {
             return Root.Q<T>(name) ?? throw new InvalidOperationException(
@@ -137,6 +189,22 @@ namespace Game.MainMenu
                 onClicked();
             };
             return button;
+        }
+
+        /// <summary>Shows on the element the button of the action for the main player's device, until the screen closes.</summary>
+        protected void AddIndication(string elementName, InputIndicationActionDataAsset actionDataAsset)
+        {
+            var indication = new InputIndicationView(Query<VisualElement>(elementName), actionDataAsset) { ShowsLikelyDeviceWithoutPlayer = true };
+            indication.SetPlayer(MainPlayer);
+            m_indications.Add(indication);
+        }
+
+        /// <summary>Makes the indications follow the main player's device again, after players joined or left.</summary>
+        protected void RefreshIndications()
+        {
+            var mainPlayer = MainPlayer;
+            foreach (var indication in m_indications)
+                indication.SetPlayer(mainPlayer);
         }
 
         /// <summary>Focuses an element without the focus sound, for focus changes the player didn't make.</summary>

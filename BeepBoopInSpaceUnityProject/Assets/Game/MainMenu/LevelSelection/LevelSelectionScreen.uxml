@@ -1,8 +1,16 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="../UI/MainMenu.uss" />
-    <ui:VisualElement name="level-selection-screen" class="mm-screen level-selection">
-        <ui:Label text="Choix du niveau" class="mm-title level-selection__title" />
-        <ui:Button name="back-button" text="Retour" class="mm-button mm-corner--top-left" />
+    <ui:VisualElement name="level-selection-screen" class="mm-screen" picking-mode="Ignore">
+        <ui:VisualElement class="mm-background" picking-mode="Ignore" />
         <ui:ScrollView name="levels" mode="Vertical" horizontal-scroller-visibility="Hidden" class="level-selection__levels" />
+        <ui:VisualElement class="mm-title" picking-mode="Ignore">
+            <ui:VisualElement class="mm-title__fill" picking-mode="Ignore" />
+            <ui:VisualElement class="mm-title__border" picking-mode="Ignore" />
+            <ui:Label text="CHOIX DU NIVEAU" class="mm-title__label" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:Button name="back-button" focusable="false" class="mm-legend mm-legend--back">
+            <ui:Label text="Retour" class="mm-text mm-legend__label" picking-mode="Ignore" />
+            <ui:VisualElement name="back-glyph" class="mm-glyph mm-legend__glyph--after" picking-mode="Ignore" />
+        </ui:Button>
     </ui:VisualElement>
 </ui:UXML>
