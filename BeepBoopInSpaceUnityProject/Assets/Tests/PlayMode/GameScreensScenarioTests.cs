@@ -104,10 +104,9 @@ namespace Game.Tests.PlayMode
             yield return m_driver.WaitUntil("the results' button to be focused", () => NameOf(FocusedElement) == "back-to-menu-button", 60f);
             yield return RealSeconds(0.5f);
             yield return CaptureScreen("28-results");
-            yield return m_driver.Submit();
 
-            m_driver.Step("Loading screen, then the main menu");
-            yield return m_driver.WaitUntil("the loading screen", () => FindActive(k_LoadingScreenPanel) != null, 30f);
+            m_driver.Step("Submit, the loading screen, then the main menu");
+            yield return SubmitAndSeeTheLoadingScreen();
             yield return CaptureScreen("29-loading-screen");
             yield return m_driver.WaitUntil("the main menu home screen", () => IsOnMainMenuHome, 120f);
 
@@ -149,10 +148,9 @@ namespace Game.Tests.PlayMode
             yield return m_driver.WaitUntil("the pause", () => IsPaused, 5f);
             yield return m_driver.WaitUntil("the resume button to be focused", () => NameOf(FocusedElement) == "resume-button", 5f);
             yield return m_driver.Select(ScreenElement(k_PauseMenuPanel, "back-to-menu-button"));
-            yield return m_driver.Submit();
 
-            m_driver.Step("Loading screen, then the main menu");
-            yield return m_driver.WaitUntil("the loading screen", () => FindActive(k_LoadingScreenPanel) != null, 30f);
+            m_driver.Step("Submit, the loading screen, then the main menu");
+            yield return SubmitAndSeeTheLoadingScreen();
             m_driver.RemoveKeyboardAndMouse();
             yield return m_driver.WaitUntil("the main menu home screen",
                 () => IsOnMainMenuHome || Manager(k_TournamentResultsContext) != null, 120f);
@@ -188,6 +186,27 @@ namespace Game.Tests.PlayMode
             StopRenderingToTextures();
             StartRenderingToTextures();
             yield return CaptureScreen(fileName);
+        }
+
+        /// <summary>
+        /// Submits with the main pad, watching every frame from the press on for the loading screen: leaving a game,
+        /// the main menu may load and hide it again within the frames of the press.
+        /// </summary>
+        private IEnumerator SubmitAndSeeTheLoadingScreen()
+        {
+            var button = m_driver.MainPad.buttonSouth;
+            var start = Time.realtimeSinceStartup;
+            var seen = false;
+            Set(button, 1f);
+            for (var frame = 0; !seen || frame <= 2; frame++)
+            {
+                if (frame == 2)
+                    Set(button, 0f);
+                if (Time.realtimeSinceStartup - start > 30f)
+                    m_driver.Fail("Timed out after 30s waiting for the loading screen.");
+                yield return null;
+                seen |= FindActive(k_LoadingScreenPanel) != null;
+            }
         }
 
         private static bool IsPaused => (bool)Get(FindActive(k_PauseMenuManager), "IsPaused");

@@ -13,23 +13,31 @@ using UnityEngine.UIElements;
 namespace Game.UITools.Screens
 {
     /// <summary>
-    /// A screen drawn by the UIDocument next to it, outside the main menu: game panels, pause menu, loading screen,
-    /// tournament results. Enabling the GameObject (flow states do it) clones a fresh visual tree from the UXML, which
-    /// the screen binds in HandleShown; disabling it destroys the tree. Gamepads and keyboard move the focus through
-    /// the EventSystem (the main player's devices) and the mouse focuses what it hovers, so every device shares the
-    /// same highlighted element. Screens of the same PanelSettings share one panel, so one focus.
+    /// A UI Toolkit screen, drawn by the UIDocument next to it: the main menu's screens (AMainMenuScreen) and the others
+    /// (game panels, pause menu, loading screen, tournament results). Enabling the GameObject clones a fresh visual tree
+    /// from the UXML, which the screen binds in HandleShown; disabling it destroys the tree. Gamepads and keyboard move
+    /// the focus through the EventSystem (the main player's devices once players have joined) and the mouse focuses what
+    /// it hovers, so every device shares the same highlighted element. Screens of the same PanelSettings share one
+    /// panel, so one focus.
     /// Derived screens use HandleShown, HandleHidden and HandleUpdate, not OnEnable, OnDisable and Update.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public abstract class AUIToolkitScreen : Panel
     {
+        private const string k_BackGlyphName = "back-glyph";
+        private const string k_FiligreeClass = "ui-filigree";
+
         [SerializeField]
         private AudioPlayer m_focusAudioPlayer;
+
+        [SerializeField, Tooltip("Button shown by the \"back-glyph\" element of the screen's Retour legend, if it has one.")]
+        private InputIndicationActionDataAsset m_backIndicationAction;
 
         private UIDocument m_document;
         private Focusable m_silentFocusTarget;
         private GameObject m_panelGameObject;
         private readonly List<InputIndicationView> m_indications = new();
+        private readonly List<InputIndicationView> m_mainPlayerIndications = new();
 
         public bool IsShown { get; private set; }
 
@@ -63,7 +71,10 @@ namespace Game.UITools.Screens
         {
             IsShown = true;
             SetUpRoot();
+            if (m_backIndicationAction && Root.Q(k_BackGlyphName) != null)
+                AddIndication(k_BackGlyphName, m_backIndicationAction);
             HandleShown();
+            KeepFiligreesAligned();
             FocusSilently(DefaultFocus);
         }
 
@@ -77,6 +88,7 @@ namespace Game.UITools.Screens
             foreach (var indication in m_indications)
                 indication.Dispose();
             m_indications.Clear();
+            m_mainPlayerIndications.Clear();
             DefaultFocus = null;
         }
 
@@ -137,6 +149,27 @@ namespace Game.UITools.Screens
             root.RegisterCallback<NavigationCancelEvent>(_ => HandleCancel());
         }
 
+        // The dark shapes show the background's pattern: a texture that covers the screen, wherever the shape is, so it
+        // moves whenever the shape or one of its parents does.
+        private void KeepFiligreesAligned()
+        {
+            Root.Query(className: k_FiligreeClass).ForEach(filigree =>
+            {
+                for (var element = filigree.hierarchy.parent; element != null && element != Root; element = element.hierarchy.parent)
+                    element.RegisterCallback<GeometryChangedEvent>(_ => AlignFiligree(filigree));
+            });
+        }
+
+        private static void AlignFiligree(VisualElement filigree)
+        {
+            // Layout positions, not world bounds: these ignore the ongoing scale and rotation transitions and tweens.
+            var position = Vector2.zero;
+            for (var element = filigree.hierarchy.parent; element != null; element = element.hierarchy.parent)
+                position += element.layout.position;
+            filigree.style.left = -position.x;
+            filigree.style.top = -position.y;
+        }
+
         protected T Query<T>(string name) where T : VisualElement
         {
             return Root.Q<T>(name) ?? throw new InvalidOperationException(
@@ -147,7 +180,7 @@ namespace Game.UITools.Screens
         protected Button BindButton(string name, Action onClicked, AudioPlayer clickAudioPlayer = null)
         {
             var button = Query<Button>(name);
-            // Styled by Screens.uss alone, without the default theme's button style.
+            // Styled by the screens' USS alone, without the default theme's button style.
             button.RemoveFromClassList(Button.ussClassName);
             button.clicked += () =>
             {
@@ -159,15 +192,26 @@ namespace Game.UITools.Screens
         }
 
         /// <summary>Shows on the element the button of the action for the main player's device, until the screen hides.</summary>
-        protected void AddIndication(string elementName, InputIndicationActionDataAsset actionDataAsset) =>
-            AddIndication(Query<VisualElement>(elementName), actionDataAsset, MainPlayer);
+        protected void AddIndication(string elementName, InputIndicationActionDataAsset actionDataAsset)
+        {
+            m_mainPlayerIndications.Add(AddIndication(Query<VisualElement>(elementName), actionDataAsset, MainPlayer));
+        }
 
         /// <summary>Shows on the element the button of the action for the player's device, until the screen hides.</summary>
-        protected void AddIndication(VisualElement element, InputIndicationActionDataAsset actionDataAsset, AbstractPlayer player)
+        protected InputIndicationView AddIndication(VisualElement element, InputIndicationActionDataAsset actionDataAsset, AbstractPlayer player)
         {
             var indication = new InputIndicationView(element, actionDataAsset) { ShowsLikelyDeviceWithoutPlayer = true };
             indication.SetPlayer(player);
             m_indications.Add(indication);
+            return indication;
+        }
+
+        /// <summary>Makes the main player's indications follow the main player again, after players joined or left.</summary>
+        protected void RefreshIndications()
+        {
+            var mainPlayer = MainPlayer;
+            foreach (var indication in m_mainPlayerIndications)
+                indication.SetPlayer(mainPlayer);
         }
 
         /// <summary>Focuses an element without the focus sound, for focus changes the player didn't make.</summary>
@@ -215,7 +259,7 @@ namespace Game.UITools.Screens
         }
 
         // Directional navigation like uGUI's automatic one: the closest element ahead, even diagonally. UI Toolkit's own
-        // only looks straight ahead, which leaves elements out of the d-pad's reach.
+        // only looks straight ahead, which leaves buttons in the screen corners out of the d-pad's reach.
         private void HandleNavigationMove(NavigationMoveEvent evt)
         {
             var direction = evt.direction switch
@@ -255,7 +299,7 @@ namespace Game.UITools.Screens
             Root.focusController?.IgnoreEvent(evt);
         }
 
-        // What the d-pad moves between: buttons and sliders, not the parts they are made of nor scrollbars.
+        // What the d-pad moves between: buttons (and level cards) and sliders, not the parts they are made of nor scrollbars.
         private static bool IsNavigationTarget(VisualElement element) =>
             (element is Button or BaseSlider<int> or BaseSlider<float>) && element.GetFirstAncestorOfType<Scroller>() == null;
 

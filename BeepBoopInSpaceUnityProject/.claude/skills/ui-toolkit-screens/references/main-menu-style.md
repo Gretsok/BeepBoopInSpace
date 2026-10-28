@@ -140,14 +140,16 @@ La maquette code l'avancement de la même façon partout :
 
 ## 8. Dans le code
 
-`UI/MainMenu.uss` porte ces valeurs dans sa partie commune : palette `--mm-ink`, `--mm-outline`,
-`--mm-text`, `--mm-navy`, `--mm-navy-faded`, `--mm-locked`, `--mm-filigree` ; classes `mm-background`,
-`mm-title` (`__fill`, `__border`, `__label`), `mm-legend` (`--back`, `--action`, `__label`,
-`__glyph--after`), `mm-glyph` (sprite Kenney de 57 px = disque de 43 px, teinté `#BDDBE2`), `mm-text`
-(Boogaloo, la police par défaut du menu), `mm-filigree`. Ce qui n'appartient qu'à la sélection des
-personnages reste en `cs-` (pastilles `cs-insert`, cercles, grille). Écarts assumés : gras synthétique +
-`letter-spacing: 5px` pour BeepBoop Bold, glyphes Kenney à la place des disques Cooper Black, lueurs
-des pastilles non reproduites.
+`UITools/Screens/Common.uss`, importée par les styles du menu (`MainMenu/UI/MainMenu.uss`) et ceux des
+autres écrans (`UITools/Screens/Screens.uss`), porte ces valeurs : palette `--ui-ink`, `--ui-outline`,
+`--ui-text`, `--ui-navy`, `--ui-navy-faded`, `--ui-locked`, `--ui-filigree` ; classes `ui-background`,
+`ui-title` (`__fill`, `__border`, `__label`), `ui-legend` (`--back`, `--action`, `__label`,
+`__glyph--after`), `ui-glyph` (sprite Kenney de 57 px = disque de 43 px, teinté `#BDDBE2`), `ui-text`
+(Boogaloo, la police par défaut des écrans), `ui-heading` (BeepBoop), `ui-filigree`, et les choix de la
+section 9 (`ui-button`, `ui-tile`, `ui-panel`, `ui-badge`, `ui-volume-row`). Ce qui n'appartient qu'à la
+sélection des personnages reste en `cs-` (pastilles `cs-insert`, cercles, grille). Écarts assumés : gras
+synthétique + `letter-spacing: 5px` pour BeepBoop Bold, glyphes Kenney à la place des disques Cooper
+Black, lueurs des pastilles non reproduites.
 
 ## 9. Application aux autres écrans (choix d'intégration, pas la maquette)
 
@@ -159,13 +161,17 @@ maquette ne définit pas (section 7) y a été tranché ainsi, **à faire valide
 | Fond | Fond de la maquette partout, sauf l'accueil qui garde la scène 3D du menu | Demande de l'utilisateur |
 | Titre d'écran | Cartouche, en français et en capitales (« PARAMÈTRES », « CRÉDITS », « CHOIX DU NIVEAU », « MODE DE JEU ») | Textes du jeu en français ; la sélection des personnages garde « CHARACTER SELECTION » de la maquette |
 | Titre du jeu (accueil) | BeepBoop gras 130 / 70 px, `#BCDFED`, contour encre 4 px + ombre | Lisible sur n'importe quel endroit de la scène 3D |
-| Bouton (`mm-button`) | Pastille : encre, contour 3 px `#BDDBE2`, rayon 24 px, 68 px de haut, Boogaloo 35 px. Sélectionné : contour blanc 5 px, fond `#164F6C`, texte blanc, pop ×1,1. Appuyé : encre. Désactivé : 50 % | Le blanc = « en cours » de la maquette (anneau blanc d'une case visée) |
-| Action principale (`mm-button--big`) | La même pastille en 150 px de haut, Boogaloo 88 px (« Jouer ») | |
-| Tuile (`mm-tile`, cartes de niveau, lignes des paramètres) | Forme sombre `#164F6C` + filigrane, rayon 30-48 px ; sélectionnée : anneau blanc 6 px, texte blanc, pop | Les cercles des joueurs : le contenu de l'écran est sombre et laisse voir le fond |
+| Bouton (`ui-button`) | Pastille : encre, contour 3 px `#BDDBE2`, rayon 24 px, 68 px de haut, Boogaloo 35 px. Sélectionné : contour blanc 5 px, fond `#164F6C`, texte blanc, pop ×1,1. Appuyé : encre. Désactivé : 50 % | Le blanc = « en cours » de la maquette (anneau blanc d'une case visée) |
+| Action principale (`ui-button--big`) | La même pastille en 150 px de haut, Boogaloo 88 px (« Jouer ») | |
+| Tuile (`ui-tile`, cartes de niveau ; `ui-volume-row`, lignes de volume) | Forme sombre `#164F6C` + filigrane, rayon 30-48 px ; sélectionnée : anneau blanc 6 px, texte blanc, pop | Les cercles des joueurs : le contenu de l'écran est sombre et laisse voir le fond |
 | Retour | Légende « Retour (B) » en bas à gauche, cliquable ; plus de bouton Retour à atteindre à la croix | Composition de la maquette |
 | Curseur de volume | Rail encre 18 px, remplissage `#BDDBE2`, poignée `#BCDFED` cerclée d'encre (blanche et ×1,2 quand la ligne est sélectionnée) | |
 | Défilement (choix du niveau) | Barre de 16 px : rail encre à 60 %, poignée `#BDDBE2`, sans flèches | |
 | Crédits | Un panneau sombre, rubriques en BeepBoop gras 42 px capitales, noms en Boogaloo 40 px | |
+| Panneau (`ui-panel`) | La forme sombre d'une tuile, jamais sélectionnée (règles du tutoriel, lignes des résultats du tournoi) | |
+| Pastille de joueur (`ui-badge`) | « J1 » à « J4 » : blanche en attente, dans la couleur du robot une fois validé | Celles des cercles de la sélection |
+| Annonces en partie | Pastille encre élargie, BeepBoop gras 48 px en capitales, qui se déroule à l'apparition | Lisible sur la scène de jeu |
+| Écran de chargement | Fond de la maquette, aliens de `Menus/LoadingScreen` qui sautillent, « Chargement… » en bas à droite | Sprites livrés pour cet écran, sans maquette |
 
 Sprites livrés sans maquette et non utilisés pour l'instant : `Menus/Training` (fond et contours de
 carte, icônes d'action), `Menus/Settings` (flèches, barres, `SPR_FunnyAlien`), `Menus/Credits`

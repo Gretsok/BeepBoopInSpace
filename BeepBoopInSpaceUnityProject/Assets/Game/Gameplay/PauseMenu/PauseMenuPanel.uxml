@@ -1,38 +1,33 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Template name="VolumeRow" src="../../UITools/Screens/VolumeRow.uxml" />
     <Style src="/Assets/Game/UITools/Screens/Screens.uss" />
-    <ui:VisualElement name="pause-screen" class="gs-screen" picking-mode="Ignore">
+    <ui:VisualElement name="pause-screen" class="ui-screen" picking-mode="Ignore">
         <ui:VisualElement name="pause" class="pause pause--hidden">
-            <ui:VisualElement class="gs-shade" picking-mode="Ignore" />
-            <ui:VisualElement class="gs-title" picking-mode="Ignore">
-                <ui:VisualElement class="gs-title__fill" picking-mode="Ignore" />
-                <ui:VisualElement class="gs-title__border" picking-mode="Ignore" />
-                <ui:Label text="PAUSE" class="gs-text gs-heading gs-title__label" picking-mode="Ignore" />
+            <ui:VisualElement class="ui-shade" picking-mode="Ignore" />
+            <ui:VisualElement class="ui-title" picking-mode="Ignore">
+                <ui:VisualElement class="ui-title__fill" picking-mode="Ignore" />
+                <ui:VisualElement class="ui-title__border" picking-mode="Ignore" />
+                <ui:Label text="PAUSE" class="ui-text ui-heading ui-title__label" picking-mode="Ignore" />
             </ui:VisualElement>
             <ui:VisualElement class="pause__actions" picking-mode="Ignore">
-                <ui:Button name="resume-button" text="Reprendre" class="gs-button pause__action pause__action--main" />
-                <ui:Button name="back-to-menu-button" text="Menu principal" class="gs-button pause__action" />
-                <ui:Button name="quit-game-button" text="Quitter le jeu" class="gs-button pause__action" />
+                <ui:Button name="resume-button" text="Reprendre" class="ui-button pause__action pause__action--main" />
+                <ui:Button name="back-to-menu-button" text="Menu principal" class="ui-button pause__action" />
+                <ui:Button name="quit-game-button" text="Quitter le jeu" class="ui-button pause__action" />
             </ui:VisualElement>
             <ui:VisualElement class="pause__volumes" picking-mode="Ignore">
-                <ui:VisualElement name="master-volume" class="volume-row">
-                    <ui:Label text="Volume général" class="gs-text volume-row__label" />
-                    <ui:SliderInt low-value="0" high-value="100" page-size="5" fill="true" class="volume-row__slider" />
-                    <ui:Label class="gs-text volume-row__value" />
-                </ui:VisualElement>
-                <ui:VisualElement name="music-volume" class="volume-row">
-                    <ui:Label text="Musique" class="gs-text volume-row__label" />
-                    <ui:SliderInt low-value="0" high-value="100" page-size="5" fill="true" class="volume-row__slider" />
-                    <ui:Label class="gs-text volume-row__value" />
-                </ui:VisualElement>
-                <ui:VisualElement name="sfx-volume" class="volume-row">
-                    <ui:Label text="Effets sonores" class="gs-text volume-row__label" />
-                    <ui:SliderInt low-value="0" high-value="100" page-size="5" fill="true" class="volume-row__slider" />
-                    <ui:Label class="gs-text volume-row__value" />
-                </ui:VisualElement>
+                <ui:Instance template="VolumeRow" name="master-volume">
+                    <ui:AttributeOverrides element-name="label" text="Volume général" />
+                </ui:Instance>
+                <ui:Instance template="VolumeRow" name="music-volume">
+                    <ui:AttributeOverrides element-name="label" text="Musique" />
+                </ui:Instance>
+                <ui:Instance template="VolumeRow" name="sfx-volume">
+                    <ui:AttributeOverrides element-name="label" text="Effets sonores" />
+                </ui:Instance>
             </ui:VisualElement>
-            <ui:Button name="back-button" focusable="false" class="gs-legend gs-legend--back">
-                <ui:Label text="Retour" class="gs-text gs-legend__label" picking-mode="Ignore" />
-                <ui:VisualElement name="back-glyph" class="gs-glyph gs-legend__glyph--after" picking-mode="Ignore" />
+            <ui:Button name="back-button" focusable="false" class="ui-legend ui-legend--back">
+                <ui:Label text="Retour" class="ui-text ui-legend__label" picking-mode="Ignore" />
+                <ui:VisualElement name="back-glyph" class="ui-glyph ui-legend__glyph--after" picking-mode="Ignore" />
             </ui:Button>
         </ui:VisualElement>
     </ui:VisualElement>

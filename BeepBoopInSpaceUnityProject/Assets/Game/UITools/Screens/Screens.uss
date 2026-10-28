@@ -1,283 +1,40 @@
 /*
- * Styles of the UI Toolkit screens outside the main menu (game panels, pause, loading screen, tournament results),
- * shared by every screen. Sizes are in the 1920x1080 reference resolution of ScreensPanelSettings, which scales the UI
- * to the screen width.
- * Colors, fonts and components follow the main menu's style guide, taken from the character selection mockup
- * (RawAssets/UI/Menus/UI_CharacterSelection.psd): see the ui-toolkit-screens skill. None of these screens has a
- * mockup of its own.
- * Focus is the selection state for every device: gamepad and keyboard move it, the mouse focuses what it hovers.
+ * Styles of the UI Toolkit screens outside the main menu (game panels, pause, loading screen, tournament results):
+ * a section per screen. None of them has a mockup of its own: they follow the style guide, whose components are
+ * in Common.uss, imported first.
  */
 
-.gs-screen {
-    --gs-ink: rgb(3, 27, 38);
-    --gs-ink-shade: rgba(3, 27, 38, 0.75);
-    --gs-outline: rgb(189, 219, 226);
-    --gs-text: rgb(188, 223, 237);
-    --gs-navy: rgb(22, 79, 108);
-    --gs-locked: rgb(189, 189, 189);
-    --gs-filigree: rgb(25, 90, 124);
-
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    color: var(--gs-text);
-}
-
-.gs-screen,
-.gs-screen .unity-text-element {
-    -unity-font-definition: url("/Assets/RawAssets/UI/Fonts/Boogaloo-Regular.ttf");
-}
-
-/* The style guide's background: a gradient with a pattern of creatures. */
-.gs-background {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url("/Assets/RawAssets/UI/Menus/Communs/SPR_Background.png");
-    -unity-background-scale-mode: stretch-to-fill;
-}
-
-/* Darkens the game behind a screen. */
-.gs-shade {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--gs-ink-shade);
-}
-
-/* Light texts with the style guide's bevel, a dark line under the letters. */
-.gs-screen .gs-text {
-    margin: 0;
-    padding: 0;
-    font-size: 40px;
-    color: var(--gs-text);
-    text-shadow: 0 2px 1px rgba(0, 0, 0, 0.45);
-    -unity-text-align: middle-left;
-    white-space: nowrap;
-}
-
-/* Titles: BeepBoop Bold isn't in the project, bold and spacing on the regular font. Written in capitals. */
-.gs-screen .gs-heading {
-    -unity-font-definition: url("/Assets/RawAssets/UI/Fonts/BeepBoop.otf");
-    -unity-font-style: bold;
-    letter-spacing: 5px;
-}
-
-/* An input sprite: its button is 3/4 of the sprite, tinted like the style guide's buttons. */
-.gs-glyph {
-    width: 57px;
-    height: 57px;
-    flex-shrink: 0;
-    -unity-background-scale-mode: scale-to-fit;
-    -unity-background-image-tint-color: var(--gs-outline);
-}
-
-/* The title cartouche, hanging from the top of the screen. */
-
-.gs-title {
-    position: absolute;
-    left: 495px;
-    top: 0;
-    width: 935px;
-    height: 121px;
-}
-
-.gs-title__fill,
-.gs-title__border {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    -unity-background-scale-mode: stretch-to-fill;
-}
-
-.gs-title__fill {
-    background-image: url("/Assets/RawAssets/UI/Menus/Communs/SPR_UpperBorderInt.png");
-    -unity-background-image-tint-color: var(--gs-ink);
-}
-
-.gs-title__border {
-    background-image: url("/Assets/RawAssets/UI/Menus/Communs/SPR_UpperBorderExt.png");
-    -unity-background-image-tint-color: var(--gs-outline);
-}
-
-.gs-screen .gs-title__label {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    height: 95px;
-    font-size: 46px;
-    -unity-text-align: middle-center;
-}
-
-/* Legends of the bottom corners: Retour (label then button), and the main action (button then label). */
-
-.gs-legend {
-    position: absolute;
-    height: 57px;
-    flex-direction: row;
-    align-items: center;
-}
-
-/* Retour is also a button, for the mouse; B, Circle and Escape reach the screen's HandleCancel. */
-.gs-legend--back {
-    left: 82px;
-    top: 991.5px;
-    margin: 0;
-    padding: 0;
-    border-width: 0;
-    background-color: rgba(0, 0, 0, 0);
-    transition-property: scale;
-    transition-duration: 0.1s;
-}
-
-.gs-legend--back:hover {
-    scale: 1.08 1.08;
-}
-
-/* Next to a button, Boogaloo's ink sits higher than the middle of its line. */
-.gs-screen .gs-legend__label {
-    translate: 0 -5px;
-}
-
-.gs-legend__glyph--after {
-    margin-left: 12px;
-}
-
-/*
- * Buttons: the style guide's inserts (ink, light outline, rounded), which it never shows selected. Selected follows
- * its language of states, white for what is being chosen: white outline, lighter fill, white text, and a pop.
- * The code removes Unity's button class from them, so these rules are their whole style.
- */
-
-.gs-button {
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    height: 68px;
-    margin: 0;
-    /* Boogaloo's ink sits high in its line: the label goes down a little. */
-    padding: 9px 40px 0 40px;
-    border-width: 3px;
-    border-radius: 24px;
-    border-color: var(--gs-outline);
-    background-color: var(--gs-ink);
-    color: var(--gs-text);
-    font-size: 35px;
-    text-shadow: 0 2px 1px rgba(0, 0, 0, 0.45);
-    -unity-text-align: middle-center;
-    white-space: nowrap;
-    transition-property: scale, border-width, border-color, background-color, color;
-    transition-duration: 0.1s, 0.1s, 0.1s, 0.1s, 0.1s;
-    transition-timing-function: ease-out-sine, ease-out-sine, ease-out-sine, ease-out-sine, ease-out-sine;
-}
-
-.gs-button:focus {
-    scale: 1.1 1.1;
-    border-width: 5px;
-    border-color: rgb(255, 255, 255);
-    background-color: var(--gs-navy);
-    color: rgb(255, 255, 255);
-    transition-duration: 0.3s, 0.1s, 0.1s, 0.1s, 0.1s;
-    transition-timing-function: ease-out-back, ease-out-sine, ease-out-sine, ease-out-sine, ease-out-sine;
-}
-
-.gs-button:active {
-    background-color: var(--gs-ink);
-}
-
-.gs-button:disabled {
-    opacity: 0.5;
-}
-
-/* A button with the input sprite of its action before its label, like the style guide's inserts. */
-.gs-button--with-glyph {
-    padding: 0 40px 0 22px;
-}
-
-.gs-screen .gs-button__label {
-    margin: 0 0 0 16px;
-    padding: 0;
-    font-size: 35px;
-    translate: 0 -4px;
-}
-
-.gs-button:focus .gs-button__label {
-    color: rgb(255, 255, 255);
-}
-
-.gs-button:focus .gs-glyph {
-    -unity-background-image-tint-color: rgb(255, 255, 255);
-}
-
-/* The style guide's dark shapes (the players' circles): navy, rounded. */
-.gs-tile {
-    border-width: 6px;
-    border-radius: 48px;
-    border-color: var(--gs-navy);
-    background-color: var(--gs-navy);
-}
-
-/* A player's badge: white while choosing, in the character's color once done (set by the code). */
-.gs-badge {
-    width: 62px;
-    height: 62px;
-    border-radius: 31px;
-    background-color: rgb(255, 255, 255);
-    justify-content: center;
-    align-items: center;
-}
-
-.gs-screen .gs-badge__label {
-    margin: 0;
-    padding: 0;
-    font-size: 34px;
-    color: rgb(0, 0, 0);
-    -unity-text-align: middle-center;
-    translate: 0 -3px;
-}
-
-.gs-badge--done .gs-badge__label {
-    color: rgb(255, 255, 255);
-}
+@import url("/Assets/Game/UITools/Screens/Common.uss");
 
 /* Announcements over the game: an insert that unrolls in a row across the screen (BannerScreen). */
 
-.gs-banner-row {
+.banner-row {
     position: absolute;
     left: 0;
     right: 0;
     align-items: center;
 }
 
-.gs-banner-row--top {
+.banner-row--top {
     top: 120px;
 }
 
-.gs-banner-row--middle {
+.banner-row--middle {
     top: 470px;
 }
 
-.gs-banner {
+.banner {
     height: 110px;
     padding: 0 70px;
     border-width: 3px;
     border-radius: 36px;
-    border-color: var(--gs-outline);
-    background-color: var(--gs-ink);
+    border-color: var(--ui-outline);
+    background-color: var(--ui-ink);
     justify-content: center;
 }
 
 /* BeepBoop is wide: the longest announcement ("Nouvelle configuration de touches !") must fit in 1920 px. */
-.gs-screen .gs-banner__label {
+.ui-screen .banner__label {
     font-size: 48px;
     -unity-text-align: middle-center;
     translate: 0 -2px;
@@ -297,14 +54,14 @@
     width: 230px;
     height: 96px;
     border-width: 0 3px 3px 3px;
-    border-color: var(--gs-outline);
+    border-color: var(--ui-outline);
     border-bottom-left-radius: 28px;
     border-bottom-right-radius: 28px;
-    background-color: var(--gs-ink);
+    background-color: var(--ui-ink);
     justify-content: center;
 }
 
-.gs-screen .timer__label {
+.ui-screen .timer__label {
     font-size: 64px;
     -unity-text-align: middle-center;
     translate: 0 -4px;
@@ -317,13 +74,13 @@
     height: 0;
 }
 
-.gs-screen .floating-text__label {
+.ui-screen .floating-text__label {
     position: absolute;
     left: 0;
     top: 0;
     font-size: 64px;
     -unity-text-outline-width: 3px;
-    -unity-text-outline-color: var(--gs-ink);
+    -unity-text-outline-color: var(--ui-ink);
     translate: -50% -50%;
 }
 
@@ -337,17 +94,17 @@
     padding: 40px 50px;
 }
 
-.gs-screen .tutorial__rules-title {
+.ui-screen .tutorial__rules-title {
     font-size: 40px;
     margin-bottom: 4px;
 }
 
-.gs-screen .tutorial__rules-label {
+.ui-screen .tutorial__rules-label {
     font-size: 48px;
     white-space: normal;
 }
 
-.gs-screen .tutorial__rules-title--spaced {
+.ui-screen .tutorial__rules-title--spaced {
     margin-top: 40px;
 }
 
@@ -393,7 +150,7 @@
     border-width: 6px;
     border-radius: 48px;
     border-color: rgb(255, 255, 255);
-    background-color: var(--gs-navy);
+    background-color: var(--ui-navy);
     align-items: center;
     transition-property: scale, border-color;
     transition-duration: 0.15s, 0.15s;
@@ -430,7 +187,7 @@
     align-items: center;
 }
 
-.gs-screen .tutorial-card__status-label {
+.ui-screen .tutorial-card__status-label {
     font-size: 40px;
     translate: 0 -5px;
 }
@@ -457,7 +214,7 @@
     bottom: 0;
     width: 0;
     height: 16px;
-    background-color: var(--gs-outline);
+    background-color: var(--ui-outline);
 }
 
 /* Results: the button to leave, under the podium. */
@@ -518,89 +275,6 @@
     top: 290px;
 }
 
-.volume-row {
-    flex-direction: row;
-    align-items: center;
-    height: 120px;
-    margin-bottom: 40px;
-    padding: 0 40px;
-    border-width: 6px;
-    border-radius: 48px;
-    border-color: var(--gs-navy);
-    background-color: var(--gs-navy);
-    transition-property: scale, border-color;
-    transition-duration: 0.1s, 0.1s;
-    transition-timing-function: ease-out-sine, ease-out-sine;
-}
-
-.volume-row--focused {
-    scale: 1.05 1.05;
-    border-color: rgb(255, 255, 255);
-    transition-duration: 0.3s, 0.1s;
-    transition-timing-function: ease-out-back, ease-out-sine;
-}
-
-.gs-screen .volume-row__label {
-    width: 330px;
-    font-size: 44px;
-    translate: 0 -5px;
-}
-
-.gs-screen .volume-row__value {
-    width: 90px;
-    font-size: 44px;
-    -unity-text-align: middle-right;
-    translate: 0 -5px;
-}
-
-.gs-screen .volume-row--focused .volume-row__label,
-.gs-screen .volume-row--focused .volume-row__value {
-    color: rgb(255, 255, 255);
-}
-
-.gs-screen .volume-row .volume-row__slider {
-    flex-grow: 1;
-    margin: 0 36px;
-}
-
-.gs-screen .volume-row .volume-row__slider .unity-base-slider__drag-container {
-    height: 50px;
-}
-
-.gs-screen .volume-row .volume-row__slider .unity-base-slider__tracker {
-    height: 18px;
-    margin-top: -9px;
-    border-width: 0;
-    border-radius: 9px;
-    background-color: var(--gs-ink);
-}
-
-.gs-screen .volume-row .volume-row__slider .unity-base-slider__fill {
-    border-radius: 9px;
-    background-color: var(--gs-outline);
-}
-
-.gs-screen .volume-row .volume-row__slider .unity-base-slider__dragger {
-    width: 40px;
-    height: 40px;
-    margin-top: -20px;
-    border-width: 4px;
-    border-radius: 20px;
-    border-color: var(--gs-ink);
-    background-color: var(--gs-text);
-    transition-property: scale, background-color;
-    transition-duration: 0.1s, 0.1s;
-}
-
-.gs-screen .volume-row--focused .volume-row__slider .unity-base-slider__dragger {
-    scale: 1.2 1.2;
-    background-color: rgb(255, 255, 255);
-}
-
-.gs-screen .volume-row .volume-row__slider .unity-base-slider__dragger-border {
-    display: none;
-}
-
 /* Loading screen: the background, robots' alien friends walking by, and the word. */
 
 .loading__walkers {
@@ -619,7 +293,7 @@
 }
 
 /* Wide enough for the dots that come and go, so the word doesn't move. */
-.gs-screen .loading__label {
+.ui-screen .loading__label {
     width: 250px;
     font-size: 48px;
     -unity-text-align: middle-left;
@@ -660,11 +334,11 @@
     border-radius: 23px;
 }
 
-.gs-screen .tournament-line__badge .gs-badge__label {
+.ui-screen .tournament-line__badge .ui-badge__label {
     font-size: 26px;
 }
 
-.gs-screen .tournament-line__score {
+.ui-screen .tournament-line__score {
     width: 130px;
     flex-shrink: 0;
     font-size: 96px;
@@ -689,8 +363,8 @@
     margin-right: 18px;
     border-width: 5px;
     border-radius: 20px;
-    border-color: var(--gs-ink);
-    background-color: var(--gs-ink);
+    border-color: var(--ui-ink);
+    background-color: var(--ui-ink);
     -unity-background-scale-mode: scale-and-crop;
     opacity: 0.35;
 }

@@ -1,0 +1,458 @@
+/*
+ * The style guide's components, shared by every UI Toolkit screen: main menu (MainMenu.uss) and the other screens
+ * (Screens.uss), which import this file first. Sizes are in the 1920x1080 reference resolution of UIPanelSettings,
+ * which scales the UI to the screen width.
+ * Colors, fonts and components come from the character selection mockup (RawAssets/UI/Menus/UI_CharacterSelection.psd),
+ * the only one of the game: see the ui-toolkit-screens skill's style guide for what it defines and what it doesn't.
+ * Focus is the selection state for every device: gamepad and keyboard move it, the mouse focuses what it hovers.
+ */
+
+.ui-screen {
+    --ui-ink: rgb(3, 27, 38);
+    --ui-ink-shade: rgba(3, 27, 38, 0.75);
+    --ui-outline: rgb(189, 219, 226);
+    --ui-text: rgb(188, 223, 237);
+    --ui-navy: rgb(22, 79, 108);
+    --ui-navy-faded: rgba(22, 79, 108, 0.2);
+    --ui-locked: rgb(189, 189, 189);
+    --ui-filigree: rgb(25, 90, 124);
+
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    color: var(--ui-text);
+}
+
+.ui-screen,
+.ui-screen .unity-text-element {
+    -unity-font-definition: url("/Assets/RawAssets/UI/Fonts/Boogaloo-Regular.ttf");
+}
+
+/* The mockup's background: a gradient, light down to y 750 then dark, with a pattern of creatures. */
+.ui-background {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("/Assets/RawAssets/UI/Menus/Communs/SPR_Background.png");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+/* Darkens the game behind a screen. */
+.ui-shade {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--ui-ink-shade);
+}
+
+/* Light texts with the mockup's bevel, a dark line under the letters. Light on dark only: on dark shapes or low on the background. */
+.ui-screen .ui-text {
+    margin: 0;
+    padding: 0;
+    font-size: 40px;
+    color: var(--ui-text);
+    text-shadow: 0 2px 1px rgba(0, 0, 0, 0.45);
+    -unity-text-align: middle-left;
+    white-space: nowrap;
+}
+
+/* Titles: BeepBoop Bold isn't in the project, bold and spacing on the regular font. Written in capitals. */
+.ui-screen .ui-heading {
+    -unity-font-definition: url("/Assets/RawAssets/UI/Fonts/BeepBoop.otf");
+    -unity-font-style: bold;
+    letter-spacing: 5px;
+}
+
+/* An input sprite: its button is 3/4 of the sprite, tinted like the mockup's buttons. */
+.ui-glyph {
+    width: 57px;
+    height: 57px;
+    flex-shrink: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--ui-outline);
+}
+
+/*
+ * The background's pattern seen through the dark shapes: a full screen texture that AUIToolkitScreen moves to line up
+ * with the background, clipped by its parent (border-radius and overflow: hidden).
+ */
+.ui-filigree {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1920px;
+    height: 1080px;
+    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_Filigree.png");
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: var(--ui-filigree);
+}
+
+/* The title cartouche, hanging from the top of the screen. */
+
+.ui-title {
+    position: absolute;
+    left: 495px;
+    top: 0;
+    width: 935px;
+    height: 121px;
+}
+
+.ui-title__fill,
+.ui-title__border {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+.ui-title__fill {
+    background-image: url("/Assets/RawAssets/UI/Menus/Communs/SPR_UpperBorderInt.png");
+    -unity-background-image-tint-color: var(--ui-ink);
+}
+
+.ui-title__border {
+    background-image: url("/Assets/RawAssets/UI/Menus/Communs/SPR_UpperBorderExt.png");
+    -unity-background-image-tint-color: var(--ui-outline);
+}
+
+/* BeepBoop Bold isn't in the project: bold and spacing on the regular font. */
+.ui-screen .ui-title__label {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 95px;
+    margin: 0;
+    padding: 0;
+    -unity-font-definition: url("/Assets/RawAssets/UI/Fonts/BeepBoop.otf");
+    -unity-font-style: bold;
+    font-size: 46px;
+    letter-spacing: 5px;
+    color: var(--ui-text);
+    text-shadow: 0 2px 1px rgba(0, 0, 0, 0.45);
+    -unity-text-align: middle-center;
+}
+
+/* Legends of the bottom corners: Retour (label then button), and the main action (button then label). */
+
+.ui-legend {
+    position: absolute;
+    height: 57px;
+    flex-direction: row;
+    align-items: center;
+}
+
+/* Retour is also a button, for the mouse; B, Circle and Escape reach the screen's HandleCancel. */
+.ui-legend--back {
+    left: 82px;
+    top: 991.5px;
+    margin: 0;
+    padding: 0;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    transition-property: scale;
+    transition-duration: 0.1s;
+}
+
+.ui-legend--back:hover {
+    scale: 1.08 1.08;
+}
+
+/* Next to a button, Boogaloo's ink sits higher than the middle of its line. */
+.ui-screen .ui-legend__label {
+    translate: 0 -5px;
+}
+
+.ui-legend__glyph--after {
+    margin-left: 12px;
+}
+
+.ui-legend--action {
+    right: 63px;
+    top: 990px;
+}
+
+.ui-screen .ui-legend--action .ui-legend__label {
+    margin-left: 19px;
+}
+
+/*
+ * Buttons: the mockup's inserts (ink, light outline, rounded), which it never shows selected. Selected follows its
+ * language of states, white for what is being chosen: white outline, lighter fill, white text, and a pop.
+ * The code removes Unity's button class from them, so these rules are their whole style.
+ */
+
+.ui-button {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 68px;
+    margin: 0;
+    /* Boogaloo's ink sits high in its line: the label goes down a little. */
+    padding: 9px 40px 0 40px;
+    border-width: 3px;
+    border-radius: 24px;
+    border-color: var(--ui-outline);
+    background-color: var(--ui-ink);
+    color: var(--ui-text);
+    font-size: 35px;
+    text-shadow: 0 2px 1px rgba(0, 0, 0, 0.45);
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    transition-property: scale, border-width, border-color, background-color, color;
+    transition-duration: 0.1s, 0.1s, 0.1s, 0.1s, 0.1s;
+    transition-timing-function: ease-out-sine, ease-out-sine, ease-out-sine, ease-out-sine, ease-out-sine;
+}
+
+.ui-button:focus {
+    scale: 1.1 1.1;
+    border-width: 5px;
+    border-color: rgb(255, 255, 255);
+    background-color: var(--ui-navy);
+    color: rgb(255, 255, 255);
+    transition-duration: 0.3s, 0.1s, 0.1s, 0.1s, 0.1s;
+    transition-timing-function: ease-out-back, ease-out-sine, ease-out-sine, ease-out-sine, ease-out-sine;
+}
+
+.ui-button:active {
+    background-color: var(--ui-ink);
+}
+
+.ui-button:disabled {
+    opacity: 0.5;
+}
+
+/* The screen's main action. */
+.ui-button--big {
+    height: 150px;
+    padding: 20px 110px 0 110px;
+    border-width: 4px;
+    border-radius: 52px;
+    font-size: 88px;
+}
+
+.ui-button--big:focus {
+    border-width: 7px;
+}
+
+/* A button with the input sprite of its action before its label, like the mockup's inserts. */
+.ui-button--with-glyph {
+    padding: 0 40px 0 22px;
+}
+
+.ui-screen .ui-button__label {
+    margin: 0 0 0 16px;
+    padding: 0;
+    font-size: 35px;
+    translate: 0 -4px;
+}
+
+.ui-button:focus .ui-button__label {
+    color: rgb(255, 255, 255);
+}
+
+.ui-button:focus .ui-glyph {
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+
+/*
+ * Tiles: the mockup's dark shapes (the players' circles), navy with the background's pattern. Selected, like a grid
+ * cell aimed at: a white ring. The text is a child label, drawn above the pattern.
+ */
+
+.ui-tile {
+    margin: 0;
+    padding: 0;
+    border-width: 6px;
+    border-radius: 48px;
+    border-color: var(--ui-navy);
+    background-color: var(--ui-navy);
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+    transition-property: scale, border-color;
+    transition-duration: 0.1s, 0.1s;
+    transition-timing-function: ease-out-sine, ease-out-sine;
+}
+
+.ui-tile:focus {
+    scale: 1.1 1.1;
+    border-color: rgb(255, 255, 255);
+    transition-duration: 0.3s, 0.1s;
+    transition-timing-function: ease-out-back, ease-out-sine;
+}
+
+.ui-tile:disabled {
+    opacity: 0.5;
+}
+
+.ui-screen .ui-tile__label {
+    font-size: 72px;
+    -unity-text-align: middle-center;
+    translate: 0 -8px;
+}
+
+.ui-tile:focus .ui-tile__label {
+    color: rgb(255, 255, 255);
+}
+
+/* A panel: the same dark shape as a tile, that holds a layout of its own and is never selected. */
+.ui-panel {
+    border-width: 6px;
+    border-radius: 48px;
+    border-color: var(--ui-navy);
+    background-color: var(--ui-navy);
+}
+
+/* A player's badge: white while choosing, in the character's color once done (set by the code). */
+.ui-badge {
+    width: 62px;
+    height: 62px;
+    border-radius: 31px;
+    background-color: rgb(255, 255, 255);
+    justify-content: center;
+    align-items: center;
+}
+
+.ui-screen .ui-badge__label {
+    margin: 0;
+    padding: 0;
+    font-size: 34px;
+    color: rgb(0, 0, 0);
+    -unity-text-align: middle-center;
+    translate: 0 -3px;
+}
+
+.ui-screen .ui-badge--done .ui-badge__label {
+    color: rgb(255, 255, 255);
+}
+
+/*
+ * A volume (VolumeRow.uxml, VolumeRow): a tile selected with its slider. Left and right change the volume, up and
+ * down move to the next row.
+ */
+
+.ui-volume-row {
+    flex-direction: row;
+    align-items: center;
+    height: 130px;
+    margin-bottom: 50px;
+    padding: 0 40px;
+    border-width: 6px;
+    border-radius: 48px;
+    border-color: var(--ui-navy);
+    background-color: var(--ui-navy);
+    overflow: hidden;
+    transition-property: scale, border-color;
+    transition-duration: 0.1s, 0.1s;
+    transition-timing-function: ease-out-sine, ease-out-sine;
+}
+
+.ui-volume-row--focused {
+    scale: 1.05 1.05;
+    border-color: rgb(255, 255, 255);
+    transition-duration: 0.3s, 0.1s;
+    transition-timing-function: ease-out-back, ease-out-sine;
+}
+
+.ui-screen .ui-volume-row__label {
+    width: 380px;
+    font-size: 48px;
+    translate: 0 -5px;
+}
+
+.ui-screen .ui-volume-row__value {
+    width: 100px;
+    font-size: 48px;
+    -unity-text-align: middle-right;
+    translate: 0 -5px;
+}
+
+.ui-screen .ui-volume-row--focused .ui-volume-row__label,
+.ui-screen .ui-volume-row--focused .ui-volume-row__value {
+    color: rgb(255, 255, 255);
+}
+
+.ui-screen .ui-volume-row .ui-volume-row__slider {
+    flex-grow: 1;
+    margin: 0 40px;
+}
+
+.ui-screen .ui-volume-row .ui-volume-row__slider .unity-base-slider__drag-container {
+    height: 50px;
+}
+
+.ui-screen .ui-volume-row .ui-volume-row__slider .unity-base-slider__tracker {
+    height: 18px;
+    margin-top: -9px;
+    border-width: 0;
+    border-radius: 9px;
+    background-color: var(--ui-ink);
+}
+
+.ui-screen .ui-volume-row .ui-volume-row__slider .unity-base-slider__fill {
+    border-radius: 9px;
+    background-color: var(--ui-outline);
+}
+
+.ui-screen .ui-volume-row .ui-volume-row__slider .unity-base-slider__dragger {
+    width: 40px;
+    height: 40px;
+    margin-top: -20px;
+    border-width: 4px;
+    border-radius: 20px;
+    border-color: var(--ui-ink);
+    background-color: var(--ui-text);
+    transition-property: scale, background-color;
+    transition-duration: 0.1s, 0.1s;
+}
+
+.ui-screen .ui-volume-row--focused .ui-volume-row__slider .unity-base-slider__dragger {
+    scale: 1.2 1.2;
+    background-color: rgb(255, 255, 255);
+}
+
+.ui-screen .ui-volume-row .ui-volume-row__slider .unity-base-slider__dragger-border {
+    display: none;
+}
+
+/* Rows that center a button horizontally, and corner placements: the mockup's inserts on top, its legends at the bottom. */
+
+.ui-centered-row {
+    position: absolute;
+    left: 0;
+    right: 0;
+    align-items: center;
+}
+
+.ui-corner--top-left {
+    position: absolute;
+    left: 26.5px;
+    top: 22px;
+}
+
+.ui-corner--top-right {
+    position: absolute;
+    right: 26.5px;
+    top: 22px;
+}
+
+.ui-corner--bottom-left {
+    position: absolute;
+    left: 60px;
+    bottom: 26px;
+}
+
+.ui-corner--bottom-right {
+    position: absolute;
+    right: 60px;
+    bottom: 26px;
+}

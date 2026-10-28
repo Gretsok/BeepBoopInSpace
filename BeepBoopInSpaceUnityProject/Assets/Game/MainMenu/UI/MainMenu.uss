@@ -1,298 +1,9 @@
 /*
- * Main menu styles, shared by every screen. Sizes are in the 1920x1080 reference resolution of
- * MainMenuPanelSettings, which scales the UI to the screen width.
- * Colors, fonts and components come from the character selection mockup (RawAssets/UI/Menus/UI_CharacterSelection.psd),
- * the only one of the menu: see the ui-toolkit-screens skill's style guide for what it defines and what it doesn't.
- * Focus is the selection state for every device: gamepad and keyboard move it, the mouse focuses what it hovers.
+ * Main menu styles: a section per screen. The components of the style guide, shared with the other screens, are in
+ * UITools/Screens/Common.uss, imported first.
  */
 
-.mm-screen {
-    --mm-ink: rgb(3, 27, 38);
-    --mm-outline: rgb(189, 219, 226);
-    --mm-text: rgb(188, 223, 237);
-    --mm-navy: rgb(22, 79, 108);
-    --mm-navy-faded: rgba(22, 79, 108, 0.2);
-    --mm-locked: rgb(189, 189, 189);
-    --mm-filigree: rgb(25, 90, 124);
-
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    color: var(--mm-text);
-}
-
-.mm-screen,
-.mm-screen .unity-text-element {
-    -unity-font-definition: url("/Assets/RawAssets/UI/Fonts/Boogaloo-Regular.ttf");
-}
-
-/* The mockup's background: a gradient, light down to y 750 then dark, with a pattern of creatures. */
-.mm-background {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url("/Assets/RawAssets/UI/Menus/Communs/SPR_Background.png");
-    -unity-background-scale-mode: stretch-to-fill;
-}
-
-/* Light texts with the mockup's bevel, a dark line under the letters. Light on dark only: on dark shapes or low on the background. */
-.mm-screen .mm-text {
-    margin: 0;
-    padding: 0;
-    font-size: 40px;
-    color: var(--mm-text);
-    text-shadow: 0 2px 1px rgba(0, 0, 0, 0.45);
-    -unity-text-align: middle-left;
-    white-space: nowrap;
-}
-
-/* An input sprite: its button is 3/4 of the sprite, tinted like the mockup's buttons. */
-.mm-glyph {
-    width: 57px;
-    height: 57px;
-    flex-shrink: 0;
-    -unity-background-scale-mode: scale-to-fit;
-    -unity-background-image-tint-color: var(--mm-outline);
-}
-
-/*
- * The background's pattern seen through the dark shapes: a full screen texture that AMainMenuScreen moves to line up
- * with the background, clipped by its parent (border-radius and overflow: hidden).
- */
-.mm-filigree {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 1920px;
-    height: 1080px;
-    background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_Filigree.png");
-    -unity-background-scale-mode: stretch-to-fill;
-    -unity-background-image-tint-color: var(--mm-filigree);
-}
-
-/* The title cartouche, hanging from the top of the screen. */
-
-.mm-title {
-    position: absolute;
-    left: 495px;
-    top: 0;
-    width: 935px;
-    height: 121px;
-}
-
-.mm-title__fill,
-.mm-title__border {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    -unity-background-scale-mode: stretch-to-fill;
-}
-
-.mm-title__fill {
-    background-image: url("/Assets/RawAssets/UI/Menus/Communs/SPR_UpperBorderInt.png");
-    -unity-background-image-tint-color: var(--mm-ink);
-}
-
-.mm-title__border {
-    background-image: url("/Assets/RawAssets/UI/Menus/Communs/SPR_UpperBorderExt.png");
-    -unity-background-image-tint-color: var(--mm-outline);
-}
-
-/* BeepBoop Bold isn't in the project: bold and spacing on the regular font. */
-.mm-screen .mm-title__label {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    height: 95px;
-    margin: 0;
-    padding: 0;
-    -unity-font-definition: url("/Assets/RawAssets/UI/Fonts/BeepBoop.otf");
-    -unity-font-style: bold;
-    font-size: 46px;
-    letter-spacing: 5px;
-    color: var(--mm-text);
-    text-shadow: 0 2px 1px rgba(0, 0, 0, 0.45);
-    -unity-text-align: middle-center;
-}
-
-/* Legends of the bottom corners: Retour (label then button), and the main action (button then label). */
-
-.mm-legend {
-    position: absolute;
-    height: 57px;
-    flex-direction: row;
-    align-items: center;
-}
-
-/* Retour is also a button, for the mouse; B, Circle and Escape reach the screen's HandleCancel. */
-.mm-legend--back {
-    left: 82px;
-    top: 991.5px;
-    margin: 0;
-    padding: 0;
-    border-width: 0;
-    background-color: rgba(0, 0, 0, 0);
-    transition-property: scale;
-    transition-duration: 0.1s;
-}
-
-.mm-legend--back:hover {
-    scale: 1.08 1.08;
-}
-
-/* Next to a button, Boogaloo's ink sits higher than the middle of its line. */
-.mm-screen .mm-legend__label {
-    translate: 0 -5px;
-}
-
-.mm-legend__glyph--after {
-    margin-left: 12px;
-}
-
-.mm-legend--action {
-    right: 63px;
-    top: 990px;
-}
-
-.mm-screen .mm-legend--action .mm-legend__label {
-    margin-left: 19px;
-}
-
-/*
- * Buttons: the mockup's inserts (ink, light outline, rounded), which it never shows selected. Selected follows its
- * language of states, white for what is being chosen: white outline, lighter fill, white text, and a pop.
- * The code removes Unity's button class from them, so these rules are their whole style.
- */
-
-.mm-button {
-    height: 68px;
-    margin: 0;
-    padding: 9px 40px 0 40px;
-    border-width: 3px;
-    border-radius: 24px;
-    border-color: var(--mm-outline);
-    background-color: var(--mm-ink);
-    color: var(--mm-text);
-    font-size: 35px;
-    text-shadow: 0 2px 1px rgba(0, 0, 0, 0.45);
-    -unity-text-align: middle-center;
-    white-space: nowrap;
-    transition-property: scale, border-width, border-color, background-color, color;
-    transition-duration: 0.1s, 0.1s, 0.1s, 0.1s, 0.1s;
-    transition-timing-function: ease-out-sine, ease-out-sine, ease-out-sine, ease-out-sine, ease-out-sine;
-}
-
-.mm-button:focus {
-    scale: 1.1 1.1;
-    border-width: 5px;
-    border-color: rgb(255, 255, 255);
-    background-color: var(--mm-navy);
-    color: rgb(255, 255, 255);
-    transition-duration: 0.3s, 0.1s, 0.1s, 0.1s, 0.1s;
-    transition-timing-function: ease-out-back, ease-out-sine, ease-out-sine, ease-out-sine, ease-out-sine;
-}
-
-.mm-button:active {
-    background-color: var(--mm-ink);
-}
-
-.mm-button:disabled {
-    opacity: 0.5;
-}
-
-/* The screen's main action. */
-.mm-button--big {
-    height: 150px;
-    padding: 20px 110px 0 110px;
-    border-width: 4px;
-    border-radius: 52px;
-    font-size: 88px;
-}
-
-.mm-button--big:focus {
-    border-width: 7px;
-}
-
-/*
- * Tiles: the mockup's dark shapes (the players' circles), navy with the background's pattern. Selected, like a grid
- * cell aimed at: a white ring. The text is a child label, drawn above the pattern.
- */
-
-.mm-tile {
-    margin: 0;
-    padding: 0;
-    border-width: 6px;
-    border-radius: 48px;
-    border-color: var(--mm-navy);
-    background-color: var(--mm-navy);
-    overflow: hidden;
-    justify-content: center;
-    align-items: center;
-    transition-property: scale, border-color;
-    transition-duration: 0.1s, 0.1s;
-    transition-timing-function: ease-out-sine, ease-out-sine;
-}
-
-.mm-tile:focus {
-    scale: 1.1 1.1;
-    border-color: rgb(255, 255, 255);
-    transition-duration: 0.3s, 0.1s;
-    transition-timing-function: ease-out-back, ease-out-sine;
-}
-
-.mm-tile:disabled {
-    opacity: 0.5;
-}
-
-.mm-screen .mm-tile__label {
-    font-size: 72px;
-    -unity-text-align: middle-center;
-    translate: 0 -8px;
-}
-
-.mm-tile:focus .mm-tile__label {
-    color: rgb(255, 255, 255);
-}
-
-/* Rows that center a button horizontally, and corner placements: the mockup's inserts on top, its legends at the bottom. */
-
-.mm-centered-row {
-    position: absolute;
-    left: 0;
-    right: 0;
-    align-items: center;
-}
-
-.mm-corner--top-left {
-    position: absolute;
-    left: 26.5px;
-    top: 22px;
-}
-
-.mm-corner--top-right {
-    position: absolute;
-    right: 26.5px;
-    top: 22px;
-}
-
-.mm-corner--bottom-left {
-    position: absolute;
-    left: 60px;
-    bottom: 26px;
-}
-
-.mm-corner--bottom-right {
-    position: absolute;
-    right: 60px;
-    bottom: 26px;
-}
+@import url("/Assets/Game/UITools/Screens/Common.uss");
 
 /* Home: over the 3D scene of the main menu, with the game's title in its own font. */
 
@@ -304,24 +15,24 @@
     align-items: center;
 }
 
-.mm-screen .home-title__line {
+.ui-screen .home-title__line {
     margin: 0;
     padding: 0;
     -unity-font-definition: url("/Assets/RawAssets/UI/Fonts/BeepBoop.otf");
     -unity-font-style: bold;
-    color: var(--mm-text);
+    color: var(--ui-text);
     -unity-text-outline-width: 4px;
-    -unity-text-outline-color: var(--mm-ink);
+    -unity-text-outline-color: var(--ui-ink);
     text-shadow: 0 6px 2px rgba(3, 27, 38, 0.6);
     -unity-text-align: middle-center;
 }
 
-.mm-screen .home-title__main {
+.ui-screen .home-title__main {
     font-size: 130px;
     letter-spacing: 10px;
 }
 
-.mm-screen .home-title__sub {
+.ui-screen .home-title__sub {
     margin-top: 6px;
     font-size: 70px;
     letter-spacing: 7px;
@@ -365,7 +76,7 @@
     top: 165px;
     bottom: 120px;
     border-radius: 48px;
-    background-color: var(--mm-navy);
+    background-color: var(--ui-navy);
     overflow: hidden;
 }
 
@@ -392,7 +103,7 @@
     align-items: center;
 }
 
-.mm-screen .credits__section {
+.ui-screen .credits__section {
     height: 70px;
     margin-bottom: 10px;
     -unity-font-definition: url("/Assets/RawAssets/UI/Fonts/BeepBoop.otf");
@@ -402,11 +113,11 @@
     -unity-text-align: middle-center;
 }
 
-.mm-screen .credits__section--spaced {
+.ui-screen .credits__section--spaced {
     margin-top: 50px;
 }
 
-.mm-screen .credits__name {
+.ui-screen .credits__name {
     height: 54px;
     -unity-text-align: middle-center;
 }
@@ -421,7 +132,7 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 
-.mm-screen .credits__font {
+.ui-screen .credits__font {
     position: absolute;
     right: 63px;
     top: 991.5px;
@@ -462,12 +173,12 @@
 
 .cs-insert__fill {
     background-image: url("/Assets/RawAssets/UI/Menus/Communs/SPR_ButtonInterior.png");
-    -unity-background-image-tint-color: var(--mm-ink);
+    -unity-background-image-tint-color: var(--ui-ink);
 }
 
 .cs-insert__border {
     background-image: url("/Assets/RawAssets/UI/Menus/Communs/SPR_ButtonExterior.png");
-    -unity-background-image-tint-color: var(--mm-outline);
+    -unity-background-image-tint-color: var(--ui-outline);
 }
 
 .cs-insert__glyph {
@@ -487,7 +198,7 @@
     left: 195.5px;
 }
 
-.mm-screen .cs-insert__label {
+.ui-screen .cs-insert__label {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -504,7 +215,7 @@
 
 .cs-legend__label--launch,
 .cs-screen--launching .cs-legend__label--ready,
-.cs-screen--launching .mm-legend--action .mm-glyph {
+.cs-screen--launching .ui-legend--action .ui-glyph {
     display: none;
 }
 
@@ -547,13 +258,13 @@
     width: 438px;
     height: 438px;
     background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_CircleBackground.png");
-    -unity-background-image-tint-color: var(--mm-navy);
+    -unity-background-image-tint-color: var(--ui-navy);
     transition-property: -unity-background-image-tint-color;
     transition-duration: 0.3s;
 }
 
 .cs-slot--ready .cs-slot__circle {
-    -unity-background-image-tint-color: var(--mm-navy-faded);
+    -unity-background-image-tint-color: var(--ui-navy-faded);
 }
 
 .cs-slot__circle-pattern {
@@ -638,7 +349,7 @@
     width: 375px;
     height: 375px;
     background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_CircleBackgroundPlayerReady.png");
-    -unity-background-image-tint-color: var(--mm-navy);
+    -unity-background-image-tint-color: var(--ui-navy);
 }
 
 .cs-slot__scallop-pattern {
@@ -750,7 +461,7 @@
     display: flex;
 }
 
-.mm-screen .cs-slot__join-label {
+.ui-screen .cs-slot__join-label {
     margin-left: 18px;
     translate: 0 -5px;
 }
@@ -778,7 +489,7 @@
     height: 54px;
 }
 
-.mm-screen .cs-slot__badge-label {
+.ui-screen .cs-slot__badge-label {
     margin: 0;
     padding: 0;
     font-size: 38px;
@@ -788,7 +499,7 @@
     transition-duration: 0.3s, 0.2s;
 }
 
-.mm-screen .cs-slot--ready .cs-slot__badge-label {
+.ui-screen .cs-slot--ready .cs-slot__badge-label {
     font-size: 32px;
     color: rgb(255, 255, 255);
 }
@@ -817,7 +528,7 @@
     width: 115px;
     height: 115px;
     background-image: url("/Assets/RawAssets/UI/Menus/CharacterSelection/SPR_BotSelectionCircleBackground.png");
-    -unity-background-image-tint-color: var(--mm-locked);
+    -unity-background-image-tint-color: var(--ui-locked);
     transition-property: -unity-background-image-tint-color;
     transition-duration: 0.25s;
 }
@@ -871,7 +582,7 @@
     transition-duration: 0.2s;
 }
 
-.mm-screen .cs-cell__badge-label {
+.ui-screen .cs-cell__badge-label {
     margin: 0;
     padding: 0;
     font-size: 23px;
@@ -879,7 +590,7 @@
     -unity-text-align: middle-center;
 }
 
-.mm-screen .cs-cell__badge--ready .cs-cell__badge-label {
+.ui-screen .cs-cell__badge--ready .cs-cell__badge-label {
     color: rgb(255, 255, 255);
 }
 
@@ -893,32 +604,32 @@
     bottom: 100px;
 }
 
-.mm-screen .level-selection__levels .unity-scroll-view__content-container {
+.ui-screen .level-selection__levels .unity-scroll-view__content-container {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     padding: 20px 40px;
 }
 
-.mm-screen .level-selection__levels .unity-scroller--vertical {
+.ui-screen .level-selection__levels .unity-scroller--vertical {
     width: 16px;
     margin: 30px 40px 30px 0;
     border-width: 0;
     background-color: rgba(0, 0, 0, 0);
 }
 
-.mm-screen .level-selection__levels .unity-scroller__low-button,
-.mm-screen .level-selection__levels .unity-scroller__high-button {
+.ui-screen .level-selection__levels .unity-scroller__low-button,
+.ui-screen .level-selection__levels .unity-scroller__high-button {
     display: none;
 }
 
-.mm-screen .level-selection__levels .unity-scroller--vertical .unity-scroller__slider {
+.ui-screen .level-selection__levels .unity-scroller--vertical .unity-scroller__slider {
     flex-grow: 1;
     width: 16px;
     margin: 0;
 }
 
-.mm-screen .level-selection__levels .unity-scroller--vertical .unity-base-slider__tracker {
+.ui-screen .level-selection__levels .unity-scroller--vertical .unity-base-slider__tracker {
     left: 0;
     right: 0;
     border-width: 0;
@@ -926,12 +637,12 @@
     background-color: rgba(3, 27, 38, 0.6);
 }
 
-.mm-screen .level-selection__levels .unity-scroller--vertical .unity-base-slider__dragger {
+.ui-screen .level-selection__levels .unity-scroller--vertical .unity-base-slider__dragger {
     left: 0;
     width: 16px;
     border-width: 0;
     border-radius: 8px;
-    background-color: var(--mm-outline);
+    background-color: var(--ui-outline);
 }
 
 .level-card {
@@ -941,8 +652,8 @@
     padding: 0;
     border-width: 6px;
     border-radius: 30px;
-    border-color: var(--mm-navy);
-    background-color: var(--mm-navy);
+    border-color: var(--ui-navy);
+    background-color: var(--ui-navy);
     overflow: hidden;
     transition-property: scale, border-color;
     transition-duration: 0.1s, 0.1s;
@@ -958,11 +669,11 @@
 
 .level-card__thumbnail {
     height: 210px;
-    background-color: var(--mm-ink);
+    background-color: var(--ui-ink);
     -unity-background-scale-mode: scale-and-crop;
 }
 
-.mm-screen .level-card__name {
+.ui-screen .level-card__name {
     flex-grow: 1;
     padding: 0 16px 8px 16px;
     font-size: 38px;
@@ -970,7 +681,7 @@
     -unity-text-align: middle-center;
 }
 
-.mm-screen .level-card:focus .level-card__name {
+.ui-screen .level-card:focus .level-card__name {
     color: rgb(255, 255, 255);
 }
 
@@ -981,88 +692,4 @@
     left: 310px;
     right: 310px;
     top: 230px;
-}
-
-.settings-row {
-    flex-direction: row;
-    align-items: center;
-    height: 130px;
-    margin-bottom: 50px;
-    padding: 0 40px;
-    border-width: 6px;
-    border-radius: 48px;
-    border-color: var(--mm-navy);
-    background-color: var(--mm-navy);
-    overflow: hidden;
-    transition-property: scale, border-color;
-    transition-duration: 0.1s, 0.1s;
-    transition-timing-function: ease-out-sine, ease-out-sine;
-}
-
-.settings-row--focused {
-    scale: 1.05 1.05;
-    border-color: rgb(255, 255, 255);
-    transition-duration: 0.3s, 0.1s;
-    transition-timing-function: ease-out-back, ease-out-sine;
-}
-
-.mm-screen .settings-row__label {
-    width: 380px;
-    font-size: 48px;
-    translate: 0 -5px;
-}
-
-.mm-screen .settings-row__value {
-    width: 100px;
-    font-size: 48px;
-    -unity-text-align: middle-right;
-    translate: 0 -5px;
-}
-
-.mm-screen .settings-row--focused .settings-row__label,
-.mm-screen .settings-row--focused .settings-row__value {
-    color: rgb(255, 255, 255);
-}
-
-.mm-screen .settings-row .settings-row__slider {
-    flex-grow: 1;
-    margin: 0 40px;
-}
-
-.mm-screen .settings-row .settings-row__slider .unity-base-slider__drag-container {
-    height: 50px;
-}
-
-.mm-screen .settings-row .settings-row__slider .unity-base-slider__tracker {
-    height: 18px;
-    margin-top: -9px;
-    border-width: 0;
-    border-radius: 9px;
-    background-color: var(--mm-ink);
-}
-
-.mm-screen .settings-row .settings-row__slider .unity-base-slider__fill {
-    border-radius: 9px;
-    background-color: var(--mm-outline);
-}
-
-.mm-screen .settings-row .settings-row__slider .unity-base-slider__dragger {
-    width: 40px;
-    height: 40px;
-    margin-top: -20px;
-    border-width: 4px;
-    border-radius: 20px;
-    border-color: var(--mm-ink);
-    background-color: var(--mm-text);
-    transition-property: scale, background-color;
-    transition-duration: 0.1s, 0.1s;
-}
-
-.mm-screen .settings-row--focused .settings-row__slider .unity-base-slider__dragger {
-    scale: 1.2 1.2;
-    background-color: rgb(255, 255, 255);
-}
-
-.mm-screen .settings-row .settings-row__slider .unity-base-slider__dragger-border {
-    display: none;
 }

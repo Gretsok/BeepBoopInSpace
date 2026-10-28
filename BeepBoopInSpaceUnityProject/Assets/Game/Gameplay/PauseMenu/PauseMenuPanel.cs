@@ -1,7 +1,6 @@
 using System;
 using DG.Tweening;
 using Game.Global;
-using Game.Global.InputIndicationsManagement;
 using Game.Global.Settings;
 using Game.UITools;
 using Game.UITools.Screens;
@@ -17,21 +16,16 @@ namespace Game.Gameplay.PauseMenu
     /// </summary>
     public class PauseMenuPanel : AUIToolkitScreen
     {
-        private const int k_VolumeStep = 5;
         private const string k_HiddenClass = "pause--hidden";
-        private const string k_FocusedRowClass = "volume-row--focused";
-        private const string k_VolumeValueClass = "volume-row__value";
 
         [SerializeField]
         private PauseMenuManager m_manager;
-        [SerializeField]
-        private InputIndicationActionDataAsset m_backIndicationAction;
 
         private VisualElement m_pause;
         private Button m_resumeButton;
-        private SliderInt m_masterVolume;
-        private SliderInt m_musicVolume;
-        private SliderInt m_sfxVolume;
+        private VolumeRow m_masterVolume;
+        private VolumeRow m_musicVolume;
+        private VolumeRow m_sfxVolume;
         private bool m_isOpen;
         private int m_openingFrame = -1;
 
@@ -59,7 +53,6 @@ namespace Game.Gameplay.PauseMenu
             BindButton("back-to-menu-button", HandleBackToMenuButtonClicked);
             BindButton("quit-game-button", HandleQuitGameButtonClicked);
             BindButton("back-button", HandleResumeButtonClicked);
-            AddIndication("back-glyph", m_backIndicationAction);
 
             m_masterVolume = BindVolume("master-volume", (settings, volume) => settings.SetMasterVolume(volume));
             m_musicVolume = BindVolume("music-volume", (settings, volume) => settings.SetMusicVolume(volume));
@@ -151,54 +144,21 @@ namespace Game.Gameplay.PauseMenu
             var settings = GlobalContext.Instance ? GlobalContext.Instance.SettingsManager : null;
             if (!settings)
                 return;
-            ShowVolume(m_masterVolume, settings.GetMasterVolume());
-            ShowVolume(m_musicVolume, settings.GetMusicVolume());
-            ShowVolume(m_sfxVolume, settings.GetSfxVolume());
+            m_masterVolume.SetVolume(settings.GetMasterVolume());
+            m_musicVolume.SetVolume(settings.GetMusicVolume());
+            m_sfxVolume.SetVolume(settings.GetSfxVolume());
         }
 
-        private static void ShowVolume(SliderInt slider, int volume)
+        private VolumeRow BindVolume(string rowName, Action<SettingsManager, int> setVolume)
         {
-            slider.SetValueWithoutNotify(volume);
-            slider.parent.Q<Label>(className: k_VolumeValueClass).text = volume.ToString();
-        }
-
-        private SliderInt BindVolume(string rowName, Action<SettingsManager, int> setVolume)
-        {
-            var row = Query<VisualElement>(rowName);
-            var slider = row.Q<SliderInt>();
-            var valueLabel = row.Q<Label>(className: k_VolumeValueClass);
-
-            slider.RegisterValueChangedCallback(evt =>
+            return new VolumeRow(Query<VisualElement>(rowName), volume =>
             {
-                valueLabel.text = evt.newValue.ToString();
                 var globalContext = GlobalContext.Instance;
                 if (!globalContext)
                     return;
-                setVolume(globalContext.SettingsManager, evt.newValue);
+                setVolume(globalContext.SettingsManager, volume);
                 globalContext.SaveManager.SaveProfile();
             });
-
-            // Left and right change the volume right away (Unity's sliders wait for a Submit first),
-            // up and down move to the other rows.
-            slider.RegisterCallback<NavigationMoveEvent>(evt =>
-            {
-                var step = evt.direction switch
-                {
-                    NavigationMoveEvent.Direction.Left => -k_VolumeStep,
-                    NavigationMoveEvent.Direction.Right => k_VolumeStep,
-                    _ => 0,
-                };
-                if (step == 0)
-                    return;
-                slider.value = Mathf.Clamp(slider.value + step, slider.lowValue, slider.highValue);
-                evt.StopPropagation();
-                slider.focusController?.IgnoreEvent(evt);
-            }, TrickleDown.TrickleDown);
-            slider.RegisterCallback<NavigationSubmitEvent>(evt => evt.StopPropagation(), TrickleDown.TrickleDown);
-
-            row.RegisterCallback<FocusInEvent>(_ => row.AddToClassList(k_FocusedRowClass));
-            row.RegisterCallback<FocusOutEvent>(_ => row.RemoveFromClassList(k_FocusedRowClass));
-            return slider;
         }
     }
 }

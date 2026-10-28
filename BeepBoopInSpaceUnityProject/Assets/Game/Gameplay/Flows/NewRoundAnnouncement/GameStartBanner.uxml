@@ -1,10 +1,10 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="/Assets/Game/UITools/Screens/Screens.uss" />
-    <ui:VisualElement name="game-start-screen" class="gs-screen" picking-mode="Ignore">
+    <ui:VisualElement name="game-start-screen" class="ui-screen" picking-mode="Ignore">
         <!-- Hidden, like the banner of the uGUI canvas it replaces: the introduction shows each robot instead. -->
-        <ui:VisualElement class="gs-banner-row gs-banner-row--top" picking-mode="Ignore" style="display: none;">
-            <ui:VisualElement class="gs-banner" picking-mode="Ignore">
-                <ui:Label text="LA PARTIE VA COMMENCER !" class="gs-text gs-heading gs-banner__label" picking-mode="Ignore" />
+        <ui:VisualElement class="banner-row banner-row--top" picking-mode="Ignore" style="display: none;">
+            <ui:VisualElement class="banner" picking-mode="Ignore">
+                <ui:Label text="LA PARTIE VA COMMENCER !" class="ui-text ui-heading banner__label" picking-mode="Ignore" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

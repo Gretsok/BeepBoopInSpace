@@ -66,7 +66,7 @@ Ajouter son fileID à `m_Component` du GameObject. `uitk-prefab` le fait.
 
 ## PanelSettings
 
-Copier `Assets/Game/MainMenu/UI/MainMenuPanelSettings.asset` (+ `meta` pour un nouveau guid) :
+Copier `Assets/Game/UITools/Screens/UIPanelSettings.asset` (+ `meta` pour un nouveau guid) :
 `m_ScaleMode: 2` = ScaleWithScreenSize, `m_ReferenceResolution`, `m_Match: 0` = suit la largeur,
 `themeUss` = le TSS, `m_SortingOrder` (comparé aux autres panels).
 

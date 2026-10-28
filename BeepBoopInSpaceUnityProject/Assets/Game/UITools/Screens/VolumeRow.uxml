@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- A volume, bound by VolumeRow. The screen sets the label through an AttributeOverrides on "label". -->
+    <ui:VisualElement class="ui-volume-row">
+        <ui:VisualElement class="ui-filigree" picking-mode="Ignore" />
+        <ui:Label name="label" text="Volume" class="ui-text ui-volume-row__label" />
+        <ui:SliderInt low-value="0" high-value="100" page-size="5" fill="true" class="ui-volume-row__slider" />
+        <ui:Label class="ui-text ui-volume-row__value" />
+    </ui:VisualElement>
+</ui:UXML>

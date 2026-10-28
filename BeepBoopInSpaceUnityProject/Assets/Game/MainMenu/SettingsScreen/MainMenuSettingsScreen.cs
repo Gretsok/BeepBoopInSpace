@@ -3,6 +3,7 @@ using Game.Global.Save;
 using Game.Global.Settings;
 using Game.Global.SFXManagement;
 using Game.MainMenu.ZoneManagement;
+using Game.UITools.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -10,9 +11,6 @@ namespace Game.MainMenu.SettingsScreen
 {
     public class MainMenuSettingsScreen : AMainMenuScreen
     {
-        private const int k_VolumeStep = 5;
-        private const string k_FocusedRowClass = "settings-row--focused";
-
         [SerializeField]
         private AudioPlayer m_backAudioPlayer;
 
@@ -52,40 +50,13 @@ namespace Game.MainMenu.SettingsScreen
 
         private SliderInt BindVolume(string rowName, int volume, Action<int> setVolume)
         {
-            var row = Query<VisualElement>(rowName);
-            var slider = row.Q<SliderInt>();
-            var valueLabel = row.Q<Label>(className: "settings-row__value");
-
-            slider.SetValueWithoutNotify(volume);
-            valueLabel.text = volume.ToString();
-            slider.RegisterValueChangedCallback(evt =>
+            var row = new VolumeRow(Query<VisualElement>(rowName), newVolume =>
             {
-                valueLabel.text = evt.newValue.ToString();
-                setVolume(evt.newValue);
+                setVolume(newVolume);
                 m_saveManager.SaveProfile();
             });
-
-            // Left and right change the volume right away (Unity's sliders wait for a Submit first),
-            // up and down move to the other rows.
-            slider.RegisterCallback<NavigationMoveEvent>(evt =>
-            {
-                var step = evt.direction switch
-                {
-                    NavigationMoveEvent.Direction.Left => -k_VolumeStep,
-                    NavigationMoveEvent.Direction.Right => k_VolumeStep,
-                    _ => 0,
-                };
-                if (step == 0)
-                    return;
-                slider.value = Mathf.Clamp(slider.value + step, slider.lowValue, slider.highValue);
-                evt.StopPropagation();
-                slider.focusController?.IgnoreEvent(evt);
-            }, TrickleDown.TrickleDown);
-            slider.RegisterCallback<NavigationSubmitEvent>(evt => evt.StopPropagation(), TrickleDown.TrickleDown);
-
-            row.RegisterCallback<FocusInEvent>(_ => row.AddToClassList(k_FocusedRowClass));
-            row.RegisterCallback<FocusOutEvent>(_ => row.RemoveFromClassList(k_FocusedRowClass));
-            return slider;
+            row.SetVolume(volume);
+            return row.Slider;
         }
     }
 }

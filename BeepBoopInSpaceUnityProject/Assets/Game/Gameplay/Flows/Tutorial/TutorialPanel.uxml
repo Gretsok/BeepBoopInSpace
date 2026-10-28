@@ -1,15 +1,15 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="/Assets/Game/UITools/Screens/Screens.uss" />
-    <ui:VisualElement name="tutorial-screen" class="gs-screen" picking-mode="Ignore">
-        <ui:VisualElement class="gs-shade" picking-mode="Ignore" />
-        <ui:VisualElement class="gs-tile tutorial__rules" picking-mode="Ignore">
-            <ui:Label text="OBJECTIF" class="gs-text gs-heading tutorial__rules-title" picking-mode="Ignore" />
-            <ui:Label name="objective-label" text="Accumuler le plus de points" class="gs-text tutorial__rules-label" picking-mode="Ignore" />
-            <ui:Label text="ACTION SPÉCIALE" class="gs-text gs-heading tutorial__rules-title tutorial__rules-title--spaced" picking-mode="Ignore" />
-            <ui:Label name="special-action-label" text="Bombe auto-destructrice" class="gs-text tutorial__rules-label" picking-mode="Ignore" />
+    <ui:VisualElement name="tutorial-screen" class="ui-screen" picking-mode="Ignore">
+        <ui:VisualElement class="ui-shade" picking-mode="Ignore" />
+        <ui:VisualElement class="ui-panel tutorial__rules" picking-mode="Ignore">
+            <ui:Label text="OBJECTIF" class="ui-text ui-heading tutorial__rules-title" picking-mode="Ignore" />
+            <ui:Label name="objective-label" text="Accumuler le plus de points" class="ui-text tutorial__rules-label" picking-mode="Ignore" />
+            <ui:Label text="ACTION SPÉCIALE" class="ui-text ui-heading tutorial__rules-title tutorial__rules-title--spaced" picking-mode="Ignore" />
+            <ui:Label name="special-action-label" text="Bombe auto-destructrice" class="ui-text tutorial__rules-label" picking-mode="Ignore" />
             <ui:VisualElement name="meteorites" class="tutorial__modifier" picking-mode="Ignore">
                 <ui:VisualElement class="tutorial__modifier-icon" picking-mode="Ignore" />
-                <ui:Label text="Météorites" class="gs-text tutorial__rules-label" picking-mode="Ignore" />
+                <ui:Label text="Météorites" class="ui-text tutorial__rules-label" picking-mode="Ignore" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement class="tutorial__controls" picking-mode="Ignore" />

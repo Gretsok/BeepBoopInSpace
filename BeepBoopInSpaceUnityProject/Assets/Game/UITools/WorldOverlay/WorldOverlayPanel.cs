@@ -9,7 +9,7 @@ namespace Game.UITools.WorldOverlay
     public class WorldOverlayPanel : AUIToolkitScreen
     {
         private const string k_AnchorClass = "floating-text";
-        private const string k_LabelClasses = "gs-text floating-text__label";
+        private const string k_LabelClasses = "ui-text floating-text__label";
 
         [SerializeField, Tooltip("How far a floating text rises, in pixels of the 1920x1080 screen.")]
         private Vector2 m_floatingTextMove = new(-10f, -40f);

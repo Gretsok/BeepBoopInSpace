@@ -1,16 +1,16 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="/Assets/Game/UITools/Screens/Screens.uss" />
-    <ui:VisualElement name="tournament-results-screen" class="gs-screen" picking-mode="Ignore">
-        <ui:VisualElement class="gs-background" picking-mode="Ignore" />
-        <ui:VisualElement class="gs-title" picking-mode="Ignore">
-            <ui:VisualElement class="gs-title__fill" picking-mode="Ignore" />
-            <ui:VisualElement class="gs-title__border" picking-mode="Ignore" />
-            <ui:Label text="RÉSULTATS DU TOURNOI" class="gs-text gs-heading gs-title__label" picking-mode="Ignore" />
+    <ui:VisualElement name="tournament-results-screen" class="ui-screen" picking-mode="Ignore">
+        <ui:VisualElement class="ui-background" picking-mode="Ignore" />
+        <ui:VisualElement class="ui-title" picking-mode="Ignore">
+            <ui:VisualElement class="ui-title__fill" picking-mode="Ignore" />
+            <ui:VisualElement class="ui-title__border" picking-mode="Ignore" />
+            <ui:Label text="RÉSULTATS DU TOURNOI" class="ui-text ui-heading ui-title__label" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement name="player-lines" class="tournament__players" picking-mode="Ignore" />
-        <ui:Button name="ok-button" class="gs-button gs-button--with-glyph tournament__continue">
-            <ui:VisualElement name="ok-glyph" class="gs-glyph" picking-mode="Ignore" />
-            <ui:Label text="OK" class="gs-text gs-button__label" picking-mode="Ignore" />
+        <ui:Button name="ok-button" class="ui-button ui-button--with-glyph tournament__continue">
+            <ui:VisualElement name="ok-glyph" class="ui-glyph" picking-mode="Ignore" />
+            <ui:Label text="OK" class="ui-text ui-button__label" picking-mode="Ignore" />
         </ui:Button>
     </ui:VisualElement>
 </ui:UXML>

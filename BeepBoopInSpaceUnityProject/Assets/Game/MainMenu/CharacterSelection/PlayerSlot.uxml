@@ -2,12 +2,12 @@
     <ui:VisualElement name="slot" class="cs-slot" picking-mode="Ignore">
         <ui:VisualElement class="cs-slot__circle" picking-mode="Ignore" />
         <ui:VisualElement class="cs-slot__circle-pattern" picking-mode="Ignore">
-            <ui:VisualElement class="mm-filigree" picking-mode="Ignore" />
+            <ui:VisualElement class="ui-filigree" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement name="ready-layer" class="cs-slot__ready-layer" picking-mode="Ignore">
             <ui:VisualElement class="cs-slot__scallop" picking-mode="Ignore" />
             <ui:VisualElement class="cs-slot__scallop-pattern" picking-mode="Ignore">
-                <ui:VisualElement class="mm-filigree" picking-mode="Ignore" />
+                <ui:VisualElement class="ui-filigree" picking-mode="Ignore" />
             </ui:VisualElement>
             <ui:VisualElement class="cs-slot__scallop-line cs-slot__tinted" picking-mode="Ignore" />
             <ui:VisualElement class="cs-slot__ready-ring cs-slot__tinted" picking-mode="Ignore" />
@@ -16,8 +16,8 @@
         <ui:VisualElement name="burst" class="cs-slot__burst" picking-mode="Ignore" />
         <ui:VisualElement name="preview" class="cs-slot__preview" picking-mode="Ignore" />
         <ui:VisualElement class="cs-slot__join" picking-mode="Ignore">
-            <ui:VisualElement name="join-glyph" class="mm-glyph" picking-mode="Ignore" />
-            <ui:Label text="Rejoindre" class="mm-text cs-slot__join-label" picking-mode="Ignore" />
+            <ui:VisualElement name="join-glyph" class="ui-glyph" picking-mode="Ignore" />
+            <ui:Label text="Rejoindre" class="ui-text cs-slot__join-label" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement name="badge" class="cs-slot__badge" picking-mode="Ignore">
             <ui:Label name="badge-label" class="cs-slot__badge-label" picking-mode="Ignore" />

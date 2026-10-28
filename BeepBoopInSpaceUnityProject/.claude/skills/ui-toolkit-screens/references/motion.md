@@ -39,7 +39,7 @@ séquences, particules — ce que le USS ne sait pas enchaîner.
   retire pendant l'itération).
 - Un geste différé qui en remplace un autre : `DOVirtual.DelayedCall(delay, () => { KillTweens();
   ... })` plutôt que `KillTweens()` tout de suite (on couperait le geste en cours).
-- Ne pas déclarer `Update` ni `OnDestroy` dans un écran dérivé d'`AMainMenuScreen` : la base a les
+- Ne pas déclarer `OnEnable`, `OnDisable` ni `Update` dans un écran (base `AUIToolkitScreen`) : la base a les
   siens en `private`, Unity n'appellerait que celui de l'écran. Un délai : `DOVirtual.DelayedCall`.
 
 ## Vérifier une animation : la planche de film

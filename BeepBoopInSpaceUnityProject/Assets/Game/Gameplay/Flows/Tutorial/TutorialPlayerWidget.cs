@@ -13,7 +13,7 @@ namespace Game.Gameplay.Flows.Tutorial
     public class TutorialPlayerWidget
     {
         private const string k_ReadyClass = "tutorial-card--ready";
-        private const string k_BadgeDoneClass = "gs-badge--done";
+        private const string k_BadgeDoneClass = "ui-badge--done";
 
         private readonly VisualElement m_badge;
 

@@ -1,16 +1,16 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="../UI/MainMenu.uss" />
-    <ui:VisualElement name="level-selection-screen" class="mm-screen" picking-mode="Ignore">
-        <ui:VisualElement class="mm-background" picking-mode="Ignore" />
+    <ui:VisualElement name="level-selection-screen" class="ui-screen" picking-mode="Ignore">
+        <ui:VisualElement class="ui-background" picking-mode="Ignore" />
         <ui:ScrollView name="levels" mode="Vertical" horizontal-scroller-visibility="Hidden" class="level-selection__levels" />
-        <ui:VisualElement class="mm-title" picking-mode="Ignore">
-            <ui:VisualElement class="mm-title__fill" picking-mode="Ignore" />
-            <ui:VisualElement class="mm-title__border" picking-mode="Ignore" />
-            <ui:Label text="CHOIX DU NIVEAU" class="mm-title__label" picking-mode="Ignore" />
+        <ui:VisualElement class="ui-title" picking-mode="Ignore">
+            <ui:VisualElement class="ui-title__fill" picking-mode="Ignore" />
+            <ui:VisualElement class="ui-title__border" picking-mode="Ignore" />
+            <ui:Label text="CHOIX DU NIVEAU" class="ui-title__label" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:Button name="back-button" focusable="false" class="mm-legend mm-legend--back">
-            <ui:Label text="Retour" class="mm-text mm-legend__label" picking-mode="Ignore" />
-            <ui:VisualElement name="back-glyph" class="mm-glyph mm-legend__glyph--after" picking-mode="Ignore" />
+        <ui:Button name="back-button" focusable="false" class="ui-legend ui-legend--back">
+            <ui:Label text="Retour" class="ui-text ui-legend__label" picking-mode="Ignore" />
+            <ui:VisualElement name="back-glyph" class="ui-glyph ui-legend__glyph--after" picking-mode="Ignore" />
         </ui:Button>
     </ui:VisualElement>
 </ui:UXML>

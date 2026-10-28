@@ -2,13 +2,13 @@
     <!-- A player's card in the tutorial, cloned by TutorialPlayerWidget. Players with a mouse can also click it. -->
     <ui:Button name="player-card" focusable="false" class="tutorial-card">
         <ui:VisualElement name="icon" class="tutorial-card__icon" picking-mode="Ignore" />
-        <ui:VisualElement name="badge" class="gs-badge tutorial-card__badge" picking-mode="Ignore">
-            <ui:Label name="badge-label" text="J1" class="gs-badge__label" picking-mode="Ignore" />
+        <ui:VisualElement name="badge" class="ui-badge tutorial-card__badge" picking-mode="Ignore">
+            <ui:Label name="badge-label" text="J1" class="ui-badge__label" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement class="tutorial-card__status" picking-mode="Ignore">
-            <ui:VisualElement name="ready-glyph" class="gs-glyph tutorial-card__glyph" picking-mode="Ignore" />
-            <ui:Label text="Prêt ?" class="gs-text tutorial-card__status-label tutorial-card__status-label--waiting" picking-mode="Ignore" />
-            <ui:Label text="Prêt !" class="gs-text tutorial-card__status-label tutorial-card__status-label--ready" picking-mode="Ignore" />
+            <ui:VisualElement name="ready-glyph" class="ui-glyph tutorial-card__glyph" picking-mode="Ignore" />
+            <ui:Label text="Prêt ?" class="ui-text tutorial-card__status-label tutorial-card__status-label--waiting" picking-mode="Ignore" />
+            <ui:Label text="Prêt !" class="ui-text tutorial-card__status-label tutorial-card__status-label--ready" picking-mode="Ignore" />
         </ui:VisualElement>
     </ui:Button>
 </ui:UXML>

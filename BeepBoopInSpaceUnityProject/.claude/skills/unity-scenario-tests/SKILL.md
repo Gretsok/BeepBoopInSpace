@@ -62,7 +62,7 @@ attend la fin du PID affiché, puis la commande `results ...` que `--detach` a a
 | --- | --- |
 | Erreurs loguées pendant `playing` | Vrai bug de jeu : skill `unity-error-triage` sur le log du run |
 | Délai dépassé sur un écran de menu | Le menu a changé : nom d'un champ lu par réflexion (`m_trainingButton`, `m_widgets` de la sélection des personnages...), état renommé, navigation UI modifiée. Relire l'écran concerné |
-| `No UI navigation path from X to Y` | La croix n'amène pas le focus de X à Y : navigation directionnelle de `AMainMenuScreen` (élément le plus proche dans la direction), élément non focalisable ou désactivé, ou l'EventSystem ne sélectionne pas le panel |
+| `No UI navigation path from X to Y` | La croix n'amène pas le focus de X à Y : navigation directionnelle de `AUIToolkitScreen` (élément le plus proche dans la direction), élément non focalisable ou désactivé, ou l'EventSystem ne sélectionne pas le panel |
 | Délai dépassé dans la sélection des personnages | On rejoint seulement avec Y/A/Espace/Entrée (action créée par l'écran) ; les boutons d'un joueur ne comptent qu'une fois tous relâchés après qu'il a rejoint ; la croix d'une manette PS virtuelle ne bouge pas le curseur (manettes 1 et 3 pour la grille) ; le hub s'ouvre 1,2 s après le dernier « prêt » |
 | Délai dépassé sur `the game to load` | Chargement Addressables bloqué : `log-errors` sur le log, souvent une erreur au `LoadState` |
 | Échec qui disparaît au run suivant | Bug dépendant du hasard (positions, météorites) : relancer le même filtre 2-3 fois avant de conclure, et le signaler comme bug intermittent |

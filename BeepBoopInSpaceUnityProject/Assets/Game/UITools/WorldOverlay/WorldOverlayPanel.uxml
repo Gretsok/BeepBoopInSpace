@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="/Assets/Game/UITools/Screens/Screens.uss" />
     <!-- Texts placed over points of the 3D world by WorldOverlayPanel. -->
-    <ui:VisualElement name="world-overlay" class="gs-screen" picking-mode="Ignore" />
+    <ui:VisualElement name="world-overlay" class="ui-screen" picking-mode="Ignore" />
 </ui:UXML>

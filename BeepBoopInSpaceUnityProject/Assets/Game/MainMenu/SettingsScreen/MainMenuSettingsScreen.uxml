@@ -1,35 +1,27 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Template name="VolumeRow" src="../../UITools/Screens/VolumeRow.uxml" />
     <Style src="../UI/MainMenu.uss" />
-    <ui:VisualElement name="settings-screen" class="mm-screen" picking-mode="Ignore">
-        <ui:VisualElement class="mm-background" picking-mode="Ignore" />
-        <ui:VisualElement class="mm-title" picking-mode="Ignore">
-            <ui:VisualElement class="mm-title__fill" picking-mode="Ignore" />
-            <ui:VisualElement class="mm-title__border" picking-mode="Ignore" />
-            <ui:Label text="PARAMÈTRES" class="mm-title__label" picking-mode="Ignore" />
+    <ui:VisualElement name="settings-screen" class="ui-screen" picking-mode="Ignore">
+        <ui:VisualElement class="ui-background" picking-mode="Ignore" />
+        <ui:VisualElement class="ui-title" picking-mode="Ignore">
+            <ui:VisualElement class="ui-title__fill" picking-mode="Ignore" />
+            <ui:VisualElement class="ui-title__border" picking-mode="Ignore" />
+            <ui:Label text="PARAMÈTRES" class="ui-title__label" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement class="settings__volumes" picking-mode="Ignore">
-            <ui:VisualElement name="master-volume" class="settings-row">
-                <ui:VisualElement class="mm-filigree" picking-mode="Ignore" />
-                <ui:Label text="Volume général" class="mm-text settings-row__label" />
-                <ui:SliderInt low-value="0" high-value="100" page-size="5" fill="true" class="settings-row__slider" />
-                <ui:Label class="mm-text settings-row__value" />
-            </ui:VisualElement>
-            <ui:VisualElement name="music-volume" class="settings-row">
-                <ui:VisualElement class="mm-filigree" picking-mode="Ignore" />
-                <ui:Label text="Musique" class="mm-text settings-row__label" />
-                <ui:SliderInt low-value="0" high-value="100" page-size="5" fill="true" class="settings-row__slider" />
-                <ui:Label class="mm-text settings-row__value" />
-            </ui:VisualElement>
-            <ui:VisualElement name="sfx-volume" class="settings-row">
-                <ui:VisualElement class="mm-filigree" picking-mode="Ignore" />
-                <ui:Label text="Effets sonores" class="mm-text settings-row__label" />
-                <ui:SliderInt low-value="0" high-value="100" page-size="5" fill="true" class="settings-row__slider" />
-                <ui:Label class="mm-text settings-row__value" />
-            </ui:VisualElement>
+            <ui:Instance template="VolumeRow" name="master-volume">
+                <ui:AttributeOverrides element-name="label" text="Volume général" />
+            </ui:Instance>
+            <ui:Instance template="VolumeRow" name="music-volume">
+                <ui:AttributeOverrides element-name="label" text="Musique" />
+            </ui:Instance>
+            <ui:Instance template="VolumeRow" name="sfx-volume">
+                <ui:AttributeOverrides element-name="label" text="Effets sonores" />
+            </ui:Instance>
         </ui:VisualElement>
-        <ui:Button name="back-button" focusable="false" class="mm-legend mm-legend--back">
-            <ui:Label text="Retour" class="mm-text mm-legend__label" picking-mode="Ignore" />
-            <ui:VisualElement name="back-glyph" class="mm-glyph mm-legend__glyph--after" picking-mode="Ignore" />
+        <ui:Button name="back-button" focusable="false" class="ui-legend ui-legend--back">
+            <ui:Label text="Retour" class="ui-text ui-legend__label" picking-mode="Ignore" />
+            <ui:VisualElement name="back-glyph" class="ui-glyph ui-legend__glyph--after" picking-mode="Ignore" />
         </ui:Button>
     </ui:VisualElement>
 </ui:UXML>

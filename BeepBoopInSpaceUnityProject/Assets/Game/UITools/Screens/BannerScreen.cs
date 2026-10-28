@@ -5,13 +5,13 @@ using UnityEngine.UIElements;
 namespace Game.UITools.Screens
 {
     /// <summary>
-    /// An announcement over the game (new round, new controls, end of the game): its banner (class gs-banner) unrolls
+    /// An announcement over the game (new round, new controls, end of the game): its banner (class banner) unrolls
     /// when the flow state shows it, then its text pops in.
     /// </summary>
     public class BannerScreen : AUIToolkitScreen
     {
-        private const string k_BannerClass = "gs-banner";
-        private const string k_LabelClass = "gs-banner__label";
+        private const string k_BannerClass = "banner";
+        private const string k_LabelClass = "banner__label";
 
         protected override void HandleShown()
         {

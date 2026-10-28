@@ -24,7 +24,7 @@ from pathlib import Path
 
 PROJECT = Path(__file__).resolve().parents[4]
 INDEX_FILE = PROJECT / "Library" / "claude-guid-index.json"
-DEFAULT_PANEL_SETTINGS = "Assets/Game/MainMenu/UI/MainMenuPanelSettings.asset"
+DEFAULT_PANEL_SETTINGS = "Assets/Game/UITools/Screens/UIPanelSettings.asset"
 MASK = 0x7FFFFFFFFFFFFFFF
 
 if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":

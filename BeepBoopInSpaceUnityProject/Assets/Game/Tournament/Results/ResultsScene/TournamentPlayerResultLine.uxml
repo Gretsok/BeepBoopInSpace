@@ -1,11 +1,11 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <!-- A player's line in the tournament results, cloned by TournamentPlayerResultLine: robot, games won, a cell per game. -->
-    <ui:VisualElement name="player-line" class="gs-tile tournament-line" picking-mode="Ignore">
+    <ui:VisualElement name="player-line" class="ui-panel tournament-line" picking-mode="Ignore">
         <ui:VisualElement name="icon" class="tournament-line__icon" picking-mode="Ignore" />
-        <ui:VisualElement name="badge" class="gs-badge gs-badge--done tournament-line__badge" picking-mode="Ignore">
-            <ui:Label name="badge-label" text="J1" class="gs-badge__label" picking-mode="Ignore" />
+        <ui:VisualElement name="badge" class="ui-badge ui-badge--done tournament-line__badge" picking-mode="Ignore">
+            <ui:Label name="badge-label" text="J1" class="ui-badge__label" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:Label name="score" text="0" class="gs-text tournament-line__score" picking-mode="Ignore" />
+        <ui:Label name="score" text="0" class="ui-text tournament-line__score" picking-mode="Ignore" />
         <ui:VisualElement name="games" class="tournament-line__games" picking-mode="Ignore" />
     </ui:VisualElement>
 </ui:UXML>

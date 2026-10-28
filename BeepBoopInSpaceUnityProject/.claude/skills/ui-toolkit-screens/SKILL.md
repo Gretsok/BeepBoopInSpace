@@ -12,11 +12,11 @@ et le vérifier en image, sans ouvrir l'éditeur.
 
 | Quoi | Où |
 | --- | --- |
-| Base des écrans | `Assets/Game/MainMenu/AMainMenuScreen.cs` : `Activate` active le GameObject (l'UIDocument reclone l'UXML), puis `HandleActivation` lie les éléments ; `BindButton(nom, action, son)`, `Query<T>(nom)`, `DefaultFocus`, `FocusSilently`, `HandleCancel`, `AddIndication` / `RefreshIndications` / `MainPlayer` (boutons de manette du joueur principal). Gère seul : navigation directionnelle, focus au survol de la souris, clic sur le fond sans perte du focus, son de focus, sélection du panel dans l'EventSystem, bouton de l'élément `back-glyph` (champ `m_backIndicationAction` du prefab), alignement des `.mm-filigree` sur le fond |
-| Styles | `Assets/Game/MainMenu/UI/MainMenu.uss` : palette `--mm-*` et composants de la charte (`mm-background`, `mm-title`, `mm-legend`, `mm-text`, `mm-glyph`, `mm-filigree`), boutons `mm-button` (`--big`), tuiles `mm-tile`, placements `mm-corner--*`, `mm-centered-row`, puis une section par écran (`cs-` : sélection des personnages) |
-| Panel | `UI/MainMenuPanelSettings.asset` (1920×1080, suit la largeur, `sortingOrder` 0), thème `UI/MainMenuTheme.tss` = thème par défaut de Unity (pour ScrollView et Slider) |
+| Base des écrans | `Assets/Game/UITools/Screens/AUIToolkitScreen.cs`, pour tous les écrans : activer le GameObject reclone l'UXML et appelle `HandleShown`, le désactiver détruit l'arbre (`HandleHidden`). `BindButton(nom, action, son)`, `Query<T>(nom)`, `DefaultFocus`, `FocusSilently`, `ReleaseFocus`, `HandleCancel`, `AddIndication` (joueur principal, ou un joueur donné) / `RefreshIndications` / `MainPlayer`. Gère seul : navigation directionnelle, focus au survol de la souris, clic sur le fond sans perte du focus, son de focus (`m_focusAudioPlayer`), sélection du panel dans l'EventSystem, bouton de l'élément `back-glyph` (champ `m_backIndicationAction` du prefab), alignement des `.ui-filigree` sur le fond. Hérite de `Panel` (`UIManager.GetPanel<T>`). Menu principal : `MainMenu/AMainMenuScreen.cs` en hérite ; son état l'active (`Activate` / `Deactivate`), l'écran lie ses éléments dans `HandleActivation` |
+| Styles | `UITools/Screens/Common.uss` : palette `--ui-*` et composants de la charte (`ui-screen`, `ui-background`, `ui-shade`, `ui-text`, `ui-heading`, `ui-glyph`, `ui-filigree`, `ui-title`, `ui-legend`, `ui-button` (`--big`, `--with-glyph`), `ui-tile`, `ui-panel`, `ui-badge`, `ui-volume-row`, `ui-centered-row`, `ui-corner--*`). Importée en tête de `MainMenu/UI/MainMenu.uss` (une section par écran du menu, `cs-` : sélection des personnages) et de `UITools/Screens/Screens.uss` (une section par écran hors du menu) |
+| Panel | `UITools/Screens/UIPanelSettings.asset`, un seul pour tous les écrans (1920×1080, suit la largeur), thème `UITheme.tss` = thème par défaut de Unity (pour ScrollView et Slider). Un panel, donc un focus ; l'ordre d'affichage est celui des documents (`m_SortingOrder` de l'UIDocument) |
 | Écrans | `<Dossier>/<Écran>.uxml` à côté de `<Écran>.cs` ; prefab `<Écran>.prefab` (racine : script + UIDocument, enfants : lecteurs audio) placé sous son état dans `MainMenu.unity`, inactif |
-| Gabarits | `LevelSelection/LevelWidget.uxml` (cloné par `LevelWidget`), `CharacterSelection/PlayerSlot.uxml` (`<ui:Instance>`) ; éléments construits en code : `CharacterRoster` (grille des robots) |
+| Gabarits | `LevelSelection/LevelWidget.uxml` (cloné par `LevelWidget`), `CharacterSelection/PlayerSlot.uxml` (`<ui:Instance>`), `UITools/Screens/VolumeRow.uxml` (ligne de volume des paramètres et de la pause : `<ui:Instance>` + `<ui:AttributeOverrides element-name="label" text="…" />`, liée par `VolumeRow`) ; éléments construits en code : `CharacterRoster` (grille des robots) |
 | Indications d'input | `Global/InputIndicationsManagement/InputIndicationView.cs` (sprite du bouton selon le périphérique du joueur ; `ShowsLikelyDeviceWithoutPlayer` pour une légende affichée avant que quiconque ait rejoint) |
 | Charte du menu | [references/main-menu-style.md](references/main-menu-style.md) + planche [main-menu-style.png](references/main-menu-style.png) : composition, couleurs, polices, composants et états, **tirés seulement** de `RawAssets/UI/Menus/UI_CharacterSelection.psd`, avec ce qu'elle ne définit pas |
 | Motion design | [references/motion.md](references/motion.md) : transitions USS ou tweens (`UITools/UIToolkitTweens.cs`), et planche de film pour vérifier une animation |
@@ -26,20 +26,17 @@ et le vérifier en image, sans ouvrir l'éditeur.
 
 ### Écrans hors du menu principal
 
-Partie, pause, chargement et tournoi sont aussi en UI Toolkit, sur leur propre base et leurs propres
-styles (même charte, préfixe `gs-`) :
+Partie, pause, chargement et tournoi : même base, mêmes composants, styles de `Screens.uss`.
 
 | Quoi | Où |
 | --- | --- |
-| Base | `Assets/Game/UITools/Screens/AUIToolkitScreen.cs` (hérite de `Panel`, donc trouvée par `UIManager.GetPanel<T>`) : même mécanique que `AMainMenuScreen` (focus partagé, navigation, survol, sons, `HandleCancel`, `BindButton`, `AddIndication` pour le joueur principal ou un joueur donné), mais pilotée par l'activation du GameObject, comme le font les états du flow : `HandleShown` / `HandleHidden` / `HandleUpdate`, jamais `OnEnable` / `OnDisable` / `Update`. `BannerScreen` : annonce qui se déroule à l'apparition |
-| Styles et panel | `UITools/Screens/Screens.uss` (palette `--gs-*`, `gs-title`, `gs-legend`, `gs-button` (`--with-glyph`), `gs-tile`, `gs-badge`, `gs-banner`, `gs-shade`, puis une section par écran), `ScreensPanelSettings.asset` (`sortingOrder` 10, au-dessus du menu), `ScreensTheme.tss`. Ordre des documents (`m_SortingOrder` de l'UIDocument) : timer 0, overlay 5, annonces 10, tutoriel et résultats 20, pause 50, chargement 100 |
-| Écrans | Timer (`Gameplay/Timer/TimerPanel`), annonces (`NewRoundPanel`, `ConfigurationShuffledBanner`, `FinishBanner`, `GameStartBanner` caché comme l'ancien), tutoriel (`TutorialPanel` + gabarit `TutorialPlayerCard.uxml`), résultats (`ResultsPanel`), « +1 » au-dessus des cases (`UITools/WorldOverlay/WorldOverlayPanel.PlayFloatingText`), pause (`PauseMenuPanel`, avec les volumes), chargement (`LoadingScreen/LoadingScreenPanel`), résultats du tournoi (`TournamentResultsCanvas` + gabarit `TournamentPlayerResultLine.uxml`). Les prefabs gardent leur nom `*Canvas` |
+| Écrans | Timer (`Gameplay/Timer/TimerPanel`), annonces (`BannerScreen` : `NewRoundPanel`, `ConfigurationShuffledBanner`, `FinishBanner`, `GameStartBanner` caché comme l'ancien), tutoriel (`TutorialPanel` + gabarit `TutorialPlayerCard.uxml`), résultats (`ResultsPanel`), « +1 » au-dessus des cases (`UITools/WorldOverlay/WorldOverlayPanel.PlayFloatingText`), pause (`PauseMenuPanel`, avec les volumes), chargement (`LoadingScreen/LoadingScreenPanel`), résultats du tournoi (`TournamentResultsCanvas` + gabarit `TournamentPlayerResultLine.uxml`). Les prefabs gardent leur nom `*Canvas` |
+| Ordre des documents | menu 0, timer 0, overlay 5, annonces 10, tutoriel et résultats 20, pause 50, chargement 100 |
 | Test | `GameScreens_WorkWithGamepadsAndKeyboard` (captures 20 à 29) et la capture 30 du test du tournoi |
 
 Restent en uGUI, à garder : les canvas **World Space** dans la scène 3D (noms des robots à
 l'introduction, `IntroSystem` ; podium des résultats, `ResultsCharacterPositionner` ;
-`MeteoriteSystem`). `AMainMenuScreen` recopie encore la mécanique de `AUIToolkitScreen` : à faire
-hériter d'elle quand le menu sera stable.
+`MeteoriteSystem`).
 
 ## Modifier un écran
 
@@ -58,16 +55,16 @@ Lire l'UXML, le script et la section du USS ensemble. Règles :
 - **Sélection = `:focus`** dans le USS ; le survol focalise, ne pas styler `:hover` à part. Effet
   « pop » : `scale` en transition (0,3 s `ease-out-back` en entrant, 0,1 s en sortant).
 - Conteneurs et décor en `picking-mode="Ignore"`. Mise en page en px de 1920×1080 : positions
-  absolues ou flex ; centrer avec `mm-centered-row` ou `translate: 0 -50%`.
+  absolues ou flex ; centrer avec `ui-centered-row` ou `translate: 0 -50%`.
 - **Contre le thème par défaut** (contrôles Unity), sélecteurs d'au moins 3 classes :
-  `.mm-screen .settings-row .settings-row__slider .unity-base-slider__dragger`.
+  `.ui-screen .ui-volume-row .ui-volume-row__slider .unity-base-slider__dragger`.
 - **Textes en français**, majuscule initiale (Boogaloo a minuscules et accents) ; titres en
   capitales accentuées (« PARAMÈTRES ») : BeepBoop les a, son I majuscule est pointé (« iDÉATION »).
   Texte clair seulement sur du sombre (cartouche, pastille, tuile, ou bas du fond, sous y ≈ 900) :
   sur le haut du fond, clair, il ne se lit pas.
 - **Sons** : `m_focusAudioPlayer` joue à chaque focus donné par le joueur ; un focus donné par le
   code passe par `FocusSilently` (sinon son parasite, voire « No AudioManager found » à l'ouverture).
-- **Retour** : légende « Retour (B) » en bas à gauche (`mm-legend--back`, `Button` non focalisable
+- **Retour** : légende « Retour (B) » en bas à gauche (`ui-legend--back`, `Button` non focalisable
   nommé `back-button` pour la souris, avec un `back-glyph`), et surcharger `HandleCancel` (son retour
   + même action). Ne pas écouter en plus l'action Cancel via `NavigationAuthorityManager` : deux
   `RequestBack`, et la FlowMachine ne dédoublonne pas.
@@ -75,13 +72,13 @@ Lire l'UXML, le script et la section du USS ensemble. Règles :
   désactivé. Sans focus, Annuler n'arrive pas à l'écran (`PanelEventHandler` vise la racine du panel) :
   un écran sans bouton à atteindre garde le focus sur sa racine (`focusable`, `DefaultFocus`), comme
   la sélection des personnages et les crédits.
-- **Police** : `.mm-screen .unity-text-element` impose Boogaloo à tous les textes ; une autre police
-  (ou taille, couleur, marge sur un `mm-text`, qui remet ses marges à 0) demande un sélecteur d'au
-  moins deux classes placé après dans le USS (`.mm-screen .mm-title__label`). Boogaloo encre ~5 px plus haut que le milieu de sa ligne
+- **Police** : `.ui-screen .unity-text-element` impose Boogaloo à tous les textes ; une autre police
+  (ou taille, couleur, marge sur un `ui-text`, qui remet ses marges à 0) demande un sélecteur d'au
+  moins deux classes placé après dans le USS (`.ui-screen .ui-title__label`). Boogaloo encre ~5 px plus haut que le milieu de sa ligne
   (~12 % de sa taille) : `translate: 0 -5px` sur un texte à côté d'un bouton de manette, et dans un
   bouton plus de `padding-top` que de `padding-bottom` (9 px pour 35 px).
-- **Sombre qui laisse voir le fond** (tuile, panneau) : fond `--mm-navy`, `border-radius` +
-  `overflow: hidden`, et un enfant `mm-filigree` en premier ; un texte au-dessus est un `Label`
+- **Sombre qui laisse voir le fond** (tuile, panneau) : fond `--ui-navy`, `border-radius` +
+  `overflow: hidden`, et un enfant `ui-filigree` en premier ; un texte au-dessus est un `Label`
   enfant (le texte propre d'un `Button` est dessiné sous ses enfants).
 - **Sprites des maquettes** (`RawAssets/UI/Menus/<écran>`) : en double taille, souvent blancs à teinter
   (`-unity-background-image-tint-color`), et parfois sans Sprite (mode Multiple vide) : les prendre
@@ -111,13 +108,13 @@ maquette propre, suivre la charte ([references/main-menu-style.md](references/ma
 et signaler ce qu'elle ne définit pas (états des boutons sélectionnables, sliders, listes...) au
 lieu de l'inventer. Les autres écrans du menu en ont tiré des choix d'intégration (bouton
 sélectionné, tuiles, curseurs, défilement) : les reprendre (section 9 de la charte) plutôt qu'en
-créer de nouveaux. Une classe `cs-*` de `MainMenu.uss` est à sortir vers la partie commune (`mm-`)
-avant d'être réutilisée par un autre écran.
+créer de nouveaux. Une classe `cs-*` de `MainMenu.uss` est à sortir vers `Common.uss` (`ui-`) avant d'être
+réutilisée par un autre écran ; une classe d'un écran hors du menu, de `Screens.uss`, de même.
 
 ## Ajouter un écran au menu principal
 
 1. UXML (copier un écran simple comme `Credits/CreditsScreen.uxml` : `<Style src="../UI/MainMenu.uss" />`,
-   racine `class="mm-screen"`), puis `unity_yaml.py meta` dessus (skill `unity-yaml`).
+   racine `class="ui-screen"`), puis `unity_yaml.py meta` dessus (skill `unity-yaml`).
 2. Script `XxxScreen : AMainMenuScreen` et état `XxxState : AMainMenuFlowState` sur le modèle des
    Crédits ; champ, `Initialize` et `SwitchToXxxScreen` dans `MainMenuOrchestrator`.
 3. Prefab : copier `Credits/CreditsScreen.prefab` (+ `meta` pour un nouveau guid), y remplacer le
@@ -151,23 +148,23 @@ retirer ses composants uGUI et ajouter UIDocument + écran à la main (skill `un
 ## Pièges vécus
 
 - **Croix sans effet** : l'EventSystem n'envoie la navigation qu'à son objet sélectionné, qui doit
-  être le GameObject du panel, créé une frame après le premier écran. `AMainMenuScreen.Update` le
+  être le GameObject du panel, créé une frame après le premier écran. `AUIToolkitScreen.Update` le
   resélectionne ; une UI Toolkit hors de cette base doit faire pareil.
 - **Boutons dans les coins inatteignables** : la navigation native de UI Toolkit ne regarde que droit
-  devant ; `AMainMenuScreen.HandleNavigationMove` prend l'élément le plus proche dans la direction,
+  devant ; `AUIToolkitScreen.HandleNavigationMove` prend l'élément le plus proche dans la direction,
   diagonale comprise (comme uGUI).
-- **Slider** : Unity attend un Submit avant que gauche/droite changent la valeur ; `BindVolume`
+- **Slider** : Unity attend un Submit avant que gauche/droite changent la valeur ; `VolumeRow`
   intercepte `NavigationMoveEvent` en TrickleDown (`StopPropagation` + `IgnoreEvent`).
 - **Clic sur le fond** : UI Toolkit retire le focus ; `HandlePointerDown` l'empêche.
 - **Focus programmatique** : les événements de focus peuvent être différés ; reconnaître le focus
   silencieux par l'élément visé (`FocusSilently`), pas par un booléen posé autour de `Focus()`.
 - **`ScrollView.ScrollTo`** ignore les marges et l'agrandissement au focus : `ScrollIntoView`.
-- **Ordre d'affichage** entre panels : l'écran de chargement (panel des écrans, `sortingOrder` 10)
-  passe au-dessus du menu (0) d'après la doc, **pas vérifié à l'écran** (une capture ne rend qu'un panel).
+- **Ordre d'affichage** : un seul panel, les documents s'empilent par `m_SortingOrder` (l'écran de
+  chargement, 100, passe au-dessus du menu et de la partie).
 - **Données avant l'arbre** : un état du flow remplit son écran dans `HandleEnter`, avant que
   `GameObjectActivatorStateComponent` ne l'active (l'arbre n'existe pas encore) : l'écran garde les
   données et les applique dans `HandleShown` (`TutorialPanel`, `NewRoundPanel`).
-- **Un panel, un focus** : les écrans d'un même PanelSettings partagent le focus ; `FocusedElement`
+- **Un panel, un focus** : tous les écrans partagent le focus ; `FocusedElement`
   ne rend que celui de l'écran, et `DefaultFocus` n'est rendu que si personne n'a le focus.
 - **Un bouton qui apparaît** (classe qui retire `display: none`) ne prend pas le focus dans la même
   frame (`canGrabFocus` lit le style calculé) : poser `DefaultFocus`, la base le donne à la frame suivante.
@@ -176,9 +173,10 @@ retirer ses composants uGUI et ajouter UIDocument + écran à la main (skill `un
   la clique pas (`pickingMode`) : les manettes passent par leur action Ready, pas par le focus.
 - **Batchmode** : écran virtuel 640×480 (4:3) ; les captures rendent donc le panel dans une texture
   1920×1080 pendant tout le test, et attendent la fin des transitions de caméra (Cinemachine).
-- **`Update` / `OnDestroy` dans un écran dérivé** : `AMainMenuScreen` a les siens en `private` ;
-  en déclarer dans l'écran masque ceux de la base (Unity n'appelle que le plus dérivé) : plus de
-  focus rendu, plus de `Deactivate` à la destruction. Délais : `DOVirtual.DelayedCall`.
+- **`OnEnable` / `OnDisable` / `Update` dans un écran dérivé** : `AUIToolkitScreen` a les siens en
+  `private` ; en déclarer dans l'écran masque ceux de la base (Unity n'appelle que le plus dérivé) :
+  plus d'arbre lié, plus de focus rendu. Passer par `HandleShown` / `HandleHidden` / `HandleUpdate`
+  (`HandleActivation` / `HandleDeactivation` dans le menu). Délais : `DOVirtual.DelayedCall`.
 - **Tween et transition sur la même propriété** : le style inline du tween écrase le USS ; voir
   [references/motion.md](references/motion.md).
 - **Outils** : un heredoc Bash contenant une apostrophe casse parfois la commande (écrire un script

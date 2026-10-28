@@ -1,38 +1,38 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="../UI/MainMenu.uss" />
-    <ui:VisualElement name="credits-screen" class="mm-screen" picking-mode="Ignore">
-        <ui:VisualElement class="mm-background" picking-mode="Ignore" />
-        <ui:VisualElement class="mm-title" picking-mode="Ignore">
-            <ui:VisualElement class="mm-title__fill" picking-mode="Ignore" />
-            <ui:VisualElement class="mm-title__border" picking-mode="Ignore" />
-            <ui:Label text="CRÉDITS" class="mm-title__label" picking-mode="Ignore" />
+    <ui:VisualElement name="credits-screen" class="ui-screen" picking-mode="Ignore">
+        <ui:VisualElement class="ui-background" picking-mode="Ignore" />
+        <ui:VisualElement class="ui-title" picking-mode="Ignore">
+            <ui:VisualElement class="ui-title__fill" picking-mode="Ignore" />
+            <ui:VisualElement class="ui-title__border" picking-mode="Ignore" />
+            <ui:Label text="CRÉDITS" class="ui-title__label" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement class="credits__panel" picking-mode="Ignore">
-            <ui:VisualElement class="mm-filigree" picking-mode="Ignore" />
+            <ui:VisualElement class="ui-filigree" picking-mode="Ignore" />
             <ui:VisualElement class="credits__column credits__column--left" picking-mode="Ignore">
-                <ui:Label text="ART" class="mm-text credits__section" picking-mode="Ignore" />
-                <ui:Label text="Alexandre Gaule" class="mm-text credits__name" picking-mode="Ignore" />
-                <ui:Label text="Chloé Baveye" class="mm-text credits__name" picking-mode="Ignore" />
-                <ui:Label text="Victoire Cellier" class="mm-text credits__name" picking-mode="Ignore" />
-                <ui:Label text="Fanny Serré" class="mm-text credits__name" picking-mode="Ignore" />
+                <ui:Label text="ART" class="ui-text credits__section" picking-mode="Ignore" />
+                <ui:Label text="Alexandre Gaule" class="ui-text credits__name" picking-mode="Ignore" />
+                <ui:Label text="Chloé Baveye" class="ui-text credits__name" picking-mode="Ignore" />
+                <ui:Label text="Victoire Cellier" class="ui-text credits__name" picking-mode="Ignore" />
+                <ui:Label text="Fanny Serré" class="ui-text credits__name" picking-mode="Ignore" />
             </ui:VisualElement>
             <ui:VisualElement class="credits__column credits__column--right" picking-mode="Ignore">
-                <ui:Label text="PROGRAMMATION" class="mm-text credits__section" picking-mode="Ignore" />
-                <ui:Label text="Fergal Mechin" class="mm-text credits__name" picking-mode="Ignore" />
-                <ui:Label text="IDÉATION" class="mm-text credits__section credits__section--spaced" picking-mode="Ignore" />
-                <ui:Label text="Jonas Ten Cate" class="mm-text credits__name" picking-mode="Ignore" />
+                <ui:Label text="PROGRAMMATION" class="ui-text credits__section" picking-mode="Ignore" />
+                <ui:Label text="Fergal Mechin" class="ui-text credits__name" picking-mode="Ignore" />
+                <ui:Label text="IDÉATION" class="ui-text credits__section credits__section--spaced" picking-mode="Ignore" />
+                <ui:Label text="Jonas Ten Cate" class="ui-text credits__name" picking-mode="Ignore" />
             </ui:VisualElement>
             <ui:VisualElement class="credits__extra" picking-mode="Ignore">
-                <ui:Label text="AIDES SUPPLÉMENTAIRES" class="mm-text credits__section" picking-mode="Ignore" />
-                <ui:Label text="Jérémy Hoarau" class="mm-text credits__name" picking-mode="Ignore" />
-                <ui:Label text="Pierre Vue" class="mm-text credits__name" picking-mode="Ignore" />
+                <ui:Label text="AIDES SUPPLÉMENTAIRES" class="ui-text credits__section" picking-mode="Ignore" />
+                <ui:Label text="Jérémy Hoarau" class="ui-text credits__name" picking-mode="Ignore" />
+                <ui:Label text="Pierre Vue" class="ui-text credits__name" picking-mode="Ignore" />
             </ui:VisualElement>
             <ui:VisualElement name="logo" class="credits__logo" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:Label text="Police : Magnetar sur dafont" class="mm-text credits__font" picking-mode="Ignore" />
-        <ui:Button name="back-button" focusable="false" class="mm-legend mm-legend--back">
-            <ui:Label text="Retour" class="mm-text mm-legend__label" picking-mode="Ignore" />
-            <ui:VisualElement name="back-glyph" class="mm-glyph mm-legend__glyph--after" picking-mode="Ignore" />
+        <ui:Label text="Police : Magnetar sur dafont" class="ui-text credits__font" picking-mode="Ignore" />
+        <ui:Button name="back-button" focusable="false" class="ui-legend ui-legend--back">
+            <ui:Label text="Retour" class="ui-text ui-legend__label" picking-mode="Ignore" />
+            <ui:VisualElement name="back-glyph" class="ui-glyph ui-legend__glyph--after" picking-mode="Ignore" />
         </ui:Button>
     </ui:VisualElement>
 </ui:UXML>
