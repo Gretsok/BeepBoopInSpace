@@ -61,7 +61,8 @@ Lire l'UXML, le script et la section du USS ensemble. Règles :
 - **Textes en français**, majuscule initiale (Boogaloo a minuscules et accents) ; titres en
   capitales accentuées (« PARAMÈTRES ») : BeepBoop les a, son I majuscule est pointé (« iDÉATION »).
   Texte clair seulement sur du sombre (cartouche, pastille, tuile, ou bas du fond, sous y ≈ 900) :
-  sur le haut du fond, clair, il ne se lit pas.
+  sur le haut du fond, clair, il ne se lit pas. BeepBoop est large : une ligne de 36 caractères en
+  capitales tient dans 1920 px à 48 px (annonces), pas à 60 px ; regarder la capture.
 - **Sons** : `m_focusAudioPlayer` joue à chaque focus donné par le joueur ; un focus donné par le
   code passe par `FocusSilently` (sinon son parasite, voire « No AudioManager found » à l'ouverture).
 - **Retour** : légende « Retour (B) » en bas à gauche (`ui-legend--back`, `Button` non focalisable
@@ -124,6 +125,23 @@ réutilisée par un autre écran ; une classe d'un écran hors du menu, de `Scre
    main, recopier les documents d'une instance existante (`overrides`, `tree` montrent lesquels) avec
    de nouveaux fileID — non encore fait dans ce projet.
 5. Étendre le test des menus (`Select` / `Submit` / `WaitUntil` / `CaptureScreen`).
+
+## Ajouter un écran hors du menu (partie, tournoi)
+
+1. UXML à côté du script : `<Style src="/Assets/Game/UITools/Screens/Screens.uss" />`, racine
+   `class="ui-screen"` en `picking-mode="Ignore"` ; ses styles dans une section de `Screens.uss`,
+   avec les composants de `Common.uss`. `unity_yaml.py meta` sur le nouveau fichier.
+2. Script `XxxPanel : AUIToolkitScreen` (une annonce : `BannerScreen`, ou en hériter). Les données
+   que l'état donne avant l'activation sont gardées et appliquées dans `HandleShown`.
+3. Prefab : un GameObject avec l'écran et un UIDocument (`UIPanelSettings`, `sourceAsset` = l'UXML,
+   `m_SortingOrder` selon l'ordre de la section « Écrans hors du menu principal »). Le plus simple :
+   copier un prefab d'annonce (`FinishCanvas.prefab` + `meta`), puis `set-field` et `add-component`
+   (skill `unity-yaml`).
+4. Scène de partie (`GM_BaseGame.unity`, sous `UIManager`, inactif) : l'état l'active avec
+   `GameObjectActivatorStateComponent` ou `PanelsActivatorStateComponent` ; l'ajouter à
+   `m_registeredPanels` de `UIManager` si le code le cherche par `GetPanel<T>`. Comme pour le menu,
+   le plus sûr est de demander à l'utilisateur de placer l'instance dans l'éditeur.
+5. Une capture dans `GameScreens_WorkWithGamepadsAndKeyboard` (skill `unity-scenario-tests`).
 
 ## Migrer un écran uGUI
 

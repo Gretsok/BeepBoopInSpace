@@ -87,4 +87,8 @@ concerné. Une erreur aléatoire (dépend des positions) peut demander 2 ou 3 ru
 - `Destroying duplicate GameAnalytics object` au retour au menu : le `GlobalContext` de la scène
   est détruit au profit de celui déjà persistant.
 - `There are no audio listeners in the scene` pendant les chargements de scène.
+- `DOTWEEN ► Target or field is missing/null ... RectTransform/Transform has been destroyed` (avertissement,
+  une dizaine par partie) au déchargement d'une partie : tweens `DOScale` des canvas World Space
+  (`IntroductionManager`, `ResultsCharacterPositionner`, `MeteoriteSystem`) sans `SetLink`, encore en vie
+  quand la scène part. Présent depuis au moins le 2026-10-27 ; à corriger un jour avec `SetLink(gameObject)`.
 - `fallback shader 'VertexLit' not found`, `DependencyGraph file is either corrupted or from a previous version` (après un changement de version).

@@ -44,6 +44,18 @@ python $A version
 - Input System en batchmode : clavier et souris ignorés tant que `InputSystem.settings.backgroundBehavior`
   n'est pas `IgnoreFocus` (et, dans l'éditeur, `editorInputBehaviorInPlayMode` à
   `AllDeviceInputAlwaysGoesToGameView`). `MouseState.WithButton` modifie la structure appelée.
+- `UIDocument` a `[DefaultExecutionOrder(-100)]` : son `OnEnable` (qui reclone l'arbre) passe avant
+  celui des scripts du même GameObject, qui y trouvent donc l'arbre (`AUIToolkitScreen`). Un
+  UIDocument enfant du GameObject d'un autre UIDocument s'attache à l'arbre du parent (`SetupFromHierarchy`).
+- `UIDocument.sortingOrder` ordonne les documents d'un même PanelSettings (le plus grand devant).
+- USS : `@import url("/Assets/...");` en tête de fichier marche (chemin du projet) ; pas de
+  `text-transform` (aucun `IStyle.textTransform`) : capitales écrites dans l'UXML ou `ToUpperInvariant`.
+- UXML : `<ui:Template src="../chemin.uxml">` relatif, et `<ui:AttributeOverrides element-name="label"
+  text="..." />` dans un `<ui:Instance>` pour changer un attribut d'un élément du gabarit.
+- `RuntimePanelUtils.CameraTransformWorldToPanel(panel, position, camera)` : un point du monde en
+  coordonnées du panel (le « +1 » au-dessus d'une case).
+- Input System, clavier : seule Entrée a l'usage `Submit` (Espace ne valide pas l'UI) ; Échap a
+  l'usage `Cancel`.
 - Les panels UI Toolkit et les canvas uGUI « Screen Space - Overlay » sont triés ensemble par
   ordre de tri (`PanelSettings.sortingOrder` / `Canvas.sortingOrder`) d'après la doc et les forums :
   **pas vérifié à l'écran** dans ce projet.

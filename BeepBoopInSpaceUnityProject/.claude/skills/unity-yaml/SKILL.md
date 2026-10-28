@@ -1,6 +1,6 @@
 ---
 name: unity-yaml
-description: Lire et modifier sans l'éditeur les fichiers YAML de Unity de Beep Boop dans l'espace (scènes .unity, prefabs, .asset, .meta) — arbre d'un prefab ou d'une scène avec composants et références résolues, surcharges des instances de prefab avec l'objet visé (prefabs imbriqués compris), qui référence un asset, GUID ↔ chemin, création des .meta de nouveaux fichiers, nettoyage des surcharges orphelines, conversion d'un prefab d'écran uGUI en écran UIDocument. À utiliser pour comprendre une scène ou un prefab avant d'y toucher, avant de supprimer, renommer ou déplacer un asset, pour créer un asset ou un .meta à la main, et pour toute modification de .unity/.prefab/.asset faite hors de l'éditeur.
+description: Lire et modifier sans l'éditeur les fichiers YAML de Unity de Beep Boop dans l'espace (scènes .unity, prefabs, .asset, .meta) — arbre d'un prefab ou d'une scène avec composants et références résolues, surcharges des instances de prefab avec l'objet visé (prefabs imbriqués compris), qui référence un asset, GUID ↔ chemin, création des .meta de nouveaux fichiers, nettoyage des surcharges orphelines, conversion d'un prefab d'écran uGUI en écran UIDocument, champ sérialisé à poser ou retirer et composant à ajouter. À utiliser pour comprendre une scène ou un prefab avant d'y toucher, avant de supprimer, renommer ou déplacer un asset, pour créer un asset ou un .meta à la main, pour recâbler un champ ou ajouter un script à un objet, et pour toute modification de .unity/.prefab/.asset faite hors de l'éditeur.
 ---
 
 # YAML de Unity sans l'éditeur
@@ -20,7 +20,9 @@ Y=".claude/skills/unity-yaml/scripts/unity_yaml.py"   # depuis BeepBoopInSpaceUn
 | `guid <guid ou chemin>` | Chemin d'un guid (Assets et packages), ou guid d'un asset |
 | `meta <fichier>... [--guid G]` | Crée le `.meta` de fichiers neufs : dossier, `.cs`, `.uxml`, `.uss`, `.tss`, `.prefab`, `.unity`, `.asset`, `.mat`, textes. Affiche le guid à utiliser dans les références |
 | `clean-overrides <asset>... [--dry-run]` | Retire les surcharges dont la cible n'existe plus (après avoir vidé un prefab) |
-| `uitk-prefab <prefab> --uxml <f> [--keep NOMS] [--panel-settings <asset>] [--dry-run]` | Écran uGUI → écran UI Toolkit : retire Canvas, CanvasScaler, GraphicRaycaster, CanvasGroup et tous les enfants sauf `--keep` (objets ou prefabs imbriqués, par nom, remontés sous la racine, leurs composants uGUI retirés), ajoute un `UIDocument`. Liste les champs qui pointaient vers des objets retirés |
+| `uitk-prefab <prefab> --uxml <f> [--keep NOMS] [--panel-settings <asset>] [--dry-run]` | Écran uGUI → écran UI Toolkit : retire Canvas, CanvasScaler, GraphicRaycaster, CanvasGroup et tous les enfants sauf `--keep` (objets ou prefabs imbriqués, par nom, remontés sous la racine, leurs composants uGUI retirés), ajoute un `UIDocument` (PanelSettings par défaut : `UITools/Screens/UIPanelSettings.asset`). Liste les champs qui pointaient vers des objets retirés. Seulement un canvas posé sur la **racine** du prefab |
+| `set-field <asset> "Objet/Composant" <champ> (--value V \| --object O \| --asset A \| --remove)` | Pose, remplace ou retire un champ sérialisé (avec ses éléments de liste). `--object` : référence à un objet du même fichier (`"Objet/Composant"` ou nom d'un GameObject) ; `--asset` : objet principal d'un `.asset`, `.uxml`, `.uss` ou `.tss` ; `--value` : valeur YAML brute. Un champ `[field: SerializeField]` s'appelle `<Nom>k__BackingField` |
+| `add-component <asset> <GameObject> <script.cs>` | Ajoute un MonoBehaviour (le script doit avoir son `.meta`) ; ses champs prennent leur valeur par défaut, les poser ensuite avec `set-field` |
 
 Le premier appel indexe les `.meta` des packages (~10 s, cache dans `Library/claude-guid-index.json`) ;
 `Assets/` est relu à chaque appel.
@@ -32,6 +34,8 @@ Le premier appel indexe les `.meta` des packages (~10 s, cache dans `Library/cla
 - **Fins de ligne** : le dépôt stocke le YAML en LF (la copie de travail peut être en CRLF). L'outil
   écrit en LF. En Python, écrire avec `write_bytes` : `write_text` sous Windows transforme `\n` en
   `\r\n`. `sed -i` de Git Bash retire les `\r` des `.cs` (qui sont en CRLF) : passer par l'outil Edit.
+  Un YAML en CRLF dans la copie de travail, modifié par un script qui garde ses fins de ligne,
+  apparaît modifié en entier dans `git diff` (`core.autocrlf` est à `false`) : le réécrire en LF.
 - **Garder les fileID** que d'autres fichiers référencent : racine du prefab, son transform, les
   composants visés par la scène (`refs` et les objets `stripped` de la scène le disent). Un prefab
   réécrit garde ses fileID, la scène continue de pointer au bon endroit.
@@ -50,6 +54,17 @@ Lire d'abord `tree --fields` et `overrides`, puis éditer les documents YAML (un
 objets de prefabs imbriqués, bloc de surcharge). Pour un nouvel objet, prendre un fileID aléatoire
 non utilisé dans le fichier ; ajouter un enfant à un prefab (ex. un `AudioPlayer`) : voir
 « Ajouter un GameObject enfant » dans `formats.md`.
+
+Un script Python jetable qui édite les documents : chercher l'objet racine par son transform
+(`m_Father: {fileID: 0}`), pas par son nom ; insérer un champ après la ligne
+`m_EditorClassIdentifier:` quelle que soit sa valeur (elle n'est pas toujours vide :
+`Assembly-CSharp::Game...`), et vérifier ensuite avec `tree --fields` qu'il est bien là — une
+insertion ratée ne lève aucune erreur. Mieux : `set-field` et `add-component`.
+
+Canvas posé sur un enfant (écran de chargement, `LoadingScreenManager.prefab`) : garder le
+GameObject et son RectTransform (une scène peut les viser, ex. `m_IsActive`), retirer Canvas,
+CanvasScaler, GraphicRaycaster et les enfants uGUI, puis ajouter le UIDocument (copier le document
+d'un prefab converti) et l'écran (`add-component`).
 
 ## Pièges
 

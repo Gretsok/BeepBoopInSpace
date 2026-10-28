@@ -12,7 +12,7 @@
 | `Submit()` | A/Croix de la manette 1 |
 | `Select(element)` | Amène le focus UI Toolkit sur cet élément à la croix : chaque appui va du côté où l'élément est à l'écran, un appui sans effet est retenté dans une autre direction (20 appuis au plus) |
 | `DpadButton(direction)` | La flèche de la croix de la manette 1 (`MoveDirection`) |
-| `AddKeyboardAndMouse()`, `Keyboard`, `Mouse` | Clavier et souris virtuels (test des menus seulement ; retirés par `RemoveKeyboardAndMouse()` dans le TearDown) |
+| `AddKeyboardAndMouse()`, `Keyboard`, `Mouse` | Clavier et souris virtuels (accueil du menu, P pour la pause en partie ; retirés par `RemoveKeyboardAndMouse()`, aussi dans le TearDown) |
 | `PointAt(element)`, `Click()` | Amène la souris virtuelle au centre d'un élément (la souris focalise ce qu'elle survole), clic gauche |
 | `MashButtonsUntil(stop, random, timeout)` | Chaque manette appuie au hasard sur les 6 boutons d'action jusqu'à `stop()` |
 | `Set(button, value)` | Écriture brute d'un bouton (fonctionne quel que soit le format mémoire de la manette) |
@@ -62,11 +62,14 @@ Règles :
 
 ## Captures d'écran
 
-`StartRenderingToTextures()` fait rendre la caméra et le panel des menus dans des textures 1920x1080
+`StartRenderingToTextures()` fait rendre la caméra principale (s'il y en a une) et le panel UI Toolkit
+(`UIPanelSettings`, le même pour tous les écrans) dans des textures 1920x1080
 (le batchmode n'a pas de vue Game et son écran n'est pas en 16:9 : sans ça, la mise en page diffère),
 `CaptureScreen("nom")` enregistre `Logs/screenshots/nom.png` (ignoré par git), `StopRenderingToTextures()`
 remet tout en place (appelé par le TearDown). Attendre la fin des transitions de caméra avant de
-capturer (`WaitForCameraBlend()` dans les tests). Lire les PNG pour vérifier un écran soi-même.
+capturer (`WaitForCameraBlend()` dans les tests). Dans une autre scène que celle du départ du rendu
+(partie, résultats du tournoi), `CaptureGameScreen` (tests des écrans de partie) relance le rendu sur
+la nouvelle caméra. Lire les PNG pour vérifier un écran soi-même.
 
 ## Pièges des manettes virtuelles
 

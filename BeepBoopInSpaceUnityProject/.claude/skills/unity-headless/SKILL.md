@@ -38,7 +38,8 @@ Codes de sortie : 0 succès, 1 échec, 3 projet déjà ouvert par Unity.
    la bonne assembly (asmdef le plus proche, sinon `Assembly-CSharp`, `-Editor` dans un dossier
    `Editor/`), puis compile les assemblies du projet dans l'ordre de leurs dépendances.
    Viser **0 erreur et 0 warning** dans `Assets/` : le projet est propre, un warning nouveau vient
-   du changement.
+   du changement. Il compile tout le dossier : une erreur dans un fichier qu'on n'a pas touché vient
+   peut-être d'une autre session en cours (skill `parallel-sessions`).
 2. `compile` quand `quick-compile` ne suffit pas : nouvel `.asmdef` ou références modifiées,
    packages changés (`Packages/manifest.json`), nouveaux defines, ou avant un commit important.
    Elle détecte aussi les erreurs d'import, que le compilateur seul ne voit pas.
@@ -53,6 +54,9 @@ deux Unity ne peuvent pas ouvrir le même projet. Un `UnityLockfile` présent ma
 - C'est l'éditeur de l'utilisateur : lui demander de le fermer, en disant pourquoi (« pour que je
   lance les tests en arrière-plan »). En attendant, `quick-compile` marche.
 - C'est un de nos runs headless : attendre sa fin (`wait <pid>` ou un Monitor).
+- C'est le run d'une **autre session Claude** sur le même dossier (`ls -t Logs/claude-runs`) :
+  attendre sa fin aussi. Son run importe et compile vos fichiers en cours et crée leurs `.meta` :
+  voir le skill `parallel-sessions`.
 
 ## 3. Commandes longues (plus de 8 minutes)
 

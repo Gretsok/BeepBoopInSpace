@@ -1,18 +1,19 @@
 ---
 name: unity-scenario-tests
-description: Lancer, lire, déboguer et étendre les tests de scénario de Beep Boop dans l'espace — de vraies parties jouées en headless par 4 manettes virtuelles (menu, sélection des personnages, mode de jeu, partie complète, résultats, retour au menu), un test par mode Training plus un Tournoi. À utiliser pour vérifier un changement de gameplay, de menu, de flow ou de chargement « en jeu », avant un commit ou un build, quand l'utilisateur dit « teste le jeu », « vérifie que les modes marchent », « lance les tests », quand un scénario échoue, ou après l'ajout d'un mode de jeu (il faut alors ajouter son cas de test).
+description: Lancer, lire, déboguer et étendre les tests de scénario de Beep Boop dans l'espace — de vraies parties jouées en headless par 4 manettes virtuelles (menu, sélection des personnages, mode de jeu, partie complète, résultats, retour au menu), un test par mode Training, un Tournoi, et les écrans de partie (tutoriel, timer, annonces, pause, résultats, écran de chargement) avec leurs captures. À utiliser pour vérifier un changement de gameplay, de menu, de flow ou de chargement « en jeu », avant un commit ou un build, quand l'utilisateur dit « teste le jeu », « vérifie que les modes marchent », « lance les tests », quand un scénario échoue, après l'ajout d'un mode de jeu (il faut alors ajouter son cas de test), ou après un changement d'un écran de partie.
 ---
 
 # Tests de scénario (4 manettes virtuelles)
 
 But : vérifier soi-même, en jeu, qu'un changement ne casse rien, du menu jusqu'au retour au menu.
-Validé sous Unity 6000.6.7f1 : la suite complète passe (9/9) en ~14 minutes (851 s le 2026-10-27).
+Validé sous Unity 6000.6.7f1 : la suite complète (12 tests) dure ~14 minutes (839 s le 2026-10-28).
 
 Fichiers (dans `Assets/Tests/PlayMode/`, assembly `BeepBoop.Tests.PlayMode`) :
 
 | Fichier | Rôle |
 | --- | --- |
-| `GameModesScenarioTests.cs` | Les scénarios : `MainMenu_EveryScreenWorksWithGamepadKeyboardAndMouse`, `Training_PlaysAGameThenReturnsToMenu(mode)` × 7, `Tournament_PlaysUntilAChampionThenReturnsToMenu` |
+| `GameModesScenarioTests.cs` | Classe partielle, scénarios des menus et des modes : `MainMenu_EveryScreenWorksWithGamepadKeyboardAndMouse`, `Training_PlaysAGameThenReturnsToMenu(mode)` × 7, `Tournament_PlaysUntilAChampionThenReturnsToMenu` (capture `30-tournament-results` après la première partie), et les étapes partagées (`JoinFourPlayersAndOpenHub`, `Join`, `GetReady`, `PlayOneGame`) |
+| `GameScreensScenarioTests.cs` | Même classe : les écrans de partie. `GameScreens_WorkWithGamepadsAndKeyboard`, `PauseMenu_BackToMenuLeavesTheGame("Training" / "Tournament")`, et les aides `StartTraining(mode)`, `CaptureGameScreen(nom)`, `SubmitAndSeeTheLoadingScreen()`, `SelectSlider(slider)`, `IsPaused` |
 | `ScenarioDriver.cs` | Manettes, clavier et souris virtuels, navigation dans les menus UI Toolkit, captures d'écran, attente avec délai, lecture de l'état du jeu par réflexion, collecte des erreurs |
 
 `MainMenu_EveryScreenWorksWithGamepadKeyboardAndMouse` (~13 s, à lancer après toute modification des menus) :
@@ -21,6 +22,13 @@ Annuler, volume au d-pad, sélection des personnages (rejoindre, se déclarer pr
 choisi refusé, Annuler qui retire d'abord le « prêt », départ vers le hub quand tous sont prêts),
 défilement du choix du niveau ; il enregistre une capture de chaque écran dans `Logs/screenshots/`
 (`04` à `10` : chaque configuration de la sélection des personnages) : les regarder.
+
+`GameScreens_WorkWithGamepadsAndKeyboard` (~50 s) joue une partie de Points Rush : cartes du tutoriel
+pendant que les joueurs se déclarent prêts, timer, pause ouverte avec P puis pilotée par la manette
+du joueur principal (un volume au d-pad, B pour reprendre), chaque annonce, bouton des résultats,
+écran de chargement ; captures `20` à `29`. `PauseMenu_BackToMenuLeavesTheGame` quitte une partie
+par « Menu principal » de la pause, en Training et en tournoi (abandonné : ni résultats, ni partie
+suivante).
 
 Chaque scénario de partie : Home → Play → les 4 manettes rejoignent (A/Croix) puis se déclarent prêtes
 (Y/Triangle, Aléatoire avec X si le personnage est déjà pris) → Hub → Training (ou Tournoi) → map choisie à la croix → les 4 joueurs font Ready → appuis aléatoires sur les 6 boutons
@@ -36,6 +44,8 @@ CLI=".claude/skills/unity-headless/scripts/unity_cli.py"
 python $CLI screenshots                                 # les menus + liste des captures (~2 min avec le démarrage)
 python $CLI test --filter 'Training.*"Shooters"'      # un mode (~1,5 min)
 python $CLI test --filter Tournament                    # le tournoi seul (3 à 9 parties, 3-7 min)
+python $CLI test --filter GameScreens                   # écrans de partie + captures 20-29 (~2 min)
+python $CLI test --filter PauseMenu                     # quitter une partie depuis la pause (~1,5 min)
 python $CLI test --filter Game.Tests.PlayMode --detach  # toute la suite (~14 min) : en détaché
 ```
 
@@ -96,6 +106,21 @@ attend la fin du PID affiché, puis la commande `results ...` que `--detach` a a
   `Timeout`. Attendre avec `yield return null`.
 - Juste après `StartRenderingToTextures()`, un `Submit` immédiat s'est perdu : laisser passer une
   seconde (`RealSeconds(1f)`) avant le premier appui.
+- **Un état fugace se guette dès l'action**, pas après : un `Submit()` dure 4 frames, pendant
+  lesquelles le menu peut se charger et cacher l'écran de chargement. `SubmitAndSeeTheLoadingScreen`
+  regarde à chaque frame dès l'appui ; faire pareil pour tout ce qui ne dure que quelques frames.
+- **La pause remet `Time.timeScale` à 1** en reprenant : le remettre à `k_TimeScale` après. Une
+  annonce dure 1 à 2 s de temps de jeu : passer à 1 le temps de sa capture.
+- **Captures hors du menu** : `CaptureGameScreen` recommence le rendu sur la caméra de la scène
+  courante (une scène sans caméra principale, résultats du tournoi : le panel seul). Tous les
+  écrans partagent `UIPanelSettings` : le panel capturé est le même partout.
+- **Clavier pendant une partie** : `AddKeyboardAndMouse()` (P ouvre la pause) puis
+  `RemoveKeyboardAndMouse()` ; ajouter le clavier ne fait pas rejoindre de joueur hors de la
+  sélection des personnages.
+- **Curseurs** : gauche/droite changent la valeur au lieu de déplacer le focus ; atteindre un
+  curseur à la croix avec `SelectSlider` (droite depuis les boutons, puis haut/bas).
+- `GameplayState` est le **nom du type** de l'état : `AnnouncementState` (nouvelle configuration
+  de touches), `RoundAnnouncementState`, `FinishState`, `ResultsState`, `EndState`...
 - Un run interrompu (blocage, Unity tué) laisse `Assets/InitTestScene<guid>.unity` et son `.meta` :
   les supprimer. Un fichier ajouté sous `Assets/` pendant un run produit l'avertissement « Files
   generated by test without cleanup » : ne pas toucher au projet pendant un run.

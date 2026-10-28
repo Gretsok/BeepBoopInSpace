@@ -27,6 +27,11 @@ dépendent d'un état stable.
 `TweenRotate`, `TweenOpacity`, `ResetTransform`, `KillTweens`. Pour : punch, tremblement, saut,
 séquences, particules — ce que le USS ne sait pas enchaîner.
 
+- Sur un élément tout juste créé ou affiché, son style résolu n'est pas encore calculé : les
+  surcharges `TweenScale(from, to, durée)` et `TweenOpacity(from, to, durée)` posent le départ
+  elles-mêmes (annonces qui se déroulent, `BannerScreen` ; « +1 » qui monte, `WorldOverlayPanel`).
+  Les tweens tournent en temps non mis à l'échelle : ils marchent pendant la pause (`timeScale` 0).
+
 - Un tween écrit le **style inline**, qui l'emporte sur le USS : tweener un élément que le USS
   n'anime pas (un enveloppe, l'image, un élément temporaire), et rendre la main en fin de geste
   (`OnComplete(element.ResetTransform)`), sinon l'état suivant du USS ne s'applique plus.

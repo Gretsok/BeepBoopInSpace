@@ -10,6 +10,10 @@ Python 3 standard library only.
   clean-overrides <asset>... [--dry-run]    remove prefab instance overrides whose target no longer exists
   uitk-prefab <prefab> --uxml <file> [--keep NAMES] [--panel-settings <asset>]
                                             turn a uGUI screen prefab into a UIDocument screen
+  set-field <asset> <Object/Component> <field> (--value V | --object O | --asset A | --remove)
+                                            set, replace or remove a serialized field of a component
+  add-component <asset> <GameObject> <script.cs>
+                                            add a MonoBehaviour to a GameObject
 
 Edit with the Unity editor closed: an open editor would not see the change before reimporting, and could
 save its own version over it. YAML is written in LF, as the repository stores it.
@@ -689,6 +693,106 @@ def cmd_uitk_prefab(args):
     return 0
 
 
+# ----------------------------------------------------------------------------- set-field, add-component
+
+# Main object of an asset referenced from a field, by extension: (fileID, type).
+ASSET_REFERENCES = {".asset": ("11400000", "2"), ".uxml": ("9197481963319205126", "3"),
+                    ".uss": ("7433441132597879392", "3"), ".tss": ("-4733365628477956816", "3")}
+
+
+def new_file_id(model):
+    used = {d.fid for d in model.docs}
+    fid = str(random.randint(10 ** 17, 9 * 10 ** 18))
+    while fid in used:
+        fid = str(random.randint(10 ** 17, 9 * 10 ** 18))
+    return fid
+
+
+def find_objects(model, name):
+    """Components named as `tree` shows them ("Object/Component"), or GameObjects by name."""
+    if "/" in name:
+        return [d for d in model.docs if not d.stripped and d.cls not in ("1", "1001") and d.fid in model.go_of
+                and model.describe(d.fid) == name]
+    return [d for d in model.docs if not d.stripped and d.cls == "1" and d.field("m_Name") == name]
+
+
+def find_one(model, name):
+    found = find_objects(model, name)
+    if len(found) != 1:
+        raise SystemExit(f"{rel(model.path)}: {len(found)} object(s) named '{name}' (`tree` shows the names: "
+                         "\"Object/Component\" for a component).")
+    return found[0]
+
+
+def cmd_set_field(args):
+    model = Model(project_path(args.asset))
+    doc = find_one(model, args.component)
+    if args.remove:
+        line = None
+    elif args.value is not None:
+        line = f"  {args.field}: {args.value}\n"
+    elif args.object:
+        line = f"  {args.field}: {{fileID: {find_one(model, args.object).fid}}}\n"
+    elif args.asset_ref:
+        path = project_path(args.asset_ref)
+        guid, ref = guid_of(path), ASSET_REFERENCES.get(path.suffix)
+        if not guid or not ref:
+            print(f"{args.asset_ref}: {'no .meta' if not guid else 'no main object known for ' + path.suffix} "
+                  f"(known: {', '.join(ASSET_REFERENCES)}); pass the reference with --value.")
+            return 1
+        line = f"  {args.field}: {{fileID: {ref[0]}, guid: {guid}, type: {ref[1]}}}\n"
+    else:
+        print("Give --value, --object, --asset or --remove.")
+        return 1
+
+    # A field and its continuation lines (list items, nested mappings).
+    block = re.compile(r"^  " + re.escape(args.field) + r":.*\n(?:(?:  - |   ).*\n)*", re.M)
+    if block.search(doc.body):
+        doc.body = block.sub(lambda _: line or "", doc.body, count=1)
+        action = "removed" if line is None else "replaced"
+    elif line is None:
+        print(f"{model.describe(doc.fid)} has no field {args.field}.")
+        return 1
+    else:
+        # New fields go after the header, whatever m_EditorClassIdentifier holds (often empty, not always).
+        header = re.search(r"^  m_EditorClassIdentifier:.*\n", doc.body, re.M)
+        if not header:
+            print(f"{model.describe(doc.fid)}: no m_EditorClassIdentifier line to add the field after.")
+            return 1
+        doc.body = doc.body[:header.end()] + line + doc.body[header.end():]
+        action = "added"
+    model.save()
+    print(f"{rel(model.path)}: {model.describe(doc.fid)} {args.field} {action}"
+          + ("" if line is None else f": {resolve_value(model, line.split(': ', 1)[1].strip())}"))
+    return 0
+
+
+def cmd_add_component(args):
+    model = Model(project_path(args.asset))
+    go = find_one(model, args.object)
+    if go.cls != "1":
+        print(f"'{args.object}' is a component: give the GameObject's name.")
+        return 1
+    guid = guid_of(args.script)
+    if not guid:
+        print(f"{args.script}: no .meta (create it with `meta`).")
+        return 1
+    fid = new_file_id(model)
+    model.docs.append(Doc("114", fid, False,
+                          "MonoBehaviour:\n  m_ObjectHideFlags: 0\n  m_CorrespondingSourceObject: {fileID: 0}\n"
+                          "  m_PrefabInstance: {fileID: 0}\n  m_PrefabAsset: {fileID: 0}\n"
+                          f"  m_GameObject: {{fileID: {go.fid}}}\n  m_Enabled: 1\n  m_EditorHideFlags: 0\n"
+                          f"  m_Script: {{fileID: 11500000, guid: {guid}, type: 3}}\n"
+                          "  m_Name: \n  m_EditorClassIdentifier: \n"))
+    go.body = re.sub(r"(  m_Component:\n(?:  - component: .*\n)*)",
+                     lambda m: m.group(1) + f"  - component: {{fileID: {fid}}}\n", go.body, count=1)
+    model.by_id[fid] = model.docs[-1]
+    model.save()
+    print(f"{rel(model.path)}: {Path(args.script).stem} {fid} added to {args.object}. Its fields take their default "
+          "values: set the others with `set-field`.")
+    return 0
+
+
 # ----------------------------------------------------------------------------- main
 
 def main():
@@ -731,6 +835,23 @@ def main():
     p.add_argument("--panel-settings", default=DEFAULT_PANEL_SETTINGS)
     p.add_argument("--dry-run", action="store_true")
     p.set_defaults(func=cmd_uitk_prefab)
+
+    p = sub.add_parser("set-field", help="set, replace or remove a serialized field of a component")
+    p.add_argument("asset")
+    p.add_argument("component", help="\"Object/Component\", as tree shows it")
+    p.add_argument("field", help="serialized name: m_xxx, or <Xxx>k__BackingField for [field: SerializeField]")
+    value = p.add_mutually_exclusive_group(required=True)
+    value.add_argument("--value", help="raw YAML value: 2, \"text\", {fileID: 0}...")
+    value.add_argument("--object", help="reference to an object of the same file (\"Object/Component\" or GameObject name)")
+    value.add_argument("--asset", dest="asset_ref", help="reference to an asset's main object (.asset, .uxml, .uss, .tss)")
+    value.add_argument("--remove", action="store_true", help="remove the field (and its list items)")
+    p.set_defaults(func=cmd_set_field)
+
+    p = sub.add_parser("add-component", help="add a MonoBehaviour to a GameObject of a prefab or scene")
+    p.add_argument("asset")
+    p.add_argument("object", help="GameObject name")
+    p.add_argument("script", help="the script's .cs path")
+    p.set_defaults(func=cmd_add_component)
 
     args = parser.parse_args()
     sys.exit(args.func(args))

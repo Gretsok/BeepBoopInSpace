@@ -66,10 +66,11 @@ Unity en headless exige l'éditeur fermé : le demander à l'utilisateur en disa
 | `unity-build` | Build Windows, zip, lancement de contrôle |
 | `unity-upgrade` | Nouvelle version de Unity ou des packages |
 | `game-mode-variants` | Créer ou modifier un mode de jeu |
-| `ui-toolkit-screens` | Modifier, créer ou migrer (depuis uGUI) un écran UI Toolkit, et le vérifier en captures ; charte graphique du menu et motion design |
+| `ui-toolkit-screens` | Modifier ou créer un écran UI Toolkit (menu, partie, pause, chargement, tournoi) et le vérifier en captures ; charte graphique et motion design |
 | `psd-mockups` | Lire une maquette Photoshop (.psd), mesurer ses éléments, comparer les captures du jeu avec elle |
-| `unity-yaml` | Lire ou modifier scènes, prefabs, `.asset` et `.meta` sans l'éditeur (arbre, surcharges, références, conversion d'un prefab uGUI) |
+| `unity-yaml` | Lire ou modifier scènes, prefabs, `.asset` et `.meta` sans l'éditeur (arbre, surcharges, références, champs, composants, conversion d'un prefab uGUI) |
 | `unity-api-check` | Vérifier une API dans la version de Unity du projet avant de coder dessus |
+| `parallel-sessions` | D'autres sessions travaillent dans le même dossier : se coordonner, partager Unity, commiter seulement son travail |
 
 ## Git
 
@@ -79,3 +80,5 @@ Unity en headless exige l'éditeur fermé : le demander à l'utilisateur en disa
   « Upgrading to Unity 6000.6.7f1 », « Game modes scenario tests »), puis une liste à puces des
   changements si besoin.
 - Séparer les sujets indépendants en commits distincts (ex. correctifs d'un côté, tests de l'autre).
+- Plusieurs sessions travaillent souvent dans ce dossier en même temps : ne commiter que son propre
+  travail, par chemins explicites (skill `parallel-sessions`).
