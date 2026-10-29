@@ -1,4 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Template name="ConfirmationDialog" src="../../UITools/Screens/ConfirmationDialog.uxml" />
     <Style src="../UI/MainMenu.uss" />
     <ui:VisualElement name="hub-screen" class="ui-screen" picking-mode="Ignore">
         <ui:VisualElement class="ui-background" picking-mode="Ignore" />
@@ -22,5 +23,9 @@
         <ui:VisualElement class="ui-centered-row hub-character-selection-row" picking-mode="Ignore">
             <ui:Button name="character-selection-button" text="Sélection des personnages" class="ui-button" />
         </ui:VisualElement>
+        <ui:Instance template="ConfirmationDialog" name="tournament-confirmation" class="ui-dialog">
+            <ui:AttributeOverrides element-name="title" text="Tournoi" />
+            <ui:AttributeOverrides element-name="message" text="Les parties s'enchaînent jusqu'au sacre d'un champion.&#10;On lance le tournoi ?" />
+        </ui:Instance>
     </ui:VisualElement>
 </ui:UXML>

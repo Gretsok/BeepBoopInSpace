@@ -32,6 +32,7 @@ RectTransform:
   m_Children:
   - {fileID: 5620039080857912236}
   - {fileID: 355362086762438873}
+  - {fileID: 4721596384021957362}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -53,6 +54,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_focusAudioPlayer: {fileID: 3866386492025710342}
   m_confirmAudioPlayer: {fileID: 3986870659679211112}
+  m_backAudioPlayer: {fileID: 8153920467318245096}
 --- !u!114 &5212168320031920100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,4 +162,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <AudioResource>k__BackingField: {fileID: 8300000, guid: 908f9ebc5d692d343b0e0e127586aaed, type: 3}
+  <Volume>k__BackingField: 1
+--- !u!1 &6342157890123456781
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4721596384021957362}
+  - component: {fileID: 8153920467318245096}
+  m_Layer: 5
+  m_Name: BackAudioPlayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4721596384021957362
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6342157890123456781}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1231453218545472042}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8153920467318245096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6342157890123456781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ede079c0071974d43b942138b5a4dc4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <AudioResource>k__BackingField: {fileID: 8300000, guid: 24a09b9ce3e19a3458c1a61fe413d14d, type: 3}
   <Volume>k__BackingField: 1

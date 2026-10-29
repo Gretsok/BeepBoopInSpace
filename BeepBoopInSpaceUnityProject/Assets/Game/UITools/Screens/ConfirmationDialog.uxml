@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!--
+    A question over a screen, bound by ConfirmationDialog. The screen's Instance takes the "ui-dialog" class, which
+    darkens the screen around the panel, and sets the texts through AttributeOverrides on "title" and "message".
+    Last child of the screen, to be drawn over the rest.
+    -->
+    <ui:VisualElement name="panel" class="ui-panel ui-dialog__panel">
+        <ui:VisualElement class="ui-filigree" picking-mode="Ignore" />
+        <ui:VisualElement name="image" class="ui-dialog__image" picking-mode="Ignore" />
+        <ui:Label name="title" text="Titre" class="ui-text ui-dialog__title" picking-mode="Ignore" />
+        <ui:Label name="message" text="Question ?" class="ui-text ui-dialog__message" picking-mode="Ignore" />
+        <ui:VisualElement class="ui-dialog__buttons" picking-mode="Ignore">
+            <ui:Button name="cancel-button" text="Retour" class="ui-button ui-dialog__button" />
+            <ui:Button name="confirm-button" text="C'est parti !" class="ui-button ui-dialog__button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

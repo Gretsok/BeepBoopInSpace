@@ -38,6 +38,10 @@ namespace Game.UITools.Screens
         private GameObject m_panelGameObject;
         private readonly List<InputIndicationView> m_indications = new();
         private readonly List<InputIndicationView> m_mainPlayerIndications = new();
+        private readonly Dictionary<(VisualElement, NavigationMoveEvent.Direction), VisualElement> m_explicitNavigation = new();
+        private ConfirmationDialog m_dialog;
+        private Focusable m_focusBeforeDialog;
+        private Focusable m_defaultFocusBeforeDialog;
 
         public bool IsShown { get; private set; }
 
@@ -89,6 +93,10 @@ namespace Game.UITools.Screens
                 indication.Dispose();
             m_indications.Clear();
             m_mainPlayerIndications.Clear();
+            m_explicitNavigation.Clear();
+            m_dialog = null;
+            m_focusBeforeDialog = null;
+            m_defaultFocusBeforeDialog = null;
             DefaultFocus = null;
         }
 
@@ -146,7 +154,13 @@ namespace Game.UITools.Screens
             root.RegisterCallback<PointerOverEvent>(HandlePointerOver);
             root.RegisterCallback<FocusInEvent>(HandleFocusIn);
             root.RegisterCallback<NavigationMoveEvent>(HandleNavigationMove);
-            root.RegisterCallback<NavigationCancelEvent>(_ => HandleCancel());
+            root.RegisterCallback<NavigationCancelEvent>(_ =>
+            {
+                if (m_dialog != null)
+                    m_dialog.Cancel();
+                else
+                    HandleCancel();
+            });
         }
 
         // The dark shapes show the background's pattern: a texture that covers the screen, wherever the shape is, so it
@@ -231,6 +245,43 @@ namespace Game.UITools.Screens
             FocusedElement?.Blur();
         }
 
+        /// <summary>
+        /// Where the d-pad goes from <paramref name="from"/> towards <paramref name="direction"/>, instead of the closest
+        /// element that way. Null keeps the focus on <paramref name="from"/>. Until the screen hides.
+        /// </summary>
+        protected void SetNavigation(VisualElement from, NavigationMoveEvent.Direction direction, VisualElement to)
+        {
+            m_explicitNavigation[(from, direction)] = to;
+        }
+
+        /// <summary>
+        /// Shows the dialog over the screen until <see cref="HideDialog"/>: the d-pad stays in it, starting on its confirm
+        /// button, and Cancel presses its Retour button.
+        /// </summary>
+        protected void ShowDialog(ConfirmationDialog dialog)
+        {
+            m_focusBeforeDialog = FocusedElement;
+            m_defaultFocusBeforeDialog = DefaultFocus;
+            m_dialog = dialog;
+            dialog.Show(gameObject);
+            // The confirm button can only take the focus once the dialog is laid out: Update gives it at the next frame.
+            DefaultFocus = dialog.ConfirmButton;
+            ReleaseFocus();
+        }
+
+        /// <summary>Hides the dialog of <see cref="ShowDialog"/>, and gives the focus back to what had it before.</summary>
+        protected void HideDialog()
+        {
+            if (m_dialog == null)
+                return;
+            m_dialog.Hide();
+            m_dialog = null;
+            DefaultFocus = m_defaultFocusBeforeDialog;
+            FocusSilently(m_focusBeforeDialog ?? DefaultFocus);
+            m_focusBeforeDialog = null;
+            m_defaultFocusBeforeDialog = null;
+        }
+
         // Clicking the background keeps the focus, so gamepad and keyboard navigation can go on from it.
         private void HandlePointerDown(PointerDownEvent evt)
         {
@@ -274,11 +325,23 @@ namespace Game.UITools.Screens
             if (direction == Vector2.zero || from == null)
                 return;
 
+            var to = m_explicitNavigation.TryGetValue((from, evt.direction), out var explicitTarget)
+                ? explicitTarget
+                : FindClosest(from, direction);
+            if (to != null && to.canGrabFocus)
+                to.Focus();
+            evt.StopPropagation();
+            Root.focusController?.IgnoreEvent(evt);
+        }
+
+        // An open dialog keeps the d-pad among its own buttons.
+        private VisualElement FindClosest(VisualElement from, Vector2 direction)
+        {
             var bounds = from.worldBound;
             var edge = bounds.center + Vector2.Scale(bounds.size, direction * 0.5f);
             VisualElement best = null;
             var bestScore = 0f;
-            Root.Query<VisualElement>().ForEach(candidate =>
+            (m_dialog != null ? m_dialog.Element : Root).Query<VisualElement>().ForEach(candidate =>
             {
                 if (candidate == from || !IsNavigationTarget(candidate) || !candidate.canGrabFocus)
                     return;
@@ -293,10 +356,7 @@ namespace Game.UITools.Screens
                     best = candidate;
                 }
             });
-
-            best?.Focus();
-            evt.StopPropagation();
-            Root.focusController?.IgnoreEvent(evt);
+            return best;
         }
 
         // What the d-pad moves between: buttons (and level cards) and sliders, not the parts they are made of nor scrollbars.

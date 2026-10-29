@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Game.Gameplay.Levels._0_Core;
 using Game.Global.SFXManagement;
+using Game.UITools.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -22,6 +23,9 @@ namespace Game.MainMenu.LevelSelection
 
         private readonly List<LevelWidget> m_instantiatedWidgets = new();
         public IReadOnlyList<LevelWidget> LevelWidgets => m_instantiatedWidgets;
+
+        private ConfirmationDialog m_confirmation;
+        private LevelDataAsset m_pickedLevel;
 
         public Action<LevelDataAsset> OnLevelSelected;
 
@@ -44,6 +48,7 @@ namespace Game.MainMenu.LevelSelection
             });
 
             BindButton("back-button", HandleBackButton, m_backAudioPlayer);
+            m_confirmation = new ConfirmationDialog(Query<VisualElement>("level-confirmation"), HandleLaunchConfirmed, HandleLaunchCancelled);
             if (m_instantiatedWidgets.Count > 0)
             {
                 DefaultFocus = m_instantiatedWidgets[0].Element;
@@ -83,10 +88,25 @@ namespace Game.MainMenu.LevelSelection
             scrollView.scrollOffset = offset;
         }
 
-        private void HandleLevelSelected(LevelDataAsset obj)
+        // The level is only launched once confirmed: a press too many on the hub's Entraînement doesn't start a game.
+        private void HandleLevelSelected(LevelDataAsset levelDataAsset)
         {
             m_levelSelectedAudioPlayer.Play();
-            OnLevelSelected?.Invoke(obj);
+            m_pickedLevel = levelDataAsset;
+            m_confirmation.SetContent(levelDataAsset.NameKey, levelDataAsset.Thumbnail);
+            ShowDialog(m_confirmation);
+        }
+
+        private void HandleLaunchConfirmed()
+        {
+            m_levelSelectedAudioPlayer.Play();
+            OnLevelSelected?.Invoke(m_pickedLevel);
+        }
+
+        private void HandleLaunchCancelled()
+        {
+            m_backAudioPlayer.Play();
+            HideDialog();
         }
     }
 }

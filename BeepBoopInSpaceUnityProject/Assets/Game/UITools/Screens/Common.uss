@@ -312,6 +312,67 @@
     background-color: var(--ui-navy);
 }
 
+/*
+ * A question over a screen (ConfirmationDialog.uxml, ConfirmationDialog): the screen darkened around a panel with an
+ * optional picture, a title, the question, then Retour and the confirm button.
+ */
+
+.ui-dialog {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--ui-ink-shade);
+}
+
+.ui-dialog--shown {
+    display: flex;
+}
+
+.ui-dialog__panel {
+    width: 960px;
+    padding: 50px 60px 60px 60px;
+    align-items: center;
+    overflow: hidden;
+}
+
+.ui-dialog__image {
+    width: 828px;
+    height: 380px;
+    margin-bottom: 30px;
+    border-radius: 30px;
+    background-color: var(--ui-ink);
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.ui-screen .ui-dialog__title {
+    font-size: 64px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+.ui-screen .ui-dialog__message {
+    margin-top: 6px;
+    font-size: 40px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+.ui-dialog__buttons {
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.ui-dialog__button {
+    min-width: 280px;
+    margin: 0 30px;
+}
+
 /* A player's badge: white while choosing, in the character's color once done (set by the code). */
 .ui-badge {
     width: 62px;
