@@ -101,16 +101,16 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
             {
                 m_nameCanvas.transform.DOKill(true);
                 m_nameCanvas.transform.localScale = new Vector3(1f, 0f, 1f) * m_defaultNameCanvasScale.x;
-                m_nameCanvas.transform.DOScale(Vector3.one * m_defaultNameCanvasScale.x, 0.3f).SetDelay(0.2f).SetEase(Ease.InOutSine);
+                m_nameCanvas.transform.DOScale(Vector3.one * m_defaultNameCanvasScale.x, 0.3f).SetDelay(0.2f).SetEase(Ease.InOutSine).SetLink(gameObject);
                 m_scoreCanvas.transform.DOKill(true);
-                m_nameCanvas.transform.localScale = new Vector3(1f, 0f, 1f) * m_defaultNameCanvasScale.x;
-                m_scoreCanvas.transform.DOScale(Vector3.one * m_defaultScoreCanvasScale.x, 0.3f).SetDelay(0.2f).SetEase(Ease.InOutSine);
+                m_scoreCanvas.transform.localScale = new Vector3(1f, 0f, 1f) * m_defaultScoreCanvasScale.x;
+                m_scoreCanvas.transform.DOScale(Vector3.one * m_defaultScoreCanvasScale.x, 0.3f).SetDelay(0.2f).SetEase(Ease.InOutSine).SetLink(gameObject);
                 
                 m_rankCanvas.transform.DOKill(true);
                 m_rankCanvas.transform.localScale = Vector3.zero;
-                m_rankCanvas.transform.DOScale(Vector3.one * m_defaultRankCanvasScale.x, 0.3f).SetDelay(0.2f).SetEase(Ease.InOutSine);
+                m_rankCanvas.transform.DOScale(Vector3.one * m_defaultRankCanvasScale.x, 0.3f).SetDelay(0.2f).SetEase(Ease.InOutSine).SetLink(gameObject);
                 m_rankImage.transform.DOKill(true);
-                m_rankImage.transform.DORotate(Vector3.forward * 360f, 0.2f, RotateMode.LocalAxisAdd).SetDelay(0.2f).SetEase(Ease.InOutSine);
+                m_rankImage.transform.DORotate(Vector3.forward * 360f, 0.2f, RotateMode.LocalAxisAdd).SetDelay(0.2f).SetEase(Ease.InOutSine).SetLink(gameObject);
                 
                 m_hologrammeAudioPlayer.Play();
                 
@@ -119,12 +119,12 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
             else
             {
                 m_nameCanvas.transform.DOKill(true);
-                m_nameCanvas.transform.DOScale(new Vector3(1f, 0f, 1f) * m_defaultNameCanvasScale.x, 0.1f).SetEase(Ease.InCubic);
+                m_nameCanvas.transform.DOScale(new Vector3(1f, 0f, 1f) * m_defaultNameCanvasScale.x, 0.1f).SetEase(Ease.InCubic).SetLink(gameObject);
                 m_scoreCanvas.transform.DOKill(true);
-                m_scoreCanvas.transform.DOScale(new Vector3(1f, 0f, 1f) * m_defaultScoreCanvasScale.x, 0.1f).SetEase(Ease.InCubic);
+                m_scoreCanvas.transform.DOScale(new Vector3(1f, 0f, 1f) * m_defaultScoreCanvasScale.x, 0.1f).SetEase(Ease.InCubic).SetLink(gameObject);
                 
                 m_rankCanvas.transform.DOKill(true);
-                m_rankCanvas.transform.DOScale(Vector3.zero * m_defaultRankCanvasScale.x, 0.1f).SetEase(Ease.InCubic);
+                m_rankCanvas.transform.DOScale(Vector3.zero * m_defaultRankCanvasScale.x, 0.1f).SetEase(Ease.InCubic).SetLink(gameObject);
                 
                 m_rankImage.transform.DOKill(true);
                 m_rankImage.transform.localRotation = Quaternion.identity;

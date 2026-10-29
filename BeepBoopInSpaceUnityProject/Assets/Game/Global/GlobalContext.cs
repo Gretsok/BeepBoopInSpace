@@ -12,6 +12,8 @@ using UnityEngine.EventSystems;
 
 namespace Game.Global
 {
+    // Awake before its children: the copy of a reloaded scene deactivates itself before they wake up.
+    [DefaultExecutionOrder(-1000)]
     public class GlobalContext : AManager<GlobalContext>
     {
         [field: SerializeField]

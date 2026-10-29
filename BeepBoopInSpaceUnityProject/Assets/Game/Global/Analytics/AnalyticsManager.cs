@@ -9,8 +9,18 @@ namespace Game.Global.Analytics
         [field: SerializeField]
         public GameAnalytics GameAnalytics { get; private set; }
         
+        // GameAnalytics sends nothing from the editor, and warns about it at each start: only builds talk to it.
+        private static bool IsEnabled => !Application.isEditor;
+
         public void Initialize()
         {
+            // GameAnalytics keeps its object across scenes itself, which Unity only allows for a root object: it leaves
+            // the context before its Awake (the context wakes up first).
+            GameAnalytics.transform.SetParent(null, false);
+            DontDestroyOnLoad(GameAnalytics.gameObject);
+
+            if (!IsEnabled)
+                return;
             // We may need to set up a custom user id to link it to some other data. => GameAnalytics.SetCustomId("customId");
             GameAnalytics.Initialize();
         }
@@ -18,6 +28,8 @@ namespace Game.Global.Analytics
 
         public void NotifyLevelStarted(string levelID)
         {
+            if (!IsEnabled)
+                return;
             try
             {
                 GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, levelID);
@@ -31,6 +43,8 @@ namespace Game.Global.Analytics
 
         public void NotifyLevelFinished(string levelID)
         {
+            if (!IsEnabled)
+                return;
             try
             {
                 GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, levelID);
@@ -44,6 +58,8 @@ namespace Game.Global.Analytics
 
         public void NotifyLevelCanceled(string levelID)
         {
+            if (!IsEnabled)
+                return;
             try
             {
                 GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, levelID);

@@ -63,8 +63,8 @@ namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
             //m_meteoriteTransform.gameObject.SetActive(true);
             m_imminentImpactVisualContainer.gameObject.SetActive(true);
             m_imminentImpactVisualScaler.localScale = Vector3.zero;
-            m_meteoriteTransform.DOLocalMoveY(0f, dropTime).SetEase(m_meteoriteTransformEase).onComplete += Explode;
-            m_imminentImpactVisualScaler.DOScale(1f, dropTime).SetEase(m_imminentImpactVisualScalerEase);
+            m_meteoriteTransform.DOLocalMoveY(0f, dropTime).SetEase(m_meteoriteTransformEase).SetLink(gameObject).onComplete += Explode;
+            m_imminentImpactVisualScaler.DOScale(1f, dropTime).SetEase(m_imminentImpactVisualScalerEase).SetLink(gameObject);
         }
 
         private void Explode()

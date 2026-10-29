@@ -15,8 +15,18 @@ MonoBehaviour:
   m_GroupName: Game-Gameplay-Environments-Swamp
   m_GUID: 59476b9e8d37a284ab5cdfe5400b69d7
   m_SerializeEntries:
-  - m_GUID: fe59b593c7a31c64aa72331afebe1e9b
-    m_Address: Assets/Game/Gameplay/Environments/Swamp
+  - m_GUID: 2958b48c71a5deb4bb1e89de0a4aa3d2
+    m_Address: Assets/Game/Gameplay/Environments/Swamp/Swamp.unity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ef1b6793c07bbc84a8d5153bb77a7c5b
+    m_Address: Assets/Game/Gameplay/Environments/Swamp/Swamp_Enviro.unity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 013932f149f42174388ced9e850d9f11
+    m_Address: Assets/Game/Gameplay/Environments/Swamp/Cells
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

@@ -12,6 +12,8 @@ namespace Game.ArchitectureTools.Manager
         {
             if (Instance != null)
             {
+                // Inactive first: the children that haven't woken up yet never do (a second EventSystem, analytics...).
+                gameObject.SetActive(false);
                 Destroy(gameObject);
                 return;
             }

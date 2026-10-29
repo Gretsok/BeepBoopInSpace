@@ -76,13 +76,14 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
             sequence.AppendInterval(1f);
             sequence.Append(characterPawn.transform.DORotateQuaternion(
                 defaultCharacterRotation, .5f));
-            sequence.Play();
+            sequence.SetLink(characterPawn.gameObject).Play();
             
             m_canvasPositionnerRoot.transform.position = characterPawn.transform.position;
             m_nameCanvas.GetComponent<Image>().sprite = characterPawn.ReferencesHolder.CharacterDataAsset.NameplateSprite;
             m_nameCanvas.transform.DOKill(true);
             m_nameCanvas.transform.localScale = new Vector3(1f, 0f, 1f) * m_defaultNameCanvasScale.x;
-            m_nameCanvas.transform.DOScale(Vector3.one * m_defaultNameCanvasScale.x, 0.3f).SetDelay(0.2f).SetEase(Ease.InOutSine);
+            m_nameCanvas.transform.DOScale(Vector3.one * m_defaultNameCanvasScale.x, 0.3f).SetDelay(0.2f).SetEase(Ease.InOutSine)
+                .SetLink(m_nameCanvas.gameObject);
         }
         
         private void HideCanvas(Action onComplete)
@@ -91,6 +92,7 @@ namespace Game.Gameplay.Flows.NewRoundAnnouncement
             m_nameCanvas.transform.localScale = Vector3.one * m_defaultNameCanvasScale.x;
             m_nameCanvas.transform.DOScale(new Vector3(1f, 0f, 1f) * m_defaultNameCanvasScale.x, 0.1f)
                 .SetEase(Ease.InCubic)
+                .SetLink(m_nameCanvas.gameObject)
                 .onComplete += () =>
             {
                 onComplete?.Invoke();
