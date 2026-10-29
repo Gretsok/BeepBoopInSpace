@@ -70,10 +70,9 @@ namespace Game.MainMenu.CharacterSelection
             m_orchestrator = orchestrator;
         }
 
+        // Players who already joined (back from a game, or from the hub) keep their character, not ready yet.
         protected override void HandleActivation()
         {
-            m_playerManager.RemoveAllPlayers();
-
             m_playerManager.OnPlayerJoined += HandlePlayerJoined;
             m_playerManager.OnPlayerLeft += HandlePlayerLeft;
 

@@ -19,7 +19,7 @@ namespace Game.MainMenu
         {
             yield return new WaitUntil(() => GlobalContext.Instance && GlobalContext.Instance.IsInitialized);
             MainMenuOrchestrator.Initialize(GlobalContext.Instance, this);
-            FlowMachine.Run();
+            MainMenuOrchestrator.Run();
         }
     }
 }

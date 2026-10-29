@@ -18,6 +18,8 @@ namespace Game.MainMenu.Home
         protected override void HandleEnter()
         {
             base.HandleEnter();
+            // Back on the title screen, the players' session is over: they join again in the character selection.
+            GlobalContext.PlayerManager.RemoveAllPlayers();
             m_homeScreen.Activate();
         }
 

@@ -83,16 +83,9 @@ namespace Game.MainMenu.CharacterManagement
 
         public bool CanPlay => IsActivated && IsReady;
 
-        private CharacterBankManager m_characterBankManager;
-
-        private void Awake()
-        {
-            CharacterBankManager.RegisterPostInitializationCallback(manager =>
-            {
-                m_characterBankManager = manager;
-            });
-            Deactivate(true);
-        }
+        // Not kept from Awake: the widgets are children of the screen, which activates them for the players already
+        // there (back from a game) before they are awake.
+        private static CharacterBankManager BankManager => CharacterBankManager.Instance;
 
         private void OnDestroy()
         {
@@ -111,8 +104,11 @@ namespace Game.MainMenu.CharacterManagement
             if (IsActivated)
                 return;
 
-            CharacterDataAsset = m_characterBankManager.GetFirstAvailableCharacterData();
-            m_characterBankManager.NotifyAssociation(this, CharacterDataAsset);
+            // A player who comes back to the character selection points at their character again.
+            CharacterDataAsset = Player && Player.CharacterDataAsset
+                ? Player.CharacterDataAsset
+                : BankManager.GetFirstAvailableCharacterData();
+            BankManager.NotifyAssociation(this, CharacterDataAsset);
 
             IsActivated = true;
             IsReady = false;
@@ -130,8 +126,8 @@ namespace Game.MainMenu.CharacterManagement
                 return;
 
             CharacterDataAsset = null;
-            if (m_characterBankManager)
-                m_characterBankManager.UnregisterWidget(this);
+            if (BankManager)
+                BankManager.UnregisterWidget(this);
 
             IsActivated = false;
             IsReady = false;
@@ -180,7 +176,7 @@ namespace Game.MainMenu.CharacterManagement
             if (!IsActivated || IsReady || characterDataAsset == null || characterDataAsset == CharacterDataAsset)
                 return;
             CharacterDataAsset = characterDataAsset;
-            m_characterBankManager.NotifyAssociation(this, CharacterDataAsset);
+            BankManager.NotifyAssociation(this, CharacterDataAsset);
             Player.SetCharacterData(CharacterDataAsset);
             RefreshView();
 
@@ -197,7 +193,7 @@ namespace Game.MainMenu.CharacterManagement
         {
             if (!IsActivated || IsReady)
                 return IsReady;
-            if (m_characterBankManager.IsCharacterAlreadyTakenByAnotherWidget(CharacterDataAsset, this))
+            if (BankManager.IsCharacterAlreadyTakenByAnotherWidget(CharacterDataAsset, this))
             {
                 PlayRefusal();
                 OnRefused?.Invoke(this);

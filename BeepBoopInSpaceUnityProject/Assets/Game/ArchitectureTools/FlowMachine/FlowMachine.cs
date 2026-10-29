@@ -29,10 +29,18 @@ namespace Game.ArchitectureTools.FlowMachine
         [Button]
         public void Run()
         {
+            Run(m_defaultState);
+        }
+
+        /// <summary>Starts in <paramref name="firstState"/>, as if reached from the default state: going back leads there.</summary>
+        public void Run(AFlowState firstState)
+        {
             if (RunningState != ERunningState.Inactive)
                 return;
-            
-            RequestState(m_defaultState);
+
+            if (firstState != m_defaultState)
+                m_backStack.Push(m_defaultState);
+            RequestState(firstState);
             RunningState = ERunningState.Running;
             Debug.Log($"[FM] {gameObject.name} - started running.");
         }

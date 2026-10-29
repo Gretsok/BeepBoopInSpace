@@ -15,7 +15,8 @@ namespace Game.MainMenu
     public class MainMenuOrchestrator : MonoBehaviour
     {
         private FlowMachine m_flowMachine;
-        
+        private GlobalContext m_globalContext;
+
         [Header("States")]
         [SerializeField]
         private HomeState m_homeState;
@@ -33,6 +34,7 @@ namespace Game.MainMenu
         public void Initialize(GlobalContext globalContext, MainMenuContext mainMenuContext)
         {
             m_flowMachine = mainMenuContext.FlowMachine;
+            m_globalContext = globalContext;
             m_homeState.Initialize(globalContext, mainMenuContext);
             m_characterSelectionState.Initialize(globalContext, mainMenuContext);
             m_creditsState.Initialize(globalContext, mainMenuContext);
@@ -45,6 +47,18 @@ namespace Game.MainMenu
             Cursor.lockState = CursorLockMode.None;
 
             LoadingScreenManager.Instance.HideLoadingScreen();
+        }
+
+        /// <summary>
+        /// Opens the home screen, or the character selection when players come back from a game: they find their
+        /// characters there, and Retour leads to the home screen.
+        /// </summary>
+        public void Run()
+        {
+            if (m_globalContext.PlayerManager.Players.Count > 0)
+                m_flowMachine.Run(m_characterSelectionState);
+            else
+                m_flowMachine.Run();
         }
 
         [Button]
