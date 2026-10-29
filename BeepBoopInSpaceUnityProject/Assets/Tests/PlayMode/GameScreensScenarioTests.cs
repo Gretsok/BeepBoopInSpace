@@ -105,10 +105,10 @@ namespace Game.Tests.PlayMode
             yield return RealSeconds(0.5f);
             yield return CaptureScreen("28-results");
 
-            m_driver.Step("Submit, the loading screen, then the main menu");
+            m_driver.Step("Submit, the loading screen, then the character selection");
             yield return SubmitAndSeeTheLoadingScreen();
             yield return CaptureScreen("29-loading-screen");
-            yield return m_driver.WaitUntil("the main menu home screen", () => IsOnMainMenuHome, 120f);
+            yield return m_driver.WaitUntil("the character selection", () => IsOnCharacterSelection, 120f);
 
             m_driver.AssertNoErrors();
         }
@@ -123,12 +123,9 @@ namespace Game.Tests.PlayMode
             LogAssert.ignoreFailingMessages = true;
 
             yield return JoinFourPlayersAndOpenHub();
+            var characters = PlayerCharacters;
             if (mode == "Tournament")
-            {
-                m_driver.Step("Hub: start a Tournament");
-                yield return m_driver.Select(HubButton("m_tournamentButton"));
-                yield return m_driver.Submit();
-            }
+                yield return StartTournament();
             else
                 yield return StartTraining(k_ScreensTestMode);
 
@@ -152,10 +149,11 @@ namespace Game.Tests.PlayMode
             m_driver.Step("Submit, the loading screen, then the main menu");
             yield return SubmitAndSeeTheLoadingScreen();
             m_driver.RemoveKeyboardAndMouse();
-            yield return m_driver.WaitUntil("the main menu home screen",
-                () => IsOnMainMenuHome || Manager(k_TournamentResultsContext) != null, 120f);
+            yield return m_driver.WaitUntil("the character selection",
+                () => IsOnCharacterSelection || Manager(k_TournamentResultsContext) != null, 120f);
             Assert.IsNull(Manager(k_TournamentResultsContext), "Leaving a tournament from the pause led to its results.");
             Assert.IsNull(Manager(k_TournamentContext), "The tournament left from the pause is still alive.");
+            yield return BackToCharacterSelectionWith(characters);
 
             m_driver.AssertNoErrors();
         }
@@ -175,6 +173,7 @@ namespace Game.Tests.PlayMode
                 m_driver.Fail($"No level for '{mode}'. Available: {string.Join(", ", LevelWidgets(levelSelection).Select(LevelNameOf))}");
             yield return m_driver.Select((VisualElement)Get(widget, "Element"));
             yield return m_driver.Submit();
+            yield return ConfirmLaunch();
         }
 
         /// <summary>

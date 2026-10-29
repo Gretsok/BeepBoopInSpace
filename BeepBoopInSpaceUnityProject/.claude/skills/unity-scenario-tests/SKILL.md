@@ -17,11 +17,13 @@ Fichiers (dans `Assets/Tests/PlayMode/`, assembly `BeepBoop.Tests.PlayMode`) :
 | `ScenarioDriver.cs` | Manettes, clavier et souris virtuels, navigation dans les menus UI Toolkit, captures d'écran, attente avec délai, lecture de l'état du jeu par réflexion, collecte des erreurs |
 
 `MainMenu_EveryScreenWorksWithGamepadKeyboardAndMouse` (~13 s, à lancer après toute modification des menus) :
-clavier et souris sur l'accueil (si aucun joueur n'a encore rejoint), puis à la manette Crédits et
-Annuler, volume au d-pad, sélection des personnages (rejoindre, se déclarer prêt, un personnage déjà
-choisi refusé, Annuler qui retire d'abord le « prêt », départ vers le hub quand tous sont prêts),
-défilement du choix du niveau ; il enregistre une capture de chaque écran dans `Logs/screenshots/`
-(`04` à `10` : chaque configuration de la sélection des personnages) : les regarder.
+clavier et souris sur l'accueil (personne n'y a rejoint : l'accueil retire les joueurs), puis à la
+manette Crédits et Annuler, volume au d-pad, sélection des personnages (rejoindre, se déclarer prêt,
+un personnage déjà choisi refusé, Annuler qui retire d'abord le « prêt », départ vers le hub quand
+tous sont prêts), hub (la croix reste sur la rangée des modes, Tournoi demande confirmation, Annuler
+la ferme), défilement du choix du niveau, double appui qui n'ouvre que la confirmation ; il
+enregistre une capture de chaque écran dans `Logs/screenshots/` (`04` à `10` : chaque configuration
+de la sélection des personnages ; `14` et `15` : les confirmations) : les regarder.
 
 `GameScreens_WorkWithGamepadsAndKeyboard` (~50 s) joue une partie de Points Rush : cartes du tutoriel
 pendant que les joueurs se déclarent prêts, timer, pause ouverte avec P puis pilotée par la manette
@@ -31,8 +33,12 @@ par « Menu principal » de la pause, en Training et en tournoi (abandonné : ni
 suivante).
 
 Chaque scénario de partie : Home → Play → les 4 manettes rejoignent (A/Croix) puis se déclarent prêtes
-(Y/Triangle, Aléatoire avec X si le personnage est déjà pris) → Hub → Training (ou Tournoi) → map choisie à la croix → les 4 joueurs font Ready → appuis aléatoires sur les 6 boutons
-d'action jusqu'aux résultats → Submit → retour au Home. Le jeu tourne en ×4 (`k_TimeScale`).
+(Y/Triangle, Aléatoire avec X si le personnage est déjà pris) → Hub → Training (ou Tournoi) → map
+choisie à la croix → confirmation (`ConfirmLaunch` : attendre le focus sur `confirm-button`, 0,5 s,
+Submit) → les 4 joueurs font Ready → appuis aléatoires sur les 6 boutons d'action jusqu'aux
+résultats → Submit → retour sur la sélection des personnages avec les 4 joueurs et leurs robots,
+personne prêt (`BackToCharacterSelectionWith`). Le set-up revient à l'accueil par Annuler (manette
+1). Le jeu tourne en ×4 (`k_TimeScale`).
 Un scénario échoue sur un délai dépassé **ou sur toute erreur/exception loguée**.
 
 ## 1. Lancer

@@ -488,6 +488,20 @@ namespace Game.Tests.PlayMode
         public static string MenuState => CurrentStateOf(k_MainMenuContext);
         public static string GameplayState => CurrentStateOf(k_GameplayContext);
         public static bool IsOnMainMenuHome => SceneManager.GetActiveScene().name == "MainMenu" && MenuState == "HomeState";
+        public static bool IsOnCharacterSelection => SceneManager.GetActiveScene().name == "MainMenu" && MenuState == "CharacterSelectionState";
+
+        /// <summary>Each player's character, in the order they joined.</summary>
+        public static List<Object> PlayerCharacters
+        {
+            get
+            {
+                var global = Manager(k_GlobalContext);
+                if (global == null)
+                    return new List<Object>();
+                return ((IEnumerable)Get(Get(global, "PlayerManager"), "Players")).Cast<object>()
+                    .Select(player => Get(player, "CharacterDataAsset") as Object).ToList();
+            }
+        }
 
         public static int PlayerCount
         {

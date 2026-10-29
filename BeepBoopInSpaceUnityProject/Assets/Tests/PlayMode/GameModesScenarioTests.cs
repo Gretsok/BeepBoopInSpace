@@ -83,14 +83,14 @@ namespace Game.Tests.PlayMode
             var random = new System.Random(Array.IndexOf(TrainingModes, mode) + 1);
 
             yield return JoinFourPlayersAndOpenHub();
+            var characters = PlayerCharacters;
             yield return StartTraining(mode);
 
             var played = new List<string>();
             yield return PlayOneGame(random, played);
             Assert.That(played[0], Does.Contain($" - {mode} - "), "The game loaded another level than the one selected.");
 
-            m_driver.Step("Back to the main menu");
-            yield return m_driver.WaitUntil("the main menu home screen", () => IsOnMainMenuHome);
+            yield return BackToCharacterSelectionWith(characters);
 
             m_driver.AssertNoErrors();
         }
@@ -102,10 +102,8 @@ namespace Game.Tests.PlayMode
             var random = new System.Random(42);
 
             yield return JoinFourPlayersAndOpenHub();
-
-            m_driver.Step("Hub: start a Tournament");
-            yield return m_driver.Select(HubButton("m_tournamentButton"));
-            yield return m_driver.Submit();
+            var characters = PlayerCharacters;
+            yield return StartTournament();
 
             // Tournament picks its levels itself; it ends once a player has won ScoreToReach games.
             var played = new List<string>();
@@ -129,13 +127,14 @@ namespace Game.Tests.PlayMode
                 }
 
                 yield return m_driver.WaitUntil("the next game or the main menu",
-                    () => IsOnMainMenuHome || GameplayState != null, 180f);
-                if (IsOnMainMenuHome)
+                    () => IsOnCharacterSelection || IsOnMainMenuHome || GameplayState != null, 180f);
+                if (IsOnCharacterSelection || IsOnMainMenuHome)
                     break;
             }
 
             Debug.Log($"[Scenario] Tournament over after {played.Count} games: {string.Join(", ", played)}");
             Assert.IsNull(Manager(k_TournamentContext), "The tournament context should be destroyed once back on the menu.");
+            yield return BackToCharacterSelectionWith(characters);
             m_driver.AssertNoErrors();
         }
 
@@ -149,15 +148,13 @@ namespace Game.Tests.PlayMode
         {
             LogAssert.ignoreFailingMessages = true;
             Time.timeScale = 1f;
-            const string home = "Game.MainMenu.HomeScreen";
+            const string home = "Game.MainMenu.Home.HomeScreen";
             const string settings = "Game.MainMenu.SettingsScreen.MainMenuSettingsScreen";
             var cancel = m_driver.MainPad.buttonEast;
 
-            // Once players have joined (an earlier scenario of the run), only the main player's devices drive the menus.
-            if (PlayerCount == 0)
-                yield return KeyboardAndMouseOnHome();
-            else
-                Debug.Log("[Scenario] Keyboard and mouse steps skipped: players have joined, the menus follow the main player's pad.");
+            // The home screen ends the players' session: nobody has joined, so every device drives the menus.
+            Assert.AreEqual(0, PlayerCount, "Players are still there on the home screen.");
+            yield return KeyboardAndMouseOnHome();
 
             StartRenderingToTextures();
 
@@ -236,16 +233,45 @@ namespace Game.Tests.PlayMode
             yield return WaitForCameraBlend();
             yield return CaptureScreen("11-hub");
 
-            m_driver.Step("Level selection: scroll to the last level, then Cancel");
-            yield return m_driver.Select(HubButton("m_trainingButton"));
+            m_driver.Step("Hub: the d-pad stays in the row of the modes, Tournoi asks for a confirmation, Cancel closes it");
+            var tournament = HubButton("m_tournamentButton");
+            var training = HubButton("m_trainingButton");
+            yield return m_driver.Select(training);
+            yield return m_driver.Press(m_driver.DpadButton(MoveDirection.Right));
+            yield return RealSeconds(0.3f);
+            Assert.AreEqual(training, FocusedElement, "Right from Entraînement left the row of the modes.");
+            yield return m_driver.Select(tournament);
+            yield return m_driver.Press(m_driver.DpadButton(MoveDirection.Left));
+            yield return RealSeconds(0.3f);
+            Assert.AreEqual(tournament, FocusedElement, "Left from Tournoi left the row of the modes.");
+            yield return m_driver.Submit();
+            yield return WaitForConfirmation();
+            yield return RealSeconds(0.5f);
+            Assert.AreEqual("HubState", MenuState, "Tournoi left the hub without a confirmation.");
+            yield return CaptureScreen("14-tournament-confirmation");
+            yield return m_driver.Press(cancel);
+            yield return m_driver.WaitUntil("the focus back on Tournoi", () => FocusedElement == tournament, 5f);
+
+            m_driver.Step("Level selection: scroll to the last level");
+            yield return m_driver.Select(training);
             yield return m_driver.Submit();
             yield return m_driver.WaitUntil("the level selection screen", () => MenuState == "LevelSelectionState");
             var levelSelection = FindActive("Game.MainMenu.LevelSelection.LevelSelectionScreen");
             yield return m_driver.WaitUntil("the level widgets", () => LevelWidgets(levelSelection).Any());
             yield return CaptureScreen("12-level-selection");
-            yield return m_driver.Select((VisualElement)Get(LevelWidgets(levelSelection).Last(), "Element"));
+            var lastLevel = (VisualElement)Get(LevelWidgets(levelSelection).Last(), "Element");
+            yield return m_driver.Select(lastLevel);
             yield return RealSeconds(0.5f);
             yield return CaptureScreen("13-level-selection-last");
+
+            m_driver.Step("Level selection: a double press only opens the confirmation, Cancel closes it, then goes back");
+            yield return DoubleSubmit();
+            yield return WaitForConfirmation();
+            yield return RealSeconds(0.5f);
+            Assert.AreEqual("LevelSelectionState", MenuState, "A double press launched the level.");
+            yield return CaptureScreen("15-level-confirmation");
+            yield return m_driver.Press(cancel);
+            yield return m_driver.WaitUntil("the focus back on the level", () => FocusedElement == lastLevel, 5f);
             yield return m_driver.Press(cancel);
             yield return m_driver.WaitUntil("the hub after Cancel", () => MenuState == "HubState");
 
@@ -254,7 +280,7 @@ namespace Game.Tests.PlayMode
 
         private IEnumerator KeyboardAndMouseOnHome()
         {
-            const string home = "Game.MainMenu.HomeScreen";
+            const string home = "Game.MainMenu.Home.HomeScreen";
             m_driver.AddKeyboardAndMouse();
             var keyboard = m_driver.Keyboard;
 
@@ -294,7 +320,7 @@ namespace Game.Tests.PlayMode
         private IEnumerator GoToMainMenuHome()
         {
             m_driver.Step("Boot to the main menu");
-            if (!IsOnMainMenuHome)
+            if (!IsOnMainMenuHome && !IsOnCharacterSelection)
             {
                 // A scenario that failed mid-game never reached EndState: release its level like EndState does,
                 // otherwise its Addressables handles stay loaded and the next game on that level fails to load.
@@ -308,7 +334,64 @@ namespace Game.Tests.PlayMode
                     UnityEngine.Object.Destroy(tournament.gameObject);
                 SceneManager.LoadScene(0);
             }
+            // With players left from an earlier scenario, the menu opens on the character selection: the main player's
+            // Cancel goes back home, after cancelling being ready.
+            yield return m_driver.WaitUntil("the main menu", () => (IsOnMainMenuHome || IsOnCharacterSelection) && FocusedElement != null);
+            for (int presses = 0; IsOnCharacterSelection && presses < 3; presses++)
+            {
+                yield return m_driver.Press(m_driver.MainPad.buttonEast);
+                yield return RealSeconds(0.3f);
+            }
             yield return m_driver.WaitUntil("the main menu home screen", () => IsOnMainMenuHome && FocusedElement != null);
+        }
+
+        /// <summary>After a game, the character selection with every player and their character, nobody ready yet.</summary>
+        private IEnumerator BackToCharacterSelectionWith(List<UnityEngine.Object> characters)
+        {
+            m_driver.Step("Back to the character selection with the same players");
+            yield return m_driver.WaitUntil("the character selection", () => IsOnCharacterSelection && FocusedElement != null);
+            Assert.AreEqual(characters.Count, PlayerCount, "Players were lost on the way back to the menu.");
+            for (int i = 0; i < characters.Count; i++)
+            {
+                Assert.AreEqual(characters[i], CharacterOf(i), $"Player {i + 1} came back with another character.");
+                Assert.IsFalse(IsReady(i), $"Player {i + 1} came back ready.");
+            }
+        }
+
+        private IEnumerator StartTournament()
+        {
+            m_driver.Step("Hub: start a Tournament");
+            yield return m_driver.Select(HubButton("m_tournamentButton"));
+            yield return m_driver.Submit();
+            yield return ConfirmLaunch();
+        }
+
+        // A level or the tournament opens a confirmation, whose confirm button ignores presses for a moment.
+        private IEnumerator ConfirmLaunch()
+        {
+            yield return WaitForConfirmation();
+            yield return RealSeconds(0.5f);
+            yield return m_driver.Submit();
+        }
+
+        private IEnumerator WaitForConfirmation()
+        {
+            yield return m_driver.WaitUntil("the launch confirmation", () => NameOf(FocusedElement) == "confirm-button", 5f);
+        }
+
+        // A then A again right away, like a player pressing too fast: one press per frame, the main pad's only event.
+        private IEnumerator DoubleSubmit()
+        {
+            var button = m_driver.MainPad.buttonSouth;
+            var start = Time.realtimeSinceStartup;
+            foreach (var value in new[] { 1f, 0f, 1f, 0f })
+            {
+                Set(button, value);
+                yield return null;
+            }
+            var duration = Time.realtimeSinceStartup - start;
+            if (duration > 0.3f)
+                Debug.LogWarning($"[Scenario] The double press took {duration:0.00}s: slower than a player's, it proves little.");
         }
 
         private IEnumerator JoinFourPlayersAndOpenHub()
