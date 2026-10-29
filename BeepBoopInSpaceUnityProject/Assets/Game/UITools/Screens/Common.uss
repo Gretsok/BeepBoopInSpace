@@ -196,8 +196,8 @@
     justify-content: center;
     height: 68px;
     margin: 0;
-    /* Boogaloo's ink sits high in its line: the label goes down a little. */
-    padding: 9px 40px 0 40px;
+    /* Boogaloo's capitals sit ~2.5% of the font size below the middle of the line: negligible at this size. */
+    padding: 0 40px;
     border-width: 3px;
     border-radius: 24px;
     border-color: var(--ui-outline);
@@ -233,7 +233,8 @@
 /* The screen's main action. */
 .ui-button--big {
     height: 150px;
-    padding: 20px 110px 0 110px;
+    /* Raises the text by the ~2 px its capitals sit below the middle of the line at this size. */
+    padding: 0 110px 4px 110px;
     border-width: 4px;
     border-radius: 52px;
     font-size: 88px;
@@ -297,7 +298,7 @@
 .ui-screen .ui-tile__label {
     font-size: 72px;
     -unity-text-align: middle-center;
-    translate: 0 -8px;
+    translate: 0 -1px;
 }
 
 .ui-tile:focus .ui-tile__label {
