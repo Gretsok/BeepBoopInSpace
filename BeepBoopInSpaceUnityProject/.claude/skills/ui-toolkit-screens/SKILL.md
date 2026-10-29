@@ -75,9 +75,12 @@ Lire l'UXML, le script et la section du USS ensemble. Règles :
   la sélection des personnages et les crédits.
 - **Police** : `.ui-screen .unity-text-element` impose Boogaloo à tous les textes ; une autre police
   (ou taille, couleur, marge sur un `ui-text`, qui remet ses marges à 0) demande un sélecteur d'au
-  moins deux classes placé après dans le USS (`.ui-screen .ui-title__label`). Boogaloo encre ~5 px plus haut que le milieu de sa ligne
-  (~12 % de sa taille) : `translate: 0 -5px` sur un texte à côté d'un bouton de manette, et dans un
-  bouton plus de `padding-top` que de `padding-bottom` (9 px pour 35 px).
+  moins deux classes placé après dans le USS (`.ui-screen .ui-title__label`). Centrage vertical, mesuré
+  sur les captures (`inkbox` du skill `psd-mockups`) le 28/10/2026 : centré dans sa boîte, Boogaloo pose
+  ses capitales ~2,5 % de sa taille **sous** le milieu, donc un bouton ou une tuile garde des marges
+  verticales égales (`ui-button--big`, 88 px : 4 px de plus en bas). L'ancienne règle « Boogaloo encre
+  haut, plus de `padding-top` » décentrait tous les boutons vers le bas (signalé par l'utilisateur).
+  Les `translate: 0 -5px` des légendes alignent le texte sur le glyphe voisin, pas sur sa boîte.
 - **Sombre qui laisse voir le fond** (tuile, panneau) : fond `--ui-navy`, `border-radius` +
   `overflow: hidden`, et un enfant `ui-filigree` en premier ; un texte au-dessus est un `Label`
   enfant (le texte propre d'un `Button` est dessiné sous ses enfants).

@@ -54,6 +54,9 @@ python $A version
   text="..." />` dans un `<ui:Instance>` pour changer un attribut d'un élément du gabarit.
 - `RuntimePanelUtils.CameraTransformWorldToPanel(panel, position, camera)` : un point du monde en
   coordonnées du panel (le « +1 » au-dessus d'une case).
+- Input System, `Keyboard.keyboardLayout` : nom de disposition propre à la plateforme (« French »...),
+  jamais « AZERTY » (doc de `Keyboard.cs`) ; reconnaître l'AZERTY par `keyboard.qKey.displayName == "A"`
+  (`InputIndicationActionDataAsset`).
 - Input System, clavier : seule Entrée a l'usage `Submit` (Espace ne valide pas l'UI) ; Échap a
   l'usage `Cancel`.
 - Les panels UI Toolkit et les canvas uGUI « Screen Space - Overlay » sont triés ensemble par

@@ -27,6 +27,12 @@ python .claude/skills/unity-headless/scripts/unity_cli.py build --zip           
 python .claude/skills/unity-headless/scripts/unity_cli.py build --development --zip  # dossier suffixé _Debug
 ```
 
+- **Ne partager que les builds release.** Un build de développement ouvre une connexion pour le
+  profiler (écoute TCP + broadcast UDP, « Player connection » dans son log) : Windows demande alors
+  d'autoriser le jeu dans le pare-feu (vu le 28/10/2026, règles créées pour les seuls dossiers
+  `_Debug`). Un build release n'ouvre aucun port. L'avertissement SmartScreen (« Windows a protégé
+  votre ordinateur ») est autre chose : exe non signé téléchargé d'Internet ; voir § 4.
+
 - Sortie : `Builds/BeepBoop_Win_<aaaammjj>_<hhmm>[_Debug]/Beep Boop dans l'espace.exe`, et avec
   `--zip` l'archive `Builds/BeepBoop_Win_<...>.zip` à côté (le dossier du build à la racine de
   l'archive, comme les builds précédents). `--output <dossier>` pour un autre emplacement.
@@ -80,6 +86,13 @@ tests de scénario, dans l'éditeur (où les ressources ne sont pas strippées c
 Donner le chemin du dossier et du zip, leur taille, la durée, et le résultat du lancement de
 contrôle. `Builds/` pèse vite plusieurs Go : proposer de supprimer les anciens builds, sans le faire
 sans accord.
+
+- Les testeurs qui téléchargent le zip voient SmartScreen (« Windows a protégé votre ordinateur »,
+  éditeur inconnu) : l'exe n'est pas signé et Windows marque les fichiers venus d'Internet. Leur dire :
+  clic droit sur le zip → Propriétés → cocher « Débloquer » **avant** d'extraire, ou « Informations
+  complémentaires → Exécuter quand même ». Le supprimer demande une signature de code (certificat
+  d'éditeur, payant, à la charge de l'utilisateur) puis de la réputation auprès de Microsoft, ou une
+  distribution par Steam / l'app itch.io, qui ne marquent pas les fichiers.
 
 ## Repères
 
