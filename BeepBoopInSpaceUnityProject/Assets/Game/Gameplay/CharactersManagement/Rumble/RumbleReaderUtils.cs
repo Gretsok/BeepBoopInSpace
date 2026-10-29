@@ -13,7 +13,8 @@ namespace Game.Gameplay.CharactersManagement.Rumble
             if (Application.isPlaying)
 #endif
             {
-                return Time.time;
+                // Unscaled: with the game paused (time scale 0), a scaled rumble would never end.
+                return Time.unscaledTime;
             }
 #if UNITY_EDITOR
             else

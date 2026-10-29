@@ -70,7 +70,8 @@ namespace Game.Gameplay.CharactersManagement.Death
         
         public void Kill(float a_waitDurationToResurrect = -1f, bool a_cannotCounter = false)
         {
-            if (IsInvincible && !a_cannotCounter)
+            // Dying twice would count twice (Least Deaths) and schedule two resurrections.
+            if (!IsAlive || (IsInvincible && !a_cannotCounter))
                 return;
 
             IsAlive = false;

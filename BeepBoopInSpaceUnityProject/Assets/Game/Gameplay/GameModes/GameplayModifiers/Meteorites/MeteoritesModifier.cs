@@ -93,9 +93,12 @@ namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
         private void SpawnMeteorite()
         {
             m_lastSpawnTime = TimePassedSpawning;
-            
+
+            var target = m_gridBuilder.GetRandomWalkableCell(cell => !cell.TryGetComponent<KillingCellComponent>(out _));
+            if (!target)
+                return;
             var meteoriteSystem = PrepareAndGetReadyMeteoriteSystem();
-            meteoriteSystem.Drop(m_gridBuilder.GetRandomWalkableCell(cell => !cell.TryGetComponent<KillingCellComponent>(out _)), DropTime);
+            meteoriteSystem.Drop(target, DropTime);
             Debug.Log($"Spawn meteorite at {m_lastSpawnTime}", meteoriteSystem.gameObject);
         }
 

@@ -74,18 +74,21 @@ namespace Game.Global.NavigationAuthority
         
         private async UniTask UpdatePlayerDevicesOnEventSystem()
         {
-            var player = m_playerManager.Players.FirstOrDefault(player => player.PlayerInput.playerIndex == m_mainPlayerID);
-            if (!player)
-                return;
-            
-            await UniTask.WaitUntil(() => player.Initialized, cancellationToken: destroyCancellationToken);
-
-            if (!player)
-                return;
+            var player = m_playerManager.Players.FirstOrDefault(player => player && player.PlayerInput.playerIndex == m_mainPlayerID);
+            if (player)
+            {
+                await UniTask.WaitUntil(() => !player || player.Initialized, cancellationToken: destroyCancellationToken);
+                if (!player)
+                    return;
+            }
 
             m_inputUnregistrationCallback?.Invoke(m_actionAsset);
-            m_actionAsset.devices = 
-                player.PlayerInput.devices;
+            // Nobody has joined (or everybody left): every device drives the UI again, as at the start. Not a ternary:
+            // its null would become an empty ReadOnlyArray (implicit conversion from an array), i.e. no device at all.
+            if (player)
+                m_actionAsset.devices = player.PlayerInput.devices;
+            else
+                m_actionAsset.devices = null;
             m_inputRegistrationCallback?.Invoke(m_actionAsset);
         }
     }

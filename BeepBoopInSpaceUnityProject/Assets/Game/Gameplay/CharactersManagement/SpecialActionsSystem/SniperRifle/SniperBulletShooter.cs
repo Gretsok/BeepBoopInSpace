@@ -67,10 +67,12 @@ namespace Game.Gameplay.CharactersManagement.SpecialActionsSystem.SniperRifle
             if (!otherDeathController.IsAlive)
                 return;
             
-            collisionsHandler.ReferencesHolder.DeathController.Kill();
+            otherDeathController.Kill();
             Destroy(projectile.gameObject);
-            
-            OnKilledOtherPlayer?.Invoke(this);
+
+            // An invincible player stops the bullet without dying: no kill to count.
+            if (!otherDeathController.IsAlive)
+                OnKilledOtherPlayer?.Invoke(this);
         }
     }
 }

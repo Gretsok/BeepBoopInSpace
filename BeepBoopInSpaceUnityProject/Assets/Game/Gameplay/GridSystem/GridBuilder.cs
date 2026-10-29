@@ -128,31 +128,23 @@ namespace Game.Gameplay.GridSystem
         public Cell GetRandomAvailableWalkableCell(DGettingWalkableCondition additionalCondition = null)
         {
             return GetRandomWalkableCell(cell =>
-                cell.TryGetComponent<CanBeWalkedOnCellComponent>(out var comp) && !comp.MovementControllerOnCell);
+                cell.TryGetComponent<CanBeWalkedOnCellComponent>(out var comp) && !comp.MovementControllerOnCell
+                && (additionalCondition == null || additionalCondition(cell)));
         }
 
+        /// <summary>A random walkable cell matching the condition, null when none does.</summary>
         public Cell GetRandomWalkableCell(DGettingWalkableCondition additionalCondition = null)
         {
-            int iterations = 0;
-            
-
-            while (iterations < 250)
+            var candidates = m_cells.SelectMany(row => row.RowData)
+                .Where(cell => cell && cell.TryGetComponent<CanBeWalkedOnCellComponent>(out _)
+                               && (additionalCondition == null || additionalCondition(cell)))
+                .ToList();
+            if (candidates.Count == 0)
             {
-                var randomCell = GetRandomCell();
-                if (!randomCell)
-                    continue;
-                
-                if (!additionalCondition?.Invoke(randomCell) ?? false)
-                    continue;
-                
-                if (randomCell.TryGetComponent<CanBeWalkedOnCellComponent>(out var comp))
-                    return randomCell;
-                
-                ++iterations;
+                Debug.LogWarning("No walkable cell matches the condition.");
+                return null;
             }
-
-            Debug.LogError($"Max iterations hit when tried to get random walkable cell.");
-            return null;
+            return candidates[Random.Range(0, candidates.Count)];
         }
 
         public Cell GetCellAt(Vector2Int position)

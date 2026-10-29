@@ -25,7 +25,7 @@ namespace Game.Global.InputIndicationsManagement
             switch (controlScheme)
             {
                 case "KBM":
-                    if (Keyboard.current.keyboardLayout == "AZERTY")
+                    if (IsAzertyKeyboard())
                         return KBM_Azerty_InputSpriteDataAsset.InputSprite;
                     return KBM_Qwerty_InputSpriteDataAsset.InputSprite;
                 case "XboxGamepad":
@@ -35,6 +35,14 @@ namespace Game.Global.InputIndicationsManagement
                 default:
                     return null;
             }
+        }
+
+        // Layout names are the platform's ("French" on Windows), never "AZERTY": the key that writes Q on a QWERTY
+        // keyboard writes A on an AZERTY one.
+        private static bool IsAzertyKeyboard()
+        {
+            var keyboard = Keyboard.current;
+            return keyboard != null && string.Equals(keyboard.qKey.displayName, "A", System.StringComparison.OrdinalIgnoreCase);
         }
     }
 }

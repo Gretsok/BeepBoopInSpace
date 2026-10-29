@@ -25,7 +25,11 @@ namespace Game.Gameplay.Cells.ToEndPointTeleportationCell
             if (!obj.MovementControllerOnCell)
                 return;
             
-            obj.MovementControllerOnCell.TeleportToCell(m_gridBuilder.GetCellAt(m_endPointCoordinates));
+            // Someone stands on the end point: the character stays on the teleporter.
+            var endPoint = m_gridBuilder.GetCellAt(m_endPointCoordinates);
+            if (!endPoint || (endPoint.TryGetComponent(out CanBeWalkedOnCellComponent endPointComponent) && endPointComponent.MovementControllerOnCell))
+                return;
+            obj.MovementControllerOnCell.TeleportToCell(endPoint);
         }
 
         private IEnumerator Start()

@@ -16,9 +16,14 @@ namespace Game.MainMenu
         [SerializeField]
         private TrainingContextAssetReference m_trainingContextAsset;
         
+        private bool m_loadingTournament;
+
         [Button]
         public void LaunchTournament()
         {
+            // The hub stays focused while the boot scene loads: a second press would boot a second tournament.
+            if (m_loadingTournament) return;
+            m_loadingTournament = true;
             LoadingScreenManager.Instance?.ShowLoadingScreen();
             _ = Addressables.LoadSceneAsync(m_tournamentBootScene, LoadSceneMode.Single);
         }

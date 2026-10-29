@@ -46,6 +46,8 @@ namespace Game.Gameplay.CharactersManagement.Death
             if (m_deathController.CanResurrect)
             {
                 m_respawnCell = DecideAndReturnRespawnCell(m_deathCell);
+                if (!m_respawnCell)
+                    return;
                 m_respawnCell.OnCellStateUpdated += HandleRespawnCellUpdated;
 
                 var deathPlacementFX = Instantiate(m_deathPlacementFXPrefab, deathPosition, Quaternion.identity);
@@ -65,7 +67,8 @@ namespace Game.Gameplay.CharactersManagement.Death
                 m_respawnCell = ReturnClosestCellFrom(m_deathCell);
             }
 
-            m_respawnCell.OnCellStateUpdated += HandleRespawnCellUpdated;
+            if (m_respawnCell)
+                m_respawnCell.OnCellStateUpdated += HandleRespawnCellUpdated;
         }
 
         private Cell DecideAndReturnRespawnCell(Cell sourceCell)
@@ -112,11 +115,11 @@ namespace Game.Gameplay.CharactersManagement.Death
             if (m_respawnCell)
             {
                 m_respawnCell.OnCellStateUpdated -= HandleRespawnCellUpdated;
-                while (!CellIsValid(m_respawnCell))
-                {
+                // The closest valid cell, else a random valid one: no other attempt would find more.
+                if (!CellIsValid(m_respawnCell))
                     m_respawnCell = ReturnClosestCellFrom(m_deathCell);
-                }
-                TeleportToRespawnCell();
+                if (m_respawnCell)
+                    TeleportToRespawnCell();
                 m_respawnCell = null;
             }
 

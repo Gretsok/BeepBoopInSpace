@@ -83,10 +83,10 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.PointsRushObjectiveManagem
             if (m_currentObjectiveIndication != null)
                 Destroy(m_currentObjectiveIndication);
 
-            do
-            {
-                CurrentObjectiveCell = m_gridBuilder.GetRandomAvailableWalkableCell((cell) => !cell.GetComponent<KillingCellComponent>());
-            } while (!CurrentObjectiveCell || DoesAPawnStandOnCell(CurrentObjectiveCell));
+            CurrentObjectiveCell = m_gridBuilder.GetRandomAvailableWalkableCell(cell =>
+                !cell.GetComponent<KillingCellComponent>() && !DoesAPawnStandOnCell(cell));
+            if (!CurrentObjectiveCell)
+                return;
             m_objectiveCollectedAudioPlayer.Play();
             m_currentObjectiveIndication = Instantiate(m_objectiveIndicationPrefab, CurrentObjectiveCell.transform);
         }
