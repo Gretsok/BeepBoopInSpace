@@ -12,12 +12,12 @@ namespace Game.Gameplay.Flows.Gameplay
             base.HandleEnter();
             var charactersManager = CharactersManager.Instance;
             m_configurationsManager = ConfigurationsManager.Instance;
-            
-            
+            var controlMode = GameplayContext.Instance.ControlMode;
+
             foreach (var pair in charactersManager.CharacterPlayerControllersAssociation)
             {
                 pair.Key.Activate();
-                pair.Value.ReferencesHolder.ActionsController.SetConfiguration(m_configurationsManager.CurrentConfiguration);
+                pair.Value.ReferencesHolder.ActionsController.SetConfiguration(m_configurationsManager.CurrentConfiguration, controlMode);
             }
         }
 

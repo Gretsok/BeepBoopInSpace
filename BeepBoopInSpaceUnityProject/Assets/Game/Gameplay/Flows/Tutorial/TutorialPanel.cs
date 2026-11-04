@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
+using Game.Gameplay.CharactersManagement.Actions;
 using Game.Global.InputIndicationsManagement;
 using Game.Global.PlayerManagement;
 using Game.UITools.Screens;
@@ -15,6 +16,9 @@ namespace Game.Gameplay.Flows.Tutorial
     /// </summary>
     public class TutorialPanel : AUIToolkitScreen
     {
+        private const string k_FourButtonsControlsClass = "tutorial__controls--four-buttons";
+        private const string k_FiveButtonsControlsClass = "tutorial__controls--five-buttons";
+
         [SerializeField]
         private VisualTreeAsset m_playerCardTemplate;
         [SerializeField]
@@ -28,6 +32,7 @@ namespace Game.Gameplay.Flows.Tutorial
         private string m_objectiveLabel;
         private string m_specialActionLabel;
         private bool m_hasMeteorites;
+        private ECharacterControlMode m_controlMode;
 
         private VisualElement m_waitingBar;
         private Tween m_waitingTween;
@@ -44,11 +49,13 @@ namespace Game.Gameplay.Flows.Tutorial
             RefreshPlayers();
         }
 
-        public void InflateGameData(string objectiveLabelKey, string specialActionLabelKey, bool hasMeteorites)
+        public void InflateGameData(string objectiveLabelKey, string specialActionLabelKey, bool hasMeteorites,
+            ECharacterControlMode controlMode)
         {
             m_objectiveLabel = objectiveLabelKey;
             m_specialActionLabel = specialActionLabelKey;
             m_hasMeteorites = hasMeteorites;
+            m_controlMode = controlMode;
             RefreshGameData();
         }
 
@@ -72,7 +79,14 @@ namespace Game.Gameplay.Flows.Tutorial
                 return;
             Query<Label>("objective-label").text = m_objectiveLabel;
             Query<Label>("special-action-label").text = m_specialActionLabel;
+            // The simplified controls without a special action: no button plays it.
+            var specialActionDisplay = m_controlMode == ECharacterControlMode.Simplified ? DisplayStyle.None : DisplayStyle.Flex;
+            Query<Label>("special-action-title").style.display = specialActionDisplay;
+            Query<Label>("special-action-label").style.display = specialActionDisplay;
             Query<VisualElement>("meteorites").style.display = m_hasMeteorites ? DisplayStyle.Flex : DisplayStyle.None;
+            var controls = Query<VisualElement>("controls");
+            controls.EnableInClassList(k_FourButtonsControlsClass, m_controlMode == ECharacterControlMode.Simplified);
+            controls.EnableInClassList(k_FiveButtonsControlsClass, m_controlMode == ECharacterControlMode.SimplifiedWithSpecialAction);
         }
 
         private void RefreshPlayers()

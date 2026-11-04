@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Gameplay.CharactersManagement.Actions;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using Game.Gameplay.GameModes;
 using Game.Gameplay.GameModes.GameplayModifiers;
@@ -30,7 +31,11 @@ namespace Game.Gameplay.Levels._0_Core
         
         [field: SerializeField]
         public SpecialActionAssetReference SpecialActionPrefab { get; private set; }
-        
+
+        [field: SerializeField]
+        [field: Tooltip("Simplified: up, left, right and down on the face buttons, the robot facing where it goes.")]
+        public ECharacterControlMode ControlMode { get; private set; }
+
         [field: SerializeField]
         [field: Tooltip("They must inherit from \"AGameplayModifier\"")]
         public List<GameplayModifierAssetReference> AdditionalSystemsToInstantiate { get; private set; }

@@ -132,6 +132,14 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 
+.tutorial__controls--four-buttons {
+    background-image: url("/Assets/RawAssets/Tutorial/UI_XboxController_FourButtons.png");
+}
+
+.tutorial__controls--five-buttons {
+    background-image: url("/Assets/RawAssets/Tutorial/UI_XboxController_FiveButtons.png");
+}
+
 .tutorial__players {
     position: absolute;
     left: 0;

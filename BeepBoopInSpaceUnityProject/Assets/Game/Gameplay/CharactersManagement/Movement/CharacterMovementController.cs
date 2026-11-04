@@ -283,5 +283,40 @@ namespace Game.Gameplay.CharactersManagement.Movement
                     break;
             }
         }
+
+        // Simplified controls, relative to the screen: the gameplay camera looks along Z.
+        public void GoUp()
+        {
+            GoTowards(EDirection.Z);
+        }
+
+        public void GoDown()
+        {
+            GoTowards(EDirection.MinusZ);
+        }
+
+        public void GoRight()
+        {
+            GoTowards(EDirection.X);
+        }
+
+        public void GoLeft()
+        {
+            GoTowards(EDirection.MinusX);
+        }
+
+        private void GoTowards(EDirection direction)
+        {
+            if (IsBlocked)
+                return;
+
+            if (direction != CurrentDirection)
+            {
+                m_referencesHolder.Root.transform.DORotateQuaternion(Quaternion.LookRotation(GetWorldDirectionFrom(direction), Vector3.up), 0.2f);
+                CurrentDirection = direction;
+            }
+
+            WalkForward();
+        }
     }
 }

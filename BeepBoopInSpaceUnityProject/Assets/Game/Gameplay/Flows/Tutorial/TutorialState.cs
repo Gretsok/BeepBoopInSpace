@@ -45,7 +45,8 @@ namespace Game.Gameplay.Flows.Tutorial
             m_tutorialPanel.InflateGameData(
                 gameplayContext.ObjectiveManager.ObjectiveLabelKey, 
                 gameplayContext.SpecialActionPrefab.SpecialActionLabelKey, 
-                gameplayContext.HasGameplayModifier<MeteoritesModifier>());
+                gameplayContext.HasGameplayModifier<MeteoritesModifier>(),
+                gameplayContext.ControlMode);
             m_tutorialPanel.ResetWaitingBar();
         }
 

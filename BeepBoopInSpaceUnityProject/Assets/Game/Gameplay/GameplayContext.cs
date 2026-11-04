@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Game.ArchitectureTools.FlowMachine;
 using Game.ArchitectureTools.Manager;
+using Game.Gameplay.CharactersManagement.Actions;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using Game.Gameplay.Flows._0_Load;
 using Game.Gameplay.GameModes.GameplayModifiers;
@@ -32,6 +33,10 @@ namespace Game.Gameplay
         public IReadOnlyList<AGameplayModifier> GameplayModifiers => m_gameplayModifiers;
         
         public CurrentLevelInfoManager CurrentLevelInfoManager { get; private set; }
+
+        public ECharacterControlMode ControlMode => CurrentLevelInfoManager && CurrentLevelInfoManager.CurrentLevelDataAsset
+            ? CurrentLevelInfoManager.CurrentLevelDataAsset.ControlMode
+            : ECharacterControlMode.Advanced;
 
         public void RegisterObjectiveManager(AObjectiveManager objectiveManager)
         {

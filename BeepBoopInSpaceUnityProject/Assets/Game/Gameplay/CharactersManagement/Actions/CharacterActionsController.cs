@@ -22,43 +22,45 @@ namespace Game.Gameplay.CharactersManagement.Actions
         }
 
         public ActionKeysConfiguration KeysConfiguration { get; private set; }
-        public void SetConfiguration(List<int> config)
+        public void SetConfiguration(List<int> config, ECharacterControlMode controlMode)
         {
+            var actions = GetActions(controlMode);
+            // The configuration shuffles every button: the mode's actions go on its buttons in their shuffled order.
+            var buttons = config.FindAll(button => button < controlMode.ButtonsCount());
+
             var newConfig = new ActionKeysConfiguration();
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < actions.Length; i++)
             {
-                if (i == config[0])
-                {
-                     newConfig.Action[i] = ReferencesHolder.MovementController.WalkForward;
-                }
-                else if (i == config[1])
-                {
-                    newConfig.Action[i] = ReferencesHolder.MovementController.WalkLeft;
-                }
-                else if (i == config[2])
-                {
-                    newConfig.Action[i] = ReferencesHolder.MovementController.WalkRight;
-                }
-                else if (i == config[3])
-                {
-                    newConfig.Action[i] = ReferencesHolder.MovementController.TurnRight;
-                }
-                else if (i == config[4])
-                {
-                    newConfig.Action[i] = ReferencesHolder.MovementController.TurnLeft;
-                }
-                else if (i == config[5])
-                {
-                    newConfig.Action[i] = PlaySpecialAction;
-                }
-                else
-                {
-                    newConfig.Action[i] = null;
-                }
+                newConfig.Action[buttons[i]] = actions[i];
             }
-            
-            
+
             KeysConfiguration = newConfig;
+        }
+
+        private FActionKeyDelegate[] GetActions(ECharacterControlMode controlMode)
+        {
+            var movementController = ReferencesHolder.MovementController;
+            switch (controlMode)
+            {
+                case ECharacterControlMode.Simplified:
+                    return new FActionKeyDelegate[]
+                    {
+                        movementController.GoUp, movementController.GoLeft, movementController.GoRight, movementController.GoDown
+                    };
+                case ECharacterControlMode.SimplifiedWithSpecialAction:
+                    return new FActionKeyDelegate[]
+                    {
+                        movementController.GoUp, movementController.GoLeft, movementController.GoRight, movementController.GoDown,
+                        PlaySpecialAction
+                    };
+                case ECharacterControlMode.Advanced:
+                default:
+                    return new FActionKeyDelegate[]
+                    {
+                        movementController.WalkForward, movementController.WalkLeft, movementController.WalkRight,
+                        movementController.TurnRight, movementController.TurnLeft, PlaySpecialAction
+                    };
+            }
         }
 
         public void TryToPerformAction(int index)
