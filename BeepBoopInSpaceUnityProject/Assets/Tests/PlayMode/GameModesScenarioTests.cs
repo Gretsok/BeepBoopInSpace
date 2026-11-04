@@ -72,6 +72,7 @@ namespace Game.Tests.PlayMode
             StopRenderingToTextures();
             RestoreControlMode();
             LeaveOnlineRoom();
+            RestoreGuestLoadingTimeout();
             yield return RestoreRunInBackground();
             StopGuestBuild();
             m_driver.RemoveKeyboardAndMouse();
@@ -440,7 +441,8 @@ namespace Game.Tests.PlayMode
 
         /// <summary>From the game scene loading to the end of its results screen.</summary>
         /// <param name="onResults">Called as the results show, before the close-ups.</param>
-        private IEnumerator PlayOneGame(System.Random random, List<string> played, Action onResults = null)
+        /// <param name="onPlaying">Called once the game is on, before the buttons are pressed.</param>
+        private IEnumerator PlayOneGame(System.Random random, List<string> played, Action onResults = null, Action onPlaying = null)
         {
             m_driver.Step("Game: loading");
             yield return m_driver.WaitUntil("the game to load",
@@ -458,6 +460,7 @@ namespace Game.Tests.PlayMode
             }
 
             m_driver.Step($"{level}: playing");
+            onPlaying?.Invoke();
             yield return m_driver.MashButtonsUntil(() => GameplayState is "ResultsState" or "EndState" or null, random, 300f);
             Debug.Log($"[Scenario] {level} finished. Scores: {Scores}");
             // The game's music ends with it: the next clip mustn't start over its end and its results.

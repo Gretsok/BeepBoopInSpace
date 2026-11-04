@@ -92,16 +92,7 @@ namespace Game.Tests.PlayMode
             yield return CaptureScreen("19-online-room");
 
             {
-                m_driver.Step("Online: the host launches a training for the room");
-                yield return m_driver.Select(LobbyButton("m_trainingButton"));
-                yield return m_driver.Submit();
-                yield return m_driver.WaitUntil("the level selection screen", () => MenuState == "LevelSelectionState");
-                var levelSelection = FindActive("Game.MainMenu.LevelSelection.LevelSelectionScreen");
-                yield return m_driver.WaitUntil("the level widgets", () => LevelWidgets(levelSelection).Any());
-                var widget = LevelWidgets(levelSelection).First(w => LevelNameOf(w).Contains(" - Points Rush - "));
-                yield return m_driver.Select((VisualElement)Get(widget, "Element"));
-                yield return m_driver.Submit();
-                yield return ConfirmLaunch();
+                yield return LaunchPointsRushForTheRoom();
 
                 var played = new List<string>();
                 var hostScores = "-";
@@ -111,13 +102,7 @@ namespace Game.Tests.PlayMode
                 m_driver.Step("Online: back in the room with the guest");
                 yield return m_driver.WaitUntil("the room after the game", () => MenuState == "OnlineLobbyState" && FocusedElement != null, 60f);
                 Assert.AreEqual(2, RoomPlayersCount, "The guest isn't in the room anymore.");
-                // The guest saw both robots move (its own moved on the host, its buttons got there), and the host's scores.
-                var results = Regex.Match(ReadShared(GuestLog), @"\[GuestBot\] game 1: results, moves (\d+), (\d+), scores (.*)");
-                Assert.IsTrue(results.Success, $"The guest didn't reach the results:\n{GuestLogTail()}");
-                Debug.Log($"[Scenario] The guest saw {results.Groups[1].Value} moves of the host's robot, {results.Groups[2].Value} of its own, scores {results.Groups[3].Value.Trim()}.");
-                Assert.Greater(int.Parse(results.Groups[1].Value), 0, "The guest didn't see the host's robot move.");
-                Assert.Greater(int.Parse(results.Groups[2].Value), 0, "The guest's buttons didn't move its robot.");
-                Assert.AreEqual(hostScores, results.Groups[3].Value.Trim(), "The guest's scores aren't the host's.");
+                yield return CheckTheGuestSawTheGame(HostGameNumber, hostScores);
 
                 yield return CloseTheRoomAndWaitForTheGuest(1);
             }
@@ -172,9 +157,12 @@ namespace Game.Tests.PlayMode
         private Process m_guest;
         private bool? m_runInBackgroundBeforeTest;
         private static string GuestLog => Path.GetFullPath("Logs/online-guest.log");
+        // The guest bot's lines, written as they happen (its log reaches the disk by blocks).
+        private static string GuestReport => Path.GetFullPath("Logs/online-guest-report.txt");
 
-        // The hub alone, then a room on a direct connection, which a build of the game joins (OnlineGuestBot).
-        private IEnumerator OpenARoomWithAGuestBuild(string address)
+        // The hub alone, then a room on a direct connection, which a build of the game joins (OnlineGuestBot), with
+        // what goes wrong on its side (OnlineGuestBot.ReadScenario).
+        private IEnumerator OpenARoomWithAGuestBuild(string address, string guestScenario = null)
         {
             var guestExecutable = Path.GetFullPath(Path.Combine(k_GuestBuildFolder, k_GuestExecutable));
             if (!File.Exists(guestExecutable))
@@ -191,8 +179,11 @@ namespace Game.Tests.PlayMode
             yield return m_driver.WaitUntil("the room", () => MenuState == "OnlineLobbyState", 15f);
 
             m_driver.Step("Online: a guest joins (a build of the game)");
+            var scenario = string.IsNullOrEmpty(guestScenario) ? "" : $" -online-test-guest-scenario {guestScenario}";
+            File.Delete(GuestReport);
             m_guest = Process.Start(new ProcessStartInfo(guestExecutable,
-                $"-batchmode -nographics -no-analytics -online-direct {address} -online-test-guest -logFile \"{GuestLog}\"")
+                $"-batchmode -nographics -no-analytics -online-direct {address} -online-test-guest{scenario} " +
+                $"-online-test-guest-report \"{GuestReport}\" -logFile \"{GuestLog}\"")
             {
                 UseShellExecute = false,
                 CreateNoWindow = true,
@@ -202,10 +193,38 @@ namespace Game.Tests.PlayMode
             yield return RealSeconds(0.5f);
         }
 
+        // The host's training: Points Rush, from the room's Entraînement.
+        private IEnumerator LaunchPointsRushForTheRoom()
+        {
+            m_driver.Step("Online: the host launches a training for the room");
+            yield return OpenTheRoomsLevelSelection();
+            yield return PickPointsRush();
+        }
+
+        private IEnumerator OpenTheRoomsLevelSelection()
+        {
+            yield return m_driver.Select(LobbyButton("m_trainingButton"));
+            yield return m_driver.Submit();
+            yield return m_driver.WaitUntil("the level selection screen", () => MenuState == "LevelSelectionState");
+        }
+
+        private IEnumerator PickPointsRush()
+        {
+            var levelSelection = FindActive("Game.MainMenu.LevelSelection.LevelSelectionScreen");
+            yield return m_driver.WaitUntil("the level widgets", () => LevelWidgets(levelSelection).Any());
+            var widget = LevelWidgets(levelSelection).First(w => LevelNameOf(w).Contains(" - Points Rush - "));
+            yield return m_driver.Select((VisualElement)Get(widget, "Element"));
+            yield return m_driver.Submit();
+            yield return ConfirmLaunch();
+        }
+
         // The host leaves: the guest, back in its menu, quits on its own once it has played every game.
         private IEnumerator CloseTheRoomAndWaitForTheGuest(int gamesPlayed)
         {
-            var guestResults = Regex.Matches(ReadShared(GuestLog), @"\[GuestBot\] game \d+: results").Count;
+            // It may still be showing the last results the host left.
+            int GuestResults() => Regex.Matches(ReadShared(GuestReport), @"\[GuestBot\] game \d+: results").Count;
+            yield return WaitForRealSeconds(() => GuestResults() >= gamesPlayed, 10f);
+            var guestResults = GuestResults();
             Assert.AreEqual(gamesPlayed, guestResults, $"The guest saw the results of {guestResults} game(s) out of {gamesPlayed}:\n{GuestLogTail()}");
             yield return LeaveRoom();
             m_driver.Step("Online: the guest quits once the room is closed");
@@ -221,6 +240,19 @@ namespace Game.Tests.PlayMode
                 m_guest.Kill();
             m_guest.Dispose();
             m_guest = null;
+            // The next test's guest writes over them: kept as Logs/online-guest-<test>.log and -report.txt.
+            try
+            {
+                var testName = Regex.Replace(TestContext.CurrentContext.Test.Name, @"[^\w-]", "");
+                var folder = Path.GetDirectoryName(GuestLog);
+                File.Copy(GuestLog, Path.Combine(folder, $"online-guest-{testName}.log"), true);
+                if (File.Exists(GuestReport))
+                    File.Copy(GuestReport, Path.Combine(folder, $"online-guest-{testName}-report.txt"), true);
+            }
+            catch (IOException e)
+            {
+                Debug.LogWarning($"[Scenario] The guest's log couldn't be kept: {e.Message}");
+            }
         }
 
         private IEnumerator JoinAloneAndOpenHub()
@@ -241,6 +273,8 @@ namespace Game.Tests.PlayMode
         private IEnumerator LeaveRoom()
         {
             m_driver.Step("Online: leave the room");
+            // A press right as the room opens after a game can get lost.
+            yield return RealSeconds(0.5f);
             yield return m_driver.Press(m_driver.MainPad.buttonEast);
             yield return WaitForConfirmation();
             yield return RealSeconds(0.5f);
@@ -248,6 +282,9 @@ namespace Game.Tests.PlayMode
             yield return m_driver.WaitUntil("the hub after leaving the room", () => MenuState == "HubState", 10f);
             Assert.IsFalse((bool)Get(Manager(k_OnlineManager), "IsInRoom"), "Still in the room after leaving it.");
         }
+
+        // Counts the games of every room the editor hosted: the guest logs the same number.
+        private static int HostGameNumber => (int)Get(Manager(k_OnlineManager), "GameNumber");
 
         private static int RoomPlayersCount => ((ICollection)Get(Manager(k_OnlineManager), "Roster")).Count;
 
@@ -293,7 +330,14 @@ namespace Game.Tests.PlayMode
             var lines = ReadShared(GuestLog).Split('\n');
             var interesting = lines.Where(line => line.Contains("[GuestBot]") || line.Contains("[Online]") || line.Contains("Exception")
                                                   || line.Contains("Error")).TakeLast(40);
-            return string.Join("\n", interesting);
+            return $"Its report:\n{ReadShared(GuestReport)}\nIts log (as far as written):\n{string.Join("\n", interesting)}";
+        }
+
+        private static IEnumerator WaitForRealSeconds(System.Func<bool> condition, float timeout)
+        {
+            var end = Time.realtimeSinceStartup + timeout;
+            while (!condition() && Time.realtimeSinceStartup < end)
+                yield return null;
         }
     }
 }
