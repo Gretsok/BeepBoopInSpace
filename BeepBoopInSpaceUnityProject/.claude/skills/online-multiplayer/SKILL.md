@@ -49,6 +49,7 @@ CLI=".claude/skills/unity-headless/scripts/unity_cli.py"
 python $CLI test --filter OnlineMenu                         # écrans, une machine (~1 min)
 python $CLI build --output Builds/OnlineGuest                # le build qui joue l'invité (30 s à 2 min 30)
 python $CLI test --filter "Online_Plays"                 # entraînement (~1 min) et tournoi (3-9 parties, 3-8 min)
+python $CLI test --filter "OnlineMenu_Leaves|OnlineDrops" --detach   # départs, coupures, retours (9 tests, ~8 min)
 ```
 
 - `OnlineMenu_OnePlayerOpensARoom` : joueur seul → hub (modes locaux grisés) → En ligne (code à la
@@ -63,7 +64,26 @@ python $CLI test --filter "Online_Plays"                 # entraînement (~1 min
   doit contenir le code testé** : le refaire après tout changement de gameplay ou de réseau (un build
   périmé fait échouer le test pour une raison déjà corrigée). Log de l'invité : `Logs/online-guest.log`.
 - `OnlineGuestBot` (`Online/Testing/`) : ne s'active qu'avec `-online-test-guest`. Codes de sortie :
-  0 ok, 1 erreur loguée ou aucune partie, 2 trop long, 3 n'a pas pu rejoindre.
+  0 ok, 1 erreur loguée, aucune partie (ou salle non perdue avec `expect-room-lost`), scène de jeu
+  restée dans le menu, 2 trop long, 3 n'a pas pu rejoindre. `-online-test-guest-scenario a,b` ajoute
+  ce qui tourne mal de son côté : `rejoin` (quitte la salle 6 s après y être entré, revient 3 s plus
+  tard), `freeze-in-game:N` (gel de N s, 3 s après le début de la première partie), `quit-when-dead`
+  (quitte la partie par la pause dès que son robot est mort, puis redemande la salle chaque seconde,
+  refusé tant que la partie dure), `quit-while-loading` (pareil, dès que la partie commence à se
+  charger), `stuck-loading` (charge sans jamais le dire à l'hôte), `expect-room-lost` (la salle doit
+  être perdue ; aucune partie n'est exigée). Il logue `room lost: <raison>`, `joining refused: <raison>`,
+  `freezing N s` / `unfrozen`, et écrit ces lignes `[GuestBot]` au fil de l'eau dans
+  `-online-test-guest-report <fichier>` (`Logs/online-guest-report.txt`) : **le log du joueur n'arrive
+  sur le disque que par blocs**, un test qui y cherche une ligne récente la rate. Après chaque test,
+  le log et le rapport sont gardés en `Logs/online-guest-<test>.log` / `-report.txt`.
+- **Départs, coupures, retours** : la liste des cas et leur test est dans
+  [references/disconnections.md](references/disconnections.md) (à lire avant de toucher aux
+  départs, au chargement ou à la fin d'une partie en ligne). Tests `OnlineDrops_*`
+  (`OnlineDropsScenarioTests.cs`) et `OnlineMenu_LeavesAndReopensRightAway` (une machine : recréer
+  une salle juste après l'avoir quittée, message de lancement arrivé après le départ). Une coupure se
+  simule en gelant le fil principal (`Thread.Sleep`) d'une machine : côté invité par son scénario,
+  côté hôte par le test (`FreezeHost`) ; au-delà du délai du transport
+  (`OnlineConnection.k_DisconnectTimeoutMs`, 10 s) c'est une perte de connexion, en deçà un pic de lag.
 - `-no-analytics` : les copies lancées par les tests n'envoient rien à GameAnalytics.
 - À la main, deux copies du jeu buildé sur un PC : `-online-direct` sur les deux (127.0.0.1), ou
   l'adresse IP de l'hôte sur le réseau local (Windows demande alors d'ouvrir le pare-feu à l'hôte).
@@ -125,3 +145,14 @@ main, deux copies du jeu sur le même PC (chaque copie se connecte avec son prop
   animations peuvent être en retard sans que rien ne se désynchronise.
 - Enregistrer un handler de message nommé deux fois (démarrage client + serveur de l'hôte) le remplace
   sans erreur : c'est voulu.
+- **`NetworkManager.DisconnectReason`** rend la raison de l'hôte (refus, renvoi) **ou** une description
+  technique fabriquée par Netcode (« [Disconnect Event][Client-1]… ») : ne jamais l'afficher telle
+  quelle (`OnlineConnection.RefusalReason` la filtre).
+- Une machine qui se réveille d'un gel traite d'abord les paquets reçus pendant le gel : elle ne voit
+  la perte de connexion qu'un délai du transport (10 s) **après** son réveil. Les tests en tiennent
+  compte (attendre la sortie de l'invité jusqu'à 60-90 s).
+- `OnlineManager.GameNumber` compte les parties de **toutes** les salles de la session (l'invité logue
+  le même numéro) : un test lit celui de l'hôte (`HostGameNumber`), jamais « partie 1 ».
+- Une salle quittée se ferme en arrière-plan (0,2 s pour que `RoomClosed` parte, puis l'arrêt de la
+  session) : `CreateRoom`/`JoinRoom` attendent `m_isClosing`. Un message arrivé pendant ce temps est
+  ignoré (`Status == None`).
