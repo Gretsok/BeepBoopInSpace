@@ -80,3 +80,9 @@ dans `BeepBoopInSpaceUnityProject/` (menu principal, écrans de jeu, menu pause)
   dans `log-flow` des deux runs si l'ordre des événements est le même avant d'accuser son changement.
 - Les messages se croisent : une session peut répondre à une question déjà réglée ; se fier à l'état
   des fichiers et des processus, pas seulement aux messages.
+- **Une autre session commite sur la branche en cours** (vu le 04/11/2026 : deux commits d'une autre
+  session sur `online-multiplayer` pendant le travail en ligne). Avant de commiter, de rendre compte
+  ou de dire « rien n'est commité » : `git log --oneline -5` et `git status`, pas l'état noté plus tôt.
+- L'utilisateur travaille dans l'éditeur pendant la session (il lie le projet à Unity Cloud...) :
+  `ProjectSettings/*.asset` modifiés qu'on n'a pas touchés sont à lui, ne pas les commiter sans lui
+  demander, et ne rien écrire dans `Assets/` en YAML tant que l'éditeur est ouvert.

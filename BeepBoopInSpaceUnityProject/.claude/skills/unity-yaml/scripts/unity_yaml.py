@@ -14,6 +14,13 @@ Python 3 standard library only.
                                             set, replace or remove a serialized field of a component
   add-component <asset> <GameObject> <script.cs>
                                             add a MonoBehaviour to a GameObject
+  copy-prefab <prefab> <new prefab> [--replace OLD=NEW]... [--name N]
+                                            copy a prefab, swapping the script/UXML it uses (new .meta)
+  add-child <asset> <parent GameObject> <name> [--script X.cs] [--inactive]
+                                            add a child GameObject (Transform like its parent's), with a script
+  add-instance <asset> <parent GameObject> <prefab> [--name N] [--inactive]
+                                            instantiate a prefab under a GameObject; prints how to reference
+                                            the root's scripts
 
 Edit with the Unity editor closed: an open editor would not see the change before reimporting, and could
 save its own version over it. YAML is written in LF, as the repository stores it.
@@ -773,23 +780,181 @@ def cmd_add_component(args):
     if go.cls != "1":
         print(f"'{args.object}' is a component: give the GameObject's name.")
         return 1
-    guid = guid_of(args.script)
-    if not guid:
-        print(f"{args.script}: no .meta (create it with `meta`).")
-        return 1
-    fid = new_file_id(model)
-    model.docs.append(Doc("114", fid, False,
-                          "MonoBehaviour:\n  m_ObjectHideFlags: 0\n  m_CorrespondingSourceObject: {fileID: 0}\n"
-                          "  m_PrefabInstance: {fileID: 0}\n  m_PrefabAsset: {fileID: 0}\n"
-                          f"  m_GameObject: {{fileID: {go.fid}}}\n  m_Enabled: 1\n  m_EditorHideFlags: 0\n"
-                          f"  m_Script: {{fileID: 11500000, guid: {guid}, type: 3}}\n"
-                          "  m_Name: \n  m_EditorClassIdentifier: \n"))
-    go.body = re.sub(r"(  m_Component:\n(?:  - component: .*\n)*)",
-                     lambda m: m.group(1) + f"  - component: {{fileID: {fid}}}\n", go.body, count=1)
-    model.by_id[fid] = model.docs[-1]
+    fid = add_monobehaviour(model, go, args.script)
     model.save()
     print(f"{rel(model.path)}: {Path(args.script).stem} {fid} added to {args.object}. Its fields take their default "
           "values: set the others with `set-field`.")
+    return 0
+
+
+# ----------------------------------------------------------------------------- copy-prefab, add-child, add-instance
+
+def root_game_object(model):
+    roots = [go for go, tr in model.transform_of.items() if model.father.get(tr) == "0"]
+    if len(roots) != 1:
+        raise SystemExit(f"{rel(model.path)}: {len(roots)} root object(s), a prefab has one.")
+    return model.by_id[roots[0]]
+
+
+def cmd_copy_prefab(args):
+    source, target = project_path(args.prefab), project_path(args.target)
+    if target.exists():
+        print(f"{rel(target)} already exists.")
+        return 1
+    text = read_text(source)
+    renamed_scripts = []
+    for pair in args.replace or []:
+        old, _, new = pair.partition("=")
+        old_guid, new_guid = guid_of(old), guid_of(new)
+        if not old_guid or not new_guid:
+            print(f"{old if not old_guid else new}: no .meta (create it with `meta`).")
+            return 1
+        if old_guid not in text:
+            print(f"{rel(source)} doesn't reference {old}.")
+            return 1
+        text = text.replace(old_guid, new_guid)
+        if new.endswith(".cs"):
+            renamed_scripts.append(new_guid)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    write_yaml(target, text)
+    model = Model(target)
+    # The class identifier of a swapped script names the old class: Unity fills it back in.
+    for doc in model.docs:
+        if any(guid in (doc.field("m_Script") or "") for guid in renamed_scripts):
+            doc.body = re.sub(r"^  m_EditorClassIdentifier:.*$", "  m_EditorClassIdentifier: ", doc.body, count=1, flags=re.M)
+    root = root_game_object(model)
+    name = args.name or target.stem
+    root.body = re.sub(r"^  m_Name: .*$", f"  m_Name: {name}", root.body, count=1, flags=re.M)
+    model.save()
+    cmd_meta(argparse.Namespace(files=[str(target)], guid=None))
+    print(f"{rel(target)}: copy of {source.name}, root '{name}'. Check it with `tree --fields`.")
+    return 0
+
+
+def add_monobehaviour(model, go, script):
+    guid = guid_of(script)
+    if not guid:
+        raise SystemExit(f"{script}: no .meta (create it with `meta`).")
+    fid = new_file_id(model)
+    doc = Doc("114", fid, False,
+              "MonoBehaviour:\n  m_ObjectHideFlags: 0\n  m_CorrespondingSourceObject: {fileID: 0}\n"
+              "  m_PrefabInstance: {fileID: 0}\n  m_PrefabAsset: {fileID: 0}\n"
+              f"  m_GameObject: {{fileID: {go.fid}}}\n  m_Enabled: 1\n  m_EditorHideFlags: 0\n"
+              f"  m_Script: {{fileID: 11500000, guid: {guid}, type: 3}}\n"
+              "  m_Name: \n  m_EditorClassIdentifier: \n")
+    model.docs.append(doc)
+    model.by_id[fid] = doc
+    go.body = re.sub(r"(  m_Component:\n(?:  - component: .*\n)*)",
+                     lambda m: m.group(1) + f"  - component: {{fileID: {fid}}}\n", go.body, count=1)
+    return fid
+
+
+def append_child(transform_doc, child_fid):
+    if re.search(r"^  m_Children: \[\]$", transform_doc.body, re.M):
+        transform_doc.body = re.sub(r"^  m_Children: \[\]$", f"  m_Children:\n  - {{fileID: {child_fid}}}",
+                                    transform_doc.body, count=1, flags=re.M)
+    else:
+        transform_doc.body = re.sub(r"(  m_Children:\n(?:  - .*\n)*)",
+                                    lambda m: m.group(1) + f"  - {{fileID: {child_fid}}}\n", transform_doc.body, count=1)
+
+
+def cmd_add_child(args):
+    model = Model(project_path(args.asset))
+    parent = find_one(model, args.parent)
+    if parent.cls != "1":
+        print(f"'{args.parent}' is a component: give the GameObject's name.")
+        return 1
+    parent_transform = model.by_id[model.transform_of[parent.fid]]
+    go_fid, transform_fid = new_file_id(model), None
+    go = Doc("1", go_fid, False,
+             "GameObject:\n  m_ObjectHideFlags: 0\n  m_CorrespondingSourceObject: {fileID: 0}\n"
+             "  m_PrefabInstance: {fileID: 0}\n  m_PrefabAsset: {fileID: 0}\n  serializedVersion: 6\n"
+             "  m_Component:\n"
+             f"  m_Layer: {parent.field('m_Layer') or 0}\n  m_Name: {args.name}\n  m_TagString: Untagged\n"
+             "  m_Icon: {fileID: 0}\n  m_NavMeshLayer: 0\n  m_StaticEditorFlags: 0\n"
+             f"  m_IsActive: {0 if args.inactive else 1}\n")
+    model.docs.append(go)
+    model.by_id[go_fid] = go
+    transform_fid = new_file_id(model)
+    # The parent's own transform as the model (Transform or RectTransform), reset under it.
+    body = parent_transform.body
+    body = re.sub(r"^  m_GameObject: .*$", f"  m_GameObject: {{fileID: {go_fid}}}", body, count=1, flags=re.M)
+    body = re.sub(r"^  m_Children:\n(?:  - .*\n)*|^  m_Children: \[\]\n", "  m_Children: []\n", body, count=1, flags=re.M)
+    body = re.sub(r"^  m_Father: .*$", f"  m_Father: {{fileID: {parent_transform.fid}}}", body, count=1, flags=re.M)
+    for field, value in (("m_LocalRotation", "{x: 0, y: 0, z: 0, w: 1}"), ("m_LocalPosition", "{x: 0, y: 0, z: 0}"),
+                         ("m_LocalScale", "{x: 1, y: 1, z: 1}"), ("m_LocalEulerAnglesHint", "{x: 0, y: 0, z: 0}"),
+                         ("m_AnchoredPosition", "{x: 0, y: 0}")):
+        body = re.sub(r"^  " + field + r": .*$", f"  {field}: {value}", body, count=1, flags=re.M)
+    transform = Doc(parent_transform.cls, transform_fid, False, body)
+    model.docs.append(transform)
+    model.by_id[transform_fid] = transform
+    go.body = go.body.replace("  m_Component:\n", f"  m_Component:\n  - component: {{fileID: {transform_fid}}}\n", 1)
+    append_child(parent_transform, transform_fid)
+    script_fid = add_monobehaviour(model, go, args.script) if args.script else None
+    model.save()
+    print(f"{rel(model.path)}: {args.name} ({go_fid}) added under {args.parent}"
+          + (f", with {Path(args.script).stem} ({script_fid}): set its fields with `set-field`." if script_fid else "."))
+    return 0
+
+
+def cmd_add_instance(args):
+    model = Model(project_path(args.asset))
+    parent = find_one(model, args.parent)
+    if parent.cls != "1":
+        print(f"'{args.parent}' is a component: give the GameObject's name.")
+        return 1
+    parent_transform = model.by_id[model.transform_of[parent.fid]]
+    prefab_path = project_path(args.prefab)
+    guid = guid_of(prefab_path)
+    if not guid:
+        print(f"{args.prefab}: no .meta.")
+        return 1
+    source = Model(prefab_path)
+    root = root_game_object(source)
+    root_transform = source.by_id[source.transform_of[root.fid]]
+    instance_fid = new_file_id(model)
+    name = args.name or root.field("m_Name")
+
+    def modification(target, path, value):
+        return (f"    - target: {{fileID: {target}, guid: {guid}, type: 3}}\n      propertyPath: {path}\n"
+                f"      value: {value}\n      objectReference: {{fileID: 0}}\n")
+
+    modifications = modification(root.fid, "m_Name", name)
+    if args.inactive:
+        modifications += modification(root.fid, "m_IsActive", 0)
+    instance = Doc("1001", instance_fid, False,
+                   "PrefabInstance:\n  m_ObjectHideFlags: 0\n  serializedVersion: 2\n  m_Modification:\n"
+                   f"    serializedVersion: 3\n    m_TransformParent: {{fileID: {parent_transform.fid}}}\n"
+                   f"    m_Modifications:\n{modifications}    m_RemovedComponents: []\n    m_RemovedGameObjects: []\n"
+                   "    m_AddedGameObjects: []\n    m_AddedComponents: []\n"
+                   f"  m_SourcePrefab: {{fileID: 100100000, guid: {guid}, type: 3}}\n")
+    model.docs.append(instance)
+    model.by_id[instance_fid] = instance
+
+    # Objects of an instance have implicit ids; the file only holds "stripped" stand-ins for those it references.
+    def stripped(source_doc, extra=""):
+        fid = str((int(instance_fid) ^ int(source_doc.fid)) & MASK)
+        kind = CLASS_NAMES.get(source_doc.cls, "MonoBehaviour")
+        doc = Doc(source_doc.cls, fid, True,
+                  f"{kind}:\n  m_CorrespondingSourceObject: {{fileID: {source_doc.fid}, guid: {guid}, type: 3}}\n"
+                  f"  m_PrefabInstance: {{fileID: {instance_fid}}}\n  m_PrefabAsset: {{fileID: 0}}\n{extra}")
+        model.docs.append(doc)
+        model.by_id[fid] = doc
+        return fid
+
+    append_child(parent_transform, stripped(root_transform))
+    exposed = []
+    for doc in source.docs:
+        if doc.cls == "114" and source.go_of.get(doc.fid) == root.fid:
+            script = doc.field("m_Script")
+            fid = stripped(doc, f"  m_GameObject: {{fileID: 0}}\n  m_Enabled: 1\n  m_EditorHideFlags: 0\n"
+                                f"  m_Script: {script}\n  m_Name: \n  m_EditorClassIdentifier: \n")
+            exposed.append((source.script_name(doc), fid))
+    model.save()
+    print(f"{rel(model.path)}: {name} (instance {instance_fid}) of {prefab_path.name} under {args.parent}"
+          f"{', inactive' if args.inactive else ''}.")
+    for script, fid in exposed:
+        print(f"  {script}: reference it with set-field ... --value \"{{fileID: {fid}}}\"")
     return 0
 
 
@@ -852,6 +1017,30 @@ def main():
     p.add_argument("object", help="GameObject name")
     p.add_argument("script", help="the script's .cs path")
     p.set_defaults(func=cmd_add_component)
+
+    p = sub.add_parser("copy-prefab", help="copy a prefab, swapping the assets it references")
+    p.add_argument("prefab")
+    p.add_argument("target", help="new prefab path (its .meta is created)")
+    p.add_argument("--replace", action="append", metavar="OLD=NEW",
+                   help="asset to swap, by path (script, UXML...): OLD's guid becomes NEW's; repeatable")
+    p.add_argument("--name", help="name of the root object (default: the file name)")
+    p.set_defaults(func=cmd_copy_prefab)
+
+    p = sub.add_parser("add-child", help="add a child GameObject, with a script if given")
+    p.add_argument("asset")
+    p.add_argument("parent", help="parent GameObject name")
+    p.add_argument("name")
+    p.add_argument("--script", help="the .cs of a MonoBehaviour to add to it")
+    p.add_argument("--inactive", action="store_true")
+    p.set_defaults(func=cmd_add_child)
+
+    p = sub.add_parser("add-instance", help="instantiate a prefab under a GameObject of a scene or prefab")
+    p.add_argument("asset")
+    p.add_argument("parent", help="parent GameObject name")
+    p.add_argument("prefab")
+    p.add_argument("--name", help="name of the instance (default: the prefab's root name)")
+    p.add_argument("--inactive", action="store_true")
+    p.set_defaults(func=cmd_add_instance)
 
     args = parser.parse_args()
     sys.exit(args.func(args))

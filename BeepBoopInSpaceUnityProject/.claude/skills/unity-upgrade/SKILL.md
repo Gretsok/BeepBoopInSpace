@@ -46,6 +46,14 @@ après chaque série de corrections, de nouvelles erreurs peuvent apparaître.
   curl -s https://package.openupm.com/com.gameanalytics.sdk | python -c "import sys,json; d=json.load(sys.stdin); print(d['dist-tags'], sorted(d['versions'])[-5:])"
   curl -s https://packages.unity.com/com.unity.addressables | python -c "import sys,json; print(json.load(sys.stdin)['dist-tags'])"
   ```
+- **Versions validées pour l'éditeur installé** (avant d'ajouter ou de monter un package Unity) :
+  `C:/Program Files/Unity/Hub/Editor/<version>/Editor/Data/Resources/PackageManager/Editor/manifest.json`
+  donne pour chaque package sa `version` recommandée, sa `minimumVersion` et s'il est `deprecated`
+  (Lobby, Relay, Matchmaker séparés : remplacés par `com.unity.services.multiplayer`) ; `BuiltInPackages/`
+  et les `.tgz` de `Editor/` sont livrés avec l'éditeur. La dernière version du registre peut viser un
+  éditeur plus récent (`"unity": "6000.7"` : NGO 3.x le 04/11/2026).
+- Ajouter un package : l'écrire dans `manifest.json`, puis `unity_cli.py compile` le résout et compile
+  (~2 min). Netcode for GameObjects crée alors `Assets/DefaultNetworkPrefabs.asset` : à commiter.
   Lire le changelog (breaking changes en version majeure) et vérifier que l'API utilisée par le
   projet n'a pas changé (`grep` des usages dans `Assets/`). Changer la version dans
   `Packages/manifest.json`.

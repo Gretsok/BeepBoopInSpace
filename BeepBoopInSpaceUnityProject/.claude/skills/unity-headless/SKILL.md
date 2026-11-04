@@ -70,6 +70,13 @@ build :
    quand le PID disparaît (`tasklist //FI "PID eq <pid>"`), puis afficher le résultat ;
 3. ne pas sonder en boucle entre-temps : avancer sur autre chose.
 
+Quand il n'y a rien d'autre à faire qu'attendre : un appel Bash au premier plan (délai 600000) peut
+attendre jusqu'à ~9 minutes, puis relancer le même appel :
+`for i in $(seq 1 55); do tasklist //FI "PID eq <pid>" | grep -q <pid> || break; sleep 10; done`.
+Une commande qui dépasse les 10 minutes passe d'elle-même en arrière-plan et notifie à sa fin : ne
+pas la relancer. Un run de tests ou un build en cours **importe les fichiers de `Assets/`** : écrire
+les modifications suivantes hors du projet (dossier temporaire) et les appliquer après.
+
 ## Pièges connus
 
 - **Git Bash convertit les arguments qui commencent par `/`** en chemins Windows (`/nostdlib`

@@ -121,13 +121,31 @@ réutilisée par un autre écran ; une classe d'un écran hors du menu, de `Scre
    racine `class="ui-screen"`), puis `unity_yaml.py meta` dessus (skill `unity-yaml`).
 2. Script `XxxScreen : AMainMenuScreen` et état `XxxState : AMainMenuFlowState` sur le modèle des
    Crédits ; champ, `Initialize` et `SwitchToXxxScreen` dans `MainMenuOrchestrator`.
-3. Prefab : copier `Credits/CreditsScreen.prefab` (+ `meta` pour un nouveau guid), y remplacer le
-   guid du script de l'écran et le `sourceAsset` de l'UIDocument (`tree --fields` pour vérifier).
-4. Scène : un GameObject d'état sous `Orchestrator` et l'instance de l'écran dessous, inactive, liée
-   au champ de l'état. Le plus sûr est de demander à l'utilisateur de le faire dans l'éditeur ; à la
-   main, recopier les documents d'une instance existante (`overrides`, `tree` montrent lesquels) avec
-   de nouveaux fileID — non encore fait dans ce projet.
-5. Étendre le test des menus (`Select` / `Submit` / `WaitUntil` / `CaptureScreen`).
+3. Prefab et scène, éditeur fermé (fait ainsi pour En ligne et la salle, le 04/11/2026) :
+   ```bash
+   Y=.claude/skills/unity-yaml/scripts/unity_yaml.py; M=Assets/Game/MainMenu
+   python $Y meta $M/Foo $M/Foo/FooScreen.cs $M/Foo/FooState.cs $M/Foo/FooScreen.uxml
+   # Le prefab du hub a déjà les lecteurs Focus/Confirm/Back : nommer les champs de l'écran
+   # m_confirmAudioPlayer et m_backAudioPlayer pour les garder branchés.
+   python $Y copy-prefab $M/Hub/HubScreen.prefab $M/Foo/FooScreen.prefab \
+       --replace $M/Hub/HubScreen.cs=$M/Foo/FooScreen.cs --replace $M/Hub/HubScreen.uxml=$M/Foo/FooScreen.uxml
+   python $Y set-field $M/Foo/FooScreen.prefab "FooScreen/FooScreen" m_backIndicationAction \
+       --value "{fileID: 11400000, guid: a76201ebfb354ce795cb6dd3d02706a9, type: 2}"   # glyphe du Retour
+   python $Y add-child $M/MainMenu.unity Orchestrator FooState --script $M/Foo/FooState.cs
+   python $Y add-instance $M/MainMenu.unity FooState $M/Foo/FooScreen.prefab --inactive   # affiche le fileID de FooScreen
+   python $Y set-field $M/MainMenu.unity "FooState/FooState" m_fooScreen --value "{fileID: <id affiché>}"
+   python $Y set-field $M/MainMenu.unity "Orchestrator/MainMenuOrchestrator" m_fooState --object "FooState/FooState"
+   python $Y tree $M/MainMenu.unity --fields | grep -A4 FooState       # tout doit être résolu
+   ```
+   Puis `unity_cli.py compile` (import de l'UXML, du prefab, de la scène).
+4. Étendre le test des menus (`Select` / `Submit` / `WaitUntil` / `CaptureScreen`), regarder les captures.
+
+Composants déjà faits à réutiliser : `ConfirmationDialog` en **message** (Retour caché,
+`ConfirmButton.text = "OK"`, notice du hub) ou en **attente** (un seul bouton « Annuler », écran En
+ligne) ; saisie d'un code à la manette et au clavier (`MainMenu/Online/RoomCodeField` : haut/bas
+interceptés en TrickleDown comme `VolumeRow`, lettres par `Keyboard.onTextInput`, Retour arrière et
+Ctrl+V lus dans `HandleUpdate`) ; cartes de joueurs (`OnlineLobby/LobbyPlayerCard.uxml`, gabarit
+instancié 4 fois dans l'UXML et retrouvé par son nom).
 
 ## Ajouter un écran hors du menu (partie, tournoi)
 

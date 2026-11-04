@@ -115,6 +115,19 @@ sans accord.
 
 ## Repères
 
+- **Les tests dans l'éditeur ne voient pas les bundles Addressables** (Asset Database). Dans un
+  build, un bundle se décharge quand plus aucune scène ni handle ne le tient, et **détruit ses
+  assets même si un objet persistant (DontDestroyOnLoad) les référence encore** : ils deviennent
+  « null » pour Unity. Vu le 04/11/2026 : la config du tournoi et ses `LevelDataAsset` (dans le bundle
+  du groupe `Game-Tournament`, avec ses scènes) détruits avant la 2e partie, « No current level data
+  asset » et partie jamais chargée. Corrigé : `TournamentContext` garde un handle Addressables sur sa
+  config. Un nouvel objet persistant qui garde des assets d'un groupe Addressables doit en faire
+  autant. Seul un test qui joue dans un build le voit : le build invité des tests en ligne (skill
+  `online-multiplayer`).
+- Build vers un dossier fixe pour un test : `build --output Builds/OnlineGuest` (écrase le
+  précédent). Le 04/11/2026, un build release sans changement de shaders a pris 30 s à 2 min 30
+  (152 s pour le premier après l'ajout des packages réseau).
+
 - 27/10/2026, Unity 6000.6.7f1, premier build après la migration : 1034 s (dont 982 s de build,
   surtout des shaders), 268 Mo, zip de 148 Mo. Écran noir au lancement : URP 17.6 strippe les
   ressources des render features **désactivées** (ici le SSAO de `PC_Renderer`) mais les initialise

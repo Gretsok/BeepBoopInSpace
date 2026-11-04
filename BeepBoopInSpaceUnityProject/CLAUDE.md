@@ -42,7 +42,8 @@ L'utilisateur écrit en français ou en anglais : répondre dans la langue de so
 - `Debug.LogError` seulement pour un vrai problème : les tests de scénario échouent sur toute erreur
   loguée. Une situation prévue et gérée se logue en `Debug.Log` ou `LogWarning`.
 - Fins de ligne : YAML Unity (`.asset`, `.meta`, `.unity`, `.prefab`) en LF dans le dépôt, même si
-  la copie de travail est en CRLF ; `.cs` surtout en CRLF. Garder celles du fichier modifié.
+  la copie de travail est en CRLF ; `.cs` surtout en CRLF. Garder celles du fichier modifié
+  (`python .claude/skills/scripted-edits/scripts/textedit.py eol` avant un commit).
 - Un `.meta` voyage toujours avec son fichier (création, déplacement, suppression). Ne jamais
   modifier `Library/PackageCache` (régénéré) : voir le skill `unity-upgrade`.
 - Les tests ne peuvent pas référencer `Assembly-CSharp` : ils lisent l'état du jeu par réflexion.
@@ -73,7 +74,8 @@ Unity en headless exige l'éditeur fermé : le demander à l'utilisateur en disa
 | `online-multiplayer` | Jeu en ligne : salles et codes, écrans En ligne et salle, synchronisation des parties, tests à deux machines (éditeur hôte + build invité) |
 | `ui-toolkit-screens` | Modifier ou créer un écran UI Toolkit (menu, partie, pause, chargement, tournoi) et le vérifier en captures ; charte graphique et motion design |
 | `psd-mockups` | Lire une maquette Photoshop (.psd), mesurer ses éléments, comparer les captures du jeu avec elle |
-| `unity-yaml` | Lire ou modifier scènes, prefabs, `.asset` et `.meta` sans l'éditeur (arbre, surcharges, références, champs, composants, conversion d'un prefab uGUI) |
+| `unity-yaml` | Lire ou modifier scènes, prefabs, `.asset` et `.meta` sans l'éditeur (arbre, surcharges, références, champs, composants, enfant, instance de prefab, copie d'un prefab, conversion d'un prefab uGUI) |
+| `scripted-edits` | Modifier beaucoup de fichiers par script sans casser fins de ligne ni BOM (`textedit.py`), commiter une partie d'un fichier |
 | `unity-api-check` | Vérifier une API dans la version de Unity du projet avant de coder dessus |
 | `parallel-sessions` | D'autres sessions travaillent dans le même dossier : se coordonner, partager Unity, commiter seulement son travail |
 

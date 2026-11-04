@@ -47,7 +47,7 @@ la ferme. Salle perdue (hôte parti, connexion) : retour au hub, qui dit pourquo
 ```bash
 CLI=".claude/skills/unity-headless/scripts/unity_cli.py"
 python $CLI test --filter OnlineMenu                         # écrans, une machine (~1 min)
-python $CLI build --output Builds/OnlineGuest                # le build qui joue l'invité (5-17 min)
+python $CLI build --output Builds/OnlineGuest                # le build qui joue l'invité (30 s à 2 min 30)
 python $CLI test --filter "Online_Plays"                 # entraînement (~1 min) et tournoi (3-9 parties, 3-8 min)
 ```
 
@@ -59,27 +59,47 @@ python $CLI test --filter "Online_Plays"                 # entraînement (~1 min
   la ferme ; le build doit quitter avec le code 0. L'invité compte les déplacements des deux robots et
   logue les scores : le test vérifie que ses boutons ont fait bouger son robot chez l'hôte et que ses
   scores sont ceux de l'hôte. `Online_PlaysATournamentWithAGuestBuild` : pareil, un tournoi entier
-  (l'hôte tire les niveaux et quitte les résultats pour tout le monde). Ignorés sans build. **Le build doit contenir le code
-  testé** : le refaire après un changement de gameplay ou de réseau. Log de l'invité :
-  `Logs/online-guest.log`.
+  (l'hôte tire les niveaux et quitte les résultats pour tout le monde). Ignorés sans build. **Le build
+  doit contenir le code testé** : le refaire après tout changement de gameplay ou de réseau (un build
+  périmé fait échouer le test pour une raison déjà corrigée). Log de l'invité : `Logs/online-guest.log`.
 - `OnlineGuestBot` (`Online/Testing/`) : ne s'active qu'avec `-online-test-guest`. Codes de sortie :
   0 ok, 1 erreur loguée ou aucune partie, 2 trop long, 3 n'a pas pu rejoindre.
 - `-no-analytics` : les copies lancées par les tests n'envoient rien à GameAnalytics.
 - À la main, deux copies du jeu buildé sur un PC : `-online-direct` sur les deux (127.0.0.1), ou
   l'adresse IP de l'hôte sur le réseau local (Windows demande alors d'ouvrir le pare-feu à l'hôte).
 
+## Boucle de travail
+
+Une itération coûte ~4 min : `quick-compile` (5 s) → `build --output Builds/OnlineGuest` → `test
+--filter "OnlineMenu|Online_Plays"` (l'éditeur doit être fermé pour les deux). Pour diagnostiquer :
+
+| Où | Quoi |
+| --- | --- |
+| `Logs/claude-runs/<run>/editor.log` (l'hôte) | `[Online]` (salle, machines, parties), `[FM] FlowMachine - <état> - ENTER`, `[Scenario]` |
+| `Logs/online-guest.log` (l'invité) | `[GuestBot]` (prêt, résultats avec déplacements et scores, code de sortie), `[FM] FlowMachine - <état> - About to switch state remotely`, `[Tournament]`, exceptions |
+| Les deux | Un invité bloqué : comparer la dernière ligne `[FM]` des deux logs. Une exception chez l'invité dans `HandleNamedMessage` vient du traitement d'un message de salle (pile complète dans son log) |
+
+Ajouter un `Debug.Log("[Tournament] ...")` ou `[Online]` aux étapes douteuses plutôt que de deviner :
+c'est ainsi qu'a été trouvé le niveau détruit du tournoi (voir Pièges). Les erreurs de l'invité
+comptent : un seul `LogError` le fait sortir avec le code 1.
+
 ## Services Unity (codes et Relay)
 
 Sans `-online-direct`, créer ou rejoindre une salle passe par Unity Gaming Services : le projet doit
 être lié à un projet Unity Cloud (Edit > Project Settings > Services, `cloudProjectId` et
-`organizationId` dans `ProjectSettings.asset`, vides au 04/11/2026 : seul l'utilisateur peut le faire,
-avec son compte). Sans lien, `UnityServices.InitializeAsync` échoue (`UnityProjectNotLinkedException`,
+`organizationId` dans `ProjectSettings.asset` ; seul l'utilisateur peut le faire, avec son compte,
+fait le 04/11/2026 au soir). Sans lien, `UnityServices.InitializeAsync` échoue (`UnityProjectNotLinkedException`,
 interne au package) : `OnlineConnection.SignIn` le teste avant (`Application.cloudProjectId`) et
 l'écran En ligne dit « le projet n'est pas lié à Unity Cloud ». Une fois lié : commiter
 `ProjectSettings.asset`, vérifier sur le tableau de bord (cloud.unity.com) que Relay et Lobby sont
 actifs pour le projet (un refus à la création de la salle le signale), refaire les builds. Le détail
-des échecs des services est dans le log (`[Online] ...` en avertissement). Le format des codes (6 caractères A-Z 0-9, `RoomCodeField.k_Length`) est à
-confirmer sur une vraie session.
+des échecs des services est dans le log (`[Online] ...` en avertissement, éditeur ouvert :
+`Logs/Editor.log`). Le format des codes (6 caractères A-Z 0-9, `RoomCodeField.k_Length`) est à
+confirmer sur une vraie session : le code affiché par la première salle créée le dit.
+
+Les tests n'utilisent jamais les services (connexion directe) : une salle par Relay se vérifie à la
+main, deux copies du jeu sur le même PC (chaque copie se connecte avec son propre profil anonyme,
+`instance0`, `instance1`...) ou deux PC.
 
 ## Pièges
 
@@ -96,3 +116,12 @@ confirmer sur une vraie session.
   handle sur sa config. Le build invité est le seul test qui joue dans les conditions d'un build.
 - L'hôte qui quitte par la pause n'envoie pas `EndState` : il ferme la salle, les invités quittent
   de leur côté (`GameplaySync.HandleRoomLost`).
+- **Approbation** : `ApproveGuest` rend `null` pour accepter. Un `?? "refus"` derrière son appel
+  transformait chaque acceptation en refus (« La salle n'accepte personne », vu au premier test).
+- La machine de l'hôte a l'id Netcode 0 (`k_HostMachineId`) ; un invité qui reçoit un message d'un
+  autre id l'ignore.
+- Le test lance l'hôte en ×4 (`k_TimeScale`), l'invité en temps réel : l'invité suit les états de
+  l'hôte (ses propres minuteries de présentation sont coupées par les changements d'état), et ses
+  animations peuvent être en retard sans que rien ne se désynchronise.
+- Enregistrer un handler de message nommé deux fois (démarrage client + serveur de l'hôte) le remplace
+  sans erreur : c'est voulu.

@@ -70,6 +70,9 @@ Causes déjà rencontrées dans ce projet (vérifier d'abord celles-ci) :
 | `NullReferenceException` dans un `*ObjectiveManager.SetUp`, partie bloquée au chargement | Mode qui combine un objectif et une action spéciale incompatibles (ex. `MostKills` sans le fusil de sniper) : skill `game-mode-variants` |
 | Build : **écran noir**, `Blitter is already initialized` à chaque frame | Le pipeline URP n'a pas pu se créer : regarder la **première** erreur du log (`log-errors` l'affiche en tête). Déjà vu : une render feature désactivée dont URP 17.6 a strippé les ressources (`ScreenSpaceAmbientOcclusion.TryPrepareResources`) : retirer la feature du renderer |
 
+| Écran En ligne : « Salles en ligne indisponibles : le projet n'est pas lié à Unity Cloud » (ou, avant le 04/11/2026, « Les services en ligne ne répondent pas ») | `UnityProjectNotLinkedException` : `cloudProjectId` vide dans `ProjectSettings.asset`. Le lien se fait dans l'éditeur, par l'utilisateur (skill `online-multiplayer`). Les échecs des services Unity sont des **avertissements** `[Online] ...` avec l'exception complète : `grep "\[Online\]" Logs/Editor.log` |
+| Build : partie suivante d'un tournoi jamais chargée, « No current level data asset » | Asset d'un bundle Addressables détruit avec son bundle (skill `unity-build`, Repères) |
+
 `log-errors` affiche en tête la **première erreur loguée** : quand une erreur se répète des
 milliers de fois, c'est souvent la conséquence d'une autre, plus ancienne.
 
@@ -77,6 +80,9 @@ milliers de fois, c'est souvent la conséquence d'une autre, plus ancienne.
 
 Rejouer la situation avec les tests de scénario (skill `unity-scenario-tests`), filtrés sur le mode
 concerné. Une erreur aléatoire (dépend des positions) peut demander 2 ou 3 runs.
+
+Le log global `%LOCALAPPDATA%\Unity\Editor\Editor.log` reprend la ligne de commande de Unity Hub,
+**jeton d'accès compris** : ne jamais le recopier dans une réponse, un fichier ou un commit.
 
 ## Bruit connu (ne pas « corriger »)
 

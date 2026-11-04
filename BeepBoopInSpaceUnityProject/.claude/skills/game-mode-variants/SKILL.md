@@ -78,7 +78,10 @@ l'avoir retiré des deux listes et de `TrainingModes`.
 3. Jouer le mode : `python .claude/skills/unity-headless/scripts/unity_cli.py test --filter 'Training.*"<Mode>"'`
    (skill `unity-scenario-tests`) : il doit être sélectionnable, se charger, se jouer et revenir au
    menu sans erreur.
-4. Dire à l'utilisateur ce qui reste à faire dans l'éditeur : la vignette est celle du mode copié.
+4. En ligne : le tournoi en ligne tire ses niveaux dans la même config. Un mode qui ne combine que des
+   objectifs, actions et modificateurs existants est déjà synchronisé ; le vérifier au besoin avec
+   `test --filter "Online_Plays"` (skill `online-multiplayer`, build invité à refaire avant).
+5. Dire à l'utilisateur ce qui reste à faire dans l'éditeur : la vignette est celle du mode copié.
 
 ## 4. Nouveau type d'objectif ou de modificateur (code)
 
@@ -92,7 +95,12 @@ ce que les bugs passés ont appris :
 - ne demander la fin de partie (`FinishStateGrabber.Instance.FinishState`) qu'une fois, et pas si
   le chrono l'a déjà fait ;
 - déclarer le calcul du score dans `Initialize` :
-  `ResultsManager.RegisterPostInitializationCallback(m => m.SetScoreCalculationMethod(...))`.
+  `ResultsManager.RegisterPostInitializationCallback(m => m.SetScoreCalculationMethod(...))` ;
+- **jouable en ligne** : tout ce qui décide (mort, case au hasard, point marqué, fin de manche, apparition)
+  derrière `Netplay.HasAuthority`, l'hôte le dit aux invités par un message de `GameplaySync`
+  (`NotifyXxx` avant la mutation, `ReplicateXxx` chez l'invité) ; les scores passent seuls par
+  `CharacterScoringController`. Modèles : `PointsRushObjectiveManager` (objectif tiré au hasard) et
+  `MeteoritesModifier`. Skill `online-multiplayer`, section « Ajouter ou modifier un système ».
 
 Le prefab et son entrée Addressables se créent dans l'éditeur : préparer le code, puis donner à
 l'utilisateur les étapes précises (créer le prefab, l'ajouter au groupe), et vérifier ensuite

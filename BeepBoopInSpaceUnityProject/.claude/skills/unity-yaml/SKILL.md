@@ -23,6 +23,9 @@ Y=".claude/skills/unity-yaml/scripts/unity_yaml.py"   # depuis BeepBoopInSpaceUn
 | `uitk-prefab <prefab> --uxml <f> [--keep NOMS] [--panel-settings <asset>] [--dry-run]` | Écran uGUI → écran UI Toolkit : retire Canvas, CanvasScaler, GraphicRaycaster, CanvasGroup et tous les enfants sauf `--keep` (objets ou prefabs imbriqués, par nom, remontés sous la racine, leurs composants uGUI retirés), ajoute un `UIDocument` (PanelSettings par défaut : `UITools/Screens/UIPanelSettings.asset`). Liste les champs qui pointaient vers des objets retirés. Seulement un canvas posé sur la **racine** du prefab |
 | `set-field <asset> "Objet/Composant" <champ> (--value V \| --object O \| --asset A \| --remove)` | Pose, remplace ou retire un champ sérialisé (avec ses éléments de liste). `--object` : référence à un objet du même fichier (`"Objet/Composant"` ou nom d'un GameObject) ; `--asset` : objet principal d'un `.asset`, `.uxml`, `.uss` ou `.tss` ; `--value` : valeur YAML brute. Un champ `[field: SerializeField]` s'appelle `<Nom>k__BackingField` |
 | `add-component <asset> <GameObject> <script.cs>` | Ajoute un MonoBehaviour (le script doit avoir son `.meta`) ; ses champs prennent leur valeur par défaut, les poser ensuite avec `set-field` |
+| `copy-prefab <prefab> <nouveau> [--replace ANCIEN=NOUVEAU]... [--name N]` | Copie un prefab (nouveau `.meta`) en remplaçant les assets qu'il référence, par chemin : script de l'écran, UXML... Vide le `m_EditorClassIdentifier` des scripts remplacés (Unity le remplit) et renomme la racine |
+| `add-child <asset> <GameObject parent> <nom> [--script X.cs] [--inactive]` | Ajoute un GameObject enfant (Transform ou RectTransform comme son parent, remis à zéro), avec un MonoBehaviour si `--script` |
+| `add-instance <asset> <GameObject parent> <prefab> [--name N] [--inactive]` | Instancie un prefab sous un GameObject (instance + documents `stripped` de sa racine et de ses scripts) ; affiche le `{fileID: ...}` à passer à `set-field --value` pour référencer un script de l'instance |
 
 Le premier appel indexe les `.meta` des packages (~10 s, cache dans `Library/claude-guid-index.json`) ;
 `Assets/` est relu à chaque appel.
@@ -59,7 +62,14 @@ Un script Python jetable qui édite les documents : chercher l'objet racine par 
 (`m_Father: {fileID: 0}`), pas par son nom ; insérer un champ après la ligne
 `m_EditorClassIdentifier:` quelle que soit sa valeur (elle n'est pas toujours vide :
 `Assembly-CSharp::Game...`), et vérifier ensuite avec `tree --fields` qu'il est bien là — une
-insertion ratée ne lève aucune erreur. Mieux : `set-field` et `add-component`.
+insertion ratée ne lève aucune erreur. Mieux : `set-field`, `add-component`, `add-child`, `add-instance`.
+
+`copy-prefab`, `add-child` et `add-instance` reprennent ce qui a été fait à la main le 04/11/2026 pour
+les écrans En ligne et la salle (`MainMenu.unity`) et l'`OnlineManager` (`GlobalContext.prefab`),
+importés et testés par Unity ; les commandes elles-mêmes n'ont été vérifiées que sur des copies, avec
+`tree --fields`. Après leur première vraie utilisation : `unity_cli.py compile` et les tests du menu.
+Les nouveaux objets se placent en dernier parmi les enfants de leur parent ; une instance n'a que les
+surcharges de son nom et de son activation (Unity complète le reste à la prochaine sauvegarde).
 
 Canvas posé sur un enfant (écran de chargement, `LoadingScreenManager.prefab`) : garder le
 GameObject et son RectTransform (une scène peut les viser, ex. `m_IsActive`), retirer Canvas,

@@ -124,6 +124,14 @@ attend la fin du PID affiché, puis la commande `results ...` que `--detach` a a
 - **Captures hors du menu** : `CaptureGameScreen` recommence le rendu sur la caméra de la scène
   courante (une scène sans caméra principale, résultats du tournoi : le panel seul). Tous les
   écrans partagent `UIPanelSettings` : le panel capturé est le même partout.
+- **`CaptureScreen` sans `StartRenderingToTextures()` avant** : `NullReferenceException` dans
+  `ScenarioDriver.ReadPixels`. Un nouveau test qui capture commence par `StartRenderingToTextures()`
+  puis `RealSeconds(1f)` (le test des menus et `JoinAloneAndOpenHub` le font).
+- **Processus lancé par un test** (build invité des tests en ligne) : le garder dans un champ et le
+  tuer dans le `TearDown` (`StopGuestBuild`), qui passe même quand le test s'arrête sur un échec ;
+  ne pas compter sur un `try/finally` dans l'`IEnumerator` du test.
+- **Tout objet du jeu à `Instance` statique** se lit avec `Manager("<type>")`, pas seulement les
+  `AManager` (`OnlineManager`). `MenuState` vaut null hors du menu principal.
 - **Clavier pendant une partie** : `AddKeyboardAndMouse()` (P ouvre la pause) puis
   `RemoveKeyboardAndMouse()` ; ajouter le clavier ne fait pas rejoindre de joueur hors de la
   sélection des personnages.
