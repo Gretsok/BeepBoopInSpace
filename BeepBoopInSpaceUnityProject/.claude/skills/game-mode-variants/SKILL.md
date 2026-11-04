@@ -19,6 +19,7 @@ Un mode = un `LevelDataAsset` (`Assets/Game/Gameplay/Levels/Arenas/<Arène>/<Ar�
 | `GameModeScene` / `EnvironmentScene` / `LevelScene` | `GM_BaseGame` / `Swamp_Enviro` / `TestArena_Level` pour toutes les arènes actuelles |
 | `ObjectiveManagerPrefab` | Comment on gagne : `LastManStanding`, `LeastDeaths`, `MostKills`, `PointsRush` |
 | `SpecialActionPrefab` | L'action spéciale : `Bomb`, `SniperRifle` |
+| `ControlMode` | Les contrôles (`ECharacterControlMode`, absent du YAML = `Advanced`) : `Advanced` (avancer, pas à gauche / à droite, pivoter à gauche / à droite, action spéciale : 6 boutons), `Simplified` (haut, gauche, droite, bas, le robot se tourne vers où il va : Y X B A / W A S D), `SimplifiedWithSpecialAction` (les mêmes + l'action spéciale sur RB / E). Dans tous les cas, les actions sont mélangées entre les boutons du mode à chaque nouvelle configuration ; l'image des contrôles du tutoriel suit le mode, et `Simplified` y masque l'action spéciale |
 | `AdditionalSystemsToInstantiate` | Modificateurs (`AGameplayModifier`) : `Meteorites` |
 | `GlobalGameplayDataAsset` | Réglages de respawn (case valide / invalide : au plus proche, aléatoire) |
 
@@ -49,6 +50,10 @@ python .claude/skills/game-mode-variants/scripts/level_variant.py create \
 - `--from` : mode copié (tous les champs non précisés viennent de lui, vignette comprise).
 - `--mode` : nom dans le nom de fichier, en anglais comme les autres ; `--name` : nom affiché.
 - `--objective`, `--special`, `--modifiers` (`a,b` ou `none`) : noms courts donnés par `list`.
+- `--controls Advanced|Simplified|SimplifiedWithSpecialAction` : mode de contrôle. Un mode
+  `Simplified` n'a pas d'action spéciale jouable, mais son `SpecialActionPrefab` doit rester
+  renseigné (le chargement l'instancie toujours) ; le script refuse `Simplified` avec un objectif
+  qui marque par l'action spéciale (`MostKills`).
 - `--training` inscrit aussi le mode dans `TrainingModes` des tests (sauf `--no-tests`).
 
 Le script écrit le YAML comme Unity (fins de ligne LF, accents en `\xE9`), avec un nouveau GUID.

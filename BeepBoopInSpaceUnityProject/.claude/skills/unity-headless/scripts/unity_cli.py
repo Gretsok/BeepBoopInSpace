@@ -147,6 +147,8 @@ def require_editor_closed():
 
 
 def new_run_dir(name):
+    # A test filter is a regex: its * | ? and the like aren't allowed in a Windows folder name.
+    name = re.sub(r'[<>:"/\\|?*]+', "_", name).strip(" ._") or "run"
     path = RUNS_DIR / f"{datetime.datetime.now():%Y%m%d-%H%M%S}-{name}"
     path.mkdir(parents=True, exist_ok=True)
     return path

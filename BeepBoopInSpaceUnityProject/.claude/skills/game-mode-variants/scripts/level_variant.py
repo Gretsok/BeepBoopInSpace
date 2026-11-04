@@ -170,6 +170,23 @@ def set_reference(text, field, guid):
     return re.sub(pattern, lambda m: m.group(1) + guid, text)
 
 
+# ECharacterControlMode, by serialized value. Assets saved before the field existed don't have it: Advanced.
+CONTROL_MODES = ["Advanced", "Simplified", "SimplifiedWithSpecialAction"]
+
+
+def control_mode(text):
+    match = re.search(r"^  <ControlMode>k__BackingField: (\d+)", text, re.M)
+    return CONTROL_MODES[int(match.group(1))] if match else CONTROL_MODES[0]
+
+
+def set_control_mode(text, name):
+    line = f"  <ControlMode>k__BackingField: {CONTROL_MODES.index(name)}\n"
+    if re.search(r"^  <ControlMode>k__BackingField: ", text, re.M):
+        return re.sub(r"^  <ControlMode>k__BackingField: .*\n", lambda _: line, text, flags=re.M)
+    # Where Unity serializes it: in the order of LevelDataAsset's fields.
+    return re.sub(r"^(?=  <AdditionalSystemsToInstantiate>k__BackingField:)", lambda _: line, text, count=1, flags=re.M)
+
+
 def set_reference_list(text, field, guids):
     value = "\n" + "".join(asset_reference(g) for g in guids) if guids else " []\n"
     return re.sub(rf"  <{field}>k__BackingField:.*?(?=  <|\Z)", lambda _: f"  <{field}>k__BackingField:{value}", text,
@@ -249,7 +266,7 @@ def cmd_list(args):
     print("Building blocks:")
     for kind, items in blocks().items():
         print(f"  {kind:10} {', '.join(sorted(items))}")
-    print("\nModes (arena / mode: objective + special action + modifiers | display name | registered in):")
+    print("\nModes (arena / mode: objective + special action + modifiers | controls | display name | registered in):")
     for level in level_assets():
         text = read(level)
         guid = guid_of(level)
@@ -259,7 +276,7 @@ def cmd_list(args):
         where = [k for k in ("training", "tournament") if guid in registered[k]]
         if f'"{mode_name(level)}"' in tests_text:
             where.append("tests")
-        print(f"  {arena_name(level)} / {mode_name(level)}: {parts[0]} + {parts[1]} + {parts[2]} | {display} | "
+        print(f"  {arena_name(level)} / {mode_name(level)}: {parts[0]} + {parts[1]} + {parts[2]} | {control_mode(text)} | {display} | "
               f"{', '.join(where) or 'nowhere'}")
     return 0
 
@@ -283,7 +300,12 @@ def cmd_create(args):
     if args.modifiers is not None:
         names = [m for m in args.modifiers.split(",") if m and m.lower() != "none"]
         text = set_reference_list(text, "AdditionalSystemsToInstantiate", [guid_of(pick("modifier", m)) for m in names])
+    if args.controls:
+        text = set_control_mode(text, args.controls)
     check_compatibility(field_guids(text, "ObjectiveManagerPrefab")[0], field_guids(text, "SpecialActionPrefab")[0])
+    objective = name_by_guid().get(field_guids(text, "ObjectiveManagerPrefab")[0])
+    if objective in REQUIRED_SPECIAL and control_mode(text) == "Simplified":
+        sys.exit(f"The {objective} objective scores with the special action, which the Simplified controls don't have.")
 
     meta = read(Path(str(source) + ".meta"))
     new_guid = uuid.uuid4().hex
@@ -317,6 +339,7 @@ def main():
     p.add_argument("--objective", help="objective manager, see `list`")
     p.add_argument("--special", help="special action, see `list`")
     p.add_argument("--modifiers", help="comma-separated modifiers, or 'none'")
+    p.add_argument("--controls", choices=CONTROL_MODES, help="control mode (default: the source's)")
     p.add_argument("--training", action="store_true", help="add to the Training list (and the scenario tests)")
     p.add_argument("--tournament", action="store_true", help="add to the Tournament levels")
     p.add_argument("--no-tests", action="store_true", help="don't add a scenario test case")

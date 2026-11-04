@@ -13,7 +13,8 @@ Fichiers (dans `Assets/Tests/PlayMode/`, assembly `BeepBoop.Tests.PlayMode`) :
 | Fichier | Rôle |
 | --- | --- |
 | `GameModesScenarioTests.cs` | Classe partielle, scénarios des menus et des modes : `MainMenu_EveryScreenWorksWithGamepadKeyboardAndMouse`, `Training_PlaysAGameThenReturnsToMenu(mode)` × 7, `Tournament_PlaysUntilAChampionThenReturnsToMenu` (capture `30-tournament-results` après la première partie), et les étapes partagées (`JoinFourPlayersAndOpenHub`, `Join`, `GetReady`, `PlayOneGame`) |
-| `GameScreensScenarioTests.cs` | Même classe : les écrans de partie. `GameScreens_WorkWithGamepadsAndKeyboard`, `PauseMenu_BackToMenuLeavesTheGame("Training" / "Tournament")`, et les aides `StartTraining(mode)`, `CaptureGameScreen(nom)`, `SubmitAndSeeTheLoadingScreen()`, `SelectSlider(slider)`, `IsPaused` |
+| `GameScreensScenarioTests.cs` | Même classe : les écrans de partie. `GameScreens_WorkWithGamepadsAndKeyboard`, `PauseMenu_BackToMenuLeavesTheGame("Training" / "Tournament")`, et les aides `StartTraining(mode, beforeLaunch)` (`beforeLaunch` reçoit le `LevelDataAsset` choisi avant le lancement), `CaptureGameScreen(nom)`, `SubmitAndSeeTheLoadingScreen()`, `SelectSlider(slider)`, `IsPaused` |
+| `ControlModesScenarioTests.cs` | Même classe : `ControlModes_SimplifiedButtonsGoWhereTheySay("Simplified" / "SimplifiedWithSpecialAction")`, Points Rush passé dans ce mode de contrôle le temps du test (champ remis dans le `TearDown`) : image des contrôles du tutoriel (capture `40-tutorial-<mode>`), actions sur les seuls boutons du mode, chaque direction tourne et déplace le robot du joueur 1, les autres boutons ne font rien, une nouvelle configuration change les actions des boutons, puis la partie jusqu'au bout. Aides `RobotOf(pad)`, `ButtonActions(robot)` (nom de la méthode de chaque bouton, dans l'ordre `Action_1` à `Action_6` : A, Y, B, X, RB, LB) |
 | `ScenarioDriver.cs` | Manettes, clavier et souris virtuels, navigation dans les menus UI Toolkit, captures d'écran, attente avec délai, lecture de l'état du jeu par réflexion, collecte des erreurs |
 
 `MainMenu_EveryScreenWorksWithGamepadKeyboardAndMouse` (~13 s, à lancer après toute modification des menus) :
@@ -52,6 +53,7 @@ python $CLI test --filter 'Training.*"Shooters"'      # un mode (~1,5 min)
 python $CLI test --filter Tournament                    # le tournoi seul (3 à 9 parties, 3-7 min)
 python $CLI test --filter GameScreens                   # écrans de partie + captures 20-29 (~2 min)
 python $CLI test --filter PauseMenu                     # quitter une partie depuis la pause (~1,5 min)
+python $CLI test --filter ControlModes                  # les deux modes de contrôle simplifiés + captures 40
 python $CLI test --filter Game.Tests.PlayMode --detach  # toute la suite (~14 min) : en détaché
 ```
 
