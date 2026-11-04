@@ -88,6 +88,10 @@ build :
   l'utilisateur (un `.psd`...) et complète ceux des textures livrées en mode Multiple sans sprite
   (sprite `<nom>_0`, réglages Android, fins de ligne LF). Le dire à l'utilisateur et ne pas les
   glisser dans un commit sans rapport.
+- **À la fermeture, Unity vide la police TMP dynamique `Magnetar SDF.asset`** si elle a servi
+  (« Clear Dynamic Data On Build ») : l'état vidé est celui du dépôt, il ne crée donc pas de
+  différence. Une version remplie dans `git status` vient d'un éditeur ouvert : ne pas la commiter
+  (skill `unity-build`, « Ce que le build écrit dans le projet »).
 - Un test bloqué ne s'arrête qu'à son `Timeout` ; `log-flow` sur le log du run montre où il en est,
   et le run laisse alors `Assets/InitTestScene<guid>.unity` à supprimer (skill `unity-scenario-tests`).
 - Le Test Runner copie `TestResults.xml` (plusieurs Mo) dans le dossier de données du jeu

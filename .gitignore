@@ -68,6 +68,10 @@ BeepBoopInSpaceUnityProject/crashlytics-build.properties
 # Packed Addressables
 /BeepBoopInSpaceUnityProject/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 
+# Copied by Addressables before each player build, deleted the next time Unity starts
+/BeepBoopInSpaceUnityProject/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/link.xml
+/BeepBoopInSpaceUnityProject/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/link.xml.meta
+
 # Temporary auto-generated Android Assets
 /BeepBoopInSpaceUnityProject/[Aa]ssets/[Ss]treamingAssets/aa.meta
 /BeepBoopInSpaceUnityProject/[Aa]ssets/[Ss]treamingAssets/aa/*

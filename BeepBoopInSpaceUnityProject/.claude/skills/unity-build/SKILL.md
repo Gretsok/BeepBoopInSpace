@@ -1,6 +1,6 @@
 ---
 name: unity-build
-description: Construire Beep Boop dans l'espace pour Windows en headless — build du joueur (Addressables compris), dossier daté dans Builds/, zip prêt à partager, puis lancement de contrôle du jeu buildé avec analyse de son log. À utiliser quand l'utilisateur demande un build, un exe, une version à envoyer ou à faire tester, un zip pour des testeurs, un build de debug ou de développement, ou veut savoir si le jeu buildé démarre sans erreur.
+description: Construire Beep Boop dans l'espace pour Windows en headless — build du joueur (Addressables compris), dossier daté dans Builds/, zip prêt à partager, puis lancement de contrôle du jeu buildé avec analyse de son log. À utiliser quand l'utilisateur demande un build, un exe, une version à envoyer ou à faire tester, un zip pour des testeurs, un build de debug ou de développement, ou veut savoir si le jeu buildé démarre sans erreur, et quand un build ou un run de Unity laisse des fichiers modifiés dans git status (link.xml, ProjectSettings.asset, police Magnetar SDF).
 ---
 
 # Build Windows
@@ -52,6 +52,25 @@ python .claude/skills/unity-headless/scripts/unity_cli.py build --development --
 
 En cas d'échec : la commande affiche les erreurs distinctes du log (`log-errors`) ; le log
 complet est dans `Logs/claude-runs/<date>-build/editor.log`.
+
+### Ce que le build écrit dans le projet
+
+Un build, headless ou lancé depuis l'éditeur, ne doit laisser **aucun fichier modifié** dans
+`git status`. Trois packages écrivent pourtant dans le projet pendant un build ; chacun est
+neutralisé (vérifié le 04/11/2026 : build puis `git status` identique) :
+
+| Fichier | Qui l'écrit et pourquoi | Ce qui le neutralise |
+| --- | --- | --- |
+| `Assets/AddressableAssetsData/link.xml` (+ `.meta`) | Addressables le copie avant le build pour le stripping du code (`AddressablesPlayerBuildProcessor.PrepareForPlayerbuild`) et ne le supprime qu'au démarrage suivant de Unity | Ignoré par le `.gitignore` du dépôt. Le laisser : il disparaît tout seul |
+| `ProjectSettings/ProjectSettings.asset`, `preloadedAssets` | Input System ajoute `InputSystem_Actions` aux preloaded assets avant le build et les retire après, **en mémoire seulement**, alors que Unity enregistre les réglages pendant le build. Une fois enregistrées (build depuis l'éditeur sans sauvegarde ensuite), il ne les ajoute ni ne les retire plus jamais : fichier modifié à chaque build du 27/10 au 04/11/2026 | `Assets/Game/Tools/Build/Editor/PreloadedAssetsBuildCleanup.cs` : avant le build, retire les actions si elles sont restées dans les réglages ; après, ré-enregistre les réglages. Ne jamais commiter un `preloadedAssets` non vide |
+| `Assets/RawAssets/Fonts/magnetar_2/Magnetar SDF.asset` | Police TMP dynamique avec « Clear Dynamic Data On Build » : TMP vide ses tables de glyphes et réduit son atlas à 1×1 avant chaque build (`TMP_PreBuildProcessor`) **et à la fermeture de Unity** si l'atlas a servi (`EditorApplication.quitting`, `TMP_EditorResourceManager.cs`), donc aussi après `compile`, `test` ou l'éditeur | L'état vidé est l'état de repos, celui qui est commité : un build ou une fermeture le réécrit à l'octet près. La police ne se remplit que pendant une session (éditeur, tests) et se vide à la fermeture |
+
+- Ne jamais commiter la police **remplie** (`m_Width: 1024` sur sa texture, tables de glyphes
+  pleines) : fermer Unity la vide. Une nouvelle police TMP dynamique avec « Clear Dynamic Data On
+  Build » se comporte pareil : la commiter vidée, après une fermeture de Unity.
+- Un autre fichier modifié après un build vient d'un nouveau mécanisme : trouver son auteur dans
+  `Library/PackageCache` avant de le commiter ou de l'ignorer. Exception connue : la mise à jour du
+  format de `Assets/Settings/PC_RPAsset.asset` (voir Repères).
 
 ## 3. Vérifier que le build démarre
 
