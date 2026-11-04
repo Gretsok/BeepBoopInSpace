@@ -15,7 +15,7 @@
       "hash": "b11d62b28c5fcbe242988f9f8d451deb925cf23b"
     },
     "com.gameanalytics.sdk": {
-      "version": "8.3.0",
+      "version": "8.3.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
