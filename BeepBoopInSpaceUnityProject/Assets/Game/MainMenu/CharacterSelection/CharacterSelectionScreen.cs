@@ -13,12 +13,13 @@ using UnityEngine.UIElements;
 namespace Game.MainMenu.CharacterSelection
 {
     /// <summary>
-    /// Players join, each picks a character in the grid and gets ready; once every player (2 at least) is ready, the
+    /// Players join, each picks a character in the grid and gets ready; once every player (1 at least, alone for the online modes) is ready, the
     /// game moves on to the hub. Each player's circle is a <see cref="CharacterWidget"/>, the grid a <see cref="CharacterRoster"/>.
     /// </summary>
     public class CharacterSelectionScreen : AMainMenuScreen
     {
-        private const int k_MinPlayers = 2;
+        // One player alone goes on to the hub for the online modes; the local modes ask for two.
+        private const int k_MinPlayers = 1;
         private const string k_LaunchingClass = "cs-screen--launching";
 
         // Each widget drives the "player-slot-<n>" element of the screen, n starting at 1.
@@ -29,6 +30,9 @@ namespace Game.MainMenu.CharacterSelection
 
         [SerializeField, Tooltip("Time between the last player getting ready and the hub, in seconds.")]
         private float m_launchDelay = 1.2f;
+
+        [SerializeField, Tooltip("The same for a player alone, who may be joined by a friend before going online.")]
+        private float m_soloLaunchDelay = 3f;
 
         // A texture, not a sprite: the menus' atlases are tightly packed, and UI Toolkit can draw the neighbors of a
         // sprite in its transparent corners.
@@ -160,7 +164,8 @@ namespace Game.MainMenu.CharacterSelection
 
             for (int i = 0; i < m_widgets.Count; i++)
                 m_widgets[i].PlayLaunch(0.35f + i * 0.08f);
-            m_launch = DOVirtual.DelayedCall(m_launchDelay, Launch, ignoreTimeScale: true)
+            var launchDelay = m_playerManager.Players.Count > 1 ? m_launchDelay : m_soloLaunchDelay;
+            m_launch = DOVirtual.DelayedCall(launchDelay, Launch, ignoreTimeScale: true)
                 .SetLink(gameObject, LinkBehaviour.KillOnDisable);
         }
 

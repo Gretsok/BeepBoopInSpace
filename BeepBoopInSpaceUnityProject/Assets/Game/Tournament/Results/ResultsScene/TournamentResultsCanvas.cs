@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Game.Global;
 using Game.Global.InputIndicationsManagement;
+using Game.Online;
 using Game.UITools.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -49,7 +50,7 @@ namespace Game.Tournament.Results.ResultsScene
             var container = Query<VisualElement>("player-lines");
             container.Clear();
             var lines = new List<TournamentPlayerResultLine>();
-            foreach (var player in GlobalContext.Instance.PlayerManager.Players)
+            foreach (var player in GlobalContext.Instance.PlayerManager.GamePlayers)
             {
                 var line = new TournamentPlayerResultLine(m_resultLineTemplate, player);
                 container.Add(line.Element);
@@ -59,6 +60,14 @@ namespace Game.Tournament.Results.ResultsScene
             foreach (var line in lines.Where(line => bestScore > 0 && line.Score == bestScore))
                 line.Highlight();
 
+            // Online, the host leaves the results for everyone.
+            if (!Netplay.HasAuthority)
+            {
+                m_okButton.SetEnabled(false);
+                m_okButton.Q<Label>().text = "En attente de l'hôte…";
+                m_okButton.Q("ok-glyph").style.display = DisplayStyle.None;
+                return;
+            }
             DefaultFocus = m_okButton;
             FocusSilently(m_okButton);
         }

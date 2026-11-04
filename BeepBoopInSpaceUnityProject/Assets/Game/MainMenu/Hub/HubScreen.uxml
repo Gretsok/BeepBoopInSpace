@@ -14,10 +14,17 @@
             <ui:Button name="tournament-button" class="ui-tile hub-mode">
                 <ui:VisualElement class="ui-filigree" picking-mode="Ignore" />
                 <ui:Label text="Tournoi" class="ui-text ui-tile__label" picking-mode="Ignore" />
+                <ui:Label name="tournament-requirement" text="2 joueurs ici, au moins" class="ui-text hub-mode__note" picking-mode="Ignore" />
             </ui:Button>
             <ui:Button name="training-button" class="ui-tile hub-mode">
                 <ui:VisualElement class="ui-filigree" picking-mode="Ignore" />
                 <ui:Label text="Entraînement" class="ui-text ui-tile__label" picking-mode="Ignore" />
+                <ui:Label name="training-requirement" text="2 joueurs ici, au moins" class="ui-text hub-mode__note" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button name="online-button" class="ui-tile hub-mode">
+                <ui:VisualElement class="ui-filigree" picking-mode="Ignore" />
+                <ui:Label text="En ligne" class="ui-text ui-tile__label" picking-mode="Ignore" />
+                <ui:Label text="Une salle, un code" class="ui-text hub-mode__note" picking-mode="Ignore" />
             </ui:Button>
         </ui:VisualElement>
         <ui:VisualElement class="ui-centered-row hub-character-selection-row" picking-mode="Ignore">
@@ -26,6 +33,9 @@
         <ui:Instance template="ConfirmationDialog" name="tournament-confirmation" class="ui-dialog">
             <ui:AttributeOverrides element-name="title" text="Tournoi" />
             <ui:AttributeOverrides element-name="message" text="Les parties s'enchaînent jusqu'au sacre d'un champion.&#10;On lance le tournoi ?" />
+        </ui:Instance>
+        <ui:Instance template="ConfirmationDialog" name="notice" class="ui-dialog">
+            <ui:AttributeOverrides element-name="title" text="Partie en ligne terminée" />
         </ui:Instance>
     </ui:VisualElement>
 </ui:UXML>

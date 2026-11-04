@@ -6,6 +6,7 @@ using Game.Global.PlayerManagement;
 using Game.Global.Settings;
 using Game.Global.Save;
 using Game.Global.SFXManagement;
+using Game.Online;
 using GameAnalyticsSDK;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -30,6 +31,8 @@ namespace Game.Global
         public NavigationAuthorityManager NavigationAuthorityManager { get; private set; }
         [field: SerializeField]
         public AnalyticsManager AnalyticsManager { get; private set; }
+        [field: SerializeField]
+        public OnlineManager OnlineManager { get; private set; }
 
         protected override IEnumerator Initialize()
         {

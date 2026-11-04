@@ -1,0 +1,53 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Template name="ConfirmationDialog" src="../../UITools/Screens/ConfirmationDialog.uxml" />
+    <ui:Template name="LobbyPlayerCard" src="LobbyPlayerCard.uxml" />
+    <Style src="../UI/MainMenu.uss" />
+    <ui:VisualElement name="online-lobby-screen" class="ui-screen" picking-mode="Ignore">
+        <ui:VisualElement class="ui-background" picking-mode="Ignore" />
+        <ui:VisualElement class="ui-title" picking-mode="Ignore">
+            <ui:VisualElement class="ui-title__fill" picking-mode="Ignore" />
+            <ui:VisualElement class="ui-title__border" picking-mode="Ignore" />
+            <ui:Label text="SALLE EN LIGNE" class="ui-title__label" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement class="ui-centered-row lobby__code-row" picking-mode="Ignore">
+            <ui:VisualElement class="ui-panel lobby__code-panel" picking-mode="Ignore">
+                <ui:VisualElement class="ui-filigree" picking-mode="Ignore" />
+                <ui:Label text="Code" class="ui-text lobby__code-label" picking-mode="Ignore" />
+                <ui:Label name="code" text="------" class="ui-text lobby__code" picking-mode="Ignore" />
+                <ui:Button name="copy-button" text="Copier" class="ui-button lobby__copy-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="lobby__players" picking-mode="Ignore">
+            <ui:Instance template="LobbyPlayerCard" name="player-1" class="lobby__player" picking-mode="Ignore" />
+            <ui:Instance template="LobbyPlayerCard" name="player-2" class="lobby__player" picking-mode="Ignore" />
+            <ui:Instance template="LobbyPlayerCard" name="player-3" class="lobby__player" picking-mode="Ignore" />
+            <ui:Instance template="LobbyPlayerCard" name="player-4" class="lobby__player" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement name="modes" class="ui-centered-row lobby__modes" picking-mode="Ignore">
+            <ui:VisualElement class="lobby__modes-row" picking-mode="Ignore">
+                <ui:Button name="tournament-button" class="ui-tile lobby__mode">
+                    <ui:VisualElement class="ui-filigree" picking-mode="Ignore" />
+                    <ui:Label text="Tournoi" class="ui-text ui-tile__label lobby__mode-label" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:Button name="training-button" class="ui-tile lobby__mode">
+                    <ui:VisualElement class="ui-filigree" picking-mode="Ignore" />
+                    <ui:Label text="Entraînement" class="ui-text ui-tile__label lobby__mode-label" picking-mode="Ignore" />
+                </ui:Button>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="ui-centered-row lobby__hint-row" picking-mode="Ignore">
+            <ui:Label name="hint" class="ui-text lobby__hint" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:Button name="back-button" focusable="false" class="ui-legend ui-legend--back">
+            <ui:Label text="Quitter la salle" class="ui-text ui-legend__label" picking-mode="Ignore" />
+            <ui:VisualElement name="back-glyph" class="ui-glyph ui-legend__glyph--after" picking-mode="Ignore" />
+        </ui:Button>
+        <ui:Instance template="ConfirmationDialog" name="tournament-confirmation" class="ui-dialog">
+            <ui:AttributeOverrides element-name="title" text="Tournoi" />
+            <ui:AttributeOverrides element-name="message" text="Les parties s'enchaînent jusqu'au sacre d'un champion.&#10;On lance le tournoi pour toute la salle ?" />
+        </ui:Instance>
+        <ui:Instance template="ConfirmationDialog" name="leave-confirmation" class="ui-dialog">
+            <ui:AttributeOverrides element-name="title" text="Quitter la salle ?" />
+        </ui:Instance>
+    </ui:VisualElement>
+</ui:UXML>

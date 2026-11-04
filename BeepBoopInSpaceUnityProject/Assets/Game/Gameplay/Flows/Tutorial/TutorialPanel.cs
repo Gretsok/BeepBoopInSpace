@@ -4,6 +4,8 @@ using DG.Tweening;
 using Game.Gameplay.CharactersManagement.Actions;
 using Game.Global.InputIndicationsManagement;
 using Game.Global.PlayerManagement;
+using Game.Online;
+using Game.Online.Gameplay;
 using Game.UITools.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -111,21 +113,44 @@ namespace Game.Gameplay.Flows.Tutorial
 
         private void HandleReadyRequested(TutorialPlayerWidget widget)
         {
-            SetPlayerStatus(widget.Player, true);
+            RequestPlayerStatus(widget.Player, true);
         }
 
         private void HandleUnreadyRequested(TutorialPlayerWidget widget)
         {
-            SetPlayerStatus(widget.Player, false);
+            RequestPlayerStatus(widget.Player, false);
         }
 
         public void TogglePlayerStatus(AbstractPlayer player)
         {
-            SetPlayerStatus(player, !m_playerStatus[player]);
+            RequestPlayerStatus(player, !m_playerStatus[player]);
         }
 
-        private void SetPlayerStatus(AbstractPlayer player, bool isReady)
+        // A player of this machine gets ready or not: an online guest asks the host, which answers with the status.
+        private void RequestPlayerStatus(AbstractPlayer player, bool isReady)
         {
+            if (Netplay.IsGuest)
+            {
+                GameplaySync.SendTutorialStatusRequest(m_players.IndexOf(player), isReady);
+                return;
+            }
+            SetPlayerStatus(player, isReady);
+        }
+
+        /// <summary>Sets whether a player is ready, and tells the guests of an online room.</summary>
+        public void SetPlayerStatus(AbstractPlayer player, bool isReady)
+        {
+            if (!m_playerStatus.ContainsKey(player))
+                return;
+            GameplaySync.NotifyTutorialStatus(m_players.IndexOf(player), isReady);
+            ApplyPlayerStatus(player, isReady);
+        }
+
+        /// <summary>Online guest: whether the host says a player is ready.</summary>
+        public void ApplyPlayerStatus(AbstractPlayer player, bool isReady)
+        {
+            if (!m_playerStatus.ContainsKey(player))
+                return;
             m_playerStatus[player] = isReady;
             if (m_playerWidgets.TryGetValue(player, out var widget))
                 widget.SetStatus(isReady);

@@ -4,6 +4,7 @@ using System.Linq;
 using Game.Gameplay.Flows.Results;
 using Game.Gameplay.Levels._0_Core;
 using Game.LoadingScreen;
+using Game.Online;
 using Game.Tournament.Config;
 using Game.Tournament.Results;
 using Game.Tournament.Results.ResultsScene;
@@ -37,8 +38,21 @@ namespace Game.Tournament.Flow
         
         private readonly List<LevelDataAsset> m_levelsDone = new ();
         
+        // Online guest: the level the host chose after the results (-1: the tournament is over), and whether the results
+        // wait for it.
+        private int? m_nextLevelFromHost;
+        private bool m_isWaitingForHost;
+
         public void StartTournament()
         {
+            var onlineManager = OnlineManager.Instance;
+            if (Netplay.IsOnline)
+            {
+                onlineManager.OnRoomLost += HandleRoomLost;
+                if (Netplay.IsGuest)
+                    onlineManager.OnTournamentNextGame += HandleHostNextGame;
+            }
+
             var levelDataAsset = m_configDataAsset.LevelDataAssets[0];
             m_levelsDone.Add(levelDataAsset);
 
@@ -49,6 +63,7 @@ namespace Game.Tournament.Flow
 
         public void Abandon()
         {
+            StopListeningToTheRoom();
             // The game being unloaded mustn't lead to the tournament's results.
             m_currentLevelInfoManager.OnCurrentLevelDataAssetChanged -= HandleCurrentLevelDataAssetChanged;
         }
@@ -66,7 +81,8 @@ namespace Game.Tournament.Flow
         private IEnumerator HandleEndOfGame()
         {
             var loadingScreenManager = LoadingScreenManager.Instance;
-            
+            Debug.Log("[Tournament] Game over: its results.");
+
             loadingScreenManager.ShowLoadingScreen();
             var op = Addressables.LoadSceneAsync(m_tournamentResultsScene, LoadSceneMode.Single);
             yield return new WaitUntil(() => op.IsDone);
@@ -75,6 +91,14 @@ namespace Game.Tournament.Flow
             {
                 resultsSceneContext.ResultsCanvas.SetUp(HandleEndOfResultTournamentScreenClosed);
                 loadingScreenManager.HideLoadingScreen();
+                // Online guest: the results stay until the host leaves them.
+                if (Netplay.IsGuest)
+                {
+                    Debug.Log($"[Tournament] Results shown, the host's choice {(m_nextLevelFromHost.HasValue ? "already here" : "awaited")}.");
+                    m_isWaitingForHost = true;
+                    if (m_nextLevelFromHost.HasValue)
+                        ContinueWithHost();
+                }
             });
         }
 
@@ -84,13 +108,21 @@ namespace Game.Tournament.Flow
             loadingScreenManager.ShowLoadingScreen();
             if (m_resultsManager.IsGameComplete())
             {
-                // Loading end Tournament scene
-                var op = Addressables.LoadSceneAsync(m_tournamentCloseScene, LoadSceneMode.Single);
+                CloseTournament();
             }
             else
             {
                 LoadNextLevel();
             }
+        }
+
+        private void CloseTournament()
+        {
+            if (Netplay.IsHost)
+                OnlineManager.Instance.SendTournamentNextGame(-1);
+            StopListeningToTheRoom();
+            // Loading end Tournament scene
+            Addressables.LoadSceneAsync(m_tournamentCloseScene, LoadSceneMode.Single);
         }
 
         private void LoadNextLevel()
@@ -102,8 +134,67 @@ namespace Game.Tournament.Flow
                 m_levelsDone.Clear();
                 levels = m_configDataAsset.LevelDataAssets.ToList();
             }
-            
+
             var levelDataAsset = levels[Random.Range(0, levels.Count)];
+            // Online, the guests play the level the host drew.
+            if (Netplay.IsHost)
+                OnlineManager.Instance.SendTournamentNextGame(m_configDataAsset.LevelDataAssets.IndexOf(levelDataAsset));
+            LoadLevel(levelDataAsset);
+        }
+
+        private void HandleHostNextGame(int levelIndex)
+        {
+            Debug.Log($"[Tournament] The host chose the level {levelIndex}.");
+            m_nextLevelFromHost = levelIndex;
+            if (m_isWaitingForHost)
+                ContinueWithHost();
+        }
+
+        private void ContinueWithHost()
+        {
+            m_isWaitingForHost = false;
+            var levelIndex = m_nextLevelFromHost ?? -1;
+            m_nextLevelFromHost = null;
+            LoadingScreenManager.Instance.ShowLoadingScreen();
+            if (levelIndex < 0 || levelIndex >= m_configDataAsset.LevelDataAssets.Count)
+            {
+                CloseTournament();
+                return;
+            }
+            var levelDataAsset = m_configDataAsset.LevelDataAssets[levelIndex];
+            if (m_levelsDone.Count >= m_configDataAsset.LevelDataAssets.Count)
+                m_levelsDone.Clear();
+            LoadLevel(levelDataAsset);
+        }
+
+        // The room is lost between two games (during one, the game goes back to the main menu itself).
+        private void HandleRoomLost(string reason)
+        {
+            if (Game.Gameplay.GameplayContext.Instance)
+                return;
+            Debug.Log("[Tournament] Room lost between two games: back to the main menu.");
+            m_isWaitingForHost = false;
+            LoadingScreenManager.Instance.ShowLoadingScreen();
+            CloseTournament();
+        }
+
+        private void StopListeningToTheRoom()
+        {
+            var onlineManager = OnlineManager.Instance;
+            if (!onlineManager)
+                return;
+            onlineManager.OnRoomLost -= HandleRoomLost;
+            onlineManager.OnTournamentNextGame -= HandleHostNextGame;
+        }
+
+        private void OnDestroy()
+        {
+            StopListeningToTheRoom();
+        }
+
+        private void LoadLevel(LevelDataAsset levelDataAsset)
+        {
+            Debug.Log($"[Tournament] Next game: {levelDataAsset.name}.");
             m_levelsDone.Add(levelDataAsset);
             
             m_currentLevelInfoManager.SetCurrentLevelDataAsset(levelDataAsset);

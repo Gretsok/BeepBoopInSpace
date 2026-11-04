@@ -62,7 +62,8 @@ namespace Game.Gameplay.CharactersManagement.Rumble
             var charactersManager = CharactersManager.Instance;
             var controller = charactersManager.CharacterPlayerControllersAssociation.FirstOrDefault(pair => pair.Value == m_characterPawn)
                 .Key;
-            if (!controller)
+            // A player of another machine of the online room rumbles on that machine.
+            if (!controller || !controller.Player || controller.Player.IsRemote)
                 return;
             var playerdevices = controller.Player.PlayerInput.devices;
 
@@ -80,9 +81,12 @@ namespace Game.Gameplay.CharactersManagement.Rumble
         private void OnDisable()
         {
             var charactersManager = CharactersManager.Instance;
+            if (!charactersManager)
+                return;
             var controller = charactersManager.CharacterPlayerControllersAssociation.FirstOrDefault(pair => pair.Value == m_characterPawn)
                 .Key;
-            if (!controller)
+            // A player of another machine of the online room rumbles on that machine.
+            if (!controller || !controller.Player || controller.Player.IsRemote)
                 return;
             var playerdevices = controller.Player.PlayerInput.devices;
 

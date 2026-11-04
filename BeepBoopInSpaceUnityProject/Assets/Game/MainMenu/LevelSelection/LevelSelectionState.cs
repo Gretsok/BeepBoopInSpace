@@ -1,4 +1,5 @@
 using Game.Gameplay.Levels._0_Core;
+using Game.Online;
 using UnityEngine;
 
 namespace Game.MainMenu.LevelSelection
@@ -23,7 +24,11 @@ namespace Game.MainMenu.LevelSelection
 
         private void HandleLevelSelected(LevelDataAsset obj)
         {
-            MainMenuContext.GameModesLauncher.LaunchTraining(obj);
+            // In an online room, the host launches the level for everyone.
+            if (Netplay.IsHost)
+                GlobalContext.OnlineManager.LaunchTraining(obj);
+            else
+                MainMenuContext.GameModesLauncher.LaunchTraining(obj);
         }
 
         protected override void HandleLeave()

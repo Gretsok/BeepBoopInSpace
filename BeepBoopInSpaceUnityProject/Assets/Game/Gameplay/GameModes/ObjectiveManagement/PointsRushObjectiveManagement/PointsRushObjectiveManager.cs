@@ -9,6 +9,8 @@ using Game.Gameplay.GridSystem;
 using Game.Gameplay.GridSystem.GenericComponents;
 using Game.Gameplay.Timer;
 using Game.Global.SFXManagement;
+using Game.Online;
+using Game.Online.Gameplay;
 using Game.UITools.WorldOverlay;
 using NaughtyAttributes;
 using UnityEngine;
@@ -50,9 +52,11 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.PointsRushObjectiveManagem
 
         private void HandlePawnMove(CharacterMovementController characterMovementController, Cell cell)
         {
-            if (cell == CurrentObjectiveCell)
+            // Online guest: the host gives the points (ReplicatePointCollected).
+            if (cell == CurrentObjectiveCell && Netplay.HasAuthority)
             {
                 characterMovementController.ReferencesHolder.ScoringController.IncreaseScore();
+                GameplaySync.NotifyPointCollected(characterMovementController, cell);
 
                 PlayPointFeedback(characterMovementController, cell);
 
@@ -74,7 +78,9 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.PointsRushObjectiveManagem
             {
                 pawn.ReferencesHolder.MovementController.OnPositionUpdated += HandlePawnMove;
             }
-            UpdateObjective();
+            // Online guest: the host picks the cells (ReplicateObjective).
+            if (Netplay.HasAuthority)
+                UpdateObjective();
         }
         
         [Button]
@@ -85,10 +91,31 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.PointsRushObjectiveManagem
 
             CurrentObjectiveCell = m_gridBuilder.GetRandomAvailableWalkableCell(cell =>
                 !cell.GetComponent<KillingCellComponent>() && !DoesAPawnStandOnCell(cell));
+            GameplaySync.NotifyObjective(CurrentObjectiveCell);
+            ShowObjective();
+        }
+
+        private void ShowObjective()
+        {
             if (!CurrentObjectiveCell)
                 return;
             m_objectiveCollectedAudioPlayer.Play();
             m_currentObjectiveIndication = Instantiate(m_objectiveIndicationPrefab, CurrentObjectiveCell.transform);
+        }
+
+        /// <summary>Online guest: the host picked the cell of the next point (none if null).</summary>
+        public void ReplicateObjective(Cell cell)
+        {
+            if (m_currentObjectiveIndication != null)
+                Destroy(m_currentObjectiveIndication);
+            CurrentObjectiveCell = cell;
+            ShowObjective();
+        }
+
+        /// <summary>Online guest: a robot took the point of the cell.</summary>
+        public void ReplicatePointCollected(CharacterMovementController characterMovementController, Cell cell)
+        {
+            PlayPointFeedback(characterMovementController, cell);
         }
 
         private bool DoesAPawnStandOnCell(Cell cell)

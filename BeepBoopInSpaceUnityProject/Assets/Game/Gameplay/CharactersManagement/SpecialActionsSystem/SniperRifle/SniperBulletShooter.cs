@@ -3,6 +3,8 @@ using Game.Gameplay.CharactersManagement.CollisionsHandling;
 using Game.Gameplay.CharactersManagement.ReferencesHolding;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using Game.Gameplay.ProjectileSystem;
+using Game.Online;
+using Game.Online.Gameplay;
 using UnityEngine;
 
 namespace Game.Gameplay.CharactersManagement.SpecialActionsSystem.SniperRifle
@@ -38,7 +40,19 @@ namespace Game.Gameplay.CharactersManagement.SpecialActionsSystem.SniperRifle
         {
             if (Time.time - m_lastShotTime < m_cooldown)
                 return;
-            
+
+            GameplaySync.NotifyShot(this);
+            FireBullet();
+        }
+
+        /// <summary>Online guest: the host's robot shot. Its bullet only kills on the host.</summary>
+        public void ReplicateShot()
+        {
+            FireBullet();
+        }
+
+        private void FireBullet()
+        {            
             var model = ReferencesHolder.ModelSource;
             var bullet = Instantiate(m_bulletPrefab,
                 model.position + Vector3.up * m_bulletHeight + model.forward * m_bulletStartingForwardPosition,
@@ -67,7 +81,8 @@ namespace Game.Gameplay.CharactersManagement.SpecialActionsSystem.SniperRifle
             if (!otherDeathController.IsAlive)
                 return;
             
-            otherDeathController.Kill();
+            if (Netplay.HasAuthority)
+                otherDeathController.Kill();
             Destroy(projectile.gameObject);
 
             // An invincible player stops the bullet without dying: no kill to count.

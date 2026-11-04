@@ -4,7 +4,10 @@ using System.Linq;
 using Game.Gameplay.Flows._0_Load;
 using Game.Gameplay.Flows.Gameplay;
 using Game.Gameplay.GridSystem;
+using Game.Gameplay.Cells.Default;
 using Game.Gameplay.GridSystem.GenericComponents;
+using Game.Online;
+using Game.Online.Gameplay;
 using UnityEngine;
 
 namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
@@ -79,7 +82,8 @@ namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
         private float m_lastSpawnTime;
         private void Update()
         {
-            if (!IsSpawning)
+            // Online guest: the host drops the meteorites (ReplicateMeteorite).
+            if (!IsSpawning || !Netplay.HasAuthority)
                 return;
 
             TimePassedSpawning += Time.deltaTime;
@@ -99,7 +103,14 @@ namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
                 return;
             var meteoriteSystem = PrepareAndGetReadyMeteoriteSystem();
             meteoriteSystem.Drop(target, DropTime);
+            GameplaySync.NotifyMeteorite(target, DropTime);
             Debug.Log($"Spawn meteorite at {m_lastSpawnTime}", meteoriteSystem.gameObject);
+        }
+
+        /// <summary>Online guest: the host dropped a meteorite. It only kills on the host.</summary>
+        public void ReplicateMeteorite(Cell target, float dropTime)
+        {
+            PrepareAndGetReadyMeteoriteSystem().Drop(target, dropTime);
         }
 
         private MeteoriteSystem PrepareAndGetReadyMeteoriteSystem()

@@ -6,10 +6,20 @@ using UnityEngine.InputSystem.Users;
 
 namespace Game.Global.PlayerManagement
 {
-    [RequireComponent(typeof(PlayerInput))]
+    /// <summary>
+    /// A player of the game. A local player has a PlayerInput, from the PlayerInputManager. A player of another machine of
+    /// an online room has none: the online manager creates it, its inputs reach the host through the network.
+    /// </summary>
     public class AbstractPlayer : MonoBehaviour
     {
         public PlayerInput PlayerInput => GetComponent<PlayerInput>();
+
+        /// <summary>A player of another machine of the online room.</summary>
+        public bool IsRemote => !PlayerInput;
+
+        private int m_number;
+        /// <summary>The player's badge number (J1 to J4): their rank in the online room, else in the local players.</summary>
+        public int Number => m_number > 0 ? m_number : PlayerInput ? PlayerInput.playerIndex + 1 : 0;
         
         [field: SerializeField]
         public CharacterDataAsset CharacterDataAsset { get; private set; }
@@ -25,6 +35,8 @@ namespace Game.Global.PlayerManagement
         private void MakeKBMCompletePairingIfNeeded()
         {
             var playerInput = PlayerInput;
+            if (!playerInput)
+                return;
 
             var mouse = InputSystem.GetDevice<Mouse>();
             var keyboard = InputSystem.GetDevice<Keyboard>();
@@ -48,6 +60,12 @@ namespace Game.Global.PlayerManagement
         public void SetCharacterData(CharacterDataAsset characterDataAsset)
         {
             CharacterDataAsset = characterDataAsset;
+        }
+
+        /// <summary>The badge number in an online room, 0 to go back to the local one.</summary>
+        public void SetNumber(int number)
+        {
+            m_number = number;
         }
     }
 }

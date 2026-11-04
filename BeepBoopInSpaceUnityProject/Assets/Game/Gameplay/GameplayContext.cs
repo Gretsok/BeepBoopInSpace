@@ -10,6 +10,7 @@ using Game.Gameplay.GameModes.ObjectiveManagement;
 using Game.Gameplay.Levels._0_Core;
 using Game.Gameplay.PauseMenu;
 using Game.Gameplay.RoundsManagement;
+using Game.Online.Gameplay;
 using UnityEngine;
 
 namespace Game.Gameplay
@@ -67,6 +68,7 @@ namespace Game.Gameplay
         {
             FlowMachine.Run();
             PauseMenuManager.Initialize(FlowMachine);
+            GameplaySync.AttachTo(this);
             
             yield return new WaitUntil(() => LoadingManager.HasLoadedLevel);
             CurrentLevelInfoManager = LoadingManager.FetchCurrentLevelInfoManager();

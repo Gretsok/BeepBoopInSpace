@@ -7,6 +7,8 @@ using Game.Gameplay.CharactersManagement.Death.Invincibility;
 using Game.Gameplay.GlobalGameplayData;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.GridSystem.GenericComponents;
+using Game.Online;
+using Game.Online.Gameplay;
 using UnityEngine;
 
 namespace Game.Gameplay.CharactersManagement.Death
@@ -38,6 +40,9 @@ namespace Game.Gameplay.CharactersManagement.Death
 
         private void HandleDeath(DeathController obj)
         {
+            // Online guest: the host says where the robot comes back (ReplicateRespawnTarget) and takes it there.
+            if (!Netplay.HasAuthority)
+                return;
             var deathPosition = m_deathController.CharacterReferencesHolder.ModelSource.position;
             // Detaching clears the walker's current cell, so the death cell must be read first.
             m_deathCell = m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell;
@@ -50,12 +55,26 @@ namespace Game.Gameplay.CharactersManagement.Death
                     return;
                 m_respawnCell.OnCellStateUpdated += HandleRespawnCellUpdated;
 
-                var deathPlacementFX = Instantiate(m_deathPlacementFXPrefab, deathPosition, Quaternion.identity);
-                deathPlacementFX.SetUp(m_deathController.CharacterReferencesHolder.CharacterDataAsset, 
-                    deathPosition,
-                    m_respawnCell.transform.position,
-                    m_deathController.WaitDurationToResurrect);
+                GameplaySync.NotifyRespawnTarget(m_deathController, m_respawnCell, m_deathController.WaitDurationToResurrect);
+                PlayDeathPlacementFX(m_respawnCell, m_deathController.WaitDurationToResurrect);
             }
+        }
+
+        /// <summary>Online guest: the host's robot will come back on the cell.</summary>
+        public void ReplicateRespawnTarget(Cell respawnCell, float travelDuration)
+        {
+            PlayDeathPlacementFX(respawnCell, travelDuration);
+        }
+
+        // The robot's spark, from where it died to where it comes back.
+        private void PlayDeathPlacementFX(Cell respawnCell, float travelDuration)
+        {
+            var deathPosition = m_deathController.CharacterReferencesHolder.ModelSource.position;
+            var deathPlacementFX = Instantiate(m_deathPlacementFXPrefab, deathPosition, Quaternion.identity);
+            deathPlacementFX.SetUp(m_deathController.CharacterReferencesHolder.CharacterDataAsset,
+                deathPosition,
+                respawnCell.transform.position,
+                travelDuration);
         }
 
         private void HandleRespawnCellUpdated(Cell cell)
@@ -112,7 +131,7 @@ namespace Game.Gameplay.CharactersManagement.Death
 
         private void HandleResurrection(DeathController obj)
         {
-            if (m_respawnCell)
+            if (m_respawnCell && Netplay.HasAuthority)
             {
                 m_respawnCell.OnCellStateUpdated -= HandleRespawnCellUpdated;
                 // The closest valid cell, else a random valid one: no other attempt would find more.

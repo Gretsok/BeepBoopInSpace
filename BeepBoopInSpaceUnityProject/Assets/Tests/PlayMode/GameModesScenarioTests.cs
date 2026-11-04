@@ -237,10 +237,11 @@ namespace Game.Tests.PlayMode
             m_driver.Step("Hub: the d-pad stays in the row of the modes, Tournoi asks for a confirmation, Cancel closes it");
             var tournament = HubButton("m_tournamentButton");
             var training = HubButton("m_trainingButton");
-            yield return m_driver.Select(training);
+            var online = HubButton("m_onlineButton");
+            yield return m_driver.Select(online);
             yield return m_driver.Press(m_driver.DpadButton(MoveDirection.Right));
             yield return RealSeconds(0.3f);
-            Assert.AreEqual(training, FocusedElement, "Right from Entraînement left the row of the modes.");
+            Assert.AreEqual(online, FocusedElement, "Right from En ligne left the row of the modes.");
             yield return m_driver.Select(tournament);
             yield return m_driver.Press(m_driver.DpadButton(MoveDirection.Left));
             yield return RealSeconds(0.3f);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Game.ArchitectureTools.Manager;
+using Game.Gameplay.CharactersManagement.ReferencesHolding;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using Game.Global;
 using Game.Global.PlayerManagement;
@@ -24,6 +25,17 @@ namespace Game.Gameplay.CharactersManagement
 
         public event Action<CharactersManager> OnCharactersCreated;
 
+        /// <summary>The robot's rank in the game, the rank of its player in <see cref="PlayerManager.GamePlayers"/>; -1 if none.</summary>
+        public int IndexOf(CharacterReferencesHolder referencesHolder)
+        {
+            return m_characterPawns.FindIndex(pawn => pawn.ReferencesHolder == referencesHolder);
+        }
+
+        public CharacterPlayerController ControllerOf(CharacterPawn characterPawn)
+        {
+            return m_characterPlayerControllers.Find(controller => controller.Pawn == characterPawn);
+        }
+
         public AbstractPlayer GetAbstractPlayerFromCharacter(CharacterPawn characterPawn)
         {
             var playerController = m_characterPlayerControllers.Find(characterPlayerController =>
@@ -33,11 +45,12 @@ namespace Game.Gameplay.CharactersManagement
         
         public void CreateCharactersAndPlayerControllers(SpecialAction specialActionPrefab)
         {
-            var playerManager = GlobalContext.Instance.PlayerManager;
+            // Online, the whole room's players, some of them on other machines.
+            var players = GlobalContext.Instance.PlayerManager.GamePlayers;
 
-            for (int i = 0; i < playerManager.Players.Count; i++)
+            for (int i = 0; i < players.Count; i++)
             {
-                var player = playerManager.Players[i];
+                var player = players[i];
                 var character = Instantiate(m_characterPawnPrefab);
                 var playerController = Instantiate(m_characterPlayerControllerPrefab);
                 

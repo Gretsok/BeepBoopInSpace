@@ -2,6 +2,7 @@ using System;
 using DG.Tweening;
 using Game.ArchitectureTools.FlowMachine;
 using Game.Gameplay.Flows.End;
+using Game.Online;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -39,11 +40,17 @@ namespace Game.Gameplay.PauseMenu
                 return;
             if (!m_gameplayFlowMachine.CurrentState.GetComponent<CanBePausedTagStateComponent>())
                 return;
-            
-            Time.timeScale = 0;
-            DOTween.defaultTimeScaleIndependent = true;
-            
-            m_gameplayFlowMachine.Pause(this);
+
+            // Online, the game goes on for the other machines: the menu opens over it, and takes this machine's
+            // players' buttons (CharacterPlayerController).
+            m_isPausingTheGame = !Netplay.IsOnline;
+            if (m_isPausingTheGame)
+            {
+                Time.timeScale = 0;
+                DOTween.defaultTimeScaleIndependent = true;
+
+                m_gameplayFlowMachine.Pause(this);
+            }
             OnPause?.Invoke(this);
             
             IsPaused = true;
@@ -54,17 +61,22 @@ namespace Game.Gameplay.PauseMenu
         {
             if (!IsPaused)
                 return;
-            
-            Time.timeScale = 1;
-            DOTween.defaultTimeScaleIndependent = false;
-            
-            m_gameplayFlowMachine.Unpause(this);
+
+            if (m_isPausingTheGame)
+            {
+                Time.timeScale = 1;
+                DOTween.defaultTimeScaleIndependent = false;
+
+                m_gameplayFlowMachine.Unpause(this);
+            }
             OnResume?.Invoke(this);
             
             IsPaused = false;
         }
 
+        private bool m_isPausingTheGame;
         private bool m_isQuitting;
+        public bool IsQuitting => m_isQuitting;
         /// <summary>Leaves the game for the main menu through the end state, which unloads it. A tournament is abandoned.</summary>
         public void QuitToMainMenu()
         {
@@ -73,6 +85,11 @@ namespace Game.Gameplay.PauseMenu
             m_isQuitting = true;
 
             Resume();
+            // Online, leaving the game leaves the room: a host closes it, its guests leave their game too.
+            if (Netplay.IsOnline)
+                OnlineManager.Instance.LeaveRoom();
+            // This machine decides now, even an online guest's.
+            m_gameplayFlowMachine.IsRemotelyDriven = false;
             var endState = EndStateGrabber.Instance.EndState;
             endState.IsQuittingToMainMenu = true;
             m_gameplayFlowMachine.RequestState(endState);

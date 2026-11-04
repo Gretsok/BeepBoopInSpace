@@ -39,10 +39,11 @@ namespace Game.Gameplay.Flows.Tutorial
             Element.Q("icon").style.backgroundImage = character.SelectionIcon
                 ? new StyleBackground(character.SelectionIcon)
                 : new StyleBackground(character.AvatarSprite);
-            Element.Q<Label>("badge-label").text = $"J{player.PlayerInput.playerIndex + 1}";
+            Element.Q<Label>("badge-label").text = $"J{player.Number}";
 
-            // Gamepad players press their Ready button (TutorialPlayerController): only the mouse clicks the card.
-            if (player.PlayerInput.GetDevice<Mouse>() == null)
+            // Gamepad players press their Ready button (TutorialPlayerController): only the mouse clicks the card, and
+            // only on the player's machine.
+            if (player.IsRemote || player.PlayerInput.GetDevice<Mouse>() == null)
                 Element.pickingMode = PickingMode.Ignore;
             Element.clicked += HandleClicked;
         }

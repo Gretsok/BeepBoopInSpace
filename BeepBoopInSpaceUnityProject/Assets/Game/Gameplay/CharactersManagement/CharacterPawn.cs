@@ -29,6 +29,17 @@ namespace Game.Gameplay.CharactersManagement
             ReferencesHolder.RumbleHandler.SetDependencies(this);
         }
 
+        /// <summary>The robot's player left the online room during the game: the robot dies for good.</summary>
+        public bool HasLeft { get; private set; }
+
+        public void Leave()
+        {
+            HasLeft = true;
+            ReferencesHolder.DeathController.CanResurrect = false;
+            ReferencesHolder.DeathController.Kill(a_cannotCounter: true);
+            ReferencesHolder.MovementController.DistachFromCurrentCell();
+        }
+
         private void OnDestroy()
         {
             if (ReferencesHolder.GridWalker)

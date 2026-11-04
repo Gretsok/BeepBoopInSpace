@@ -4,6 +4,8 @@ using Game.Gameplay.Cells.Default;
 using Game.Gameplay.CharactersManagement.Movement;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.GridSystem.GenericComponents;
+using Game.Online;
+using Game.Online.Gameplay;
 using UnityEngine;
 
 namespace Game.Gameplay.Cells.FrozenCell
@@ -20,6 +22,9 @@ namespace Game.Gameplay.Cells.FrozenCell
 
         private void HandleMovementControllerOnCellChanged(CanBeWalkedOnCellComponent obj)
         {
+            // Online guest: the host makes the robots slide (GameplaySync.NotifySlide, then a teleport).
+            if (!Netplay.HasAuthority)
+                return;
             if (!obj.MovementControllerOnCell)
                 return;
 
@@ -94,6 +99,7 @@ namespace Game.Gameplay.Cells.FrozenCell
 
 
             isComplete = false;
+            GameplaySync.NotifySlide(m_blockedController, cell);
             characterRoot.DOMove(targetDestination, 0.2f).SetEase(isTargetCellAFrozenCell ? Ease.Linear : Ease.OutCubic).onComplete += () => isComplete = true;
             yield return new WaitUntil(() => isComplete);
             var controller = m_blockedController;
@@ -104,6 +110,7 @@ namespace Game.Gameplay.Cells.FrozenCell
                 targetComp.MovementControllerOnCell && targetComp.MovementControllerOnCell != controller)
             {
                 isComplete = false;
+                GameplaySync.NotifySlide(controller, GetComponent<Cell>());
                 characterRoot.DOMove(transform.position, 0.2f).SetEase(Ease.OutCubic).onComplete += () => isComplete = true;
                 yield return new WaitUntil(() => isComplete);
                 UnblockController();

@@ -4,6 +4,7 @@ using Game.Gameplay.CharactersManagement.Death;
 using Game.Gameplay.ConfigurationsManagement;
 using Game.Gameplay.Flows.Results;
 using Game.Gameplay.Timer;
+using Game.Online;
 using UnityEngine;
 
 namespace Game.Gameplay.GameModes.ObjectiveManagement.LeastDeathsObjectiveManagement
@@ -42,6 +43,9 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LeastDeathsObjectiveManage
 
         private void HandlePlayedDeath(DeathController obj)
         {
+            // Online guest: the host counts, the scores arrive with its messages.
+            if (!Netplay.HasAuthority)
+                return;
             obj.CharacterReferencesHolder.ScoringController.IncreaseScore();
         }
     }

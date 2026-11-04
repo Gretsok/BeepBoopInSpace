@@ -46,6 +46,17 @@ namespace Game.Gameplay.Flows.Results
             DefaultFocus = m_backToMenuButton;
         }
 
+        /// <summary>Online guest: the button, greyed, says the host leaves the results.</summary>
+        public void ShowWaitingForHost()
+        {
+            if (m_backToMenuButton == null)
+                return;
+            m_backToMenuButton.SetEnabled(false);
+            m_backToMenuButton.Q<Label>().text = "En attente de l'hôte…";
+            m_backToMenuButton.Q("back-to-menu-glyph").style.display = DisplayStyle.None;
+            m_backToMenuButton.AddToClassList(k_ButtonShownClass);
+        }
+
         public void HideButton()
         {
             m_buttonCallback = null;

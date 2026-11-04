@@ -1,4 +1,6 @@
 using Game.Gameplay.CharactersManagement.ReferencesHolding;
+using Game.Online;
+using Game.Online.Gameplay;
 using Game.Global.PlayerManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -24,8 +26,15 @@ namespace Game.Gameplay.CharactersManagement
         {
             m_player = player;
         }
+        /// <summary>The player's buttons drive the robot (in the gameplay state, outside of the pause).</summary>
+        public bool IsActive { get; private set; }
+
         public void Activate()
         {
+            IsActive = true;
+            // A player of a guest's machine: their buttons arrive through the network (PerformRemoteAction).
+            if (m_player.IsRemote)
+                return;
             var actionsMap = m_player.PlayerInput.actions.FindActionMap("Gameplay");
 
             actionsMap.Enable();
@@ -40,6 +49,9 @@ namespace Game.Gameplay.CharactersManagement
 
         public void Deactivate()
         {
+            IsActive = false;
+            if (!m_player || m_player.IsRemote)
+                return;
             var actionsMap = m_player.PlayerInput.actions.FindActionMap("Gameplay");
 
             actionsMap.FindAction("Action_1").started -= HandleAction1Started;
@@ -54,32 +66,54 @@ namespace Game.Gameplay.CharactersManagement
 
         private void HandleAction1Started(InputAction.CallbackContext obj)
         {
-            m_referencesHolder.ActionsController.TryToPerformAction(0);
+            PerformAction(0);
         }
 
         private void HandleAction2Started(InputAction.CallbackContext obj)
         {
-            m_referencesHolder.ActionsController.TryToPerformAction(1);
+            PerformAction(1);
         }
 
         private void HandleAction3Started(InputAction.CallbackContext obj)
         {
-            m_referencesHolder.ActionsController.TryToPerformAction(2);
+            PerformAction(2);
         }
 
         private void HandleAction4Started(InputAction.CallbackContext obj)
         {
-            m_referencesHolder.ActionsController.TryToPerformAction(3);
+            PerformAction(3);
         }
 
         private void HandleAction5Started(InputAction.CallbackContext obj)
         {
-            m_referencesHolder.ActionsController.TryToPerformAction(4);
+            PerformAction(4);
         }
 
         private void HandleAction6Started(InputAction.CallbackContext obj)
         {
-            m_referencesHolder.ActionsController.TryToPerformAction(5);
+            PerformAction(5);
+        }
+
+        // A guest's machine sends its players' buttons to the host, which plays them.
+        private void PerformAction(int index)
+        {
+            // Online, the pause doesn't stop the game: its menu takes the buttons of this machine's players.
+            var gameplayContext = GameplayContext.Instance;
+            if (gameplayContext && gameplayContext.PauseMenuManager.IsPaused)
+                return;
+            if (Netplay.IsGuest)
+            {
+                GameplaySync.SendPlayerAction(m_pawn, index);
+                return;
+            }
+            m_referencesHolder.ActionsController.TryToPerformAction(index);
+        }
+
+        /// <summary>Host: a button of a player of a guest's machine.</summary>
+        public void PerformRemoteAction(int index)
+        {
+            if (IsActive && index < 6)
+                m_referencesHolder.ActionsController.TryToPerformAction(index);
         }
     }
 }

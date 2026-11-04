@@ -58,6 +58,12 @@ namespace Game.Gameplay.Timer
             ResetTimer();
         }
 
+        /// <summary>Online guest: the host's time, which this machine's clock follows between two messages.</summary>
+        public void SetTimeLeft(float timeLeft)
+        {
+            TimeLeft = timeLeft;
+        }
+
         public void ResetTimer()
         {
             TimeLeft = m_gameDuration;

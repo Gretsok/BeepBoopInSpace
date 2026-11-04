@@ -1,0 +1,43 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Template name="ConfirmationDialog" src="../../UITools/Screens/ConfirmationDialog.uxml" />
+    <Style src="../UI/MainMenu.uss" />
+    <ui:VisualElement name="online-screen" class="ui-screen" picking-mode="Ignore">
+        <ui:VisualElement class="ui-background" picking-mode="Ignore" />
+        <ui:VisualElement class="ui-title" picking-mode="Ignore">
+            <ui:VisualElement class="ui-title__fill" picking-mode="Ignore" />
+            <ui:VisualElement class="ui-title__border" picking-mode="Ignore" />
+            <ui:Label text="EN LIGNE" class="ui-title__label" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement class="online__columns" picking-mode="Ignore">
+            <ui:Button name="create-button" class="ui-tile online__column online__create">
+                <ui:VisualElement class="ui-filigree" picking-mode="Ignore" />
+                <ui:Label text="Créer une salle" class="ui-text ui-tile__label" picking-mode="Ignore" />
+                <ui:Label text="Vos amis la rejoignent avec son code." class="ui-text online__note" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:VisualElement class="ui-panel online__column online__join" picking-mode="Ignore">
+                <ui:VisualElement class="ui-filigree" picking-mode="Ignore" />
+                <ui:Label text="Rejoindre une salle" class="ui-text online__heading" picking-mode="Ignore" />
+                <ui:Label text="Code de la salle" class="ui-text online__note" picking-mode="Ignore" />
+                <ui:VisualElement name="code" class="online__code" picking-mode="Ignore">
+                    <ui:Button name="code-slot-1" class="online__code-slot" />
+                    <ui:Button name="code-slot-2" class="online__code-slot" />
+                    <ui:Button name="code-slot-3" class="online__code-slot" />
+                    <ui:Button name="code-slot-4" class="online__code-slot" />
+                    <ui:Button name="code-slot-5" class="online__code-slot" />
+                    <ui:Button name="code-slot-6" class="online__code-slot" />
+                </ui:VisualElement>
+                <ui:Button name="join-button" text="Rejoindre" class="ui-button online__join-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="ui-centered-row online__status-row" picking-mode="Ignore">
+            <ui:Label name="status" class="ui-text online__status" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:Button name="back-button" focusable="false" class="ui-legend ui-legend--back">
+            <ui:Label text="Retour" class="ui-text ui-legend__label" picking-mode="Ignore" />
+            <ui:VisualElement name="back-glyph" class="ui-glyph ui-legend__glyph--after" picking-mode="Ignore" />
+        </ui:Button>
+        <ui:Instance template="ConfirmationDialog" name="connecting-dialog" class="ui-dialog">
+            <ui:AttributeOverrides element-name="message" text="Un instant…" />
+        </ui:Instance>
+    </ui:VisualElement>
+</ui:UXML>

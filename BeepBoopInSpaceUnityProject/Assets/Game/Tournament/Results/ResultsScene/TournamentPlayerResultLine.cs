@@ -35,7 +35,7 @@ namespace Game.Tournament.Results
                 ? new StyleBackground(character.SelectionIcon)
                 : new StyleBackground(character.AvatarSprite);
             Element.Q("badge").style.backgroundColor = character.SelectionColor;
-            Element.Q<Label>("badge-label").text = $"J{player.PlayerInput.playerIndex + 1}";
+            Element.Q<Label>("badge-label").text = $"J{player.Number}";
             Element.Q<Label>("score").text = Score.ToString();
 
             var games = Element.Q("games");

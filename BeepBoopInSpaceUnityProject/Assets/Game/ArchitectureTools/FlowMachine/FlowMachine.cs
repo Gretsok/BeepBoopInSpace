@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NaughtyAttributes;
 using Unity.VisualScripting;
@@ -59,9 +60,32 @@ namespace Game.ArchitectureTools.FlowMachine
 
         public AFlowState CurrentState { get; private set; }
 
+        /// <summary>
+        /// Driven by another machine (a guest's game of an online room): the states requested here are ignored, the other
+        /// machine's arrive through <see cref="SwitchToStateNow"/>.
+        /// </summary>
+        public bool IsRemotelyDriven { get; set; }
+
+        /// <summary>A state is about to enter, the previous one has left.</summary>
+        public event Action<AFlowState> OnStateEntering;
+
+        /// <summary>Switches at once to the state another machine entered, its states arriving in their order.</summary>
+        public void SwitchToStateNow(AFlowState newState)
+        {
+            m_requestedStates.Clear();
+            m_backStack.Push(newState);
+            Debug.Log($"[FM] {gameObject.name} - {newState.name} - About to switch state remotely.");
+            SwitchToState(newState);
+        }
+
         private Queue<SStateRequest> m_requestedStates = new();
         public void RequestState(AFlowState newState, bool ignoreBackStack = false)
         {
+            if (IsRemotelyDriven)
+            {
+                Debug.Log($"[FM] {gameObject.name} - Request state ignored, driven remotely: {newState.gameObject}.");
+                return;
+            }
             SStateRequest request = new SStateRequest()
             {
                 State = newState,
@@ -75,6 +99,8 @@ namespace Game.ArchitectureTools.FlowMachine
 
         public void RequestBack()
         {
+            if (IsRemotelyDriven)
+                return;
             SStateRequest request = new SStateRequest()
             {
                 RequestType = SStateRequest.ERequestType.Back
@@ -136,6 +162,7 @@ namespace Game.ArchitectureTools.FlowMachine
             CurrentState = newState;
             if (CurrentState)
             {
+                OnStateEntering?.Invoke(CurrentState);
                 Debug.Log($"[FM] {gameObject.name} - {CurrentState.name} - ENTER ");
                 CurrentState.OnAnotherStateRequested += HandleAnotherStateRequested;
                 CurrentState.OnBackRequested += HandleBackRequested;

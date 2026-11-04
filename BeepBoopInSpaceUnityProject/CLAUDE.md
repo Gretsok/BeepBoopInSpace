@@ -1,8 +1,10 @@
 # Beep Boop dans l'espace
 
-Jeu multijoueur local (2 à 4 joueurs à la manette, ou clavier/souris) de Confiture De Jeux.
+Jeu multijoueur local (2 à 4 joueurs à la manette, ou clavier/souris) de Confiture De Jeux, jouable
+aussi en ligne (salle avec un code, 4 joueurs en tout sur plusieurs machines).
 Unity **6000.6.7f1**, URP 17.6, Input System, Addressables, UniTask, DOTween, NaughtyAttributes,
-GameAnalytics 8.3. Windows uniquement pour l'instant.
+GameAnalytics 8.3, Netcode for GameObjects 2.13 + Multiplayer Services 2.4 (Relay). Windows
+uniquement pour l'instant.
 
 L'utilisateur écrit en français ou en anglais : répondre dans la langue de son dernier message.
 
@@ -23,13 +25,14 @@ L'utilisateur écrit en français ou en anglais : répondre dans la langue de so
 | `AManager<T>` | `ArchitectureTools/Manager` | Singleton par contexte (`Instance`), `Initialize()` en coroutine, `RegisterPostInitializationCallback` pour attendre l'init |
 | Contextes | `GlobalContext` (persistant : sauvegarde, réglages, audio, joueurs, EventSystem, analytics), `MainMenuContext`, `GameplayContext`, `TrainingContext` / `TournamentContext` (persistants, instanciés par Addressables) | Le `GlobalContext` en double d'une scène rechargée se détruit |
 | `FlowMachine` + `AFlowState` | `ArchitectureTools/FlowMachine` | File de demandes d'état traitées dans `Update`. Logue `[FM] <objet> - <état> - ENTER`. Les demandes ne sont pas dédoublonnées : protéger les doubles demandes |
-| Menu principal | `MainMenu/` | `MainMenuOrchestrator` : Home → CharacterSelection → Hub → LevelSelection (Training) ou Tournoi, + Settings, Credits. Un niveau ou le Tournoi se lance après une confirmation (`ConfirmationDialog`). Les joueurs restent jusqu'au retour à l'accueil (`HomeState` les retire) : après une partie, le menu rouvre sur CharacterSelection avec leurs robots |
+| Menu principal | `MainMenu/` | `MainMenuOrchestrator` : Home → CharacterSelection (1 joueur suffit) → Hub → LevelSelection (Training) ou Tournoi (2 joueurs locaux au moins), ou En ligne (`Online`) → salle (`OnlineLobby`), + Settings, Credits. Un niveau ou le Tournoi se lance après une confirmation (`ConfirmationDialog`). Les joueurs restent jusqu'au retour à l'accueil (`HomeState` les retire) : après une partie, le menu rouvre sur CharacterSelection avec leurs robots, ou sur la salle en ligne |
 | UI | `UITools/Screens` (base `AUIToolkitScreen`, `Common.uss`, `Screens.uss`, `UIPanelSettings`, `VolumeRow`), `MainMenu/UI/MainMenu.uss`, un UXML par écran | UI Toolkit partout : menu (écrans `AMainMenuScreen`, activés par leur état), partie (tutoriel, timer, annonces, résultats, « +1 »), pause, chargement, résultats du tournoi. Chaque écran a un `UIDocument` : l'arbre naît et meurt avec le GameObject. Un seul panel : le focus est la sélection de tous les périphériques (croix/clavier le déplacent, la souris focalise ce qu'elle survole) ; navigation directionnelle maison façon uGUI, Annuler = `HandleCancel`. Seuls les canvas World Space de la scène 3D restent en uGUI |
 | Partie | `Gameplay/Flows` | Load → SetUp → Introduction → Tutorial (Ready) → Gameplay (→ annonces de manche / configuration) → Finish → Results → End |
 | Scènes | Seul `MainMenu` est dans les Build Settings | Tout le reste passe par Addressables. `LoadingManager` charge les scènes et prefabs du mode, `EndState` les libère : toute sortie de partie doit passer par `LoadingManager.Unload` |
 | Modes de jeu | `Gameplay/Levels`, `Gameplay/GameModes` | Un mode = un `LevelDataAsset` (objectif + action spéciale + mode de contrôle + modificateurs + arène) : skill `game-mode-variants` |
 | Contrôles | `CharactersManagement/Actions`, `Gameplay/ConfigurationsManagement` | Le `ControlMode` du niveau (avancé : 6 boutons ; simplifié : haut/gauche/droite/bas sur Y X B A, + action spéciale sur RB en option) donne les actions ; `ConfigurationsManager` les mélange sur les boutons du mode à chaque nouvelle configuration (toutes les 10 s, chaque manche) |
-| Joueurs | `Global/PlayerManagement`, `Global/NavigationAuthority` | `PlayerInputManager` (rejoindre avec Y/A/Espace dans la sélection des personnages, puis chacun se déclare prêt), schémas Xbox / PS / clavier-souris ; l'UI suit les manettes du joueur principal |
+| Joueurs | `Global/PlayerManagement`, `Global/NavigationAuthority` | `PlayerInputManager` (rejoindre avec Y/A/Espace dans la sélection des personnages, puis chacun se déclare prêt), schémas Xbox / PS / clavier-souris ; l'UI suit les manettes du joueur principal. `Players` = joueurs de la machine, `GamePlayers` = joueurs des parties (en ligne, ceux de la salle, dont des `AbstractPlayer` distants sans `PlayerInput`) |
+| En ligne | `Online/` (`OnlineManager` sur `GlobalContext`, `GameplaySync` dans les parties) | L'hôte joue la partie et dit aux invités ce qui s'y passe ; un invité ne décide rien (`Netplay.HasAuthority`) et envoie ses boutons. Tout gameplay qui décide (mort, hasard, score, état suivant) doit être répliqué : skill `online-multiplayer` |
 
 ## Conventions
 
@@ -67,6 +70,7 @@ Unity en headless exige l'éditeur fermé : le demander à l'utilisateur en disa
 | `unity-build` | Build Windows, zip, lancement de contrôle |
 | `unity-upgrade` | Nouvelle version de Unity ou des packages |
 | `game-mode-variants` | Créer ou modifier un mode de jeu |
+| `online-multiplayer` | Jeu en ligne : salles et codes, écrans En ligne et salle, synchronisation des parties, tests à deux machines (éditeur hôte + build invité) |
 | `ui-toolkit-screens` | Modifier ou créer un écran UI Toolkit (menu, partie, pause, chargement, tournoi) et le vérifier en captures ; charte graphique et motion design |
 | `psd-mockups` | Lire une maquette Photoshop (.psd), mesurer ses éléments, comparer les captures du jeu avec elle |
 | `unity-yaml` | Lire ou modifier scènes, prefabs, `.asset` et `.meta` sans l'éditeur (arbre, surcharges, références, champs, composants, conversion d'un prefab uGUI) |

@@ -1,3 +1,4 @@
+using Game.Online.Gameplay;
 using UnityEngine;
 
 namespace Game.Gameplay.CharactersManagement.Scoring
@@ -9,11 +10,13 @@ namespace Game.Gameplay.CharactersManagement.Scoring
         public void IncreaseScore()
         {
             ++Score;
+            GameplaySync.NotifyScore(this);
         }
 
         public void SetScore(int score)
         {
             Score = score;
+            GameplaySync.NotifyScore(this);
         }
     }
 }

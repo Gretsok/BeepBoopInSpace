@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Game.ArchitectureTools.FlowMachine;
+using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.GameModes.GameplayModifiers.Meteorites;
 using Game.Gameplay.Levels._0_Core;
 using Game.Global;
@@ -26,12 +27,15 @@ namespace Game.Gameplay.Flows.Tutorial
             base.HandleEnter();
             var gameplayContext = GameplayContext.Instance;
             m_tutorialPanel = gameplayContext.UIManager.GetPanel<TutorialPanel>();
-            var players = GlobalContext.Instance.PlayerManager.Players;
-            
+            // Online, the whole room's players: this machine's get ready with their buttons.
+            var players = GlobalContext.Instance.PlayerManager.GamePlayers;
+
             m_tutorialPlayerControllers.Clear();
             for (int i = 0; i < players.Count; i++)
             {
                 var player = players[i];
+                if (player.IsRemote)
+                    continue;
 
                 var tutorialPlayerController = gameObject.AddComponent<TutorialPlayerController>();
                 tutorialPlayerController.Initialize(player);
@@ -48,6 +52,14 @@ namespace Game.Gameplay.Flows.Tutorial
                 gameplayContext.HasGameplayModifier<MeteoritesModifier>(),
                 gameplayContext.ControlMode);
             m_tutorialPanel.ResetWaitingBar();
+
+            // The robots of players who left the online room don't hold the others up.
+            var pawns = CharactersManager.Instance.CharacterPawns;
+            for (int i = 0; i < players.Count && i < pawns.Count; i++)
+            {
+                if (pawns[i].HasLeft)
+                    m_tutorialPanel.SetPlayerStatus(players[i], true);
+            }
         }
 
         private void HandlePlayerStatusToggleRequested(TutorialPlayerController obj)

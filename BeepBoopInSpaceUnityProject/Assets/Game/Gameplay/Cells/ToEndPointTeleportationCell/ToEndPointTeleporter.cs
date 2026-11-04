@@ -1,6 +1,7 @@
 using System.Collections;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.GridSystem.GenericComponents;
+using Game.Online;
 using UnityEngine;
 
 namespace Game.Gameplay.Cells.ToEndPointTeleportationCell
@@ -22,7 +23,8 @@ namespace Game.Gameplay.Cells.ToEndPointTeleportationCell
 
         private void HandleMovementControllerOnCellChanged(CanBeWalkedOnCellComponent obj)
         {
-            if (!obj.MovementControllerOnCell)
+            // Online guest: the host teleports.
+            if (!obj.MovementControllerOnCell || !Netplay.HasAuthority)
                 return;
             
             // Someone stands on the end point: the character stays on the teleporter.

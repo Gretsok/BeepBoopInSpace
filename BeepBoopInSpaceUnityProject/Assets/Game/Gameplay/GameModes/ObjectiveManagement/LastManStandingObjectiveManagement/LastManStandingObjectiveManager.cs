@@ -7,6 +7,7 @@ using Game.Gameplay.Flows.Finish;
 using Game.Gameplay.Flows.Gameplay;
 using Game.Gameplay.Flows.Results;
 using Game.Gameplay.RoundsManagement;
+using Game.Online;
 using UnityEngine;
 
 namespace Game.Gameplay.GameModes.ObjectiveManagement.LastManStandingObjectiveManagement
@@ -81,7 +82,8 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LastManStandingObjectiveMa
         private void HandlePlayedDeath(DeathController obj)
         {
             // Deaths outside of gameplay (e.g. meteorites falling on the results screen) must not end a round.
-            if (!IsTicking)
+            // Online guest: the host ends the rounds.
+            if (!IsTicking || !Netplay.HasAuthority)
                 return;
 
             var alivePlayersCount = m_charactersManager.CharacterPawns.Count(pawn => pawn.ReferencesHolder.DeathController.IsAlive);

@@ -27,10 +27,10 @@ namespace Game.Global.InputIndicationsManagement
 
         public void SetPlayer(AbstractPlayer player)
         {
-            if (m_player)
+            if (m_player && m_player.PlayerInput)
                 m_player.PlayerInput.onControlsChanged -= HandleControlsChanged;
             m_player = player;
-            if (m_player)
+            if (m_player && m_player.PlayerInput)
                 m_player.PlayerInput.onControlsChanged += HandleControlsChanged;
             Refresh();
         }
@@ -47,7 +47,8 @@ namespace Game.Global.InputIndicationsManagement
 
         private void Refresh()
         {
-            var controlScheme = m_player ? m_player.PlayerInput.currentControlScheme
+            // A player of another machine: their buttons aren't known here.
+            var controlScheme = m_player ? m_player.IsRemote ? null : m_player.PlayerInput.currentControlScheme
                 : ShowsLikelyDeviceWithoutPlayer ? LikelyControlScheme() : null;
             var sprite = controlScheme != null ? m_actionDataAsset.GetSpriteFor(controlScheme) : null;
             m_element.style.backgroundImage = sprite ? new StyleBackground(sprite) : new StyleBackground(StyleKeyword.None);

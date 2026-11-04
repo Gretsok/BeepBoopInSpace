@@ -11,7 +11,18 @@ namespace Game.Global.PlayerManagement
         public PlayerInputManager PlayerInputManager { get; private set; }
 
         private List<AbstractPlayer> m_players = new();
+        /// <summary>The players of this machine, who joined in the character selection.</summary>
         public IReadOnlyList<AbstractPlayer> Players => m_players;
+
+        private IReadOnlyList<AbstractPlayer> m_gamePlayers;
+        /// <summary>The players of the games: the local ones, or the whole online room's (some of them remote) in its order.</summary>
+        public IReadOnlyList<AbstractPlayer> GamePlayers => m_gamePlayers ?? m_players;
+
+        /// <summary>The online room's players for the next games, null to play with the local ones again.</summary>
+        public void SetGamePlayers(IReadOnlyList<AbstractPlayer> players)
+        {
+            m_gamePlayers = players;
+        }
 
         public void Initialize()
         {

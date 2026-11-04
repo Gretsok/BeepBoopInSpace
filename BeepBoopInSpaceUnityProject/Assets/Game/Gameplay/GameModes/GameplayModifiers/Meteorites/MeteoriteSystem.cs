@@ -1,6 +1,7 @@
 using DG.Tweening;
 using Game.Gameplay.Cells.Default;
 using Game.Gameplay.GridSystem.GenericComponents;
+using Game.Online;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -71,7 +72,7 @@ namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
         {
             Debug.Log($"Boom", gameObject);
 
-            if (Target.TryGetComponent<CanBeWalkedOnCellComponent>(out var component))
+            if (Netplay.HasAuthority && Target.TryGetComponent<CanBeWalkedOnCellComponent>(out var component))
             {
                 component.MovementControllerOnCell?.ReferencesHolder.DeathController.Kill();
             }

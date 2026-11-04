@@ -57,10 +57,25 @@
     justify-content: center;
 }
 
+/* Tournoi and Entraînement, for this machine's players, then En ligne. */
 .hub-mode {
-    width: 600px;
+    width: 520px;
     height: 330px;
-    margin: 0 45px;
+    margin: 0 35px;
+}
+
+/* Under a mode's name: what it takes (Tournoi and Entraînement, alone on this machine), what it is (En ligne). */
+.ui-screen .hub-mode__note {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 34px;
+    font-size: 34px;
+    -unity-text-align: middle-center;
+}
+
+.ui-tile:focus .hub-mode__note {
+    color: rgb(255, 255, 255);
 }
 
 .hub-character-selection-row {
@@ -692,4 +707,217 @@
     left: 310px;
     right: 310px;
     top: 230px;
+}
+
+
+/* Online: create a room (left), or join one with its code (right). */
+
+.online__columns {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 200px;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.online__column {
+    width: 720px;
+    height: 560px;
+    margin: 0 40px;
+}
+
+.ui-screen .online__note {
+    margin-top: 16px;
+    font-size: 36px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+.ui-tile:focus .online__note {
+    color: rgb(255, 255, 255);
+}
+
+.online__join {
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.ui-screen .online__heading {
+    font-size: 64px;
+    -unity-text-align: middle-center;
+}
+
+.online__code {
+    flex-direction: row;
+    justify-content: center;
+    margin: 26px 0 40px 0;
+}
+
+/* A box of the code: up and down change its character. */
+.online__code-slot {
+    width: 92px;
+    height: 116px;
+    margin: 0 8px;
+    padding: 0 0 6px 0;
+    border-width: 4px;
+    border-radius: 20px;
+    border-color: var(--ui-outline);
+    background-color: var(--ui-ink);
+    color: var(--ui-text);
+    font-size: 68px;
+    -unity-text-align: middle-center;
+    transition-property: scale, border-color, background-color, color;
+    transition-duration: 0.1s, 0.1s, 0.1s, 0.1s;
+}
+
+.online__code-slot:focus {
+    scale: 1.15 1.15;
+    border-width: 6px;
+    border-color: rgb(255, 255, 255);
+    background-color: var(--ui-navy);
+    color: rgb(255, 255, 255);
+    transition-duration: 0.3s, 0.1s, 0.1s, 0.1s;
+    transition-timing-function: ease-out-back, ease-out-sine, ease-out-sine, ease-out-sine;
+}
+
+.online__code-slot--empty {
+    color: var(--ui-outline);
+}
+
+.online__join-button {
+    min-width: 320px;
+}
+
+.online__status-row {
+    top: 860px;
+}
+
+/* Low on the background, where it is dark: a light text. */
+.ui-screen .online__status {
+    font-size: 40px;
+    -unity-text-align: middle-center;
+}
+
+.ui-screen .online__status--error {
+    color: rgb(255, 196, 120);
+}
+
+/* Online room: its code, its 4 players, then the host's modes. */
+
+.lobby__code-row {
+    top: 150px;
+}
+
+.lobby__code-panel {
+    flex-direction: row;
+    align-items: center;
+    height: 130px;
+    padding: 0 30px 0 50px;
+    overflow: hidden;
+}
+
+.ui-screen .lobby__code-label {
+    margin-right: 30px;
+    font-size: 40px;
+}
+
+.ui-screen .lobby__code {
+    margin-right: 40px;
+    font-size: 88px;
+    letter-spacing: 12px;
+    color: rgb(255, 255, 255);
+    translate: 0 -4px;
+}
+
+.lobby__players {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 315px;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.lobby__player {
+    margin: 0 18px;
+}
+
+.lobby__card {
+    width: 380px;
+    height: 430px;
+    align-items: center;
+    overflow: hidden;
+}
+
+.lobby__card-icon {
+    width: 300px;
+    height: 270px;
+    margin-top: 16px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.lobby__card-badge {
+    position: absolute;
+    left: 22px;
+    top: 22px;
+}
+
+.ui-screen .lobby__card-name {
+    font-size: 48px;
+    -unity-text-align: middle-center;
+}
+
+.ui-screen .lobby__card-tag {
+    height: 46px;
+    font-size: 34px;
+    color: var(--ui-outline);
+    -unity-text-align: middle-center;
+}
+
+/* This machine's players: a white ring. */
+.lobby__player--local .lobby__card {
+    border-color: rgb(255, 255, 255);
+}
+
+.ui-screen .lobby__player--local .lobby__card-tag {
+    color: rgb(255, 255, 255);
+}
+
+/* A free place, waiting for a player. */
+.lobby__player--empty .lobby__card {
+    opacity: 0.45;
+}
+
+.lobby__player--empty .lobby__card-badge {
+    display: none;
+}
+
+.lobby__modes {
+    top: 785px;
+}
+
+.lobby__modes-row {
+    flex-direction: row;
+}
+
+.lobby__mode {
+    width: 440px;
+    height: 130px;
+    margin: 0 30px;
+}
+
+.ui-screen .lobby__mode-label {
+    font-size: 60px;
+}
+
+.lobby__hint-row {
+    top: 935px;
+}
+
+/* Between the legends, low on the background where it is dark. */
+.ui-screen .lobby__hint {
+    font-size: 36px;
+    -unity-text-align: middle-center;
 }

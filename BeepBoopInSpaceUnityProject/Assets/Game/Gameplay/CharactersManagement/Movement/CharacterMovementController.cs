@@ -4,6 +4,7 @@ using DG.Tweening;
 using Game.Gameplay.Cells.Default;
 using Game.Gameplay.CharactersManagement.ReferencesHolding;
 using Game.Gameplay.GridSystem.GenericComponents;
+using Game.Online.Gameplay;
 using UnityEngine;
 
 namespace Game.Gameplay.CharactersManagement.Movement
@@ -53,14 +54,38 @@ namespace Game.Gameplay.CharactersManagement.Movement
             
             if (cell == null || !cell.TryGetComponent(out CanBeWalkedOnCellComponent comp) || comp.MovementControllerOnCell)
             {
-                m_referencesHolder.AnimationsHandler.Move();
-                m_referencesHolder.Root.transform.DOJump(m_targetPosition, 0.5f, 1, 0.2f);
-                m_referencesHolder.RumbleHandler.PlayMoveRumble();
-                m_referencesHolder.SFXsHandler.PlayCannotMoveAudio();
-
+                GameplaySync.NotifyBump(this);
+                PlayBump();
                 return;
             }
-            
+
+            // Told before the move happens: what the move causes (a teleporter...) comes after it.
+            GameplaySync.NotifyMove(this, cell);
+            PerformMove(cell);
+        }
+
+        /// <summary>Online guest: the host's robot moved to the cell.</summary>
+        public void ReplicateMove(Cell cell)
+        {
+            PerformMove(cell);
+        }
+
+        /// <summary>Online guest: the host's robot couldn't move.</summary>
+        public void ReplicateBump()
+        {
+            PlayBump();
+        }
+
+        private void PlayBump()
+        {
+            m_referencesHolder.AnimationsHandler.Move();
+            m_referencesHolder.Root.transform.DOJump(m_targetPosition, 0.5f, 1, 0.2f);
+            m_referencesHolder.RumbleHandler.PlayMoveRumble();
+            m_referencesHolder.SFXsHandler.PlayCannotMoveAudio();
+        }
+
+        private void PerformMove(Cell cell)
+        {
             m_referencesHolder.GridWalker.MoveToCell(cell, this);
             
             var groundPosition = new Vector3(m_referencesHolder.GridWalker.transform.position.x, 0f, m_referencesHolder.GridWalker.transform.position.z);
@@ -80,6 +105,7 @@ namespace Game.Gameplay.CharactersManagement.Movement
         {
             if (m_referencesHolder.GridWalker.CurrentCell != null)
             {
+                GameplaySync.NotifyDetach(this);
                 m_referencesHolder.GridWalker.MoveToCell(null, this);
             }
         }
@@ -96,6 +122,25 @@ namespace Game.Gameplay.CharactersManagement.Movement
                 return;
             }
 
+            GameplaySync.NotifyTeleport(this, cell);
+            PerformTeleport(cell);
+        }
+
+        /// <summary>Online guest: the host's robot was teleported to the cell.</summary>
+        public void ReplicateTeleport(Cell cell)
+        {
+            PerformTeleport(cell);
+        }
+
+        /// <summary>Online guest: the host's robot slides on ice towards the cell, which it reaches by a teleport.</summary>
+        public void ReplicateSlide(Cell cell)
+        {
+            m_referencesHolder.Root.DOKill();
+            m_referencesHolder.Root.DOMove(cell.transform.position, 0.2f).SetEase(Ease.OutCubic);
+        }
+
+        private void PerformTeleport(Cell cell)
+        {
             m_referencesHolder.Root.transform.DOKill();
             m_referencesHolder.GridWalker.MoveToCell(cell, this);
             m_referencesHolder.Root.transform.position = m_referencesHolder.GridWalker.transform.position;
@@ -108,7 +153,22 @@ namespace Game.Gameplay.CharactersManagement.Movement
         {
             if (IsBlocked)
                 return;
-            
+
+            GameplaySync.NotifyDirection(this, direction, true);
+            PerformChangeDirection(direction);
+        }
+
+        /// <summary>Online guest: the host's robot turned (<paramref name="turn"/>, advanced controls) or faced a direction.</summary>
+        public void ReplicateDirection(EDirection direction, bool turn)
+        {
+            if (turn)
+                PerformChangeDirection(direction);
+            else
+                Face(direction);
+        }
+
+        private void PerformChangeDirection(EDirection direction)
+        {
             var newForward = GetWorldDirectionFrom(direction);
 
             m_referencesHolder.Root.transform.DOJump(m_targetPosition, 0.5f, 1, 0.2f);
@@ -312,11 +372,17 @@ namespace Game.Gameplay.CharactersManagement.Movement
 
             if (direction != CurrentDirection)
             {
-                m_referencesHolder.Root.transform.DORotateQuaternion(Quaternion.LookRotation(GetWorldDirectionFrom(direction), Vector3.up), 0.2f);
-                CurrentDirection = direction;
+                GameplaySync.NotifyDirection(this, direction, false);
+                Face(direction);
             }
 
             WalkForward();
+        }
+
+        private void Face(EDirection direction)
+        {
+            m_referencesHolder.Root.transform.DORotateQuaternion(Quaternion.LookRotation(GetWorldDirectionFrom(direction), Vector3.up), 0.2f);
+            CurrentDirection = direction;
         }
     }
 }

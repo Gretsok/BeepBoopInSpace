@@ -1,4 +1,5 @@
 using Game.Gameplay.Flows.Gameplay;
+using Game.Online;
 using UnityEngine;
 
 namespace Game.Gameplay.ConfigurationsManagement
@@ -56,7 +57,8 @@ namespace Game.Gameplay.ConfigurationsManagement
 
         private void Update()
         {
-            if (!IsRunning)
+            // Online guest: the host changes the configurations.
+            if (!IsRunning || !Netplay.HasAuthority)
                 return;
             TimePassedSinceLastChange += Time.deltaTime;
 

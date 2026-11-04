@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Game.Gameplay.CharactersManagement.Death.Invincibility;
 using Game.Gameplay.CharactersManagement.ReferencesHolding;
+using Game.Online.Gameplay;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -74,15 +75,31 @@ namespace Game.Gameplay.CharactersManagement.Death
             if (!IsAlive || (IsInvincible && !a_cannotCounter))
                 return;
 
-            IsAlive = false;
-            
             if (a_waitDurationToResurrect < 0f)
                 a_waitDurationToResurrect = m_defaultWaitDurationToResurrect;
-            
-            m_waitDurationToResurrect = a_waitDurationToResurrect;
-            
+
+            GameplaySync.NotifyKill(this, a_waitDurationToResurrect);
+            Die(a_waitDurationToResurrect, true);
+        }
+
+        /// <summary>Online guest: the host's robot died. The host resurrects it.</summary>
+        public void ReplicateKill(float waitDurationToResurrect)
+        {
+            if (!IsAlive)
+                return;
+            Die(waitDurationToResurrect, false);
+        }
+
+        private void Die(float waitDurationToResurrect, bool schedulesResurrection)
+        {
+            IsAlive = false;
+            m_waitDurationToResurrect = waitDurationToResurrect;
+
             if (CanResurrect)
-                Invoke(nameof(Resurrect), m_waitDurationToResurrect);
+            {
+                if (schedulesResurrection)
+                    Invoke(nameof(Resurrect), m_waitDurationToResurrect);
+            }
             else
             {
                 CharacterReferencesHolder.GridWalker.MoveToCell(null);
@@ -97,6 +114,7 @@ namespace Game.Gameplay.CharactersManagement.Death
         {
             if (IsAlive)
                 return;
+            GameplaySync.NotifyResurrect(this);
             IsAlive = true;
             
             m_onResurrection?.Invoke();

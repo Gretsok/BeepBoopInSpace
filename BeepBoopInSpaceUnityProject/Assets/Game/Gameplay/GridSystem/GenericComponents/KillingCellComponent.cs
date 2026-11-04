@@ -1,5 +1,6 @@
 using Game.Gameplay.Cells.Default;
 using Game.Gameplay.CharactersManagement.Movement;
+using Game.Online;
 using UnityEngine;
 
 namespace Game.Gameplay.GridSystem.GenericComponents
@@ -17,6 +18,9 @@ namespace Game.Gameplay.GridSystem.GenericComponents
 
         private void HandleMovementControllerOnCellChanged(CanBeWalkedOnCellComponent obj)
         {
+            // Online guest: the host kills.
+            if (!Netplay.HasAuthority)
+                return;
             if (obj.MovementControllerOnCell)
                 obj.MovementControllerOnCell.OnMoveAnimationDone += HandleTargetMoveAnimationDone;
         }

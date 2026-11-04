@@ -147,6 +147,35 @@ namespace Game.Gameplay.GridSystem
             return candidates[Random.Range(0, candidates.Count)];
         }
 
+        private Dictionary<Cell, Vector2Int> m_coordinates;
+
+        /// <summary>Where the cell is in the grid: online, the machines name the cells by their coordinates.</summary>
+        public bool TryGetCoordinates(Cell cell, out Vector2Int coordinates)
+        {
+            if (m_coordinates == null)
+            {
+                m_coordinates = new Dictionary<Cell, Vector2Int>();
+                for (int x = 0; x < m_cells.Count; x++)
+                {
+                    for (int y = 0; y < m_cells[x].RowData.Count; y++)
+                    {
+                        if (m_cells[x].RowData[y])
+                            m_coordinates[m_cells[x].RowData[y]] = new Vector2Int(x, y);
+                    }
+                }
+            }
+            coordinates = default;
+            return cell && m_coordinates.TryGetValue(cell, out coordinates);
+        }
+
+        public bool TryGetCell(Vector2Int position, out Cell cell)
+        {
+            cell = position.x >= 0 && position.y >= 0 && position.x < m_cells.Count && position.y < m_cells[position.x].RowData.Count
+                ? m_cells[position.x].RowData[position.y]
+                : null;
+            return cell;
+        }
+
         public Cell GetCellAt(Vector2Int position)
         {
             if (position.x < 0

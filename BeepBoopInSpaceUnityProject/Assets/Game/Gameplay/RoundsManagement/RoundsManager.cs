@@ -1,5 +1,6 @@
 using Game.ArchitectureTools.FlowMachine;
 using Game.Gameplay.ConfigurationsManagement;
+using Game.Online.Gameplay;
 using UnityEngine;
 
 namespace Game.Gameplay.RoundsManagement
@@ -24,9 +25,16 @@ namespace Game.Gameplay.RoundsManagement
             RoundIndex = 0;
         }
         
+        /// <summary>Online guest: the host started a round.</summary>
+        public void SetRoundIndex(int roundIndex)
+        {
+            RoundIndex = roundIndex;
+        }
+
         public void TriggerNewRound()
         {
             ++RoundIndex;
+            GameplaySync.NotifyRound(RoundIndex);
             ConfigurationsManager.Instance.PerformChange(true);
             m_flowMachine.RequestState(m_newRoundState);
         }

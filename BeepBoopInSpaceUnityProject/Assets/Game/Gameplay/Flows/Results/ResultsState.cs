@@ -5,6 +5,7 @@ using Game.Gameplay.CameraManagement;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.Flows.Results.ResultsPlacementManagement;
 using Game.Gameplay.MusicsManagement;
+using Game.Online;
 using UnityEngine;
 
 namespace Game.Gameplay.Flows.Results
@@ -116,7 +117,11 @@ namespace Game.Gameplay.Flows.Results
             CameraManager.Instance.SwitchToGlobalViewResultsCamera();
             MusicsManager.Instance.StartPlayingResultsMusic();
 
-            m_resultsPanel.ShowButton(() => RequestState(m_nextState));
+            // Online, the host leaves the results for everyone.
+            if (Netplay.HasAuthority)
+                m_resultsPanel.ShowButton(() => RequestState(m_nextState));
+            else
+                m_resultsPanel.ShowWaitingForHost();
         }
     }
 }
