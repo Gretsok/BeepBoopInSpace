@@ -72,6 +72,7 @@ namespace Game.Tests.PlayMode
             StopRenderingToTextures();
             RestoreControlMode();
             LeaveOnlineRoom();
+            yield return RestoreRunInBackground();
             StopGuestBuild();
             m_driver.RemoveKeyboardAndMouse();
             m_driver.EndTest();

@@ -55,6 +55,8 @@ namespace Game.Online
         private List<CharacterDataAsset> m_characters = new();
         private CancellationTokenSource m_connectingCancellation;
         private string m_lostRoomReason;
+        private bool m_isKeepingRunningInBackground;
+        private bool m_runInBackgroundOutsideRooms;
 
         public ERoomStatus Status { get; private set; }
         public bool IsInRoom => Status == ERoomStatus.InRoom;
@@ -96,6 +98,20 @@ namespace Game.Online
         {
             if (Instance == this)
                 Instance = null;
+            KeepRunningInBackground(false);
+        }
+
+        // The room's messages only go through while the game runs: a machine of the room keeps playing when its window
+        // loses the focus (the host pasting the code to friends...), else the others freeze, then lose the room.
+        // In the editor, this is the project's Player Settings: given back once out of the room.
+        private void KeepRunningInBackground(bool keep)
+        {
+            if (keep == m_isKeepingRunningInBackground)
+                return;
+            m_isKeepingRunningInBackground = keep;
+            if (keep)
+                m_runInBackgroundOutsideRooms = Application.runInBackground;
+            Application.runInBackground = keep || m_runInBackgroundOutsideRooms;
         }
 
         #region Opening and leaving
@@ -213,6 +229,7 @@ namespace Game.Online
             m_pendingGuests.Clear();
             m_lostRoomReason = null;
             Status = ERoomStatus.Connecting;
+            KeepRunningInBackground(true);
             IsHost = isHost;
             m_connectingCancellation?.Dispose();
             m_connectingCancellation = new CancellationTokenSource();
@@ -255,6 +272,9 @@ namespace Game.Online
                 await UniTask.Delay(TimeSpan.FromSeconds(0.2f), ignoreTimeScale: true);
             }
             await m_connection.Stop();
+            // Unless another room is on its way meanwhile.
+            if (Status == ERoomStatus.None)
+                KeepRunningInBackground(false);
         }
 
         private void HandleConnectionLost(string reason)

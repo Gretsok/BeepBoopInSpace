@@ -64,16 +64,22 @@ namespace Game.Tests.PlayMode
             yield return CaptureScreen("17-online");
 
             m_driver.Step("Online: create a room");
+            // Out of a room, the game pauses when its window loses the focus, as the Player Settings say. The test runner
+            // keeps it running: not for the time of the test (TearDown gives it back).
+            m_runInBackgroundBeforeTest = Application.runInBackground;
+            Application.runInBackground = false;
             yield return m_driver.Select(ScreenElement(k_OnlineScreen, "create-button"));
             yield return m_driver.Submit();
             yield return m_driver.WaitUntil("the room", () => MenuState == "OnlineLobbyState", 15f);
             Assert.AreEqual(1, RoomPlayersCount, "The room doesn't have its host's player.");
+            Assert.IsTrue(Application.runInBackground, "In a room, the game would stop with its window out of focus, and the room with it.");
             Assert.AreEqual(address, ((Label)ScreenElement(k_OnlineLobbyScreen, "code")).text, "The room shows another code.");
             Assert.IsFalse(LobbyButton("m_trainingButton").enabledSelf, "A room of one player can launch a game.");
             yield return RealSeconds(0.5f);
             yield return CaptureScreen("18-online-room-alone");
 
             yield return LeaveRoom();
+            yield return m_driver.WaitUntil("the game to pause out of focus again after the room", () => !Application.runInBackground, 10f);
             m_driver.AssertNoErrors();
         }
 
@@ -164,6 +170,7 @@ namespace Game.Tests.PlayMode
         }
 
         private Process m_guest;
+        private bool? m_runInBackgroundBeforeTest;
         private static string GuestLog => Path.GetFullPath("Logs/online-guest.log");
 
         // The hub alone, then a room on a direct connection, which a build of the game joins (OnlineGuestBot).
@@ -256,6 +263,19 @@ namespace Game.Tests.PlayMode
             if (Manager(k_OnlineManager) is { } onlineManager && (bool)Get(onlineManager, "IsInRoom"))
                 onlineManager.GetType().GetMethod("LeaveRoom").Invoke(onlineManager, null);
             SetDirectAddress(null);
+        }
+
+        /// <summary>Gives the test runner back its run in background, once a room left open has closed.</summary>
+        private IEnumerator RestoreRunInBackground()
+        {
+            if (m_runInBackgroundBeforeTest is not { } runInBackground)
+                yield break;
+            var timeout = Time.realtimeSinceStartup + 10f;
+            while (Manager(k_OnlineManager) is { } onlineManager && (bool)Get(onlineManager, "m_isKeepingRunningInBackground")
+                                                                && Time.realtimeSinceStartup < timeout)
+                yield return null;
+            Application.runInBackground = runInBackground;
+            m_runInBackgroundBeforeTest = null;
         }
 
         // The guest still writes its log.
