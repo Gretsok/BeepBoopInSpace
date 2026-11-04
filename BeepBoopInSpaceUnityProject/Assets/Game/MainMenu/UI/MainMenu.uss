@@ -794,9 +794,11 @@
     top: 860px;
 }
 
-/* Low on the background, where it is dark: a light text. */
+/* Low on the background, where it is dark: a light text, on two lines if need be. */
 .ui-screen .online__status {
+    max-width: 1500px;
     font-size: 40px;
+    white-space: normal;
     -unity-text-align: middle-center;
 }
 

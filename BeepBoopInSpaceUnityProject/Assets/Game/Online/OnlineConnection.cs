@@ -71,7 +71,16 @@ namespace Game.Online
             {
                 await SignIn(cancellationToken);
                 var options = new SessionOptions { MaxPlayers = maxMachines, IsPrivate = true }.WithRelayNetwork();
-                m_session = await MultiplayerService.Instance.CreateSessionAsync(options).AsUniTask().AttachExternalCancellation(cancellationToken);
+                try
+                {
+                    m_session = await MultiplayerService.Instance.CreateSessionAsync(options).AsUniTask()
+                        .AttachExternalCancellation(cancellationToken);
+                }
+                catch (SessionException e)
+                {
+                    Debug.LogWarning($"[Online] The session couldn't be created: {e}");
+                    throw new OnlineException(DescribeCreateError(e), e);
+                }
                 m_session.RemovedFromSession += HandleRemovedFromSession;
                 Code = m_session.Code;
             }
@@ -284,6 +293,20 @@ namespace Game.Online
             return string.IsNullOrEmpty(reason) ? fallback : reason;
         }
 
+        private static string DescribeCreateError(SessionException exception)
+        {
+            switch (exception.Error)
+            {
+                case SessionError.Forbidden:
+                case SessionError.NotAuthorized:
+                    return $"Les services Unity refusent d'ouvrir une salle : Relay et Lobby sont-ils activés pour ce projet ? ({exception.Error})";
+                case SessionError.RateLimitExceeded:
+                    return "Trop d'essais : patientez quelques secondes.";
+                default:
+                    return $"Impossible de créer la salle ({exception.Error}).";
+            }
+        }
+
         private static string DescribeJoinError(SessionException exception)
         {
             switch (exception.Error)
@@ -303,6 +326,13 @@ namespace Game.Online
 
         private static async UniTask SignIn(CancellationToken cancellationToken)
         {
+            // Unity's services only start for a project linked to Unity Cloud, whose id the build carries.
+            if (string.IsNullOrEmpty(Application.cloudProjectId))
+            {
+                Debug.LogWarning("[Online] The project isn't linked to Unity Cloud (Edit > Project Settings > Services): " +
+                                 "rooms with a code need it. -online-direct plays on a local network without it.");
+                throw new OnlineException("Salles en ligne indisponibles : le projet n'est pas lié à Unity Cloud (Project Settings > Services).");
+            }
             try
             {
                 if (UnityServices.State == ServicesInitializationState.Uninitialized)

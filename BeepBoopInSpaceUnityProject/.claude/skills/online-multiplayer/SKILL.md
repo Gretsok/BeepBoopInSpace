@@ -71,9 +71,14 @@ python $CLI test --filter "Online_Plays"                 # entraînement (~1 min
 ## Services Unity (codes et Relay)
 
 Sans `-online-direct`, créer ou rejoindre une salle passe par Unity Gaming Services : le projet doit
-être lié à un projet Unity Cloud (Edit > Project Settings > Services, `cloudProjectId` dans
-`ProjectSettings.asset`, vide au 04/11/2026). Sinon l'écran En ligne affiche « Les services en ligne
-ne répondent pas ». Le format des codes (6 caractères A-Z 0-9, `RoomCodeField.k_Length`) est à
+être lié à un projet Unity Cloud (Edit > Project Settings > Services, `cloudProjectId` et
+`organizationId` dans `ProjectSettings.asset`, vides au 04/11/2026 : seul l'utilisateur peut le faire,
+avec son compte). Sans lien, `UnityServices.InitializeAsync` échoue (`UnityProjectNotLinkedException`,
+interne au package) : `OnlineConnection.SignIn` le teste avant (`Application.cloudProjectId`) et
+l'écran En ligne dit « le projet n'est pas lié à Unity Cloud ». Une fois lié : commiter
+`ProjectSettings.asset`, vérifier sur le tableau de bord (cloud.unity.com) que Relay et Lobby sont
+actifs pour le projet (un refus à la création de la salle le signale), refaire les builds. Le détail
+des échecs des services est dans le log (`[Online] ...` en avertissement). Le format des codes (6 caractères A-Z 0-9, `RoomCodeField.k_Length`) est à
 confirmer sur une vraie session.
 
 ## Pièges
