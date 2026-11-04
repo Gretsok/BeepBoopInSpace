@@ -24,6 +24,11 @@ namespace Game.Online
         private const string k_MessageName = "BeepBoop";
         private const ushort k_DefaultDirectPort = 7777;
         private const float k_ConnectionTimeout = 15f;
+        // A machine silent this long is gone (crash, network cut...). Unity Transport's 30 s leave the others frozen
+        // for half a game.
+        public const int k_DisconnectTimeoutMs = 10000;
+        // How Netcode starts the reason it makes up for a disconnection, when the host didn't give one.
+        private const string k_NetcodeReasonPrefix = "[Disconnect Event]";
 
         /// <summary>Host and guests connect straight to this address instead of through a session ("ip" or "ip:port").</summary>
         public static string DirectAddress { get; set; } = ReadDirectAddressFromCommandLine();
@@ -205,6 +210,7 @@ namespace Game.Online
                 var gameObject = new GameObject("NetworkManager");
                 gameObject.SetActive(false);
                 var transport = gameObject.AddComponent<UnityTransport>();
+                transport.DisconnectTimeoutMS = k_DisconnectTimeoutMs;
                 NetworkManager = gameObject.AddComponent<NetworkManager>();
                 NetworkManager.NetworkConfig = new NetworkConfig
                 {
@@ -287,10 +293,16 @@ namespace Game.Online
                 OnConnectionLost?.Invoke("L'hôte a fermé la salle.");
         }
 
+        // The host's reason (a refusal, sent away), else the fallback: Netcode's own description is for the log only.
         private string RefusalReason(string fallback = "Impossible de rejoindre la salle.")
         {
             var reason = NetworkManager ? NetworkManager.DisconnectReason : null;
-            return string.IsNullOrEmpty(reason) ? fallback : reason;
+            if (string.IsNullOrEmpty(reason))
+                return fallback;
+            if (!reason.StartsWith(k_NetcodeReasonPrefix, StringComparison.Ordinal))
+                return reason;
+            Debug.Log($"[Online] {reason}");
+            return fallback;
         }
 
         private static string DescribeCreateError(SessionException exception)

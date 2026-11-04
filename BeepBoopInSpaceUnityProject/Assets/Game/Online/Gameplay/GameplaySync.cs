@@ -12,6 +12,7 @@ using Game.Gameplay.CharactersManagement.ReferencesHolding;
 using Game.Gameplay.CharactersManagement.Scoring;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem.SniperRifle;
 using Game.Gameplay.Flows._0_Load;
+using Game.Gameplay.Flows.End;
 using Game.Gameplay.Flows.Tutorial;
 using Game.Gameplay.GameModes.GameplayModifiers.Meteorites;
 using Game.Gameplay.GameModes.ObjectiveManagement.PointsRushObjectiveManagement;
@@ -43,6 +44,7 @@ namespace Game.Online.Gameplay
         private bool m_isLeaving;
         private bool m_hasRemovedLeftPlayers;
         private float m_nextTimerSync;
+        private float m_guestsLoadingDeadline;
         private TimerManager m_timer;
 
         private static bool IsHosting => s_instance && s_instance.m_isHost && s_instance.m_online.IsInRoom;
@@ -70,8 +72,9 @@ namespace Game.Online.Gameplay
                 m_flowMachine.OnStateEntering += HandleStateEntering;
                 m_online.OnGuestGameMessage += HandleGuestMessage;
                 m_online.OnGuestLeftGame += HandleGuestLeftGame;
-                // The game starts once every guest has loaded it too.
+                // The game starts once every guest has loaded it too, or has been sent away for taking too long.
                 LoadEventsHooker.RegisterPostInitializationCallback(hooker => hooker.AddLoadingRequirement(() => m_online.AreGuestsLoaded));
+                m_guestsLoadingDeadline = Time.unscaledTime + OnlineManager.GuestLoadingTimeout;
             }
             else
             {
@@ -101,6 +104,7 @@ namespace Game.Online.Gameplay
         {
             if (m_isHost)
             {
+                SendAwaySlowGuests();
                 RemoveLeftPlayers();
                 SyncTimer();
                 return;
@@ -134,6 +138,10 @@ namespace Game.Online.Gameplay
                 return;
             m_isLeaving = true;
             m_flowMachine.IsRemotelyDriven = false;
+            // Already on its way out (the host ended the game): leaving again would unload it twice. A tournament's
+            // results see the room is lost.
+            if (m_flowMachine.CurrentState is EndState)
+                return;
             m_gameplayContext.PauseMenuManager.QuitToMainMenu();
         }
 
@@ -152,6 +160,15 @@ namespace Game.Online.Gameplay
                 return;
             }
             m_online.SendGameMessage(OnlineMessage.Write(EOnlineMessage.FlowState, writer => writer.Write(path)));
+        }
+
+        // A guest that never loads (stuck, or frozen without losing its connection) mustn't hold the game up forever.
+        private void SendAwaySlowGuests()
+        {
+            if (m_gameplayContext.LoadingManager.HasLoadedLevel || Time.unscaledTime < m_guestsLoadingDeadline || m_online.AreGuestsLoaded)
+                return;
+            m_guestsLoadingDeadline = float.PositiveInfinity;
+            m_online.SendAwayGuestsStillLoading();
         }
 
         // A tournament's next games keep the players who left the room: their robots are out from the start.

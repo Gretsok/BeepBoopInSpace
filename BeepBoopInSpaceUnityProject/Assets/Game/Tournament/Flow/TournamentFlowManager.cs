@@ -42,6 +42,8 @@ namespace Game.Tournament.Flow
         // wait for it.
         private int? m_nextLevelFromHost;
         private bool m_isWaitingForHost;
+        // From the loading of a game's scene until it's loaded: a room lost meanwhile is handled by the game itself.
+        private bool m_isLoadingLevel;
 
         public void StartTournament()
         {
@@ -57,6 +59,7 @@ namespace Game.Tournament.Flow
             m_levelsDone.Add(levelDataAsset);
 
             m_currentLevelInfoManager.SetCurrentLevelDataAsset(levelDataAsset);
+            m_isLoadingLevel = true;
             var op = Addressables.LoadSceneAsync(levelDataAsset.GameModeScene, LoadSceneMode.Single);
             op.Completed += HandleOnGameStartedLogic;
         }
@@ -89,6 +92,13 @@ namespace Game.Tournament.Flow
             
             TournamentResultsSceneContext.RegisterPostInitializationCallback(resultsSceneContext =>
             {
+                // Online guest whose room was lost as the game ended: no host to wait for.
+                if (Netplay.IsGuest && !Netplay.IsOnline)
+                {
+                    Debug.Log("[Tournament] Room lost between two games: back to the main menu.");
+                    CloseTournament();
+                    return;
+                }
                 resultsSceneContext.ResultsCanvas.SetUp(HandleEndOfResultTournamentScreenClosed);
                 loadingScreenManager.HideLoadingScreen();
                 // Online guest: the results stay until the host leaves them.
@@ -106,13 +116,25 @@ namespace Game.Tournament.Flow
         {
             var loadingScreenManager = LoadingScreenManager.Instance;
             loadingScreenManager.ShowLoadingScreen();
-            if (m_resultsManager.IsGameComplete())
+            if (m_resultsManager.IsGameComplete() || HasTooFewPlayersLeft)
             {
                 CloseTournament();
             }
             else
             {
                 LoadNextLevel();
+            }
+        }
+
+        // Online, the others left the room: a tournament needs two players, as offline.
+        private static bool HasTooFewPlayersLeft
+        {
+            get
+            {
+                if (!Netplay.IsHost || OnlineManager.Instance.Roster.Count >= OnlineManager.k_MinPlayers)
+                    return false;
+                Debug.Log("[Tournament] Fewer than 2 players left in the room: the tournament ends.");
+                return true;
             }
         }
 
@@ -170,7 +192,7 @@ namespace Game.Tournament.Flow
         // The room is lost between two games (during one, the game goes back to the main menu itself).
         private void HandleRoomLost(string reason)
         {
-            if (Game.Gameplay.GameplayContext.Instance)
+            if (Game.Gameplay.GameplayContext.Instance || m_isLoadingLevel)
                 return;
             Debug.Log("[Tournament] Room lost between two games: back to the main menu.");
             m_isWaitingForHost = false;
@@ -198,12 +220,14 @@ namespace Game.Tournament.Flow
             m_levelsDone.Add(levelDataAsset);
             
             m_currentLevelInfoManager.SetCurrentLevelDataAsset(levelDataAsset);
+            m_isLoadingLevel = true;
             var op = Addressables.LoadSceneAsync(levelDataAsset.GameModeScene, LoadSceneMode.Single);
             op.Completed += HandleOnGameStartedLogic;
         }
 
         private void HandleOnGameStartedLogic(AsyncOperationHandle<SceneInstance> obj)
         {
+            m_isLoadingLevel = false;
             m_currentLevelInfoManager.OnCurrentLevelDataAssetChanged += HandleCurrentLevelDataAssetChanged;
             
             ResultsManager.RegisterPostInitializationCallback(resultsManager =>

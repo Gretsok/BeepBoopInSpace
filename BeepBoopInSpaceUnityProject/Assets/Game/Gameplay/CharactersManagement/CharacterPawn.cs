@@ -35,8 +35,7 @@ namespace Game.Gameplay.CharactersManagement
         public void Leave()
         {
             HasLeft = true;
-            ReferencesHolder.DeathController.CanResurrect = false;
-            ReferencesHolder.DeathController.Kill(a_cannotCounter: true);
+            ReferencesHolder.DeathController.KillForGood();
             ReferencesHolder.MovementController.DistachFromCurrentCell();
         }
 

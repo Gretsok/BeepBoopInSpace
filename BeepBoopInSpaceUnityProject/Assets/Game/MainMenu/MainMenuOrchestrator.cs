@@ -18,6 +18,7 @@ namespace Game.MainMenu
     {
         private FlowMachine m_flowMachine;
         private GlobalContext m_globalContext;
+        private bool m_isGoingBackToTheRoom;
 
         [Header("States")]
         [SerializeField]
@@ -53,6 +54,8 @@ namespace Game.MainMenu
             // A game is over: the players who left the online room go away.
             globalContext.OnlineManager.HandleBackInMenu();
             globalContext.OnlineManager.OnRoomLost += HandleRoomLost;
+            globalContext.OnlineManager.OnRosterChanged += HandleRosterChanged;
+            m_flowMachine.OnStateEntering += HandleStateEntering;
 
             // Games hide and lock the cursor: the menus are also played with the mouse.
             Cursor.visible = true;
@@ -64,7 +67,12 @@ namespace Game.MainMenu
         private void OnDestroy()
         {
             if (m_globalContext && m_globalContext.OnlineManager)
+            {
                 m_globalContext.OnlineManager.OnRoomLost -= HandleRoomLost;
+                m_globalContext.OnlineManager.OnRosterChanged -= HandleRosterChanged;
+            }
+            if (m_flowMachine)
+                m_flowMachine.OnStateEntering -= HandleStateEntering;
         }
 
         /// <summary>
@@ -91,6 +99,24 @@ namespace Game.MainMenu
             var currentState = m_flowMachine.CurrentState;
             if (currentState == m_onlineLobbyState || currentState == m_levelSelectionState)
                 SwitchToHubScreen();
+        }
+
+        // The host was choosing a level, or confirming it, for players who left: back to the room, which says it needs
+        // more players. Once, though several may leave before the room opens.
+        private void HandleRosterChanged()
+        {
+            var onlineManager = m_globalContext.OnlineManager;
+            if (m_isGoingBackToTheRoom || !onlineManager.IsHost || onlineManager.IsInGame
+                || onlineManager.Roster.Count >= global::Game.Online.OnlineManager.k_MinPlayers
+                || m_flowMachine.CurrentState != m_levelSelectionState)
+                return;
+            m_isGoingBackToTheRoom = true;
+            SwitchToOnlineLobbyScreen();
+        }
+
+        private void HandleStateEntering(AFlowState state)
+        {
+            m_isGoingBackToTheRoom = false;
         }
 
         [Button]

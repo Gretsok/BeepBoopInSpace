@@ -16,9 +16,15 @@ namespace Game.Gameplay.Flows.End
         /// <summary>Set by the pause menu: back to the main menu, even in a tournament, which is abandoned.</summary>
         public bool IsQuittingToMainMenu { get; set; }
 
+        private bool m_isEnding;
+
         protected override void HandleEnter()
         {
             base.HandleEnter();
+            // Asked twice (a guest's game the room is lost in as it ends): the game unloads once.
+            if (m_isEnding)
+                return;
+            m_isEnding = true;
 
             var gameplayContext = GameplayContext.Instance;
             var currentLevelInfoManager = gameplayContext.CurrentLevelInfoManager;
@@ -39,12 +45,12 @@ namespace Game.Gameplay.Flows.End
                 {
                     currentLevelInfoManager.SetCurrentLevelDataAsset(null);
                 }
+                // Once the game's scenes are released, even those still loading when the game was left.
+                if (!tournamentContext)
+                {
+                    Addressables.LoadSceneAsync(m_mainMenuScene);
+                }
             });
-
-            if (!tournamentContext)
-            {
-                Addressables.LoadSceneAsync(m_mainMenuScene);
-            }
         }
     }
 }

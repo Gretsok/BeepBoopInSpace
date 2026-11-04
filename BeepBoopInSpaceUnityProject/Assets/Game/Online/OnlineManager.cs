@@ -44,6 +44,9 @@ namespace Game.Online
 
         public static OnlineManager Instance { get; private set; }
 
+        /// <summary>Host: seconds the guests have to load a game once the host's started loading, before being sent away.</summary>
+        public static float GuestLoadingTimeout { get; set; } = 60f;
+
         private readonly OnlineConnection m_connection = new();
         private readonly List<RoomPlayer> m_roster = new();
         private readonly List<AbstractPlayer> m_gamePlayers = new();
@@ -57,6 +60,7 @@ namespace Game.Online
         private string m_lostRoomReason;
         private bool m_isKeepingRunningInBackground;
         private bool m_runInBackgroundOutsideRooms;
+        private bool m_isClosing;
 
         public ERoomStatus Status { get; private set; }
         public bool IsInRoom => Status == ERoomStatus.InRoom;
@@ -123,6 +127,7 @@ namespace Game.Online
                 return error;
             try
             {
+                await WaitForTheLastRoomToClose();
                 await m_connection.StartHost(k_MaxPlayers, m_connectingCancellation.Token);
                 m_roster.Clear();
                 var localPlayers = LocalPlayers;
@@ -160,6 +165,7 @@ namespace Game.Online
                     foreach (var player in localPlayers)
                         writer.Write((byte)CharacterIndexOf(player.CharacterDataAsset));
                 });
+                await WaitForTheLastRoomToClose();
                 await m_connection.StartGuest(code, joinRequest, m_connectingCancellation.Token);
                 // The host sends the room's players as soon as the machine is connected.
                 var timeout = Time.realtimeSinceStartup + 10f;
@@ -195,6 +201,14 @@ namespace Game.Online
         }
 
         public bool HasLostRoomReason => m_lostRoomReason != null;
+
+        // A room left a moment ago may still be closing its connection, which the next one reuses.
+        private UniTask WaitForTheLastRoomToClose()
+        {
+            return m_isClosing
+                ? UniTask.WaitWhile(() => m_isClosing, cancellationToken: m_connectingCancellation.Token)
+                : UniTask.CompletedTask;
+        }
 
         /// <summary>Why the last room ended without the players leaving it, once: the menu tells them.</summary>
         public string TakeLostRoomReason()
@@ -265,13 +279,24 @@ namespace Game.Online
             m_gameInbox.Clear();
             if (!IsInGame)
                 ForgetRoomPlayers();
-            if (wasHost && notifyGuests && m_connection.IsConnected)
+            var wasClosing = m_isClosing;
+            m_isClosing = true;
+            try
             {
-                m_connection.SendToGuests(OnlineMessage.Write(EOnlineMessage.RoomClosed));
-                // Lets the message leave before the connection closes.
-                await UniTask.Delay(TimeSpan.FromSeconds(0.2f), ignoreTimeScale: true);
+                if (wasHost && notifyGuests && m_connection.IsConnected)
+                {
+                    m_connection.SendToGuests(OnlineMessage.Write(EOnlineMessage.RoomClosed));
+                    // Lets the message leave before the connection closes.
+                    await UniTask.Delay(TimeSpan.FromSeconds(0.2f), ignoreTimeScale: true);
+                }
+                await m_connection.Stop();
             }
-            await m_connection.Stop();
+            finally
+            {
+                // A closing that started first ends on its own.
+                if (!wasClosing)
+                    m_isClosing = false;
+            }
             // Unless another room is on its way meanwhile.
             if (Status == ERoomStatus.None)
                 KeepRunningInBackground(false);
@@ -496,6 +521,21 @@ namespace Game.Online
         /// <summary>Host: every guest still in the room has loaded the current game.</summary>
         public bool AreGuestsLoaded => !IsHost || m_connection.GuestIds.All(id => m_loadedGuests.Contains(id));
 
+        /// <summary>Host: the guests that still haven't loaded the current game leave the room, told why.</summary>
+        public void SendAwayGuestsStillLoading()
+        {
+            const string reason = "La partie a mis trop de temps à charger sur cette machine.";
+            if (!IsHost || !IsInRoom)
+                return;
+            foreach (var machineId in m_connection.GuestIds.Where(id => !m_loadedGuests.Contains(id)).ToList())
+            {
+                Debug.Log($"[Online] Machine {machineId} hasn't loaded game {GameNumber} in time: sent away.");
+                m_connection.DisconnectGuest(machineId, reason);
+                // Netcode may not call back for a machine it disconnects itself.
+                HandleGuestDisconnected(machineId);
+            }
+        }
+
         /// <summary>Host: tells the guests what just happened in the game.</summary>
         public void SendGameMessage(byte[] message)
         {
@@ -574,6 +614,9 @@ namespace Game.Online
 
         private void HandleMessageReceived(ulong senderId, byte[] message)
         {
+            // Left or lost: what was still on its way doesn't count (the connection takes a moment to close).
+            if (Status == ERoomStatus.None)
+                return;
             var type = OnlineMessage.TypeOf(message);
             if (IsHost)
             {
@@ -581,6 +624,9 @@ namespace Game.Online
                 return;
             }
             if (senderId != k_HostMachineId)
+                return;
+            // Joining: only the room's players.
+            if (Status != ERoomStatus.InRoom && type != EOnlineMessage.Roster)
                 return;
             if (OnlineMessage.IsGameMessage(type))
             {
@@ -605,14 +651,13 @@ namespace Game.Online
                     break;
                 case EOnlineMessage.LaunchTraining:
                 {
-                    StartGame(reader.ReadInt32());
+                    var gameNumber = reader.ReadInt32();
                     var level = m_trainingLevels.LevelDataList[reader.ReadByte()];
-                    StartCoroutine(InMenu(launcher => launcher.LaunchTraining(level)));
+                    StartCoroutine(LaunchInMenu(gameNumber, launcher => launcher.LaunchTraining(level)));
                     break;
                 }
                 case EOnlineMessage.LaunchTournament:
-                    StartGame(reader.ReadInt32());
-                    StartCoroutine(InMenu(launcher => launcher.LaunchTournament()));
+                    StartCoroutine(LaunchInMenu(reader.ReadInt32(), launcher => launcher.LaunchTournament()));
                     break;
                 case EOnlineMessage.TournamentNextGame:
                 {
@@ -642,11 +687,18 @@ namespace Game.Online
                 OnGuestGameMessage?.Invoke(senderId, message);
         }
 
-        // A guest may still be on its way back to the menu when the host launches the next game.
-        private static IEnumerator InMenu(Action<GameModesLauncher> action)
+        // A guest may still be on its way back to the menu when the host launches the next game: the game starts once
+        // there (the menu's opening ends the last game, HandleBackInMenu), if the room is still on.
+        private IEnumerator LaunchInMenu(int gameNumber, Action<GameModesLauncher> launch)
         {
             yield return new WaitUntil(() => MainMenuContext.Instance && MainMenuContext.Instance.IsInitialized);
-            action(MainMenuContext.Instance.GameModesLauncher);
+            if (!IsInRoom)
+            {
+                Debug.Log($"[Online] The room was lost before game {gameNumber} started.");
+                yield break;
+            }
+            StartGame(gameNumber);
+            launch(MainMenuContext.Instance.GameModesLauncher);
         }
 
         private static int IndexOf<T>(IReadOnlyList<T> list, T item) where T : class

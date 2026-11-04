@@ -109,6 +109,12 @@ namespace Game.Gameplay.CharactersManagement
             m_referencesHolder.ActionsController.TryToPerformAction(index);
         }
 
+        private void OnDestroy()
+        {
+            if (IsActive)
+                Deactivate();
+        }
+
         /// <summary>Host: a button of a player of a guest's machine.</summary>
         public void PerformRemoteAction(int index)
         {

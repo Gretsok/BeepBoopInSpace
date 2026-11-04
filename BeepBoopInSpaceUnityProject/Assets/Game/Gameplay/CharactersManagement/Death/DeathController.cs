@@ -82,6 +82,15 @@ namespace Game.Gameplay.CharactersManagement.Death
             Die(a_waitDurationToResurrect, true);
         }
 
+        /// <summary>Dead for good, off the grid, even while waiting to come back: its player left the online room.</summary>
+        public void KillForGood()
+        {
+            CanResurrect = false;
+            CancelInvoke(nameof(Resurrect));
+            if (IsAlive)
+                Kill(a_cannotCounter: true);
+        }
+
         /// <summary>Online guest: the host's robot died. The host resurrects it.</summary>
         public void ReplicateKill(float waitDurationToResurrect)
         {

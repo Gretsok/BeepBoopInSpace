@@ -79,9 +79,10 @@ namespace Game.Gameplay.Flows._0_Load
         
         
         public bool HasLoadedLevel { get; private set; }
+        private Coroutine m_loadingCoroutine;
         public void Load(Action onLoadingComplete = null)
         {
-            StartCoroutine(LoadingRoutine(onLoadingComplete));
+            m_loadingCoroutine = StartCoroutine(LoadingRoutine(onLoadingComplete));
         }
 
         public static CurrentLevelInfoManager FetchCurrentLevelInfoManager()
@@ -200,12 +201,21 @@ namespace Game.Gameplay.Flows._0_Load
 
         private IEnumerator UnloadingRoutine(Action onUnloadingComplete = null)
         {
-            m_objectiveManagerOp.Release();
-            m_specialActionOp.Release();
-            m_additionalSystemOp.ForEach(op => op.Release());
-            m_environmentSceneOp.Release();
-            m_levelSceneOp.Release();
-            m_optionalScenesOp.ForEach(op => op.Release());
+            // Left while loading (an online room lost then): nothing more loads, and what was on its way arrives
+            // before being released, or a scene would load into the next one.
+            if (m_loadingCoroutine != null)
+                StopCoroutine(m_loadingCoroutine);
+            m_loadingCoroutine = null;
+            // Released at once otherwise: a scene loaded right after the call mustn't keep them loaded.
+            if (!AreOperationsDone())
+                yield return new WaitUntil(AreOperationsDone);
+
+            Release(m_objectiveManagerOp);
+            Release(m_specialActionOp);
+            m_additionalSystemOp.ForEach(Release);
+            Release(m_environmentSceneOp);
+            Release(m_levelSceneOp);
+            m_optionalScenesOp.ForEach(Release);
 
             m_objectiveManagerOp = default;
             m_specialActionOp = default;
@@ -216,6 +226,21 @@ namespace Game.Gameplay.Flows._0_Load
             
             yield return null;
             onUnloadingComplete?.Invoke();
+        }
+
+        private bool AreOperationsDone()
+        {
+            return IsDone(m_objectiveManagerOp) && IsDone(m_specialActionOp) && m_additionalSystemOp.TrueForAll(IsDone)
+                   && IsDone(m_environmentSceneOp) && IsDone(m_levelSceneOp) && m_optionalScenesOp.TrueForAll(IsDone);
+        }
+
+        // An operation never started (left before it) has nothing to wait for nor release.
+        private static bool IsDone<T>(AsyncOperationHandle<T> operation) => !operation.IsValid() || operation.IsDone;
+
+        private static void Release<T>(AsyncOperationHandle<T> operation)
+        {
+            if (operation.IsValid())
+                operation.Release();
         }
     }
 }

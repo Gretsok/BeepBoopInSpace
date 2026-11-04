@@ -133,6 +133,9 @@ namespace Game.MainMenu.OnlineLobby
             var canLaunch = m_onlineManager.CanLaunch;
             m_tournamentButton.SetEnabled(canLaunch);
             m_trainingButton.SetEnabled(canLaunch);
+            // A player left while the host was confirming the tournament.
+            if (roster.Count < OnlineManager.k_MinPlayers && IsShowingDialog(m_tournamentDialog))
+                HideDialog();
             if (m_onlineManager.IsHost)
                 m_hint.text = roster.Count < OnlineManager.k_MinPlayers
                     ? "Donnez le code à vos amis : la partie se lance à deux joueurs ou plus."

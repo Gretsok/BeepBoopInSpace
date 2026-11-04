@@ -269,6 +269,8 @@ namespace Game.UITools.Screens
             ReleaseFocus();
         }
 
+        protected bool IsShowingDialog(ConfirmationDialog dialog) => dialog != null && m_dialog == dialog;
+
         /// <summary>Hides the dialog of <see cref="ShowDialog"/>, and gives the focus back to what had it before.</summary>
         protected void HideDialog()
         {
