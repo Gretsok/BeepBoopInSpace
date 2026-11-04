@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using GameAnalyticsSDK;
 using UnityEngine;
 
@@ -9,8 +10,9 @@ namespace Game.Global.Analytics
         [field: SerializeField]
         public GameAnalytics GameAnalytics { get; private set; }
         
-        // GameAnalytics sends nothing from the editor, and warns about it at each start: only builds talk to it.
-        private static bool IsEnabled => !Application.isEditor;
+        // GameAnalytics sends nothing from the editor, and warns about it at each start: only builds talk to it, but not
+        // the copies the tests launch (-no-analytics).
+        private static bool IsEnabled => !Application.isEditor && !Environment.GetCommandLineArgs().Contains("-no-analytics");
 
         public void Initialize()
         {

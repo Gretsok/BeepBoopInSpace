@@ -70,6 +70,8 @@ namespace Game.Tests.PlayMode
             Time.timeScale = 1f;
             StopRenderingToTextures();
             RestoreControlMode();
+            LeaveOnlineRoom();
+            StopGuestBuild();
             m_driver.RemoveKeyboardAndMouse();
             m_driver.EndTest();
             yield break;
@@ -435,7 +437,8 @@ namespace Game.Tests.PlayMode
         }
 
         /// <summary>From the game scene loading to the end of its results screen.</summary>
-        private IEnumerator PlayOneGame(System.Random random, List<string> played)
+        /// <param name="onResults">Called as the results show, before the close-ups.</param>
+        private IEnumerator PlayOneGame(System.Random random, List<string> played, Action onResults = null)
         {
             m_driver.Step("Game: loading");
             yield return m_driver.WaitUntil("the game to load",
@@ -455,6 +458,7 @@ namespace Game.Tests.PlayMode
             m_driver.Step($"{level}: playing");
             yield return m_driver.MashButtonsUntil(() => GameplayState is "ResultsState" or "EndState" or null, random, 300f);
             Debug.Log($"[Scenario] {level} finished. Scores: {Scores}");
+            onResults?.Invoke();
 
             // The main player's Submit is only listened to once the close-ups are over.
             m_driver.Step($"{level}: results");
