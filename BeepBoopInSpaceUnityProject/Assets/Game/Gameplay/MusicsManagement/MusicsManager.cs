@@ -15,25 +15,36 @@ namespace Game.Gameplay.MusicsManagement
         [SerializeField]
         private AudioClip m_resultsMusic;
         private int m_currentIndex = 0;
-        
+        private bool m_hasClipStarted;
+
         public bool IsPlayingGameplayMusics { get; private set; }
 
         public void StartPlayingGameplayMusics()
         {
             IsPlayingResultsMusic = false;
-            IsPlayingGameplayMusics = true;
-            
+            IsPlayingGameplayMusics = m_gameplayClips.Count > 0;
+            if (!IsPlayingGameplayMusics)
+                return;
+
             m_currentIndex = 0;
-            m_musicAudioSource.clip = m_gameplayClips[m_currentIndex];
-            m_musicAudioSource.loop = false;
-            m_musicAudioSource.Play();
+            PlayGameplayClip();
         }
 
         public void StopPlayingGameplayMusics()
         {
+            // Otherwise Update would start the next clip at once, over the end of the game and its results.
+            IsPlayingGameplayMusics = false;
             IsPlayingResultsMusic = false;
             m_musicAudioSource.Stop();
             m_musicAudioSource.clip = null;
+        }
+
+        private void PlayGameplayClip()
+        {
+            m_hasClipStarted = false;
+            m_musicAudioSource.clip = m_gameplayClips[m_currentIndex];
+            m_musicAudioSource.loop = false;
+            m_musicAudioSource.Play();
         }
 
 
@@ -47,24 +58,22 @@ namespace Game.Gameplay.MusicsManagement
             m_musicAudioSource.loop = true;
             m_musicAudioSource.Play();
         }
+
+        // A clip played to its end gives way to the next one. The clips last less than a game with its tutorial and
+        // announcements: they start over. Not before the clip has started playing (a clip still loading, no audio device).
         private void Update()
         {
-            if (IsPlayingGameplayMusics)
+            if (!IsPlayingGameplayMusics)
+                return;
+            if (m_musicAudioSource.isPlaying)
             {
-                if (!m_musicAudioSource.isPlaying)
-                {
-                    ++m_currentIndex;
-                    if (m_currentIndex >= m_gameplayClips.Count)
-                    {
-                        IsPlayingGameplayMusics = false;
-                    }
-                    else
-                    {
-                        m_musicAudioSource.clip = m_gameplayClips[m_currentIndex];
-                        m_musicAudioSource.Play();
-                    }
-                }
+                m_hasClipStarted = true;
+                return;
             }
+            if (!m_hasClipStarted)
+                return;
+            m_currentIndex = (m_currentIndex + 1) % m_gameplayClips.Count;
+            PlayGameplayClip();
         }
     }
 }

@@ -22,6 +22,7 @@ namespace Game.Tests.PlayMode
         // Speeds up the 120s game timer and the results close-ups. Set to 1 to watch a scenario in real time.
         private const float k_TimeScale = 4f;
         private const int k_MaxTournamentGames = 12;
+        private const string k_MusicsManager = "Game.Gameplay.MusicsManagement.MusicsManager";
 
         // Training level names are "SwampArena - <mode> - LevelDataAsset".
         public static readonly string[] TrainingModes =
@@ -458,6 +459,9 @@ namespace Game.Tests.PlayMode
             m_driver.Step($"{level}: playing");
             yield return m_driver.MashButtonsUntil(() => GameplayState is "ResultsState" or "EndState" or null, random, 300f);
             Debug.Log($"[Scenario] {level} finished. Scores: {Scores}");
+            // The game's music ends with it: the next clip mustn't start over its end and its results.
+            if (GameplayState == "ResultsState" && Manager(k_MusicsManager) is { } musics)
+                Assert.IsFalse((bool)Get(musics, "IsPlayingGameplayMusics"), $"{level}: the gameplay music goes on over the results.");
             onResults?.Invoke();
 
             // The main player's Submit is only listened to once the close-ups are over.
