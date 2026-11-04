@@ -158,7 +158,7 @@ namespace Game.Tests.PlayMode
             m_driver.AssertNoErrors();
         }
 
-        private IEnumerator StartTraining(string mode)
+        private IEnumerator StartTraining(string mode, System.Action<Object> beforeLaunch = null)
         {
             m_driver.Step("Hub: open Training");
             yield return m_driver.Select(HubButton("m_trainingButton"));
@@ -171,6 +171,7 @@ namespace Game.Tests.PlayMode
             var widget = LevelWidgets(levelSelection).FirstOrDefault(w => LevelNameOf(w).Contains($" - {mode} - "));
             if (widget == null)
                 m_driver.Fail($"No level for '{mode}'. Available: {string.Join(", ", LevelWidgets(levelSelection).Select(LevelNameOf))}");
+            beforeLaunch?.Invoke((Object)Get(widget, "LevelDataAsset"));
             yield return m_driver.Select((VisualElement)Get(widget, "Element"));
             yield return m_driver.Submit();
             yield return ConfirmLaunch();

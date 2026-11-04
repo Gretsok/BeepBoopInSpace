@@ -69,6 +69,7 @@ namespace Game.Tests.PlayMode
         {
             Time.timeScale = 1f;
             StopRenderingToTextures();
+            RestoreControlMode();
             m_driver.RemoveKeyboardAndMouse();
             m_driver.EndTest();
             yield break;
