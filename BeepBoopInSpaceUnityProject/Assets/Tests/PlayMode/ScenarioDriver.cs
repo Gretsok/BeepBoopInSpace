@@ -32,6 +32,8 @@ namespace Game.Tests.PlayMode
         private readonly Dictionary<string, int> m_knownErrorCounts = new();
         private string[] m_knownErrors = Array.Empty<string>();
         private string m_step = "Setup";
+        // The game's flow machine entered its end state: the game is being unloaded, nothing else may start in it.
+        private bool m_isGameEnding;
 
         #region Devices
 
@@ -190,6 +192,7 @@ namespace Game.Tests.PlayMode
                 m_knownErrors = knownErrors;
             }
             m_step = "Setup";
+            m_isGameEnding = false;
             Application.logMessageReceivedThreaded += HandleLog;
         }
 
@@ -200,6 +203,8 @@ namespace Game.Tests.PlayMode
 
         private void HandleLog(string message, string stackTrace, LogType type)
         {
+            if (type == LogType.Log)
+                CheckNothingStartsAfterTheEnd(message);
             if (type is not (LogType.Error or LogType.Exception or LogType.Assert))
                 return;
 
@@ -210,6 +215,24 @@ namespace Game.Tests.PlayMode
                     m_knownErrorCounts[known] = m_knownErrorCounts.GetValueOrDefault(known) + 1;
                 else
                     m_errors.Add($"[{m_step}] {type}: {message}\n{stackTrace}");
+            }
+        }
+
+        // "[FM] FlowMachine - EndState - ENTER": the game unloads. Until a flow machine starts running again (the menu's,
+        // the next game's), a state that enters is a game coming back to life while it unloads (a timer of a state left
+        // before, a request that arrived late).
+        private void CheckNothingStartsAfterTheEnd(string message)
+        {
+            if (!message.StartsWith("[FM] ", StringComparison.Ordinal))
+                return;
+            lock (m_errors)
+            {
+                if (message.EndsWith(" - started running.", StringComparison.Ordinal))
+                    m_isGameEnding = false;
+                else if (message.Contains(" - EndState - ENTER"))
+                    m_isGameEnding = true;
+                else if (m_isGameEnding && message.TrimEnd().EndsWith(" - ENTER", StringComparison.Ordinal))
+                    m_errors.Add($"[{m_step}] A state entered after the game's end state: {message}");
             }
         }
 

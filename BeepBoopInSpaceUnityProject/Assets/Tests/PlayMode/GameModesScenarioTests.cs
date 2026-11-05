@@ -327,6 +327,9 @@ namespace Game.Tests.PlayMode
         private IEnumerator GoToMainMenuHome()
         {
             m_driver.Step("Boot to the main menu");
+            // An online room lost in an earlier scenario would open the menu on the hub, which tells why.
+            if (Manager("Game.Online.OnlineManager") is { } onlineManager)
+                onlineManager.GetType().GetMethod("TakeLostRoomReason").Invoke(onlineManager, null);
             if (!IsOnMainMenuHome && !IsOnCharacterSelection)
             {
                 // A scenario that failed mid-game never reached EndState: release its level like EndState does,

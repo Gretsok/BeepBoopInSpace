@@ -236,7 +236,18 @@ namespace Game.Tests.PlayMode
 
             m_driver.Step("Online: the guest comes back once the game is over");
             yield return m_driver.WaitUntil("the guest back in the room", () => RoomPlayersCount == 2, 30f);
-            yield return CloseTheRoomAndWaitForTheGuest(0);
+            yield return m_driver.WaitUntil("the launch buttons", () => LobbyButton("m_trainingButton").enabledSelf, 5f);
+            yield return RealSeconds(0.5f);
+
+            // Nothing of the game it left while loading may get in the way of the next one, on either machine.
+            m_driver.Step("Game 2: the room plays a whole game");
+            yield return LaunchPointsRushForTheRoom();
+            var hostScores = "-";
+            yield return PlayOneGame(random, new List<string>(), () => hostScores = Scores);
+            yield return m_driver.WaitUntil("the room after the game", () => MenuState == "OnlineLobbyState" && FocusedElement != null, 60f);
+            Assert.AreEqual(2, RoomPlayersCount, "The guest isn't in the room anymore.");
+            yield return CheckTheGuestSawTheGame(HostGameNumber, hostScores);
+            yield return CloseTheRoomAndWaitForTheGuest(1);
             m_driver.AssertNoErrors();
         }
 

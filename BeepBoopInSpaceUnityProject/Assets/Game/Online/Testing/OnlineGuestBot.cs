@@ -8,6 +8,7 @@ using Game.Gameplay;
 using Game.Gameplay.Cells.Default;
 using Game.Gameplay.CharactersManagement;
 using Game.Gameplay.CharactersManagement.Movement;
+using Game.Gameplay.Flows.Finish;
 using Game.Gameplay.Flows.Gameplay;
 using Game.Gameplay.Flows.Results;
 using Game.Gameplay.Flows.Tutorial;
@@ -15,6 +16,8 @@ using Game.Global;
 using Game.Global.PlayerManagement;
 using Game.MainMenu;
 using Game.MainMenu.CharacterManagement;
+using Game.MainMenu.Hub;
+using Game.Tournament;
 using Game.Online.Gameplay;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -34,6 +37,8 @@ namespace Game.Online.Testing
     /// back, freezing (a network cut, or a lag spike when shorter than the transport's timeout), leaving a game...
     /// "-online-test-guest-report &lt;file&gt;" also writes the bot's lines there as they happen: the player's log only
     /// reaches the disk by blocks.
+    /// It also fails (an error) when a game comes back to life while it unloads (a state entered after the end state),
+    /// or when the menu doesn't open on the hub saying why after the room was lost.
     /// </summary>
     public class OnlineGuestBot : MonoBehaviour
     {
@@ -43,6 +48,10 @@ namespace Game.Online.Testing
         private const float k_Timeout = 20 * 60f;
         // Seconds into a game before freezing in it.
         private const float k_FreezeDelay = 3f;
+        // Seconds into the results before freezing: the host is about to leave them.
+        private const float k_FreezeAtResultsDelay = 1.5f;
+        // The end of a game (FinishState in the base game scene), in game seconds: it then asks for the results.
+        private const float k_FinishSeconds = 4f;
 
         private static readonly GamepadButton[] s_actionButtons =
         {
@@ -65,6 +74,9 @@ namespace Game.Online.Testing
         // The scenario.
         private bool m_leavesTheRoomAndComesBack;
         private float m_freezeInGameSeconds;
+        private float m_freezeAtResultsSeconds;
+        private float m_freezeAtLaunchSeconds;
+        private float m_freezeAsFinishEndsSeconds;
         private bool m_quitsWhenItsRobotIsDead;
         private bool m_quitsWhileLoading;
         private bool m_neverLoads;
@@ -72,6 +84,13 @@ namespace Game.Online.Testing
         private bool m_requiresAGame;
 
         private bool m_hasFrozen;
+        private bool m_hasFrozenAtResults;
+        private bool m_hasFrozenAtLaunch;
+        private bool m_hasFrozenAsFinishEnds;
+        private float m_finishStartTime = -1f;
+        private float m_resultsStartTime = -1f;
+        private bool m_isGameEnding;
+        private bool m_expectsTheHub;
         private bool m_hasLeftAGame;
         private bool m_comesBackAfterLeaving;
         private float m_gameplayStartTime = -1f;
@@ -110,6 +129,10 @@ namespace Game.Online.Testing
         }
 
         // rejoin: leaves the room once in it, then comes back. freeze-in-game:N: freezes N seconds in the first game.
+        // freeze-at-results:N: freezes N seconds in the first game's results, as the host leaves them.
+        // freeze-at-launch:N: freezes N seconds as the first game launches from the menu (its scene not loading yet).
+        // freeze-as-finish-ends:N: freezes N seconds just before the first game's end (FinishState) would ask for its
+        // results, a request the host's driving makes this machine ignore (in the results already).
         // quit-when-dead: leaves the first game (pause, Menu principal) once its robot is dead, then joins the room
         // again, refused until the host is back in it. quit-while-loading: leaves the first game as it starts loading,
         // then joins again. stuck-loading: never tells the host its game is loaded. expect-room-lost: the room is lost
@@ -127,6 +150,15 @@ namespace Game.Online.Testing
                         break;
                     case "freeze-in-game":
                         m_freezeInGameSeconds = parts.Length > 1 ? float.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture) : 3f;
+                        break;
+                    case "freeze-at-results":
+                        m_freezeAtResultsSeconds = parts.Length > 1 ? float.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture) : 8f;
+                        break;
+                    case "freeze-at-launch":
+                        m_freezeAtLaunchSeconds = parts.Length > 1 ? float.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture) : 3f;
+                        break;
+                    case "freeze-as-finish-ends":
+                        m_freezeAsFinishEndsSeconds = parts.Length > 1 ? float.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture) : 3f;
                         break;
                     case "quit-when-dead":
                         m_quitsWhenItsRobotIsDead = true;
@@ -153,12 +185,66 @@ namespace Game.Online.Testing
         {
             if (type is LogType.Error or LogType.Exception or LogType.Assert)
                 m_errors++;
+            else if (type == LogType.Log)
+                CheckNothingStartsAfterTheEnd(condition);
+        }
+
+        // "[FM] FlowMachine - EndState - ENTER": the game unloads. Until a flow machine starts running again (the menu's,
+        // the next game's), a state that enters is the game coming back to life while it unloads.
+        private void CheckNothingStartsAfterTheEnd(string message)
+        {
+            if (!message.StartsWith("[FM] ", StringComparison.Ordinal))
+                return;
+            if (message.EndsWith(" - started running.", StringComparison.Ordinal))
+                m_isGameEnding = false;
+            else if (message.Contains(" - EndState - ENTER"))
+                m_isGameEnding = true;
+            else if (m_isGameEnding && message.TrimEnd().EndsWith(" - ENTER", StringComparison.Ordinal))
+            {
+                m_errors++;
+                Log($"ERROR a state entered after the game's end state: {message}");
+            }
         }
 
         private void HandleRoomLost(string reason)
         {
             m_roomsLost++;
+            m_expectsTheHub = true;
             Log($"room lost: {reason}");
+            Log($"room lost while {WhereItIs()}");
+        }
+
+        private static string WhereItIs()
+        {
+            var gameplayContext = GameplayContext.Instance;
+            if (gameplayContext && gameplayContext.FlowMachine)
+            {
+                var state = gameplayContext.FlowMachine.CurrentState;
+                return $"in game state {(state ? state.GetType().Name : "none")}";
+            }
+            if (MainMenuContext.Instance)
+                return OnlineManager.Instance.IsInGame ? "launching a game from the menu" : "in the menu";
+            return TournamentContext.Instance ? "between tournament games" : "elsewhere";
+        }
+
+        // Back in the menu after the room was lost: the hub, which has said why (the reason taken).
+        private IEnumerator CheckTheHubSaysWhy()
+        {
+            if (!m_expectsTheHub)
+                yield break;
+            var flowMachine = MainMenuContext.Instance.FlowMachine;
+            var timeout = Time.realtimeSinceStartup + 10f;
+            while (!flowMachine.CurrentState && Time.realtimeSinceStartup < timeout)
+                yield return null;
+            // A request to switch screens may still be on its way.
+            yield return null;
+            yield return null;
+            var screen = flowMachine.CurrentState ? flowMachine.CurrentState.GetType().Name : "none";
+            Log($"back in the menu on {screen}");
+            if (flowMachine.CurrentState is not HubState)
+                Debug.LogError($"[GuestBot] The room was lost, but the menu opened on {screen} instead of the hub.");
+            else if (OnlineManager.Instance.HasLostRoomReason)
+                Debug.LogError("[GuestBot] The room was lost, but the hub didn't say why.");
         }
 
         private IEnumerator Start()
@@ -214,6 +300,8 @@ namespace Game.Online.Testing
                         Quit(1, "game scenes left in the menu");
                         yield break;
                     }
+                    yield return CheckTheHubSaysWhy();
+                    m_expectsTheHub = false;
                     if (m_comesBackAfterLeaving)
                     {
                         // Refused while the host plays the game this machine left: until the host is back in the room.
@@ -232,6 +320,14 @@ namespace Game.Online.Testing
                 }
 
                 var gameplayContext = GameplayContext.Instance;
+                // Launching from the menu: the launcher has just been asked, the game's scene isn't loading yet.
+                if (m_freezeAtLaunchSeconds > 0f && !m_hasFrozenAtLaunch && onlineManager.IsInGame && !gameplayContext
+                    && MainMenuContext.Instance)
+                {
+                    m_hasFrozenAtLaunch = true;
+                    Log("launching a game from the menu");
+                    Freeze(m_freezeAtLaunchSeconds);
+                }
                 // Once the game's context has started (its sync is attached then).
                 if (gameplayContext && gameplayContext != m_handledGameplayContext && gameplayContext.TryGetComponent(out GameplaySync sync))
                 {
@@ -277,9 +373,27 @@ namespace Game.Online.Testing
                     yield return Press(s_actionButtons[m_random.Next(s_actionButtons.Length)]);
                 }
 
+                // Game time: a freeze doesn't count in it (a frame's time is capped), the end of game's timer neither.
+                if (state is FinishState && m_finishStartTime < 0f)
+                    m_finishStartTime = Time.time;
+                if (m_freezeAsFinishEndsSeconds > 0f && !m_hasFrozenAsFinishEnds && m_finishStartTime >= 0f
+                    && Time.time > m_finishStartTime + k_FinishSeconds - 0.15f)
+                {
+                    m_hasFrozenAsFinishEnds = true;
+                    Log($"the end of game is about to ask for its results, in {(state ? state.GetType().Name : "no state")}");
+                    Freeze(m_freezeAsFinishEndsSeconds);
+                }
+
                 var isInResults = state is ResultsState;
+                if (isInResults && m_freezeAtResultsSeconds > 0f && !m_hasFrozenAtResults && m_resultsStartTime >= 0f
+                    && Time.realtimeSinceStartup > m_resultsStartTime + k_FreezeAtResultsDelay)
+                {
+                    m_hasFrozenAtResults = true;
+                    Freeze(m_freezeAtResultsSeconds);
+                }
                 if (isInResults && !m_isInResults)
                 {
+                    m_resultsStartTime = Time.realtimeSinceStartup;
                     m_gamesPlayed++;
                     var pawns = CharactersManager.Instance.CharacterPawns;
                     var scores = string.Join(", ", pawns.Select(pawn => pawn.ReferencesHolder.ScoringController.Score));
@@ -313,6 +427,7 @@ namespace Game.Online.Testing
         private void LeaveTheGame(GameplayContext gameplayContext)
         {
             m_hasLeftAGame = true;
+            m_expectsTheHub = false;
             m_comesBackAfterLeaving = true;
             gameplayContext.PauseMenuManager.QuitToMainMenu();
         }
@@ -348,6 +463,7 @@ namespace Game.Online.Testing
             }
             if (error == null)
             {
+                m_expectsTheHub = false;
                 Log($"in the room as machine {onlineManager.LocalMachineId}, {onlineManager.Roster.Count} players");
                 MainMenuContext.Instance.MainMenuOrchestrator.SwitchToOnlineLobbyScreen();
             }
