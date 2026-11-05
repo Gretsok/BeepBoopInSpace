@@ -6,7 +6,7 @@ description: Lancer, lire, déboguer et étendre les tests de scénario de Beep 
 # Tests de scénario (4 manettes virtuelles)
 
 But : vérifier soi-même, en jeu, qu'un changement ne casse rien, du menu jusqu'au retour au menu.
-Validé sous Unity 6000.6.7f1 : la suite complète (27 tests, dont 12 en ligne contre le build invité) dure ~26 minutes (1576 s le 2026-11-04, ~1 min par test de mode de contrôle).
+Validé sous Unity 6000.6.7f1 : la suite complète (35 tests, dont 20 en ligne contre le build invité) dure ~35 minutes (2107 s le 2026-11-05, ~1 min par test de mode de contrôle).
 
 Fichiers (dans `Assets/Tests/PlayMode/`, assembly `BeepBoop.Tests.PlayMode`) :
 
@@ -17,6 +17,7 @@ Fichiers (dans `Assets/Tests/PlayMode/`, assembly `BeepBoop.Tests.PlayMode`) :
 | `ControlModesScenarioTests.cs` | Même classe : `ControlModes_SimplifiedButtonsGoWhereTheySay("<mode>: <contrôles>")` × 3 (`SimplifiedControlsCases` : Points Rush en `Simplified` et en `SimplifiedWithSpecialAction`, Shooters en `SimplifiedWithSpecialAction`), le niveau passé dans ce mode de contrôle le temps du test (champ remis dans le `TearDown`), joué par 3 manettes et un clavier (`JoinPadsAndAKeyboardAndOpenHub` : Espace pour rejoindre et être prêt, R pour Aléatoire) : image des contrôles du tutoriel (capture `40-tutorial-<mode>-<contrôles>`), actions sur les seuls boutons du mode, chaque direction (manette 1 puis clavier) tourne le robot, mène vers ce côté de l'écran vu par la caméra de jeu, déplace le robot et tourne son modèle ; les autres boutons ne font rien ; l'action spéciale fait exploser le robot (bombe) ou tire là où il regarde (fusil, via l'événement `OnShot`) ; une nouvelle configuration change les actions des boutons ; puis la partie jusqu'au bout et le retour à l'accueil (les joueurs partent avant qu'on retire le clavier). Corps commun `PlaySimplifiedControls(mode, controlMode, switchLevel)` (`switchLevel: false` pour un niveau déjà enregistré dans le mode). Aides `RobotOf(device)`, `ButtonActions(robot)` (nom de la méthode de chaque bouton, dans l'ordre `Action_1` à `Action_6` : A/S, Y/W, B/D, X/A, RB/E, LB/Q) |
 | `OnlineScenarioTests.cs` | Même classe : `OnlineMenu_OnePlayerOpensARoom` (un joueur seul : hub aux modes locaux grisés, code à la croix et au clavier, salle seule ; captures `16` à `18`) `Online_PlaysATrainingWithAGuestBuild` et `Online_PlaysATournamentWithAGuestBuild` (l'éditeur héberge une salle en connexion directe, un build `Builds/OnlineGuest` joue l'invité avec `-online-test-guest` ; ignorés sans build). Détails, build de l'invité et pièges : skill `online-multiplayer` |
 | `OnlineDropsScenarioTests.cs` | Même classe : `OnlineMenu_LeavesAndReopensRightAway` (une machine) et `OnlineDrops_*` × 8 : départs, coupures (gel du fil principal), retours, chargement bloqué, tournoi qui perd l'hôte, contre le build invité et son `-online-test-guest-scenario`. Liste des cas : `online-multiplayer/references/disconnections.md` |
+| `OnlineTransitionsScenarioTests.cs` | Même classe : `OnlineTransitions_*` × 8 : salle perdue ou invité à la traîne pendant un lancement, une fin de partie, entre deux parties du tournoi, pause ouverte quand la partie finit. Liste des cas : `online-multiplayer/references/transitions.md`. `ScenarioDriver` échoue sur tout état entré après `EndState`, dans tous les tests |
 | `ScenarioDriver.cs` | Manettes, clavier et souris virtuels, navigation dans les menus UI Toolkit, captures d'écran, attente avec délai, lecture de l'état du jeu par réflexion, collecte des erreurs |
 
 `MainMenu_EveryScreenWorksWithGamepadKeyboardAndMouse` (~13 s, à lancer après toute modification des menus) :
@@ -57,7 +58,7 @@ python $CLI test --filter GameScreens                   # écrans de partie + ca
 python $CLI test --filter PauseMenu                     # quitter une partie depuis la pause (~1,5 min)
 python $CLI test --filter ControlModes                  # les modes de contrôle simplifiés (3 parties) + captures 40
 python $CLI test --filter "OnlineMenu|Online_Plays"     # en ligne : écrans, entraînement et tournoi contre un build invité (~6 min)
-python $CLI test --filter Game.Tests.PlayMode --detach  # toute la suite (~26 min, build invité à jour) : en détaché
+python $CLI test --filter Game.Tests.PlayMode --detach  # toute la suite (~35 min, build invité à jour) : en détaché
 ```
 
 `--filter` est le `-testFilter` de Unity : un nom complet ou une regex sur le nom complet

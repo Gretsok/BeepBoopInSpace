@@ -49,7 +49,8 @@ CLI=".claude/skills/unity-headless/scripts/unity_cli.py"
 python $CLI test --filter OnlineMenu                         # écrans, une machine (~1 min)
 python $CLI build --output Builds/OnlineGuest                # le build qui joue l'invité (30 s à 2 min 30)
 python $CLI test --filter "Online_Plays"                 # entraînement (~1 min) et tournoi (3-9 parties, 3-8 min)
-python $CLI test --filter "OnlineMenu_Leaves|OnlineDrops" --detach   # départs, coupures, retours (9 tests, ~8 min)
+python $CLI test --filter "OnlineMenu_Leaves|OnlineDrops" --detach   # départs, coupures, retours (9 tests, ~10 min)
+python $CLI test --filter "OnlineTransitions" --detach   # pertes et lag pendant les transitions (8 tests, ~12 min)
 ```
 
 - `OnlineMenu_OnePlayerOpensARoom` : joueur seul → hub (modes locaux grisés) → En ligne (code à la
@@ -71,11 +72,18 @@ python $CLI test --filter "OnlineMenu_Leaves|OnlineDrops" --detach   # départs,
   (quitte la partie par la pause dès que son robot est mort, puis redemande la salle chaque seconde,
   refusé tant que la partie dure), `quit-while-loading` (pareil, dès que la partie commence à se
   charger), `stuck-loading` (charge sans jamais le dire à l'hôte), `expect-room-lost` (la salle doit
-  être perdue ; aucune partie n'est exigée). Il logue `room lost: <raison>`, `joining refused: <raison>`,
+  être perdue ; aucune partie n'est exigée), `freeze-at-results:N` (gel 1,5 s après l'entrée dans les
+  résultats de la première partie, l'hôte les quitte pendant), `freeze-at-launch:N` (gel dès que le
+  lancement d'une partie part du menu, sa scène pas encore en chargement), `freeze-as-finish-ends:N`
+  (gel juste avant que la fin de partie de 4 s n'échoie, en temps de jeu : un gel ne compte pas dans
+  `Time.time`). Il logue `room lost: <raison>` puis `room lost while <où>` (`launching a game from the
+  menu`, `in game state <état>`...), `back in the menu on <écran>`, `joining refused: <raison>`,
   `freezing N s` / `unfrozen`, et écrit ces lignes `[GuestBot]` au fil de l'eau dans
   `-online-test-guest-report <fichier>` (`Logs/online-guest-report.txt`) : **le log du joueur n'arrive
   sur le disque que par blocs**, un test qui y cherche une ligne récente la rate. Après chaque test,
-  le log et le rapport sont gardés en `Logs/online-guest-<test>.log` / `-report.txt`.
+  le log et le rapport sont gardés en `Logs/online-guest-<test>.log` / `-report.txt`. Il échoue aussi
+  si un état de sa partie entre après `EndState`, ou si, la salle perdue, son menu ne s'ouvre pas sur
+  le hub qui a dit pourquoi (`HasLostRoomReason` consommée).
 - **Départs, coupures, retours** : la liste des cas et leur test est dans
   [references/disconnections.md](references/disconnections.md) (à lire avant de toucher aux
   départs, au chargement ou à la fin d'une partie en ligne). Tests `OnlineDrops_*`
@@ -84,6 +92,13 @@ python $CLI test --filter "OnlineMenu_Leaves|OnlineDrops" --detach   # départs,
   simule en gelant le fil principal (`Thread.Sleep`) d'une machine : côté invité par son scénario,
   côté hôte par le test (`FreezeHost`) ; au-delà du délai du transport
   (`OnlineConnection.k_DisconnectTimeoutMs`, 10 s) c'est une perte de connexion, en deçà un pic de lag.
+- **Transitions** (lancement, chargement, fin de partie, retour au menu, tournoi entre deux parties,
+  pause par-dessus) : [references/transitions.md](references/transitions.md), tests
+  `OnlineTransitions_*` (`OnlineTransitionsScenarioTests.cs`). Une course d'une image se provoque en
+  gelant l'invité juste avant l'instant visé (l'hôte agit pendant le gel), ou en agissant dans
+  l'événement même côté hôte (`DoWhenASceneLoads`, `DoWhenTheGameEnters`). La perte de la salle de
+  l'hôte (transport, Relay) se simule par `LoseTheHostsConnection` (`OnlineManager.HandleConnectionLost`
+  par réflexion).
 - `-no-analytics` : les copies lancées par les tests n'envoient rien à GameAnalytics.
 - À la main, deux copies du jeu buildé sur un PC : `-online-direct` sur les deux (127.0.0.1), ou
   l'adresse IP de l'hôte sur le réseau local (Windows demande alors d'ouvrir le pare-feu à l'hôte).
@@ -145,9 +160,22 @@ main, deux copies du jeu sur le même PC (chaque copie se connecte avec son prop
   animations peuvent être en retard sans que rien ne se désynchronise.
 - Enregistrer un handler de message nommé deux fois (démarrage client + serveur de l'hôte) le remplace
   sans erreur : c'est voulu.
-- **`NetworkManager.DisconnectReason`** rend la raison de l'hôte (refus, renvoi) **ou** une description
-  technique fabriquée par Netcode (« [Disconnect Event][Client-1]… ») : ne jamais l'afficher telle
-  quelle (`OnlineConnection.RefusalReason` la filtre).
+- **`NetworkManager.DisconnectReason`** rend la raison de l'hôte (refus, renvoi) **ou** un texte de
+  Netcode : la description technique (« [Disconnect Event][Client-1]… ») ou, quand l'hôte arrête son
+  jeu, « Disconnected due to host shutting down. », envoyé comme une raison d'hôte. Ne jamais
+  l'afficher tel quel (`OnlineConnection.RefusalReason` les filtre).
+- **Rien ne démarre après `EndState`** : il verrouille la machine (`FlowMachine.Lock`). Un état quitté
+  ne peut déjà plus rien demander (la machine se désabonne de lui), mais les systèmes qui appellent
+  `FlowMachine.RequestState` eux-mêmes (configurations, chrono, manches) le peuvent dans l'image où la
+  partie part.
+- Toute partie lancée d'une salle (`OnlineManager.IsInGame`) s'attache à `GameplaySync`, même si la
+  salle a été perdue pendant le lancement : elle repart aussitôt, au lieu d'attendre des machines
+  parties. Le menu, lui, ne réagit pas à une salle perdue pendant un lancement.
+- Tournoi, invité : le choix de l'hôte (`TournamentNextGame`) ne démarre pas la partie suivante
+  (`StartGame` vide la file des messages) ; elle commence quand l'invité la charge
+  (`StartTheNextTournamentGame`), la partie en cours a pu ne pas finir chez lui (pic de lag).
+- La pause en ligne n'arrête pas le jeu : elle se ferme d'elle-même à la fin de la partie (Finish,
+  Results, End).
 - Une machine qui se réveille d'un gel traite d'abord les paquets reçus pendant le gel : elle ne voit
   la perte de connexion qu'un délai du transport (10 s) **après** son réveil. Les tests en tiennent
   compte (attendre la sortie de l'invité jusqu'à 60-90 s).

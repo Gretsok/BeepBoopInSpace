@@ -38,7 +38,7 @@ défaut dans Unity Transport, trop long pour une partie de 2 min).
 | B2 | Hôte ferme le salon | Invités au hub : « L'hôte a fermé la salle. » | OK | tests `Online_Plays*` |
 | B3 | Invité quitte une partie (pause → Menu principal) | Son robot meurt pour de bon, la partie continue | OK | `GuestQuitsAGameWhileItsRobotIsDead` |
 | B4 | Hôte quitte une partie | Invités au hub avec la raison | OK | `HostLeavesDuringAGame` |
-| B5 | Fenêtre fermée (Alt+F4) | Comme B1/B4 : Netcode envoie la déconnexion à l'arrêt | OK | — |
+| B5 | Fenêtre fermée (Alt+F4) | Comme B1/B4 : Netcode envoie la déconnexion à l'arrêt | **Bug** trouvé ensuite (transitions.md, E1) : chez l'invité, l'arrêt de l'hôte affichait « Disconnected due to host shutting down. ». Corrigé | `OnlineTransitions_HostLosesTheRoom*` |
 | B6 | Quitter au moment où l'hôte lance | Rien ne se lance chez celui qui part | **Bug** : un `LaunchTraining` arrivé après `LeaveRoom` (la session met du temps à se fermer) lançait une partie hors ligne. Corrigé : rien n'est traité hors salle | `LeavesAndReopensRightAway` (message forgé) |
 
 ### C. Coupure brutale (crash, réseau, machine figée)
