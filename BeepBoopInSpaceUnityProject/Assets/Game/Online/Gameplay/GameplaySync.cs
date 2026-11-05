@@ -49,11 +49,12 @@ namespace Game.Online.Gameplay
 
         private static bool IsHosting => s_instance && s_instance.m_isHost && s_instance.m_online.IsInRoom;
 
-        /// <summary>Plays the game of the gameplay context online, if this machine is in a room.</summary>
+        /// <summary>Plays the game of the gameplay context online, if it was launched in a room.</summary>
         public static void AttachTo(GameplayContext gameplayContext)
         {
             var online = OnlineManager.Instance;
-            if (!online || !online.IsInGame || (!online.IsInRoom && !online.IsGuest))
+            // A game launched in a room, even if the room was lost since: it mustn't start without it.
+            if (!online || !online.IsInGame)
                 return;
             var sync = gameplayContext.gameObject.AddComponent<GameplaySync>();
             sync.Initialize(online, gameplayContext);
@@ -67,6 +68,13 @@ namespace Game.Online.Gameplay
             m_flowMachine = gameplayContext.FlowMachine;
             m_isHost = online.IsHost;
             m_online.OnRoomLost += HandleRoomLost;
+            // Lost while the game was launching: its players would wait for machines that are gone.
+            if (!m_online.IsInRoom)
+            {
+                Debug.Log($"[Online] Game {m_online.GameNumber}: the room was lost while it launched.");
+                HandleRoomLost(null);
+                return;
+            }
             if (m_isHost)
             {
                 m_flowMachine.OnStateEntering += HandleStateEntering;
@@ -80,9 +88,6 @@ namespace Game.Online.Gameplay
             {
                 // The host says which state comes next.
                 m_flowMachine.IsRemotelyDriven = true;
-                // Lost before the game even started.
-                if (!m_online.IsInRoom)
-                    HandleRoomLost(null);
             }
             Debug.Log($"[Online] Game {m_online.GameNumber} played as {(m_isHost ? "host" : "guest")}.");
         }

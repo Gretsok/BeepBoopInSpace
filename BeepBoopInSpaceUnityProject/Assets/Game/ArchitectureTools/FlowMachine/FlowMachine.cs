@@ -66,12 +66,30 @@ namespace Game.ArchitectureTools.FlowMachine
         /// </summary>
         public bool IsRemotelyDriven { get; set; }
 
+        /// <summary>
+        /// The machine's last state has entered (a game that unloads): the states requested from then on, by a timer
+        /// of a state left before or a message that arrives late, are ignored.
+        /// </summary>
+        public bool IsLocked { get; private set; }
+
+        public void Lock()
+        {
+            IsLocked = true;
+            m_requestedStates.Clear();
+            Debug.Log($"[FM] {gameObject.name} - locked in {(CurrentState ? CurrentState.name : "no state")}.");
+        }
+
         /// <summary>A state is about to enter, the previous one has left.</summary>
         public event Action<AFlowState> OnStateEntering;
 
         /// <summary>Switches at once to the state another machine entered, its states arriving in their order.</summary>
         public void SwitchToStateNow(AFlowState newState)
         {
+            if (IsLocked)
+            {
+                Debug.Log($"[FM] {gameObject.name} - Remote state ignored, locked: {newState.gameObject}.");
+                return;
+            }
             m_requestedStates.Clear();
             m_backStack.Push(newState);
             Debug.Log($"[FM] {gameObject.name} - {newState.name} - About to switch state remotely.");
@@ -81,6 +99,11 @@ namespace Game.ArchitectureTools.FlowMachine
         private Queue<SStateRequest> m_requestedStates = new();
         public void RequestState(AFlowState newState, bool ignoreBackStack = false)
         {
+            if (IsLocked)
+            {
+                Debug.Log($"[FM] {gameObject.name} - Request state ignored, locked: {newState.gameObject}.");
+                return;
+            }
             if (IsRemotelyDriven)
             {
                 Debug.Log($"[FM] {gameObject.name} - Request state ignored, driven remotely: {newState.gameObject}.");
@@ -99,7 +122,7 @@ namespace Game.ArchitectureTools.FlowMachine
 
         public void RequestBack()
         {
-            if (IsRemotelyDriven)
+            if (IsRemotelyDriven || IsLocked)
                 return;
             SStateRequest request = new SStateRequest()
             {

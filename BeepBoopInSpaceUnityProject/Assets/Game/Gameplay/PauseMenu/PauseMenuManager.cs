@@ -2,6 +2,8 @@ using System;
 using DG.Tweening;
 using Game.ArchitectureTools.FlowMachine;
 using Game.Gameplay.Flows.End;
+using Game.Gameplay.Flows.Finish;
+using Game.Gameplay.Flows.Results;
 using Game.Online;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -23,6 +25,15 @@ namespace Game.Gameplay.PauseMenu
             m_controls.Pause.Toggle.started += HandlePauseToggleStarted;
             
             m_gameplayFlowMachine = gameplayFlowMachine;
+            m_gameplayFlowMachine.OnStateEntering += HandleStateEntering;
+        }
+
+        // Online, the game goes on behind the pause: once over, the pause gives way to its end and results (Menu principal
+        // there would leave a game that already unloads, or a tournament between two games).
+        private void HandleStateEntering(AFlowState state)
+        {
+            if (IsPaused && state is FinishState or ResultsState or EndState)
+                Resume();
         }
 
         private void HandlePauseToggleStarted(InputAction.CallbackContext obj)
@@ -38,7 +49,8 @@ namespace Game.Gameplay.PauseMenu
         {
             if (IsPaused || m_isQuitting)
                 return;
-            if (!m_gameplayFlowMachine.CurrentState.GetComponent<CanBePausedTagStateComponent>())
+            var state = m_gameplayFlowMachine.CurrentState;
+            if (!state || !state.GetComponent<CanBePausedTagStateComponent>())
                 return;
 
             // Online, the game goes on for the other machines: the menu opens over it, and takes this machine's
@@ -97,6 +109,8 @@ namespace Game.Gameplay.PauseMenu
 
         private void OnDestroy()
         {
+            if (m_gameplayFlowMachine)
+                m_gameplayFlowMachine.OnStateEntering -= HandleStateEntering;
             m_controls.Pause.Toggle.started -= HandlePauseToggleStarted;
             
             m_controls.Disable();

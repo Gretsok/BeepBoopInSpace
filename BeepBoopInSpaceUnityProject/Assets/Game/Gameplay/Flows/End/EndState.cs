@@ -27,6 +27,8 @@ namespace Game.Gameplay.Flows.End
             m_isEnding = true;
 
             var gameplayContext = GameplayContext.Instance;
+            // The game unloads: a state left before whose timer runs out, a room lost meanwhile, mustn't start anything.
+            gameplayContext.FlowMachine.Lock();
             var currentLevelInfoManager = gameplayContext.CurrentLevelInfoManager;
 
             // Otherwise the tournament goes on once the game is unloaded: its results, then its next game.

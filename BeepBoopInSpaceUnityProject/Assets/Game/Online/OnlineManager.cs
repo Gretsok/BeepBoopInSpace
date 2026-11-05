@@ -58,6 +58,8 @@ namespace Game.Online
         private List<CharacterDataAsset> m_characters = new();
         private CancellationTokenSource m_connectingCancellation;
         private string m_lostRoomReason;
+        // Guest, tournament: the number of the game the host goes on with, until this machine starts loading it.
+        private int m_nextTournamentGame;
         private bool m_isKeepingRunningInBackground;
         private bool m_runInBackgroundOutsideRooms;
         private bool m_isClosing;
@@ -582,6 +584,13 @@ namespace Game.Online
             return m_gameInbox.TryDequeue(out message);
         }
 
+        /// <summary>Guest, tournament: the last game is over here too, the one the host chose next starts loading.</summary>
+        public void StartTheNextTournamentGame()
+        {
+            if (IsGuest && m_nextTournamentGame > GameNumber)
+                StartGame(m_nextTournamentGame);
+        }
+
         /// <summary>Guest: the game is loaded, the host may start it.</summary>
         public void SendGameLoaded()
         {
@@ -663,8 +672,10 @@ namespace Game.Online
                 {
                     var gameNumber = reader.ReadInt32();
                     var levelIndex = reader.ReadInt16();
+                    // Not started yet: the last game's messages may still be waiting to be played (this machine lagged
+                    // as it ended), the next game's only come once it's loaded (StartTheNextTournamentGame).
                     if (levelIndex >= 0)
-                        StartGame(gameNumber);
+                        m_nextTournamentGame = gameNumber;
                     OnTournamentNextGame?.Invoke(levelIndex);
                     break;
                 }

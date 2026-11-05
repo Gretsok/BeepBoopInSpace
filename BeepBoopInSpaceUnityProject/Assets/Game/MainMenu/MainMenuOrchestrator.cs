@@ -96,6 +96,10 @@ namespace Game.MainMenu
         // The room is over (the host left, the connection failed...): its screens give way to the hub, which says why.
         private void HandleRoomLost(string reason)
         {
+            // A game launches: the hub would take the reason under the loading screen. The game goes back to the menu
+            // once loaded, which opens on the hub.
+            if (m_globalContext.OnlineManager.IsInGame)
+                return;
             var currentState = m_flowMachine.CurrentState;
             if (currentState == m_onlineLobbyState || currentState == m_levelSelectionState)
                 SwitchToHubScreen();

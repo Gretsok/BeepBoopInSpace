@@ -44,10 +44,14 @@ namespace Game.Tournament.Flow
         private bool m_isWaitingForHost;
         // From the loading of a game's scene until it's loaded: a room lost meanwhile is handled by the game itself.
         private bool m_isLoadingLevel;
+        // Started in an online room: a tournament doesn't go on without it.
+        private bool m_isOnline;
+        private bool m_isClosing;
 
         public void StartTournament()
         {
             var onlineManager = OnlineManager.Instance;
+            m_isOnline = Netplay.IsOnline;
             if (Netplay.IsOnline)
             {
                 onlineManager.OnRoomLost += HandleRoomLost;
@@ -92,8 +96,8 @@ namespace Game.Tournament.Flow
             
             TournamentResultsSceneContext.RegisterPostInitializationCallback(resultsSceneContext =>
             {
-                // Online guest whose room was lost as the game ended: no host to wait for.
-                if (Netplay.IsGuest && !Netplay.IsOnline)
+                // The room was lost as the game ended (on the host too: its transport failed): no tournament without it.
+                if (HasLostTheRoom)
                 {
                     Debug.Log("[Tournament] Room lost between two games: back to the main menu.");
                     CloseTournament();
@@ -116,7 +120,7 @@ namespace Game.Tournament.Flow
         {
             var loadingScreenManager = LoadingScreenManager.Instance;
             loadingScreenManager.ShowLoadingScreen();
-            if (m_resultsManager.IsGameComplete() || HasTooFewPlayersLeft)
+            if (m_resultsManager.IsGameComplete() || HasTooFewPlayersLeft || HasLostTheRoom)
             {
                 CloseTournament();
             }
@@ -138,8 +142,14 @@ namespace Game.Tournament.Flow
             }
         }
 
+        private bool HasLostTheRoom => m_isOnline && !Netplay.IsOnline;
+
         private void CloseTournament()
         {
+            // The room lost as the results close.
+            if (m_isClosing)
+                return;
+            m_isClosing = true;
             if (Netplay.IsHost)
                 OnlineManager.Instance.SendTournamentNextGame(-1);
             StopListeningToTheRoom();
@@ -186,6 +196,7 @@ namespace Game.Tournament.Flow
             var levelDataAsset = m_configDataAsset.LevelDataAssets[levelIndex];
             if (m_levelsDone.Count >= m_configDataAsset.LevelDataAssets.Count)
                 m_levelsDone.Clear();
+            OnlineManager.Instance.StartTheNextTournamentGame();
             LoadLevel(levelDataAsset);
         }
 

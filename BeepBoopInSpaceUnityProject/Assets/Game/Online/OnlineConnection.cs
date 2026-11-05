@@ -28,7 +28,9 @@ namespace Game.Online
         // for half a game.
         public const int k_DisconnectTimeoutMs = 10000;
         // How Netcode starts the reason it makes up for a disconnection, when the host didn't give one.
-        private const string k_NetcodeReasonPrefix = "[Disconnect Event]";
+        // What Netcode itself says when a machine goes (a technical description, or the host shutting down), unlike the
+        // reasons the host gives: not for the players.
+        private static readonly string[] s_netcodeReasonPrefixes = { "[Disconnect Event]", "Disconnected due to " };
 
         /// <summary>Host and guests connect straight to this address instead of through a session ("ip" or "ip:port").</summary>
         public static string DirectAddress { get; set; } = ReadDirectAddressFromCommandLine();
@@ -299,7 +301,7 @@ namespace Game.Online
             var reason = NetworkManager ? NetworkManager.DisconnectReason : null;
             if (string.IsNullOrEmpty(reason))
                 return fallback;
-            if (!reason.StartsWith(k_NetcodeReasonPrefix, StringComparison.Ordinal))
+            if (!Array.Exists(s_netcodeReasonPrefixes, prefix => reason.StartsWith(prefix, StringComparison.Ordinal)))
                 return reason;
             Debug.Log($"[Online] {reason}");
             return fallback;
