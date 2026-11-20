@@ -163,13 +163,17 @@
     -unity-background-scale-mode: scale-to-fit;
 }
 
-.ui-screen .credits__font {
+.credits__notices {
     position: absolute;
+    left: 320px;
     right: 63px;
-    top: 991.5px;
-    height: 57px;
-    font-size: 32px;
-    translate: 0 -5px;
+    top: 972px;
+    align-items: flex-end;
+}
+
+.ui-screen .credits__notice {
+    font-size: 28px;
+    -unity-text-align: middle-right;
 }
 
 /*

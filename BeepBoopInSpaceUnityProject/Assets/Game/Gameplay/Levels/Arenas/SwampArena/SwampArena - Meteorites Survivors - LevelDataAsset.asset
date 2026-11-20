@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SwampArena - Meteorites Survivors - LevelDataAsset
   m_EditorClassIdentifier: 
   <NameKey>k__BackingField: "Survie sous m\xE9t\xE9orites"
-  <Thumbnail>k__BackingField: {fileID: 21300000, guid: 7ab0fbc3dd781c543bc26c91310c82a8, type: 3}
+  <Thumbnail>k__BackingField: {fileID: 21300000, guid: 56387a9e83da420089317b3669ce6ced, type: 3}
   <GameModeScene>k__BackingField:
     m_AssetGUID: 0bc3d4077faf5744081b93e5c2a7de5f
     m_SubObjectName: 

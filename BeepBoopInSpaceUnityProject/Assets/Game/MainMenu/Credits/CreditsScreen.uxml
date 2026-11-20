@@ -11,7 +11,7 @@
             <ui:VisualElement class="ui-filigree" picking-mode="Ignore" />
             <ui:VisualElement class="credits__column credits__column--left" picking-mode="Ignore">
                 <ui:Label text="ART" class="ui-text credits__section" picking-mode="Ignore" />
-                <ui:Label text="Alexandre Gaule" class="ui-text credits__name" picking-mode="Ignore" />
+                <ui:Label text="Alexandre Gaulé"  class="ui-text credits__name" picking-mode="Ignore" />
                 <ui:Label text="Chloé Baveye" class="ui-text credits__name" picking-mode="Ignore" />
                 <ui:Label text="Victoire Cellier" class="ui-text credits__name" picking-mode="Ignore" />
                 <ui:Label text="Fanny Serré" class="ui-text credits__name" picking-mode="Ignore" />
@@ -29,7 +29,10 @@
             </ui:VisualElement>
             <ui:VisualElement name="logo" class="credits__logo" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:Label text="Police : Magnetar sur dafont" class="ui-text credits__font" picking-mode="Ignore" />
+        <ui:VisualElement class="credits__notices" picking-mode="Ignore">
+            <ui:Label text="Musiques : alanajordan, Lesiakower · Sons : linhmitto, freesound_community (Pixabay)" class="ui-text credits__notice" picking-mode="Ignore" />
+            <ui:Label text="Police Boogaloo : John Vargas Beltrán (licence SIL OFL)" class="ui-text credits__notice" picking-mode="Ignore" />
+        </ui:VisualElement>
         <ui:Button name="back-button" focusable="false" class="ui-legend ui-legend--back">
             <ui:Label text="Retour" class="ui-text ui-legend__label" picking-mode="Ignore" />
             <ui:VisualElement name="back-glyph" class="ui-glyph ui-legend__glyph--after" picking-mode="Ignore" />

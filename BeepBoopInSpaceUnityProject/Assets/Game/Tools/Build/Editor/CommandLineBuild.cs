@@ -17,6 +17,7 @@ namespace Game.Tools.Build.Editor
     /// </summary>
     public static class CommandLineBuild
     {
+        private const string k_DistributionFolder = "Distribution";
         private const string k_BuildAddressablesWithPlayerPreference = "Addressables.BuildAddressablesWithPlayerBuild";
 
         public static void BuildWindows()
@@ -45,7 +46,18 @@ namespace Game.Tools.Build.Editor
                       $"{summary.totalErrors} error(s), {summary.totalWarnings} warning(s), {summary.totalTime.TotalSeconds:0}s");
 
             if (summary.result != BuildResult.Succeeded)
+            {
                 EditorApplication.Exit(1);
+                return;
+            }
+            CopyDistributionFiles(output);
+        }
+
+        // The notes and the third-party licenses that travel with the game.
+        private static void CopyDistributionFiles(string output)
+        {
+            foreach (var file in Directory.GetFiles(k_DistributionFolder))
+                File.Copy(file, Path.Combine(output, Path.GetFileName(file)), true);
         }
 
         // Addressables content is built with the player only when the settings (or the editor preference) say so.

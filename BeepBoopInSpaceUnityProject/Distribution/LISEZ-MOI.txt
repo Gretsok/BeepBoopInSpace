@@ -1,0 +1,69 @@
+BEEP BOOP DANS L'ESPACE - DÉMO
+==============================
+
+(English below)
+
+Des robots, une grille, et des touches qui changent toutes les 10 secondes.
+De 1 à 4 joueurs : sur le même PC (manettes ou clavier), contre des robots de
+l'ordinateur, ou en ligne avec un code de salle.
+
+LANCER LE JEU
+  Décompressez tout le dossier, puis lancez « Beep Boop dans l'espace.exe ».
+  Si Windows affiche « Windows a protégé votre ordinateur » : le jeu n'est pas
+  signé. Cliquez sur « Informations complémentaires », puis « Exécuter quand même ».
+
+JOUER
+  Manette (Xbox, PlayStation et autres) : A / Croix pour rejoindre et valider.
+  Clavier : Espace ou Entrée pour rejoindre, W A S D + Q E pour jouer, Échap pour
+  la pause. Le clavier compte pour un seul joueur.
+  Seul : dans le menu des modes de jeu, « Robots adversaires » règle le nombre
+  de robots.
+  En ligne : une personne crée une salle et donne son code aux autres.
+
+DONNÉES
+  Le jeu vous demande au premier lancement s'il peut envoyer des statistiques
+  d'utilisation à GameAnalytics : parties jouées, erreurs, appareil, identifiant
+  aléatoire et localisation approximative déduite de l'adresse IP. Sans votre
+  accord, rien n'est envoyé à GameAnalytics. Vous pouvez changer d'avis dans les
+  Paramètres.
+  Les salles en ligne passent par les services Unity, avec une connexion anonyme :
+  Unity traite alors votre adresse IP et un identifiant de joueur.
+
+RÉGLAGES
+  La langue, le plein écran, les volumes et les statistiques sont dans les
+  Paramètres.
+
+Licences et crédits des éléments tiers : THIRD-PARTY-NOTICES.txt
+
+
+BEEP BOOP IN SPACE - DEMO
+=========================
+
+Robots, a grid, and buttons that change every 10 seconds.
+1 to 4 players: on the same PC (gamepads or keyboard), against computer robots,
+or online with a room code.
+
+STARTING THE GAME
+  Unzip the whole folder, then run "Beep Boop dans l'espace.exe".
+  If Windows says "Windows protected your PC": the game isn't signed. Click
+  "More info", then "Run anyway".
+
+PLAYING
+  Gamepad (Xbox, PlayStation and others): A / Cross to join and confirm.
+  Keyboard: Space or Enter to join, W A S D + Q E to play, Escape to pause. The
+  keyboard counts as one player.
+  Alone: on the game mode menu, "Opponent robots" sets the number of robots.
+  Online: one person creates a room and gives its code to the others.
+
+DATA
+  On first launch, the game asks whether it may send usage statistics to
+  GameAnalytics: games played, errors, device, a random identifier and an
+  approximate location derived from your IP address. Without your agreement,
+  nothing is sent to GameAnalytics. You can change your mind in the Settings.
+  Online rooms go through Unity's services, with an anonymous sign-in: Unity then
+  processes your IP address and a player identifier.
+
+OPTIONS
+  Language, fullscreen, volumes and statistics are in the Settings.
+
+Third-party credits and licenses: THIRD-PARTY-NOTICES.txt
