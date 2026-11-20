@@ -39,6 +39,8 @@ python .claude/skills/unity-headless/scripts/unity_cli.py build --development --
 - Le dossier que Unity marque « à ne pas distribuer » (infos de debug Burst :
   `*_BackUpThisFolder_ButDontShipItWithYourGame` depuis Unity 6.6, `*_DoNotShip` avant) reste dans
   le dossier du build mais est exclu du zip. `zip <dossier>` refait l'archive d'un build existant.
+- Après un build réussi, les fichiers de `Distribution/` (`LISEZ-MOI.txt`, `THIRD-PARTY-NOTICES.txt`) sont
+  copiés à côté de l'exe, donc dans le zip.
 - Addressables : le contenu est construit avec le joueur quand le réglage du projet (ou la
   préférence de l'éditeur) le prévoit ; sinon `CommandLineBuild` le construit d'abord. Un build sans
   contenu Addressables démarrerait sur un menu vide.
@@ -63,7 +65,7 @@ neutralisé (vérifié le 04/11/2026 : build puis `git status` identique) :
 | --- | --- | --- |
 | `Assets/AddressableAssetsData/link.xml` (+ `.meta`) | Addressables le copie avant le build pour le stripping du code (`AddressablesPlayerBuildProcessor.PrepareForPlayerbuild`) et ne le supprime qu'au démarrage suivant de Unity | Ignoré par le `.gitignore` du dépôt. Le laisser : il disparaît tout seul |
 | `ProjectSettings/ProjectSettings.asset`, `preloadedAssets` | Input System ajoute `InputSystem_Actions` aux preloaded assets avant le build et les retire après, **en mémoire seulement**, alors que Unity enregistre les réglages pendant le build. Une fois enregistrées (build depuis l'éditeur sans sauvegarde ensuite), il ne les ajoute ni ne les retire plus jamais : fichier modifié à chaque build du 27/10 au 04/11/2026 | `Assets/Game/Tools/Build/Editor/PreloadedAssetsBuildCleanup.cs` : avant le build, retire les actions si elles sont restées dans les réglages ; après, ré-enregistre les réglages. Ne jamais commiter un `preloadedAssets` non vide |
-| `Assets/RawAssets/Fonts/magnetar_2/Magnetar SDF.asset` | Police TMP dynamique avec « Clear Dynamic Data On Build » : TMP vide ses tables de glyphes et réduit son atlas à 1×1 avant chaque build (`TMP_PreBuildProcessor`) **et à la fermeture de Unity** si l'atlas a servi (`EditorApplication.quitting`, `TMP_EditorResourceManager.cs`), donc aussi après `compile`, `test` ou l'éditeur | L'état vidé est l'état de repos, celui qui est commité : un build ou une fermeture le réécrit à l'octet près. La police ne se remplit que pendant une session (éditeur, tests) et se vide à la fermeture |
+| `Assets/RawAssets/UI/Fonts/BeepBoop SDF.asset` (et `Assets/RawAssets/Fonts/magnetar_2/Magnetar SDF.asset`, plus utilisée en jeu) | Police TMP dynamique avec « Clear Dynamic Data On Build » : TMP vide ses tables de glyphes et réduit son atlas à 1×1 avant chaque build (`TMP_PreBuildProcessor`) **et à la fermeture de Unity** si l'atlas a servi (`EditorApplication.quitting`, `TMP_EditorResourceManager.cs`), donc aussi après `compile`, `test` ou l'éditeur | L'état vidé est l'état de repos, celui qui est commité : un build ou une fermeture le réécrit à l'octet près. La police ne se remplit que pendant une session (éditeur, tests) et se vide à la fermeture (vérifié le 05/11/2026 : `Clearing [BeepBoop SDF]` dans le log, `git status` sans la police après chaque run de tests) |
 
 - Ne jamais commiter la police **remplie** (`m_Width: 1024` sur sa texture, tables de glyphes
   pleines) : fermer Unity la vide. Une nouvelle police TMP dynamique avec « Clear Dynamic Data On
@@ -88,8 +90,12 @@ Prévenir l'utilisateur qu'une fenêtre va s'ouvrir quelques secondes.
   `run-build` copie ces préférences avant le lancement et les remet à l'identique après.
 - Le jeu est arrêté de force : son log s'arrête net, ce n'est pas un crash. Un vrai crash laisse
   `Crash!!!` dans le log et un dossier `%LOCALAPPDATA%\Temp\Confiture De Jeux\Beep Boop dans l'espace\Crashes`.
-- Chaque lancement envoie une session à GameAnalytics (le jeu buildé envoie ses événements) : ne
-  pas multiplier les lancements de contrôle inutiles.
+- GameAnalytics ne démarre qu'après « Oui » à la question des statistiques, et jamais avec `-no-analytics`
+  (que `run-build` et `relay-test` passent toujours, sauf `run-build --analytics`). La sauvegarde de la machine
+  (`saveProfile.sav`, `AnalyticsConsent` : 1 oui, -1 non, 0 pas de réponse) dit oui sur le PC de l'utilisateur :
+  sans `-no-analytics`, un lancement enverrait une session. Pour voir la question au premier lancement, mettre
+  `AnalyticsConsent` à 0 le temps du run puis remettre le fichier à l'octet près. Vérifié le 19/11/2026 sur un premier lancement sans sauvegarde : aucune
+  connexion réseau du jeu, aucune ligne GameAnalytics dans son log, fermeture normale.
 
 La fenêtre est indispensable : un joueur en `-batchmode` ne fait pas tourner sa boucle de rendu,
 donc un build qui n'affiche qu'un **écran noir** (pipeline URP qui ne se crée pas) y passe sans
@@ -97,8 +103,39 @@ erreur. C'est arrivé le 27/10/2026 avec le build de 12h44 : contrôle `-batchmo
 chez l'utilisateur. `--headless` (`-batchmode -nographics`) reste disponible pour un contrôle sans
 fenêtre, mais il ne vérifie que le démarrage logique.
 
-Ce contrôle couvre le démarrage et le menu, pas une partie : les parties se vérifient avec les
-tests de scénario, dans l'éditeur (où les ressources ne sont pas strippées comme dans un build).
+Ce contrôle couvre le démarrage et le menu, pas une partie. Pour une partie dans le build :
+
+```bash
+python .claude/skills/unity-headless/scripts/unity_cli.py run-build "Builds/<dossier>/Beep Boop dans l'espace.exe" --smoke --seconds 1200
+```
+
+(`--smoke` seul attend aussi 1200 s ; sans `--smoke`, le délai par défaut est de 20 s.)
+
+Le jeu (`Game.Tools.Smoke.DemoSmokeTest`, argument `-demo-smoke`) joue seul deux tournois : un joueur au clavier
+qui ne bouge pas et 3 robots, en ×3, en 1280×720 et en vrai rendu, puis quitte (code 0 si aucune erreur
+loguée, 1 sinon, 10 s après une exception, 2 après 20 min). Le premier part du menu intégré au build et va à son
+terme ; le second part du menu revenu par son bundle (voir Repères), passe par le hub et finit à la première
+victoire (`TournamentResultsManager.ScoreToReachOverride`). À chaque lancement il contrôle les personnages : ceux de
+la banque, tous différents, aucun robot sans ses images (lignes `[DemoSmoke] Tournament <n> with: ...`). Ses images
+sont dans `Logs/claude-runs/<date>-player/captures/` (`tournament-2-...` pour le second) : les regarder. C'est le
+seul contrôle d'une partie locale avec les bundles Addressables et l'affichage réels.
+
+La commande affiche aussi la ligne `[DemoSmoke] Performance: ...` du log : images par seconde en moyenne et sur le
+1 % des images les plus lentes (temps réel, `unscaledDeltaTime`, pendant `GameplayState` seulement), pire image,
+résolution, vSync, fréquence de l'écran, carte graphique, processeur, mémoire. Avec `vSync 1`, la moyenne plafonne à
+la fréquence de l'écran : elle dit si le jeu tient cette cadence, pas sa marge. Le ×3 ne change pas le rendu, mais les
+mises à jour à pas fixe tournent plus souvent. Hors focus le jeu s'arrête (`runInBackground: 0`) : garder la fenêtre
+au premier plan.
+
+Pour le jeu en ligne par les vrais services :
+
+```bash
+python .claude/skills/unity-headless/scripts/unity_cli.py relay-test "Builds/<dossier>/Beep Boop dans l'espace.exe"
+```
+
+Deux copies du build jouent seules une salle réelle (Multiplayer Services, Relay, code), sans fenêtre, en ~4 min.
+C'est aussi le seul contrôle d'un **hôte** dans un build. Détails et limites : skill `online-multiplayer`, section
+Services Unity.
 
 ## 4. Rendre compte
 
@@ -124,6 +161,21 @@ sans accord.
   config. Un nouvel objet persistant qui garde des assets d'un groupe Addressables doit en faire
   autant. Seul un test qui joue dans un build le voit : le build invité des tests en ligne (skill
   `online-multiplayer`).
+- **Deux copies des personnages, et leur bundle à tenir.** `MainMenu.unity` est dans les Build Settings (premier
+  menu d'une session : les copies du build) et dans un groupe Addressables (menus suivants : les copies du bundle
+  `Game-Characters`). Un joueur garde son `CharacterDataAsset` d'un menu à l'autre : `MainMenuOrchestrator.Initialize`
+  le remplace par celui de la banque du menu, de même nom (`CharacterBankManager.RemapCharactersOf`), et
+  l'`OnlineManager` reprend la banque en revenant dans sa salle. Sinon : un robot prend le personnage de son joueur,
+  une salle ouverte ensuite donne le rang -1 donc le robot 0, la grille perd le joueur et la croix ne le déplace plus.
+  Chaque scène jouée avec ces personnages doit tenir le bundle, par un `AddressablesAnchorInSceneReferencer` :
+  `GM_BaseGame` et `TournamentBootScene`, qui vaut pour tout le bundle de ses scènes (les scènes d'un bundle chargent
+  toutes ses dépendances). Sans elle, passer du menu revenu par son bundle au tournoi détruit les personnages de
+  ses joueurs, et `CharacterReferencesHolder.SetCharacterData` lève une exception (analyse du layout du 05/11/2026).
+  Contrôle après un build : dans `Library/com.unity.addressables/buildlayout.json`, `game-tournament_scenes` dépend
+  du bundle de `Game-Characters`. `run-build --smoke` joue ce parcours.
+- **`GameplayContext.IsInitialized` arrive avant son `CurrentLevelInfoManager`**, posé seulement quand le niveau
+  est chargé (`GameplayContext.Start`) : tout code qui lit le niveau en cours dès l'initialisation l'attend. Le smoke
+  le lisait trop tôt (`NullReferenceException` dans `DemoSmokeTest.PlayGame`, 19/11/2026).
 - Build vers un dossier fixe pour un test : `build --output Builds/OnlineGuest` (écrase le
   précédent). Le 04/11/2026, un build release sans changement de shaders a pris 30 s à 2 min 30
   (152 s pour le premier après l'ajout des packages réseau).

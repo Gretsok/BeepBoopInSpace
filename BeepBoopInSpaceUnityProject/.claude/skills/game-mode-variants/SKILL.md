@@ -14,8 +14,8 @@ Un mode = un `LevelDataAsset` (`Assets/Game/Gameplay/Levels/Arenas/<Arène>/<Ar�
 
 | Champ | Contenu |
 | --- | --- |
-| `NameKey` | Nom affiché tel quel dans le jeu (pas de localisation : texte français direct) |
-| `Thumbnail` | Vignette de la sélection de niveau |
+| `NameKey` | Nom affiché, en français : ajouter sa traduction dans `Assets/Game/Global/Localization/Translations.cs` (sinon il reste en français en anglais) |
+| `Thumbnail` | Vignette de la sélection de niveau et des résultats du tournoi (`Levels/Arenas/SwampArena/Thumbnails/`, tirées des captures `50-game-<mode>` de `Bots_PlayAGameWithAPlayerAlone`) |
 | `GameModeScene` / `EnvironmentScene` / `LevelScene` | `GM_BaseGame` / `Swamp_Enviro` / `TestArena_Level` pour toutes les arènes actuelles |
 | `ObjectiveManagerPrefab` | Comment on gagne : `LastManStanding`, `LeastDeaths`, `MostKills`, `PointsRush` |
 | `SpecialActionPrefab` | L'action spéciale : `Bomb`, `SniperRifle` |
@@ -96,6 +96,7 @@ ce que les bugs passés ont appris :
   le chrono l'a déjà fait ;
 - déclarer le calcul du score dans `Initialize` :
   `ResultsManager.RegisterPostInitializationCallback(m => m.SetScoreCalculationMethod(...))` ;
+- **jouable contre les robots** : apprendre à `BotController.Decide` à jouer ce nouvel objectif (`Bots_PlayAGameWithAPlayerAlone` vérifie qu'ils marquent) ;
 - **jouable en ligne** : tout ce qui décide (mort, case au hasard, point marqué, fin de manche, apparition)
   derrière `Netplay.HasAuthority`, l'hôte le dit aux invités par un message de `GameplaySync`
   (`NotifyXxx` avant la mutation, `ReplicateXxx` chez l'invité) ; les scores passent seuls par

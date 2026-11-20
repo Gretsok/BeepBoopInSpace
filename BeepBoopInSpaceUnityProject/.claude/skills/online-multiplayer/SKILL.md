@@ -11,8 +11,8 @@ salle privée qu'on rejoint avec un code. Pas de matchmaking public pour l'insta
 ## Parcours dans le menu
 
 Accueil → sélection des personnages (les joueurs **locaux** choisissent leur robot ; un joueur seul
-peut continuer, le hub s'ouvre 3 s après son « prêt ») → Hub : Tournoi et Entraînement (2 joueurs
-locaux au moins, sinon grisés) ou **En ligne** → écran En ligne : Créer une salle, ou Rejoindre avec
+peut continuer, le hub s'ouvre 3 s après son « prêt ») → Hub : Tournoi et Entraînement (en local, avec
+des robots de l'ordinateur si besoin ; les salles n'en ont pas) ou **En ligne** → écran En ligne : Créer une salle, ou Rejoindre avec
 le code (6 cases : croix haut/bas, clavier, Ctrl+V) → **Salle** : code, 4 places, l'hôte lance
 Tournoi ou Entraînement (même choix du niveau qu'en local), les invités attendent. Après chaque partie,
 tout le monde revient dans la salle. Retour dans la salle = la quitter (confirmation) ; l'hôte qui part
@@ -51,9 +51,10 @@ python $CLI build --output Builds/OnlineGuest                # le build qui joue
 python $CLI test --filter "Online_Plays"                 # entraînement (~1 min) et tournoi (3-9 parties, 3-8 min)
 python $CLI test --filter "OnlineMenu_Leaves|OnlineDrops" --detach   # départs, coupures, retours (9 tests, ~10 min)
 python $CLI test --filter "OnlineTransitions" --detach   # pertes et lag pendant les transitions (8 tests, ~12 min)
+python $CLI relay-test "Builds/<dossier>/Beep Boop dans l'espace.exe"   # salle réelle (services, Relay), deux copies du build, sans action humaine (~4 min)
 ```
 
-- `OnlineMenu_OnePlayerOpensARoom` : joueur seul → hub (modes locaux grisés) → En ligne (code à la
+- `OnlineMenu_OnePlayerOpensARoom` : joueur seul → hub → En ligne (code à la
   croix et au clavier) → salle seule → la quitter. Captures `16` à `18`.
 - `Online_PlaysATrainingWithAGuestBuild` : l'éditeur ouvre une salle en direct sur 127.0.0.1:7792,
   lance `Builds/OnlineGuest/Beep Boop dans l'espace.exe -batchmode -nographics -no-analytics
@@ -64,7 +65,7 @@ python $CLI test --filter "OnlineTransitions" --detach   # pertes et lag pendant
   (l'hôte tire les niveaux et quitte les résultats pour tout le monde). Ignorés sans build. **Le build
   doit contenir le code testé** : le refaire après tout changement de gameplay ou de réseau (un build
   périmé fait échouer le test pour une raison déjà corrigée). Log de l'invité : `Logs/online-guest.log`.
-- `OnlineGuestBot` (`Online/Testing/`) : ne s'active qu'avec `-online-test-guest`. Codes de sortie :
+- `OnlineGuestBot` (`Online/Testing/`) : ne s'active qu'avec `-online-test-guest`, ou `-relay-test-host` / `-relay-test-guest` (voir Services Unity). Codes de sortie :
   0 ok, 1 erreur loguée, aucune partie (ou salle non perdue avec `expect-room-lost`), scène de jeu
   restée dans le menu, 2 trop long, 3 n'a pas pu rejoindre. `-online-test-guest-scenario a,b` ajoute
   ce qui tourne mal de son côté : `rejoin` (quitte la salle 6 s après y être entré, revient 3 s plus
@@ -129,15 +130,32 @@ l'écran En ligne dit « le projet n'est pas lié à Unity Cloud ». Une fois li
 `ProjectSettings.asset`, vérifier sur le tableau de bord (cloud.unity.com) que Relay et Lobby sont
 actifs pour le projet (un refus à la création de la salle le signale), refaire les builds. Le détail
 des échecs des services est dans le log (`[Online] ...` en avertissement, éditeur ouvert :
-`Logs/Editor.log`). Le format des codes (6 caractères A-Z 0-9, `RoomCodeField.k_Length`) est à
-confirmer sur une vraie session : le code affiché par la première salle créée le dit.
+`Logs/Editor.log`). Le format des codes (6 caractères A-Z 0-9, `RoomCodeField.k_Length`) est contrôlé
+par `relay-test` (code de sortie 5).
 
-Les tests n'utilisent jamais les services (connexion directe) : une salle par Relay se vérifie à la
-main, deux copies du jeu sur le même PC (chaque copie se connecte avec son propre profil anonyme,
-`instance0`, `instance1`...) ou deux PC.
+Les tests de scénario n'utilisent jamais les services (connexion directe). Le chemin réel se contrôle sur un
+build, sans action humaine : `relay-test <exe> [--seconds N]` (défaut 600) lance deux copies en `-batchmode
+-nographics -no-analytics`, avec `-relay-test-host <fichier>` et `-relay-test-guest <fichier>` (`OnlineGuestBot`,
+sans `-online-direct`). L'hôte ouvre la salle, écrit son code dans le fichier, attend l'invité, lance Points Rush
+en temps réel, quitte les résultats, revient en salle et la ferme. L'invité lit le code, rejoint et joue. Chaque
+copie prend son propre profil anonyme (`instance0`, `instance1`..., par mutex) et logue
+`[Online] Signed in as player <id> (<profil>).` : la commande vérifie que les deux joueurs diffèrent, que le
+transport est bien Relay, que les scores sont égaux et que chaque robot a bougé chez l'autre, puis restaure les
+préférences (deux nouveaux joueurs anonymes à chaque lancement, et un peu du quota Unity : ne pas le lancer en
+boucle). Résultats dans `Logs/claude-runs/<date>-relay/`. Codes de sortie en plus de ceux des tests : 4 salle non
+ouverte, 5 code que l'écran ne sait pas saisir, 6 pas sur Relay, 7 pas de code ou pas d'invité en 3 min, 8 partie
+non lancée, 9 hôte : salle perdue ou invité parti, 10 salle pas fermée en 20 s.
+
+Ce contrôle se fait sur un seul PC et un seul réseau : il ne dit rien du NAT entre deux réseaux, ni d'une connexion
+qui perd des paquets, ni des coupures à travers Relay. Avant une version publique, faire aussi une partie entre deux PC
+sur deux réseaux différents.
 
 ## Pièges
 
+- **Textes de salle** : les machines s'envoient le texte français (refus, salle perdue), chacune l'affiche
+  dans sa langue par `Loc.T` : ne pas traduire avant l'envoi, et ajouter tout nouveau motif à `Translations.cs`.
+- **Robots de l'ordinateur** : `IsRemote` est vrai pour eux aussi (pas de `PlayerInput`). Ils n'existent qu'en
+  local (`GameModesLauncher.PrepareBots` ne fait rien en salle, `GamePlayers` y vient de l'`OnlineManager`).
 - Un message de l'hôte envoyé **après** la mutation qu'il décrit arrive après ses conséquences (un
   téléporteur déclenché par le déplacement) : l'invité les rejouerait dans le mauvais ordre.
 - `NetworkManager.Shutdown` est interdit avec une session : `ISession.LeaveAsync` (fait par `Stop`).

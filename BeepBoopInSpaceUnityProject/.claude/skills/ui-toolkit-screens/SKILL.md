@@ -58,6 +58,15 @@ Lire l'UXML, le script et la section du USS ensemble. Règles :
   absolues ou flex ; centrer avec `ui-centered-row` ou `translate: 0 -50%`.
 - **Contre le thème par défaut** (contrôles Unity), sélecteurs d'au moins 3 classes :
   `.ui-screen .ui-volume-row .ui-volume-row__slider .unity-base-slider__dragger`.
+- **Mise en page en 1920×1080** : `.ui-screen` garde cette taille et se centre sur tout écran (le panel est
+  en mode Expand), `.ui-background` et `.ui-shade` débordent pour remplir les bords, `.ui-filigree` prend la taille
+  de tout l'écran (comme le fond), le cartouche de titre et le timer restent accrochés au haut de l'écran
+  (`AUIToolkitScreen.ExtendBackgroundsToThePanel`). Un écran qui suit le monde 3D ajoute `ui-screen--whole-panel`.
+  Voir un autre format : `SCENARIO_RESOLUTION=2560x1080` ou `1920x1200` avant les tests, en regardant le haut de
+  l'écran à 16:10 et les motifs à droite des cartes en 21:9. `CameraManager` élargit la caméra des résultats sous 16:9.
+- **Traductions** : tout texte d'UXML doit avoir sa clé dans `Global/Localization/Translations.cs`
+  (`AUIToolkitScreen` traduit l'arbre, un template cloné par le code appelle `Loc.Translate`) ; un texte posé
+  par le code passe par `Loc.T`. `SCENARIO_LANGUAGE=English` joue les tests en anglais, pour les captures.
 - **Textes en français**, majuscule initiale (Boogaloo a minuscules et accents) ; titres en
   capitales accentuées (« PARAMÈTRES ») : BeepBoop les a, son I majuscule est pointé (« iDÉATION »).
   Texte clair seulement sur du sombre (cartouche, pastille, tuile, ou bas du fond, sous y ≈ 900) :

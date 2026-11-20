@@ -1,7 +1,8 @@
 # Beep Boop dans l'espace
 
-Jeu multijoueur local (2 à 4 joueurs à la manette, ou clavier/souris) de Confiture De Jeux, jouable
-aussi en ligne (salle avec un code, 4 joueurs en tout sur plusieurs machines).
+Jeu multijoueur local (1 à 4 joueurs à la manette, ou clavier/souris, complétés par des robots de
+l'ordinateur) de Confiture De Jeux, jouable aussi en ligne (salle avec un code, 4 joueurs en tout sur
+plusieurs machines). Une démo publique se prépare (itch.io d'abord) : `Demo/` et `Distribution/`.
 Unity **6000.6.7f1**, URP 17.6, Input System, Addressables, UniTask, DOTween, NaughtyAttributes,
 GameAnalytics 8.3, Netcode for GameObjects 2.13 + Multiplayer Services 2.4 (Relay). Windows
 uniquement pour l'instant.
@@ -25,20 +26,24 @@ L'utilisateur écrit en français ou en anglais : répondre dans la langue de so
 | `AManager<T>` | `ArchitectureTools/Manager` | Singleton par contexte (`Instance`), `Initialize()` en coroutine, `RegisterPostInitializationCallback` pour attendre l'init |
 | Contextes | `GlobalContext` (persistant : sauvegarde, réglages, audio, joueurs, EventSystem, analytics), `MainMenuContext`, `GameplayContext`, `TrainingContext` / `TournamentContext` (persistants, instanciés par Addressables) | Le `GlobalContext` en double d'une scène rechargée se détruit |
 | `FlowMachine` + `AFlowState` | `ArchitectureTools/FlowMachine` | File de demandes d'état traitées dans `Update`. Logue `[FM] <objet> - <état> - ENTER`. Les demandes ne sont pas dédoublonnées : protéger les doubles demandes |
-| Menu principal | `MainMenu/` | `MainMenuOrchestrator` : Home → CharacterSelection (1 joueur suffit) → Hub → LevelSelection (Training) ou Tournoi (2 joueurs locaux au moins), ou En ligne (`Online`) → salle (`OnlineLobby`), + Settings, Credits. Un niveau ou le Tournoi se lance après une confirmation (`ConfirmationDialog`). Les joueurs restent jusqu'au retour à l'accueil (`HomeState` les retire) : après une partie, le menu rouvre sur CharacterSelection avec leurs robots, ou sur la salle en ligne |
+| Menu principal | `MainMenu/` | `MainMenuOrchestrator` : Home → CharacterSelection (1 joueur suffit) → Hub → LevelSelection (Training) ou Tournoi (même seul : les robots de l'ordinateur complètent), ou En ligne (`Online`) → salle (`OnlineLobby`), + Settings, Credits. Un niveau ou le Tournoi se lance après une confirmation (`ConfirmationDialog`). Les joueurs restent jusqu'au retour à l'accueil (`HomeState` les retire) : après une partie, le menu rouvre sur CharacterSelection avec leurs robots, ou sur la salle en ligne |
 | UI | `UITools/Screens` (base `AUIToolkitScreen`, `Common.uss`, `Screens.uss`, `UIPanelSettings`, `VolumeRow`), `MainMenu/UI/MainMenu.uss`, un UXML par écran | UI Toolkit partout : menu (écrans `AMainMenuScreen`, activés par leur état), partie (tutoriel, timer, annonces, résultats, « +1 »), pause, chargement, résultats du tournoi. Chaque écran a un `UIDocument` : l'arbre naît et meurt avec le GameObject. Un seul panel : le focus est la sélection de tous les périphériques (croix/clavier le déplacent, la souris focalise ce qu'elle survole) ; navigation directionnelle maison façon uGUI, Annuler = `HandleCancel`. Seuls les canvas World Space de la scène 3D restent en uGUI |
 | Partie | `Gameplay/Flows` | Load → SetUp → Introduction → Tutorial (Ready) → Gameplay (→ annonces de manche / configuration) → Finish → Results → End |
 | Scènes | Seul `MainMenu` est dans les Build Settings | Tout le reste passe par Addressables. `LoadingManager` charge les scènes et prefabs du mode, `EndState` les libère : toute sortie de partie doit passer par `LoadingManager.Unload` |
 | Modes de jeu | `Gameplay/Levels`, `Gameplay/GameModes` | Un mode = un `LevelDataAsset` (objectif + action spéciale + mode de contrôle + modificateurs + arène) : skill `game-mode-variants` |
 | Contrôles | `CharactersManagement/Actions`, `Gameplay/ConfigurationsManagement` | Le `ControlMode` du niveau (avancé : 6 boutons ; simplifié : haut/gauche/droite/bas sur Y X B A, + action spéciale sur RB en option) donne les actions ; `ConfigurationsManager` les mélange sur les boutons du mode à chaque nouvelle configuration (toutes les 10 s, chaque manche) |
-| Joueurs | `Global/PlayerManagement`, `Global/NavigationAuthority` | `PlayerInputManager` (rejoindre avec Y/A/Espace dans la sélection des personnages, puis chacun se déclare prêt), schémas Xbox / PS / clavier-souris ; l'UI suit les manettes du joueur principal. `Players` = joueurs de la machine, `GamePlayers` = joueurs des parties (en ligne, ceux de la salle, dont des `AbstractPlayer` distants sans `PlayerInput`) |
+| Joueurs | `Global/PlayerManagement`, `Global/NavigationAuthority` | `PlayerInputManager` (rejoindre avec Y/A/Espace dans la sélection des personnages, puis chacun se déclare prêt), schémas Xbox / PS / autres manettes / clavier-souris ; l'UI suit les manettes du joueur principal. `Players` = joueurs de la machine, `GamePlayers` = joueurs des parties (en local, avec les robots de l'ordinateur ; en ligne, ceux de la salle, dont des `AbstractPlayer` distants sans `PlayerInput`) |
+| Robots de l'ordinateur | `Gameplay/CharactersManagement/Bots/BotController` | Parties locales seulement. `AbstractPlayer.IsBot`, nombre choisi au hub (`PlayerManager.BotsCount`, 3 pour un joueur seul), créés au lancement (`GameModesLauncher`). Leur force se règle par les constantes en tête de `BotController` ; un nouvel objectif doit lui apprendre quoi faire (`Decide`) |
+| Langues | `Global/Localization` | Français et anglais. Les textes restent écrits en français (UXML, assets, code) : ce texte est la clé de `Translations.cs`, `Loc.T(...)` le traduit à l'affichage, `AUIToolkitScreen` traduit l'arbre de chaque écran. Un texte avec une valeur : clé avec `{0}` (`Loc.T($"Il reste {n}")` marche). Choix mémorisé dans `SaveProfile` |
+| Statistiques | `Global/Analytics/AnalyticsManager` | GameAnalytics ne démarre qu'avec l'accord du joueur (question au premier passage sur l'accueil, changeable dans les paramètres). Rien depuis l'éditeur ni avec `-no-analytics` |
 | En ligne | `Online/` (`OnlineManager` sur `GlobalContext`, `GameplaySync` dans les parties) | L'hôte joue la partie et dit aux invités ce qui s'y passe ; un invité ne décide rien (`Netplay.HasAuthority`) et envoie ses boutons. Tout gameplay qui décide (mort, hasard, score, état suivant) doit être répliqué : skill `online-multiplayer` |
 
 ## Conventions
 
 - C# : namespaces `Game.<Dossier>`, champs privés `m_camelCase`, statiques `s_`, constantes `k_`,
   `[field: SerializeField]` sur les auto-propriétés, commentaires rares et en anglais. Code,
-  commentaires et noms d'assets en anglais ; textes affichés aux joueurs en français.
+  commentaires et noms d'assets en anglais ; textes affichés aux joueurs écrits en français, avec leur
+  traduction anglaise dans `Global/Localization/Translations.cs`.
 - `Debug.LogError` seulement pour un vrai problème : les tests de scénario échouent sur toute erreur
   loguée. Une situation prévue et gérée se logue en `Debug.Log` ou `LogWarning`.
 - Fins de ligne : YAML Unity (`.asset`, `.meta`, `.unity`, `.prefab`) en LF dans le dépôt, même si
@@ -57,7 +62,8 @@ L'utilisateur ne doit pas avoir à tester à notre place :
 2. Gameplay, menus, flow, chargement : tests de scénario filtrés sur ce qui est touché, la suite
    complète avant un commit important (skill `unity-scenario-tests`). Écran modifié : regarder ses
    captures (`unity_cli.py screenshots`, skill `ui-toolkit-screens`).
-3. Avant de partager une version : build + lancement de contrôle (skill `unity-build`).
+3. Avant de partager une version : build + lancement de contrôle + tournoi joué par le build
+   (`run-build --smoke`, 20 min au plus, skill `unity-build`).
 
 Unity en headless exige l'éditeur fermé : le demander à l'utilisateur en disant pourquoi.
 
