@@ -19,6 +19,11 @@
                 <ui:AttributeOverrides element-name="label" text="Effets sonores" />
             </ui:Instance>
         </ui:VisualElement>
+        <ui:VisualElement class="settings__options" picking-mode="Ignore">
+            <ui:Button name="fullscreen-button" class="ui-button settings__option" />
+            <ui:Button name="language-button" class="ui-button settings__option" />
+            <ui:Button name="statistics-button" class="ui-button settings__option" />
+        </ui:VisualElement>
         <ui:Button name="back-button" focusable="false" class="ui-legend ui-legend--back">
             <ui:Label text="Retour" class="ui-text ui-legend__label" picking-mode="Ignore" />
             <ui:VisualElement name="back-glyph" class="ui-glyph ui-legend__glyph--after" picking-mode="Ignore" />

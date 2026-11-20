@@ -44,6 +44,7 @@ namespace Game.Global
             SaveManager.LoadProfile(_ =>
             {
                 SettingsManager.Initialize(SaveManager);
+                AnalyticsManager.SetSaveManager(SaveManager);
                 settingsManagerInitialized = true;
             });
             

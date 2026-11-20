@@ -718,6 +718,20 @@
 
 /* Settings: a tile per volume, selected with its slider. */
 
+.settings__options {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 800px;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.settings__option {
+    margin-left: 16px;
+    margin-right: 16px;
+}
+
 .settings__volumes {
     position: absolute;
     left: 310px;

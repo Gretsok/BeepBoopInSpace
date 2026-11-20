@@ -1,3 +1,4 @@
+using Game.Global.Localization;
 using Game.Global.Save;
 using Unity.Mathematics;
 using UnityEngine;
@@ -19,6 +20,13 @@ namespace Game.Global.Settings
             SetMasterVolume(saveManager.Profile.MasterVolume);
             SetSfxVolume(saveManager.Profile.SfxVolume);
             SetMusicVolume(saveManager.Profile.MusicVolume);
+            Loc.SetLanguage(saveManager.Profile.Language >= 0 ? (ELanguage)saveManager.Profile.Language : Loc.SystemLanguage);
+        }
+
+        public void SetLanguage(ELanguage language)
+        {
+            m_saveManager.Profile.Language = (int)language;
+            Loc.SetLanguage(language);
         }
         
 #region Sounds

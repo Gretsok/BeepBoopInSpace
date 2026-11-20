@@ -1,5 +1,7 @@
+using Game.Global;
 using Game.Global.Localization;
 using Game.Global.SFXManagement;
+using Game.UITools.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -11,6 +13,7 @@ namespace Game.MainMenu.Home
         private AudioPlayer m_playAudioPlayer;
 
         private MainMenuOrchestrator m_mainMenuOrchestrator;
+        private ConfirmationDialog m_consent;
 
         public void Initialize(MainMenuOrchestrator orchestrator)
         {
@@ -25,6 +28,23 @@ namespace Game.MainMenu.Home
             BindButton("quit-button", HandleQuitButtonClicked);
             Query<Label>("version-label").text = Loc.T($"Démo {Application.version}");
 
+            var analyticsManager = GlobalContext.Instance.AnalyticsManager;
+            m_consent = new ConfirmationDialog(Query<VisualElement>("consent"), () => AnswerConsent(true), () => AnswerConsent(false));
+            m_consent.ConfirmButton.text = Loc.T("Oui");
+            m_consent.CancelButton.text = Loc.T("Non");
+            if (analyticsManager.HasToAskConsent)
+            {
+                ShowDialog(m_consent);
+                // Starting on No: nobody agrees by pressing on without reading.
+                DefaultFocus = m_consent.CancelButton;
+            }
+        }
+
+        private void AnswerConsent(bool isGiven)
+        {
+            GlobalContext.Instance.AnalyticsManager.SetConsent(isGiven);
+            GlobalContext.Instance.SaveManager.SaveProfile();
+            HideDialog();
         }
 
         private void HandlePlayButtonClicked()

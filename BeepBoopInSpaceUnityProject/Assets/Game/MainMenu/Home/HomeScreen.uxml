@@ -1,4 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Template name="ConfirmationDialog" src="../../UITools/Screens/ConfirmationDialog.uxml"/>
     <Style src="project://database/Assets/Game/MainMenu/UI/MainMenu.uss?fileID=7433441132597879392&amp;guid=ea07ca713bdd44c997cab467f207503c&amp;type=3#MainMenu"/>
     <ui:VisualElement name="home-screen" picking-mode="Ignore" class="ui-screen">
         <ui:VisualElement picking-mode="Ignore" class="home-title">
@@ -14,5 +15,9 @@
         <ui:Label name="version-label" picking-mode="Ignore" class="home-version"/>
         <ui:Button name="settings-button" text="Paramètres" class="ui-button ui-corner--bottom-left"/>
         <ui:Button name="quit-button" text="Quitter" class="ui-button ui-corner--bottom-right"/>
+        <ui:Instance template="ConfirmationDialog" name="consent" class="ui-dialog">
+            <ui:AttributeOverrides element-name="title" text="Statistiques d'utilisation"/>
+            <ui:AttributeOverrides element-name="message" text="Pour améliorer le jeu, pouvons-nous envoyer des statistiques à GameAnalytics : parties jouées, erreurs, appareil, identifiant aléatoire et localisation approximative (déduite de l'adresse IP) ?&#10;Vous pourrez changer d'avis dans les paramètres."/>
+        </ui:Instance>
     </ui:VisualElement>
 </ui:UXML>
