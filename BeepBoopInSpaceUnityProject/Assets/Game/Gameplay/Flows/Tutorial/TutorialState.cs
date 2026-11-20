@@ -53,11 +53,11 @@ namespace Game.Gameplay.Flows.Tutorial
                 gameplayContext.ControlMode);
             m_tutorialPanel.ResetWaitingBar();
 
-            // The robots of players who left the online room don't hold the others up.
+            // Bots and the robots of players who left the online room don't hold the others up.
             var pawns = CharactersManager.Instance.CharacterPawns;
             for (int i = 0; i < players.Count && i < pawns.Count; i++)
             {
-                if (pawns[i].HasLeft)
+                if (pawns[i].HasLeft || players[i].IsBot)
                     m_tutorialPanel.SetPlayerStatus(players[i], true);
             }
         }

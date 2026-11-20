@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Game.ArchitectureTools.Manager;
+using Game.Gameplay.CharactersManagement.Bots;
 using Game.Gameplay.CharactersManagement.ReferencesHolding;
 using Game.Gameplay.CharactersManagement.SpecialActionsSystem._0_Core;
 using Game.Global;
@@ -56,7 +57,9 @@ namespace Game.Gameplay.CharactersManagement
                 
                 playerController.SetPlayer(player);
                 playerController.InjectDependencies(character);
-                
+                if (player.IsBot)
+                    playerController.gameObject.AddComponent<BotController>().SetUp(playerController);
+
                 character.ReferencesHolder.SetSpecialAction(specialActionPrefab);
                 character.ReferencesHolder.SetCharacterData(player.CharacterDataAsset);
                 

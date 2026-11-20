@@ -41,7 +41,7 @@ namespace Game.Gameplay.Flows.Tutorial
             Element.Q("icon").style.backgroundImage = character.SelectionIcon
                 ? new StyleBackground(character.SelectionIcon)
                 : new StyleBackground(character.AvatarSprite);
-            Element.Q<Label>("badge-label").text = $"J{player.Number}";
+            Element.Q<Label>("badge-label").text = player.BadgeLabel;
 
             // Gamepad players press their Ready button (TutorialPlayerController): only the mouse clicks the card, and
             // only on the player's machine.

@@ -113,6 +113,12 @@ namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
             PrepareAndGetReadyMeteoriteSystem().Drop(target, dropTime);
         }
 
+        /// <summary>A meteorite is falling on the cell.</summary>
+        public bool IsCellTargeted(Cell cell)
+        {
+            return m_instantiatedMeteoriteSystems.Exists(meteorite => meteorite.Target == cell);
+        }
+
         private MeteoriteSystem PrepareAndGetReadyMeteoriteSystem()
         {
             var meteoriteSystem = m_instantiatedMeteoriteSystems.FirstOrDefault(meteorite => meteorite.ReadyToBeUsed);

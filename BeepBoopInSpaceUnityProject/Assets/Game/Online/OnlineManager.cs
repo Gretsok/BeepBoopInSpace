@@ -606,6 +606,8 @@ namespace Game.Online
             m_gameInbox.Clear();
             if (IsInRoom)
             {
+                // The same ranks, in this menu's copies of the characters (CharacterBankManager.RemapCharactersOf).
+                m_characters = CharacterBankManager.Instance.Characters.ToList();
                 RefreshGamePlayers();
                 return;
             }

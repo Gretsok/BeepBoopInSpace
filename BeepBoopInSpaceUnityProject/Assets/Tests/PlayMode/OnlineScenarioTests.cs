@@ -38,12 +38,13 @@ namespace Game.Tests.PlayMode
 
             yield return JoinAloneAndOpenHub();
 
-            m_driver.Step("Hub alone: the local modes are greyed, En ligne is focused");
-            Assert.IsFalse(HubButton("m_tournamentButton").enabledSelf, "Tournoi is open to a player alone.");
-            Assert.IsFalse(HubButton("m_trainingButton").enabledSelf, "Entraînement is open to a player alone.");
-            var online = HubButton("m_onlineButton");
-            yield return m_driver.WaitUntil("En ligne to be focused", () => FocusedElement == online, 5f);
+            m_driver.Step("Hub alone: the local modes wait with bots, En ligne is one choice among them");
+            Assert.IsTrue(HubButton("m_tournamentButton").enabledSelf, "Tournoi isn't open to a player alone.");
+            Assert.IsTrue(HubButton("m_trainingButton").enabledSelf, "Entraînement isn't open to a player alone.");
+            yield return RealSeconds(0.3f);
             yield return CaptureScreen("16-hub-alone");
+            var online = HubButton("m_onlineButton");
+            yield return m_driver.Select(online);
 
             m_driver.Step("Online: the d-pad and the keyboard type the code");
             m_driver.AddKeyboardAndMouse();

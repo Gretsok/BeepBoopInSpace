@@ -14,12 +14,10 @@
             <ui:Button name="tournament-button" class="ui-tile hub-mode">
                 <ui:VisualElement class="ui-filigree" picking-mode="Ignore" />
                 <ui:Label text="Tournoi" class="ui-text ui-tile__label" picking-mode="Ignore" />
-                <ui:Label name="tournament-requirement" text="2 joueurs ici, au moins" class="ui-text hub-mode__note" picking-mode="Ignore" />
             </ui:Button>
             <ui:Button name="training-button" class="ui-tile hub-mode">
                 <ui:VisualElement class="ui-filigree" picking-mode="Ignore" />
                 <ui:Label text="Entraînement" class="ui-text ui-tile__label" picking-mode="Ignore" />
-                <ui:Label name="training-requirement" text="2 joueurs ici, au moins" class="ui-text hub-mode__note" picking-mode="Ignore" />
             </ui:Button>
             <ui:Button name="online-button" class="ui-tile hub-mode">
                 <ui:VisualElement class="ui-filigree" picking-mode="Ignore" />
@@ -29,6 +27,9 @@
         </ui:VisualElement>
         <ui:VisualElement class="ui-centered-row hub-character-selection-row" picking-mode="Ignore">
             <ui:Button name="character-selection-button" text="Sélection des personnages" class="ui-button" />
+        </ui:VisualElement>
+        <ui:VisualElement class="ui-centered-row hub-bots-row" picking-mode="Ignore">
+            <ui:Button name="bots-button" class="ui-button" />
         </ui:VisualElement>
         <ui:Instance template="ConfirmationDialog" name="tournament-confirmation" class="ui-dialog">
             <ui:AttributeOverrides element-name="title" text="Tournoi" />

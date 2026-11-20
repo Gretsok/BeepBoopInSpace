@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Game.ArchitectureTools.Manager;
 using Game.Characters;
+using Game.Global.PlayerManagement;
 using UnityEngine;
 
 namespace Game.MainMenu.CharacterManagement
@@ -32,6 +33,21 @@ namespace Game.MainMenu.CharacterManagement
         public void UnregisterWidget(CharacterWidget widget)
         {
             m_associations.Remove(widget);
+        }
+
+        /// <summary>
+        /// The characters of the players back from a game become this bank's. The first menu of a session has the build's
+        /// copies of the characters, the next ones those of their Addressables bundle: a copy kept from another menu is
+        /// another object, which neither the grid, nor the robots' choice, nor the online room's ranks recognize.
+        /// </summary>
+        public void RemapCharactersOf(IEnumerable<AbstractPlayer> players)
+        {
+            foreach (var player in players)
+            {
+                var character = player.CharacterDataAsset;
+                if (character && !m_charactersData.Contains(character))
+                    player.SetCharacterData(m_charactersData.FirstOrDefault(data => data.name == character.name) ?? character);
+            }
         }
 
         /// <summary>Whether a player other than <paramref name="widgetOwner"/>'s has chosen the character.</summary>

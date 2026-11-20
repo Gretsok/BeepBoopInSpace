@@ -91,7 +91,11 @@
 }
 
 .hub-character-selection-row {
-    top: 730px;
+    top: 680px;
+}
+
+.hub-bots-row {
+    top: 800px;
 }
 
 /* Credits */

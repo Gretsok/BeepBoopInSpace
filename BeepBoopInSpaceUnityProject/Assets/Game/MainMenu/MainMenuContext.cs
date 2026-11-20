@@ -2,6 +2,7 @@ using System.Collections;
 using Game.ArchitectureTools.FlowMachine;
 using Game.ArchitectureTools.Manager;
 using Game.Global;
+using Game.MainMenu.CharacterManagement;
 using UnityEngine;
 
 namespace Game.MainMenu
@@ -17,7 +18,8 @@ namespace Game.MainMenu
 
         protected override IEnumerator Initialize()
         {
-            yield return new WaitUntil(() => GlobalContext.Instance && GlobalContext.Instance.IsInitialized);
+            // Back from a game this may run in the scene's first Awake: the orchestrator needs the bank awake.
+            yield return new WaitUntil(() => GlobalContext.Instance && GlobalContext.Instance.IsInitialized && CharacterBankManager.Instance);
             MainMenuOrchestrator.Initialize(GlobalContext.Instance, this);
             MainMenuOrchestrator.Run();
         }

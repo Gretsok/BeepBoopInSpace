@@ -1,6 +1,7 @@
 using Game.ArchitectureTools.FlowMachine;
 using Game.Global;
 using Game.LoadingScreen;
+using Game.MainMenu.CharacterManagement;
 using Game.MainMenu.CharacterSelection;
 using Game.MainMenu.Credits;
 using Game.MainMenu.Home;
@@ -51,6 +52,7 @@ namespace Game.MainMenu
             m_onlineState.Initialize(globalContext, mainMenuContext);
             m_onlineLobbyState.Initialize(globalContext, mainMenuContext);
 
+            CharacterBankManager.Instance.RemapCharactersOf(globalContext.PlayerManager.Players);
             // A game is over: the players who left the online room go away.
             globalContext.OnlineManager.HandleBackInMenu();
             globalContext.OnlineManager.OnRoomLost += HandleRoomLost;
