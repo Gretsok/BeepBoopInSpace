@@ -27,6 +27,13 @@ namespace Game.UITools.Screens
     {
         private const string k_BackGlyphName = "back-glyph";
         private const string k_FiligreeClass = "ui-filigree";
+        // The layout's size, kept in the middle of any screen by .ui-screen.
+        private const float k_LayoutWidth = 1920f;
+        private const float k_LayoutHeight = 1080f;
+        private static readonly string[] s_fullScreenClasses = { "ui-background", "ui-shade", "ui-dialog" };
+        private static readonly string[] s_titleSpriteClasses = { "ui-title__fill", "ui-title__border" };
+        private const string k_TimerRowClass = "timer-row";
+        private const int k_TitleSpriteBottomSlice = 120;
 
         [SerializeField]
         private AudioPlayer m_focusAudioPlayer;
@@ -141,6 +148,38 @@ namespace Game.UITools.Screens
                 eventSystem.SetSelectedGameObject(m_panelGameObject);
         }
 
+        // On a screen of another shape, what's around the layout: the backgrounds and shades cover it too.
+        private void ExtendBackgroundsToThePanel()
+        {
+            var overflowX = Mathf.Min(0f, (k_LayoutWidth - Root.layout.width) / 2f);
+            var overflowY = Mathf.Min(0f, (k_LayoutHeight - Root.layout.height) / 2f);
+            foreach (var className in s_fullScreenClasses)
+            {
+                Root.Query(className: className).ForEach(element =>
+                {
+                    element.style.left = overflowX;
+                    element.style.right = overflowX;
+                    element.style.top = overflowY;
+                    element.style.bottom = overflowY;
+                });
+            }
+
+            // The title cartouche and the timer hang from the top of the screen. The cartouche grows upward: its label
+            // stays in line with the buttons beside it, and the slices keep the rounded corners of its sprites, twice
+            // their size on screen.
+            var isTaller = overflowY < 0f;
+            foreach (var className in s_titleSpriteClasses)
+            {
+                Root.Query(className: className).ForEach(sprite =>
+                {
+                    sprite.style.top = overflowY;
+                    sprite.style.unitySliceBottom = isTaller ? k_TitleSpriteBottomSlice : 0;
+                    sprite.style.unitySliceScale = isTaller ? 0.5f : 1f;
+                });
+            }
+            Root.Query(className: k_TimerRowClass).ForEach(row => row.style.translate = new Translate(0f, overflowY));
+        }
+
         private void SetUpRoot()
         {
             var root = Root;
@@ -152,6 +191,7 @@ namespace Game.UITools.Screens
             root.style.bottom = 0;
             root.pickingMode = PickingMode.Ignore;
 
+            root.RegisterCallback<GeometryChangedEvent>(_ => ExtendBackgroundsToThePanel());
             root.RegisterCallback<PointerDownEvent>(HandlePointerDown, TrickleDown.TrickleDown);
             root.RegisterCallback<PointerOverEvent>(HandlePointerOver);
             root.RegisterCallback<FocusInEvent>(HandleFocusIn);
@@ -180,10 +220,17 @@ namespace Game.UITools.Screens
         {
             // Layout positions, not world bounds: these ignore the ongoing scale and rotation transitions and tweens.
             var position = Vector2.zero;
+            var panelRoot = filigree;
             for (var element = filigree.hierarchy.parent; element != null; element = element.hierarchy.parent)
+            {
                 position += element.layout.position;
+                panelRoot = element;
+            }
             filigree.style.left = -position.x;
             filigree.style.top = -position.y;
+            // Stretched over the whole screen like the background, whatever the screen's shape.
+            filigree.style.width = panelRoot.layout.width;
+            filigree.style.height = panelRoot.layout.height;
         }
 
         protected T Query<T>(string name) where T : VisualElement
