@@ -633,6 +633,17 @@
                     "isOR": false
                 }
             ]
+        },
+        {
+            "name": "OtherGamepad",
+            "bindingGroup": "OtherGamepad",
+            "devices": [
+                {
+                    "devicePath": "<Gamepad>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
         }
     ]
 }

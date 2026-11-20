@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using Game.Gameplay.CharactersManagement.Actions;
 using Game.Gameplay.PauseMenu;
@@ -21,11 +22,16 @@ namespace Game.Gameplay.Flows.Tutorial
     {
         private const string k_FourButtonsControlsClass = "tutorial__controls--four-buttons";
         private const string k_FiveButtonsControlsClass = "tutorial__controls--five-buttons";
+        private const string k_ControlsRowClass = "tutorial__controls-row";
+        private const string k_ControlsGlyphClass = "tutorial__controls-glyph";
+        private const string k_GlyphClass = "ui-glyph";
 
         [SerializeField]
         private VisualTreeAsset m_playerCardTemplate;
         [SerializeField]
         private InputIndicationActionDataAsset m_readyIndicationAction;
+        [SerializeField, Tooltip("The game's buttons, in the order of the actions: the control modes use the first ones.")]
+        private List<InputIndicationActionDataAsset> m_actionIndications;
 
         private readonly List<AbstractPlayer> m_players = new();
         private readonly Dictionary<AbstractPlayer, TutorialPlayerWidget> m_playerWidgets = new();
@@ -113,6 +119,40 @@ namespace Game.Gameplay.Flows.Tutorial
             var controls = Query<VisualElement>("controls");
             controls.EnableInClassList(k_FourButtonsControlsClass, m_controlMode == ECharacterControlMode.Simplified);
             controls.EnableInClassList(k_FiveButtonsControlsClass, m_controlMode == ECharacterControlMode.SimplifiedWithSpecialAction);
+            RefreshControls(controls);
+        }
+
+        // The picture shows an Xbox controller: the other devices get the row of their buttons, one per device.
+        private void RefreshControls(VisualElement picture)
+        {
+            var rows = Query<VisualElement>("controls-rows");
+            foreach (var row in rows.Query(className: k_ControlsRowClass).ToList())
+                row.RemoveFromHierarchy();
+
+            var players = m_players.Where(player => !player.IsRemote)
+                .GroupBy(player => player.PlayerInput.currentControlScheme)
+                .Select(sameDevice => sameDevice.First())
+                .ToList();
+            var onlyXbox = players.All(player => player.PlayerInput.currentControlScheme is "XboxGamepad" or "OtherGamepad");
+            picture.style.display = onlyXbox ? DisplayStyle.Flex : DisplayStyle.None;
+            rows.style.display = onlyXbox ? DisplayStyle.None : DisplayStyle.Flex;
+            if (onlyXbox)
+                return;
+
+            foreach (var player in players)
+            {
+                var row = new VisualElement { pickingMode = PickingMode.Ignore };
+                row.AddToClassList(k_ControlsRowClass);
+                rows.Add(row);
+                foreach (var action in m_actionIndications.Take(m_controlMode.ButtonsCount()))
+                {
+                    var glyph = new VisualElement { pickingMode = PickingMode.Ignore };
+                    glyph.AddToClassList(k_GlyphClass);
+                    glyph.AddToClassList(k_ControlsGlyphClass);
+                    row.Add(glyph);
+                    AddIndication(glyph, action, player);
+                }
+            }
         }
 
         private void RefreshPlayers()

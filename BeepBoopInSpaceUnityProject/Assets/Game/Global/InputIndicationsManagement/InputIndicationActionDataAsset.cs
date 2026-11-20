@@ -29,6 +29,7 @@ namespace Game.Global.InputIndicationsManagement
                         return KBM_Azerty_InputSpriteDataAsset.InputSprite;
                     return KBM_Qwerty_InputSpriteDataAsset.InputSprite;
                 case "XboxGamepad":
+                case "OtherGamepad":
                     return XboxGamepad_InputSpriteDataAsset.InputSprite;
                 case "PSGamepad":
                     return PSGamepad_InputSpriteDataAsset.InputSprite;

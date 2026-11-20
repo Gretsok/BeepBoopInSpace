@@ -52,6 +52,13 @@ MonoBehaviour:
   m_focusAudioPlayer: {fileID: 0}
   m_playerCardTemplate: {fileID: 9197481963319205126, guid: 4c798d658d061464a956dd3e1678d863, type: 3}
   m_readyIndicationAction: {fileID: 11400000, guid: c66a763b676d30e4f9c9330711473c4a, type: 2}
+  m_actionIndications:
+  - {fileID: 11400000, guid: ca49f9310b804e64b8ff174788a87597, type: 2}
+  - {fileID: 11400000, guid: 71d192cda2a226e4e8b062eb496bc42d, type: 2}
+  - {fileID: 11400000, guid: 0f8c7bd95a85f2647b8c97be9fbe5264, type: 2}
+  - {fileID: 11400000, guid: ca5115fc7fe37644facf8a11fdaa0070, type: 2}
+  - {fileID: 11400000, guid: 3bd0ff784e51e12408129470178661c0, type: 2}
+  - {fileID: 11400000, guid: abcee0cae60a6d443a2d747f6b7d5a4d, type: 2}
 --- !u!114 &7020004073763006048
 MonoBehaviour:
   m_ObjectHideFlags: 0

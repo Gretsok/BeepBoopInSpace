@@ -11,8 +11,14 @@
                 <ui:VisualElement class="tutorial__modifier-icon" picking-mode="Ignore" />
                 <ui:Label text="Météorites" class="ui-text tutorial__rules-label" picking-mode="Ignore" />
             </ui:VisualElement>
+            <ui:Label text="ATTENTION" class="ui-text ui-heading tutorial__rules-title tutorial__rules-title--spaced" picking-mode="Ignore" />
+            <ui:Label text="Les touches changent toutes les 10 secondes !" class="ui-text tutorial__rules-label tutorial__rules-label--small" picking-mode="Ignore" />
+            <ui:Label text="Dans l'eau, on coule. Sur les dalles, on glisse." class="ui-text tutorial__rules-label tutorial__rules-label--small" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement name="controls" class="tutorial__controls" picking-mode="Ignore" />
+        <ui:VisualElement name="controls-rows" class="ui-panel tutorial__controls-rows" picking-mode="Ignore">
+            <ui:Label text="TOUCHES" class="ui-text ui-heading tutorial__rules-title" picking-mode="Ignore" />
+        </ui:VisualElement>
         <ui:VisualElement name="player-cards" class="tutorial__players" picking-mode="Ignore" />
         <ui:Label name="device-notice" class="ui-text tutorial__device-notice" picking-mode="Ignore" />
         <ui:VisualElement name="waiting-bar" class="tutorial__waiting-bar" picking-mode="Ignore" />
