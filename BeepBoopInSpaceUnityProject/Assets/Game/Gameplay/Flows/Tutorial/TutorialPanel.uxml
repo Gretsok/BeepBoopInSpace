@@ -14,6 +14,7 @@
         </ui:VisualElement>
         <ui:VisualElement name="controls" class="tutorial__controls" picking-mode="Ignore" />
         <ui:VisualElement name="player-cards" class="tutorial__players" picking-mode="Ignore" />
+        <ui:Label name="device-notice" class="ui-text tutorial__device-notice" picking-mode="Ignore" />
         <ui:VisualElement name="waiting-bar" class="tutorial__waiting-bar" picking-mode="Ignore" />
     </ui:VisualElement>
 </ui:UXML>

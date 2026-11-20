@@ -9,6 +9,7 @@
                 <ui:VisualElement class="ui-title__border" picking-mode="Ignore" />
                 <ui:Label text="PAUSE" class="ui-text ui-heading ui-title__label" picking-mode="Ignore" />
             </ui:VisualElement>
+            <ui:Label name="device-notice" class="ui-text pause__device-notice" picking-mode="Ignore" />
             <ui:VisualElement class="pause__actions" picking-mode="Ignore">
                 <ui:Button name="resume-button" text="Reprendre" class="ui-button pause__action pause__action--main" />
                 <ui:Button name="back-to-menu-button" text="Menu principal" class="ui-button pause__action" />

@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 using static Game.Tests.PlayMode.ScenarioDriver;
@@ -154,6 +155,88 @@ namespace Game.Tests.PlayMode
             Assert.IsNull(Manager(k_TournamentResultsContext), "Leaving a tournament from the pause led to its results.");
             Assert.IsNull(Manager(k_TournamentContext), "The tournament left from the pause is still alive.");
             yield return BackToCharacterSelectionWith(characters);
+
+            m_driver.AssertNoErrors();
+        }
+
+        /// <summary>A player's pad disconnected during a game: the pause opens and says whose it is, until it comes back.</summary>
+        [UnityTest, Order(1), Timeout(10 * 60 * 1000)]
+        public IEnumerator PauseMenu_OpensWhenAGamepadIsDisconnected()
+        {
+            LogAssert.ignoreFailingMessages = true;
+
+            yield return JoinFourPlayersAndOpenHub();
+            yield return StartTraining(k_ScreensTestMode);
+
+            m_driver.Step("Game: loading, everyone presses Ready");
+            yield return m_driver.WaitUntil("the tutorial", () => GameplayState == "TutorialState", 180f);
+            yield return Frames(5);
+            foreach (var pad in m_driver.Gamepads)
+                yield return m_driver.Press(pad.buttonSouth);
+            yield return m_driver.WaitUntil("the game", () => GameplayState == "GameplayState", 60f);
+
+            m_driver.Step("A pad disconnected: the pause opens and says whose it is");
+            var lostPad = m_driver.Gamepads[1];
+            InputSystem.RemoveDevice(lostPad);
+            yield return m_driver.WaitUntil("the pause", () => IsPaused, 5f);
+            yield return m_driver.WaitUntil("the resume button to be focused", () => NameOf(FocusedElement) == "resume-button", 5f);
+            var notice = (Label)ScreenElement(k_PauseMenuPanel, "device-notice");
+            Assert.AreEqual(DisplayStyle.Flex, notice.resolvedStyle.display, "The pause doesn't say a pad is disconnected.");
+            StringAssert.Contains(InTestsLanguage("J2", "P2"), notice.text);
+            yield return RealSeconds(0.3f);
+            yield return CaptureGameScreen("31-pause-pad-disconnected");
+
+            m_driver.Step("The pad comes back: the notice leaves, the pause stays");
+            InputSystem.AddDevice(lostPad);
+            yield return m_driver.WaitUntil("the notice to leave", () => notice.resolvedStyle.display == DisplayStyle.None, 5f);
+            Assert.IsTrue(IsPaused, "The pause closed by itself when the pad came back.");
+
+            m_driver.Step("Back to the main menu");
+            yield return m_driver.Select(ScreenElement(k_PauseMenuPanel, "back-to-menu-button"));
+            yield return SubmitAndSeeTheLoadingScreen();
+            yield return m_driver.WaitUntil("the character selection", () => IsOnCharacterSelection, 120f);
+
+            m_driver.AssertNoErrors();
+        }
+
+        /// <summary>A pad disconnected in the tutorial, which can't pause: it says whose it is, and the pause opens as soon as the game can.</summary>
+        [UnityTest, Order(1), Timeout(10 * 60 * 1000)]
+        public IEnumerator PauseMenu_OpensAfterATutorialThatLostAGamepad()
+        {
+            LogAssert.ignoreFailingMessages = true;
+
+            yield return JoinFourPlayersAndOpenHub();
+            yield return StartTraining(k_ScreensTestMode);
+
+            m_driver.Step("Tutorial: a player gets ready, then loses the pad");
+            yield return m_driver.WaitUntil("the tutorial", () => GameplayState == "TutorialState", 180f);
+            yield return Frames(5);
+            var lostPad = m_driver.Gamepads[1];
+            yield return m_driver.Press(lostPad.buttonSouth);
+            var notice = (Label)ScreenElement(k_TutorialPanel, "device-notice");
+            Assert.AreEqual(DisplayStyle.None, notice.resolvedStyle.display, "The tutorial says a pad is disconnected before one is.");
+            InputSystem.RemoveDevice(lostPad);
+            yield return m_driver.WaitUntil("the tutorial's notice", () => notice.resolvedStyle.display == DisplayStyle.Flex, 5f);
+            StringAssert.Contains(InTestsLanguage("J2", "P2"), notice.text);
+            Assert.IsFalse(IsPaused, "The tutorial can't pause.");
+            yield return RealSeconds(0.3f);
+            yield return CaptureGameScreen("39-tutorial-pad-disconnected");
+
+            m_driver.Step("The others get ready: the game starts, and the pause opens");
+            foreach (var pad in m_driver.Gamepads.Where(other => other != lostPad))
+                yield return m_driver.Press(pad.buttonSouth);
+            yield return m_driver.WaitUntil("the pause", () => IsPaused, 60f);
+            yield return m_driver.WaitUntil("the resume button to be focused", () => NameOf(FocusedElement) == "resume-button", 5f);
+            var pauseNotice = (Label)ScreenElement(k_PauseMenuPanel, "device-notice");
+            Assert.AreEqual(DisplayStyle.Flex, pauseNotice.resolvedStyle.display, "The pause doesn't say a pad is disconnected.");
+            StringAssert.Contains(InTestsLanguage("J2", "P2"), pauseNotice.text);
+
+            m_driver.Step("The pad comes back, back to the main menu");
+            InputSystem.AddDevice(lostPad);
+            yield return m_driver.WaitUntil("the notice to leave", () => pauseNotice.resolvedStyle.display == DisplayStyle.None, 5f);
+            yield return m_driver.Select(ScreenElement(k_PauseMenuPanel, "back-to-menu-button"));
+            yield return SubmitAndSeeTheLoadingScreen();
+            yield return m_driver.WaitUntil("the character selection", () => IsOnCharacterSelection, 120f);
 
             m_driver.AssertNoErrors();
         }

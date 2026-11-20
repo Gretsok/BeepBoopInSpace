@@ -215,6 +215,17 @@
     margin-right: 10px;
 }
 
+/* Under the cards, above the waiting bar: whose pad is disconnected. */
+.ui-screen .tutorial__device-notice {
+    position: absolute;
+    left: 110px;
+    right: 110px;
+    bottom: 30px;
+    -unity-text-align: middle-center;
+    font-size: 44px;
+    color: rgb(255, 214, 102);
+}
+
 /* Fills up while the game is about to start, everyone being ready. */
 .tutorial__waiting-bar {
     position: absolute;
@@ -255,6 +266,16 @@
 
 .pause--hidden {
     display: none;
+}
+
+.ui-screen .pause__device-notice {
+    position: absolute;
+    left: 110px;
+    right: 110px;
+    top: 170px;
+    -unity-text-align: middle-center;
+    font-size: 44px;
+    color: rgb(255, 214, 102);
 }
 
 .pause__actions {

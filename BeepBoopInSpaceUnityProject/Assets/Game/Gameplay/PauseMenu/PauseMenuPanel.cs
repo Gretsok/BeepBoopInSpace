@@ -23,6 +23,7 @@ namespace Game.Gameplay.PauseMenu
 
         private VisualElement m_pause;
         private Button m_resumeButton;
+        private Label m_deviceNotice;
         private VolumeRow m_masterVolume;
         private VolumeRow m_musicVolume;
         private VolumeRow m_sfxVolume;
@@ -33,6 +34,7 @@ namespace Game.Gameplay.PauseMenu
         {
             m_manager.OnPause += HandlePause;
             m_manager.OnResume += HandleResume;
+            m_manager.OnPlayersWithoutDeviceChanged += HandlePlayersWithoutDeviceChanged;
         }
 
         private void OnDestroy()
@@ -41,6 +43,7 @@ namespace Game.Gameplay.PauseMenu
             {
                 m_manager.OnPause -= HandlePause;
                 m_manager.OnResume -= HandleResume;
+                m_manager.OnPlayersWithoutDeviceChanged -= HandlePlayersWithoutDeviceChanged;
             }
         }
 
@@ -48,6 +51,9 @@ namespace Game.Gameplay.PauseMenu
         {
             m_pause = Query<VisualElement>("pause");
             m_pause.EnableInClassList(k_HiddenClass, !m_isOpen);
+
+            m_deviceNotice = Query<Label>("device-notice");
+            RefreshDeviceNotice();
 
             m_resumeButton = BindButton("resume-button", HandleResumeButtonClicked);
             BindButton("back-to-menu-button", HandleBackToMenuButtonClicked);
@@ -63,6 +69,21 @@ namespace Game.Gameplay.PauseMenu
         {
             m_pause?.KillTweens();
             m_pause = null;
+            m_deviceNotice = null;
+        }
+
+        private void HandlePlayersWithoutDeviceChanged(PauseMenuManager obj)
+        {
+            RefreshDeviceNotice();
+        }
+
+        private void RefreshDeviceNotice()
+        {
+            if (m_deviceNotice == null)
+                return;
+            var notice = m_manager.DeviceNotice;
+            m_deviceNotice.style.display = string.IsNullOrEmpty(notice) ? DisplayStyle.None : DisplayStyle.Flex;
+            m_deviceNotice.text = notice;
         }
 
         protected override void HandleCancel()

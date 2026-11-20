@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using Game.Gameplay.CharactersManagement.Actions;
+using Game.Gameplay.PauseMenu;
 using Game.Global.InputIndicationsManagement;
 using Game.Global.PlayerManagement;
 using Game.Online;
@@ -38,6 +39,8 @@ namespace Game.Gameplay.Flows.Tutorial
 
         private VisualElement m_waitingBar;
         private Tween m_waitingTween;
+        private Label m_deviceNotice;
+        private PauseMenuManager m_pauseMenuManager;
 
         public event Action<TutorialPanel> OnPlayerStatusUpdated;
 
@@ -64,6 +67,10 @@ namespace Game.Gameplay.Flows.Tutorial
         protected override void HandleShown()
         {
             m_waitingBar = Query<VisualElement>("waiting-bar");
+            m_deviceNotice = Query<Label>("device-notice");
+            m_pauseMenuManager = GameplayContext.Instance.PauseMenuManager;
+            m_pauseMenuManager.OnPlayersWithoutDeviceChanged += HandlePlayersWithoutDeviceChanged;
+            RefreshDeviceNotice();
             RefreshGameData();
             RefreshPlayers();
         }
@@ -73,6 +80,23 @@ namespace Game.Gameplay.Flows.Tutorial
             ResetWaitingBar();
             m_waitingBar = null;
             m_playerWidgets.Clear();
+            if (m_pauseMenuManager)
+                m_pauseMenuManager.OnPlayersWithoutDeviceChanged -= HandlePlayersWithoutDeviceChanged;
+            m_pauseMenuManager = null;
+            m_deviceNotice = null;
+        }
+
+        private void HandlePlayersWithoutDeviceChanged(PauseMenuManager obj)
+        {
+            RefreshDeviceNotice();
+        }
+
+        // The pause can't open during the tutorial, which may be waiting for a player without a pad: it says why.
+        private void RefreshDeviceNotice()
+        {
+            var notice = m_pauseMenuManager.DeviceNotice;
+            m_deviceNotice.style.display = string.IsNullOrEmpty(notice) ? DisplayStyle.None : DisplayStyle.Flex;
+            m_deviceNotice.text = notice;
         }
 
         private void RefreshGameData()
