@@ -74,7 +74,7 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
         }
 
         public bool IsLast { get; private set; }
-        public void InflateData(CharacterPawn pawn, int rankIndex, bool isLast)
+        public void InflateData(CharacterPawn pawn, int rankIndex, bool showsRank, bool isLast)
         {
             Character = pawn;
 
@@ -88,13 +88,22 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
 
             m_nameCanvas.GetComponent<Image>().sprite = pawn.ReferencesHolder.CharacterDataAsset.NameplateSprite; 
 
-            m_scoreText.text = $"{pawn.ReferencesHolder.ScoringController.Score.ToString()} Points";
+            m_scoreText.text = FormatScore(pawn.ReferencesHolder.ScoringController.Score);
             m_rankImage.sprite = m_rankImages[rankIndex];
-            
+            m_rankCanvas.gameObject.SetActive(showsRank);
+
             IsLast = isLast;
         }
 
         
+        // The only objective where lower is better counts deaths.
+        private static string FormatScore(int score)
+        {
+            var countsDeaths = ResultsManager.Instance.ScoreCalculationMethod == EScoreCalculationMethod.LowerScoreIsBest;
+            var unit = countsDeaths ? "Mort" : "Point";
+            return Game.Global.Localization.Loc.T($"{score} {unit}{(Mathf.Abs(score) >= 2 ? "s" : "")}");
+        }
+
         public void Display(bool displayUI, bool activateCam)
         {
             if (displayUI)

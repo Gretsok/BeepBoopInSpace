@@ -5,7 +5,7 @@
         <ui:VisualElement class="ui-title" picking-mode="Ignore">
             <ui:VisualElement class="ui-title__fill" picking-mode="Ignore" />
             <ui:VisualElement class="ui-title__border" picking-mode="Ignore" />
-            <ui:Label text="RÉSULTATS DU TOURNOI" class="ui-text ui-heading ui-title__label" picking-mode="Ignore" />
+            <ui:Label name="title-label" text="RÉSULTATS DU TOURNOI" class="ui-text ui-heading ui-title__label" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement name="player-lines" class="tournament__players" picking-mode="Ignore" />
         <ui:Button name="ok-button" class="ui-button ui-button--with-glyph tournament__continue">

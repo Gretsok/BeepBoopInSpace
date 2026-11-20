@@ -10,9 +10,10 @@ namespace Game.Gameplay.Flows.Results.ResultsPlacementManagement
         [SerializeField] private List<ResultsCharacterPositionner> m_characterPositionners;
         public IReadOnlyList<ResultsCharacterPositionner> CharacterPositionners => m_characterPositionners;
         
-        public void SetCharacterAt(CharacterPawn pawn, int rankIndex, bool isLast)
+        /// <summary>Equal scores share a rank (its badge), each robot keeps its own place. A game without a winner shows no badge.</summary>
+        public void SetCharacterAt(CharacterPawn pawn, int placeIndex, int rankIndex, bool showsRank, bool isLast)
         {
-            m_characterPositionners[rankIndex].InflateData(pawn, rankIndex, isLast);
+            m_characterPositionners[placeIndex].InflateData(pawn, rankIndex, showsRank, isLast);
         }
     }
 }

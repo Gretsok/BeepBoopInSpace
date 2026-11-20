@@ -57,8 +57,11 @@ namespace Game.Tournament.Results.ResultsScene
                 lines.Add(line);
             }
             var bestScore = lines.Count > 0 ? lines.Max(line => line.Score) : 0;
-            foreach (var line in lines.Where(line => bestScore > 0 && line.Score == bestScore))
+            var leaders = lines.Where(line => bestScore > 0 && line.Score == bestScore).ToList();
+            foreach (var line in leaders)
                 line.Highlight();
+            if (TournamentContext.Instance.ResultsManager.IsGameComplete())
+                Query<Label>("title-label").text = Game.Global.Localization.Loc.T(leaders.Count > 1 ? "CHAMPIONS !" : "CHAMPION !");
 
             // Online, the host leaves the results for everyone.
             if (!Netplay.HasAuthority)

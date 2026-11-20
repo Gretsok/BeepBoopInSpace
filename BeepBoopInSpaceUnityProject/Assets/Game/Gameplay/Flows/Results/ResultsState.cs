@@ -24,6 +24,7 @@ namespace Game.Gameplay.Flows.Results
         private ResultsPlacementsManager m_resultsPlacementsManager;
         private ResultsManager m_resultsManager;
         private List<CharacterPawn> m_orderedCharacters = new ();
+        private readonly List<CharacterPawn> m_winners = new ();
 
         private int m_currentViewedCharacterIndex = -1;
         private ResultsCharacterPositionner m_currentPositionner;
@@ -39,31 +40,30 @@ namespace Game.Gameplay.Flows.Results
             
             m_resultsManager = ResultsManager.Instance;
 
-            var charactersManager = CharactersManager.Instance;
-            m_orderedCharacters = new List<CharacterPawn>(charactersManager.CharacterPawns);
-            
-            if (m_resultsManager.ScoreCalculationMethod ==
-                EScoreCalculationMethod.HigherScoreIsBest)
-            {
-                m_orderedCharacters.Sort((item1, item2) => item2.ReferencesHolder.ScoringController.Score.CompareTo(
-                    item1.ReferencesHolder.ScoringController.Score));
-            }
-            else
-            {
-                m_orderedCharacters.Sort((item1, item2) => item1.ReferencesHolder.ScoringController.Score.CompareTo(
-                    item2.ReferencesHolder.ScoringController.Score));
-            }
-            
-            
+            var characters = CharactersManager.Instance.CharacterPawns;
+            var higherIsBest = m_resultsManager.ScoreCalculationMethod == EScoreCalculationMethod.HigherScoreIsBest;
+            // OrderBy keeps the robots' order between equal scores: the same results on every machine of an online room.
+            m_orderedCharacters = (higherIsBest ? characters.OrderByDescending(ScoreOf) : characters.OrderBy(ScoreOf)).ToList();
+
+            // Equal scores share their rank, and the best one is a shared win. Nobody wins a game in which nobody scored.
+            var bestScore = ScoreOf(m_orderedCharacters[0]);
+            m_winners.Clear();
+            if (!higherIsBest || bestScore > 0)
+                m_winners.AddRange(m_orderedCharacters.Where(character => ScoreOf(character) == bestScore));
+
             m_resultsPlacementsManager = ResultsPlacementsManager.Instance;
 
+            var rank = 0;
             for (int i = 0; i < m_orderedCharacters.Count; i++)
             {
                 var character = m_orderedCharacters[i];
-                m_resultsPlacementsManager.SetCharacterAt(character, i, i == m_orderedCharacters.Count - 1);
+                if (i > 0 && ScoreOf(character) != ScoreOf(m_orderedCharacters[i - 1]))
+                    rank = i;
+                var isLast = i == m_orderedCharacters.Count - 1 && ScoreOf(character) != bestScore;
+                m_resultsPlacementsManager.SetCharacterAt(character, i, rank, m_winners.Count > 0, isLast);
             }
-            
-            m_resultsManager.ProcessGameResult(m_orderedCharacters, winner: m_orderedCharacters[0]);
+
+            m_resultsManager.ProcessGameResult(m_orderedCharacters, m_winners);
             
             m_currentViewedCharacterIndex = m_orderedCharacters.Count;
             Invoke(nameof(ViewingNextCharacter), m_waitTimeOnStart);
@@ -74,6 +74,11 @@ namespace Game.Gameplay.Flows.Results
             base.HandleLeave();
             // Pending close-ups would otherwise keep running, and overlap a new sequence if the state is entered again.
             CancelInvoke();
+        }
+
+        private static int ScoreOf(CharacterPawn character)
+        {
+            return character.ReferencesHolder.ScoringController.Score;
         }
 
         private void ViewingNextCharacter()
@@ -88,20 +93,21 @@ namespace Game.Gameplay.Flows.Results
             m_currentPositionner.Display(true, true);
             
             
-            if (m_currentViewedCharacterIndex > 0)
-            {
-                character.ReferencesHolder.AnimationsHandler.Lose();
-                character.ReferencesHolder.RumbleHandler.PlayLoseRumble();
-                m_currentPositionner.ResultCharacter.Lose();
-                Invoke(nameof(ViewingNextCharacter), m_timeToLookAtCharactersByRank[m_currentViewedCharacterIndex]);
-            }
-            else
+            if (m_winners.Contains(character))
             {
                 character.ReferencesHolder.AnimationsHandler.Win();
                 character.ReferencesHolder.RumbleHandler.PlayWinRumble();
                 m_currentPositionner.ResultCharacter.Win();
-                Invoke(nameof(HandleEndOfCloseUps), m_timeToLookAtCharactersByRank[0]);
             }
+            else
+            {
+                character.ReferencesHolder.AnimationsHandler.Lose();
+                character.ReferencesHolder.RumbleHandler.PlayLoseRumble();
+                m_currentPositionner.ResultCharacter.Lose();
+            }
+
+            var nextStep = m_currentViewedCharacterIndex > 0 ? nameof(ViewingNextCharacter) : nameof(HandleEndOfCloseUps);
+            Invoke(nextStep, m_timeToLookAtCharactersByRank[m_currentViewedCharacterIndex]);
         }
 
         private void HandleEndOfCloseUps()
