@@ -1,5 +1,6 @@
 using System;
 using Game.Global.PlayerManagement;
+using Game.Global.Localization;
 using Game.UITools.Screens;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -30,6 +31,7 @@ namespace Game.Gameplay.Flows.Tutorial
             Player = player;
 
             Element = template.Instantiate().Q<Button>("player-card");
+            Loc.Translate(Element);
             // Styled by Screens.uss alone, without the default theme's button style.
             Element.RemoveFromClassList(Button.ussClassName);
             ReadyGlyph = Element.Q("ready-glyph");

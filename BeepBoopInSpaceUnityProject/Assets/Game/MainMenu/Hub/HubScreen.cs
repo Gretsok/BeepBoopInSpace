@@ -84,8 +84,8 @@ namespace Game.MainMenu.Hub
             var lostRoomReason = OnlineManager.Instance ? OnlineManager.Instance.TakeLostRoomReason() : null;
             if (lostRoomReason != null)
             {
-                m_notice.SetContent("Partie en ligne terminée", null);
-                Query<VisualElement>("notice").Q<Label>("message").text = lostRoomReason;
+                m_notice.SetContent(Game.Global.Localization.Loc.T("Partie en ligne terminée"), null);
+                Query<VisualElement>("notice").Q<Label>("message").text = Game.Global.Localization.Loc.T(lostRoomReason);
                 ShowDialog(m_notice);
             }
         }

@@ -64,7 +64,7 @@ namespace Game.Tournament.Results.ResultsScene
             if (!Netplay.HasAuthority)
             {
                 m_okButton.SetEnabled(false);
-                m_okButton.Q<Label>().text = "En attente de l'hôte…";
+                m_okButton.Q<Label>().text = Game.Global.Localization.Loc.T("En attente de l'hôte…");
                 m_okButton.Q("ok-glyph").style.display = DisplayStyle.None;
                 return;
             }

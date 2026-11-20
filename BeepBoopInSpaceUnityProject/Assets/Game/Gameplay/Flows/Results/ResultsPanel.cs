@@ -52,7 +52,7 @@ namespace Game.Gameplay.Flows.Results
             if (m_backToMenuButton == null)
                 return;
             m_backToMenuButton.SetEnabled(false);
-            m_backToMenuButton.Q<Label>().text = "En attente de l'hôte…";
+            m_backToMenuButton.Q<Label>().text = Game.Global.Localization.Loc.T("En attente de l'hôte…");
             m_backToMenuButton.Q("back-to-menu-glyph").style.display = DisplayStyle.None;
             m_backToMenuButton.AddToClassList(k_ButtonShownClass);
         }

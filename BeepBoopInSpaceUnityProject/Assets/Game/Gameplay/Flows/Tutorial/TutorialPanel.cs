@@ -79,8 +79,8 @@ namespace Game.Gameplay.Flows.Tutorial
         {
             if (!IsShown)
                 return;
-            Query<Label>("objective-label").text = m_objectiveLabel;
-            Query<Label>("special-action-label").text = m_specialActionLabel;
+            Query<Label>("objective-label").text = Game.Global.Localization.Loc.T(m_objectiveLabel);
+            Query<Label>("special-action-label").text = Game.Global.Localization.Loc.T(m_specialActionLabel);
             // The simplified controls without a special action: no button plays it.
             var specialActionDisplay = m_controlMode == ECharacterControlMode.Simplified ? DisplayStyle.None : DisplayStyle.Flex;
             Query<Label>("special-action-title").style.display = specialActionDisplay;

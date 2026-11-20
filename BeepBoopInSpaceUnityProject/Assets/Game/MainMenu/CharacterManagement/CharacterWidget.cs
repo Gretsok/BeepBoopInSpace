@@ -155,7 +155,7 @@ namespace Game.MainMenu.CharacterManagement
             m_slot.EnableInClassList(k_JoinClass, !IsActivated && IsJoinSlot);
             m_slot.EnableInClassList(k_SelectingClass, IsActivated && !IsReady);
             m_slot.EnableInClassList(k_ReadyClass, IsActivated && IsReady);
-            m_badgeLabel.text = IsActivated ? $"J{SlotIndex + 1}" : "+";
+            m_badgeLabel.text = IsActivated ? Game.Global.Localization.Loc.PlayerBadge(SlotIndex + 1) : "+";
 
             var color = CharacterDataAsset ? CharacterDataAsset.SelectionColor : Color.white;
             // Colors come from the character: inline, so that the USS transitions still play when they change.

@@ -6,7 +6,7 @@
         <ui:VisualElement class="ui-title" picking-mode="Ignore">
             <ui:VisualElement class="ui-title__fill" picking-mode="Ignore" />
             <ui:VisualElement class="ui-title__border" picking-mode="Ignore" />
-            <ui:Label text="CHARACTER SELECTION" class="ui-title__label" picking-mode="Ignore" />
+            <ui:Label text="CHOIX DES ROBOTS" class="ui-title__label" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement class="cs-insert cs-insert--left" picking-mode="Ignore">
             <ui:VisualElement class="cs-insert__fill" picking-mode="Ignore" />

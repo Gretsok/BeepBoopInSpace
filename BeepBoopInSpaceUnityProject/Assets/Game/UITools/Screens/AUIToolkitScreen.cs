@@ -4,6 +4,7 @@ using System.Linq;
 using Game.ArchitectureTools.FlowMachine;
 using Game.Global;
 using Game.Global.InputIndicationsManagement;
+using Game.Global.Localization;
 using Game.Global.PlayerManagement;
 using Game.Global.SFXManagement;
 using UnityEngine;
@@ -75,6 +76,7 @@ namespace Game.UITools.Screens
         {
             IsShown = true;
             SetUpRoot();
+            Loc.Translate(Root);
             if (m_backIndicationAction && Root.Q(k_BackGlyphName) != null)
                 AddIndication(k_BackGlyphName, m_backIndicationAction);
             HandleShown();

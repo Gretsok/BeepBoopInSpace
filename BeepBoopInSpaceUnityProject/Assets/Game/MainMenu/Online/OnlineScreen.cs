@@ -48,7 +48,7 @@ namespace Game.MainMenu.Online
             // Connecting: the dialog's only button cancels, as does Retour.
             m_connectingDialog = new ConfirmationDialog(Query<VisualElement>("connecting-dialog"), CancelConnecting, CancelConnecting);
             m_connectingDialog.CancelButton.style.display = DisplayStyle.None;
-            m_connectingDialog.ConfirmButton.text = "Annuler";
+            m_connectingDialog.ConfirmButton.text = Game.Global.Localization.Loc.T("Annuler");
 
             // Left, the room to create; right, the code then Rejoindre.
             SetNavigation(m_createButton, Direction.Right, m_codeField.FirstSlot);
@@ -126,7 +126,7 @@ namespace Game.MainMenu.Online
                 return;
             m_isConnecting = true;
             SetStatus(null, false);
-            m_connectingDialog.SetContent(title, null);
+            m_connectingDialog.SetContent(Game.Global.Localization.Loc.T(title), null);
             ShowDialog(m_connectingDialog);
 
             var error = await connect();
@@ -153,7 +153,7 @@ namespace Game.MainMenu.Online
         {
             if (m_status == null)
                 return;
-            m_status.text = message ?? string.Empty;
+            m_status.text = Game.Global.Localization.Loc.T(message) ?? string.Empty;
             m_status.style.display = string.IsNullOrEmpty(message) ? DisplayStyle.None : DisplayStyle.Flex;
             m_status.EnableInClassList("online__status--error", isError);
         }

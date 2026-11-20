@@ -32,7 +32,7 @@ namespace Game.Gameplay.RoundsManagement
         private void RefreshText()
         {
             if (IsShown && m_text != null)
-                Query<Label>("round-label").text = m_text.ToUpperInvariant();
+                Query<Label>("round-label").text = Game.Global.Localization.Loc.T(m_text).ToUpperInvariant();
         }
     }
 }

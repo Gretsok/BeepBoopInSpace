@@ -20,7 +20,7 @@ namespace Game.MainMenu.LevelSelection
             // Styled by MainMenu.uss alone, without the default theme's button style.
             Element.RemoveFromClassList(Button.ussClassName);
             Element.Q("thumbnail").style.backgroundImage = new StyleBackground(LevelDataAsset.Thumbnail);
-            Element.Q<Label>("level-name").text = LevelDataAsset.NameKey;
+            Element.Q<Label>("level-name").text = Game.Global.Localization.Loc.T(LevelDataAsset.NameKey);
             Element.clicked += () => OnLevelSelected?.Invoke(LevelDataAsset);
         }
     }

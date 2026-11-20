@@ -1,4 +1,5 @@
 using Game.Global.SFXManagement;
+using Game.Global.Localization;
 using Game.Online;
 using Game.UITools.Screens;
 using UnityEngine;
@@ -51,10 +52,10 @@ namespace Game.MainMenu.OnlineLobby
             m_hint = Query<Label>("hint");
 
             m_leaveDialog = new ConfirmationDialog(Query<VisualElement>("leave-confirmation"), HandleLeaveConfirmed, HandleDialogCancelled);
-            m_leaveDialog.ConfirmButton.text = "Quitter";
-            Query<VisualElement>("leave-confirmation").Q<Label>("message").text = m_onlineManager.IsHost
+            m_leaveDialog.ConfirmButton.text = Loc.T("Quitter");
+            Query<VisualElement>("leave-confirmation").Q<Label>("message").text = Loc.T(m_onlineManager.IsHost
                 ? "La salle fermera pour tous ses joueurs."
-                : "Vous pourrez la rejoindre avec son code.";
+                : "Vous pourrez la rejoindre avec son code.");
             m_tournamentDialog = new ConfirmationDialog(Query<VisualElement>("tournament-confirmation"), HandleTournamentConfirmed, HandleDialogCancelled);
 
             // Only the host chooses the mode.
@@ -108,7 +109,7 @@ namespace Game.MainMenu.OnlineLobby
                 {
                     icon.style.backgroundImage = StyleKeyword.Null;
                     badge.style.backgroundColor = StyleKeyword.Null;
-                    name.text = "Place libre";
+                    name.text = Loc.T("Place libre");
                     tag.text = string.Empty;
                     card.EnableInClassList(k_LocalCardClass, false);
                     continue;
@@ -118,7 +119,7 @@ namespace Game.MainMenu.OnlineLobby
                 var character = roomPlayer.CharacterIndex < characters.Count ? characters[roomPlayer.CharacterIndex] : null;
                 var isLocal = m_onlineManager.IsLocal(roomPlayer);
                 card.EnableInClassList(k_LocalCardClass, isLocal);
-                card.Q<Label>("badge-label").text = $"J{slot + 1}";
+                card.Q<Label>("badge-label").text = Loc.PlayerBadge(slot + 1);
                 if (character)
                 {
                     var picture = character.SelectionPreview ? character.SelectionPreview : character.SelectionIcon;
@@ -126,8 +127,8 @@ namespace Game.MainMenu.OnlineLobby
                     badge.style.backgroundColor = character.SelectionColor;
                     name.text = character.Name;
                 }
-                tag.text = isLocal ? roomPlayer.MachineId == 0 ? "Vous, l'hôte" : "Vous"
-                    : roomPlayer.MachineId == 0 ? "Hôte" : string.Empty;
+                tag.text = Loc.T(isLocal ? roomPlayer.MachineId == 0 ? "Vous, l'hôte" : "Vous"
+                    : roomPlayer.MachineId == 0 ? "Hôte" : string.Empty);
             }
 
             var canLaunch = m_onlineManager.CanLaunch;
@@ -137,11 +138,11 @@ namespace Game.MainMenu.OnlineLobby
             if (roster.Count < OnlineManager.k_MinPlayers && IsShowingDialog(m_tournamentDialog))
                 HideDialog();
             if (m_onlineManager.IsHost)
-                m_hint.text = roster.Count < OnlineManager.k_MinPlayers
+                m_hint.text = Loc.T(roster.Count < OnlineManager.k_MinPlayers
                     ? "Donnez le code à vos amis : la partie se lance à deux joueurs ou plus."
-                    : "Choisissez le mode de jeu de la salle.";
+                    : "Choisissez le mode de jeu de la salle.");
             else
-                m_hint.text = "L'hôte choisit le mode de jeu…";
+                m_hint.text = Loc.T("L'hôte choisit le mode de jeu…");
 
             // Focused once enabled; the code's button meanwhile, which also keeps Retour working.
             var defaultFocus = canLaunch ? m_trainingButton : m_copyButton;
@@ -156,7 +157,7 @@ namespace Game.MainMenu.OnlineLobby
         private void HandleCopyButtonClicked()
         {
             GUIUtility.systemCopyBuffer = m_onlineManager.RoomCode;
-            m_hint.text = "Code copié : collez-le à vos amis.";
+            m_hint.text = Loc.T("Code copié : collez-le à vos amis.");
         }
 
         private void HandleTrainingButtonClicked()
@@ -180,7 +181,7 @@ namespace Game.MainMenu.OnlineLobby
 
         private void HandleBackButtonClicked()
         {
-            m_leaveDialog.SetContent("Quitter la salle ?", null);
+            m_leaveDialog.SetContent(Loc.T("Quitter la salle ?"), null);
             ShowDialog(m_leaveDialog);
         }
 

@@ -93,7 +93,7 @@ namespace Game.MainMenu.LevelSelection
         {
             m_levelSelectedAudioPlayer.Play();
             m_pickedLevel = levelDataAsset;
-            m_confirmation.SetContent(levelDataAsset.NameKey, levelDataAsset.Thumbnail);
+            m_confirmation.SetContent(Game.Global.Localization.Loc.T(levelDataAsset.NameKey), levelDataAsset.Thumbnail);
             ShowDialog(m_confirmation);
         }
 

@@ -130,7 +130,7 @@ namespace Game.MainMenu.CharacterSelection
                     badge.Element.Add(badge.Label);
                     m_badges[widget] = badge;
                 }
-                badge.Label.text = $"J{widget.SlotIndex + 1}";
+                badge.Label.text = Game.Global.Localization.Loc.PlayerBadge(widget.SlotIndex + 1);
                 badge.Element.EnableInClassList("cs-cell__badge--ready", widget.IsReady);
                 badge.Element.style.unityBackgroundImageTintColor = widget.IsReady ? widget.CharacterDataAsset.SelectionColor : StyleKeyword.Null;
 

@@ -21,11 +21,12 @@ namespace Game.LoadingScreen
 
             var label = Query<Label>("loading-label");
             var dots = 0;
-            label.text = k_LoadingText;
+            var loadingText = Game.Global.Localization.Loc.T(k_LoadingText);
+            label.text = loadingText;
             label.schedule.Execute(() =>
             {
                 dots = (dots + 1) % 4;
-                label.text = k_LoadingText + new string('.', dots);
+                label.text = loadingText + new string('.', dots);
             }).Every(k_DotIntervalMs);
         }
     }
