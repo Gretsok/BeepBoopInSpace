@@ -46,6 +46,18 @@
     top: 680px;
 }
 
+.home-version {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 40px;
+    -unity-text-align: middle-center;
+    font-size: 30px;
+    color: rgb(255, 255, 255);
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgb(2, 26, 38);
+}
+
 /* Hub */
 
 .hub-modes {

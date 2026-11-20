@@ -11,6 +11,7 @@
         <ui:VisualElement picking-mode="Ignore" class="ui-centered-row home-credits-row">
             <ui:Button name="credits-button" text="Crédits" class="ui-button"/>
         </ui:VisualElement>
+        <ui:Label name="version-label" picking-mode="Ignore" class="home-version"/>
         <ui:Button name="settings-button" text="Paramètres" class="ui-button ui-corner--bottom-left"/>
         <ui:Button name="quit-button" text="Quitter" class="ui-button ui-corner--bottom-right"/>
     </ui:VisualElement>

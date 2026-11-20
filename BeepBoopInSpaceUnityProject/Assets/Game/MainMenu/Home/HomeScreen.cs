@@ -1,5 +1,7 @@
+using Game.Global.Localization;
 using Game.Global.SFXManagement;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Game.MainMenu.Home
 {
@@ -21,6 +23,7 @@ namespace Game.MainMenu.Home
             BindButton("credits-button", HandleCreditsButtonClicked, m_playAudioPlayer);
             BindButton("settings-button", HandleSettingsButtonClicked);
             BindButton("quit-button", HandleQuitButtonClicked);
+            Query<Label>("version-label").text = Loc.T($"Démo {Application.version}");
 
         }
 
