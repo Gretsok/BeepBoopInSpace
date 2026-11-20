@@ -77,6 +77,7 @@ namespace Game.Online
         public ulong LocalMachineId => m_connection.LocalClientId;
         public IReadOnlyList<RoomPlayer> Roster => m_roster;
         public IReadOnlyList<CharacterDataAsset> Characters => m_characters;
+        public IReadOnlyList<LevelDataAsset> TrainingLevels => m_trainingLevels.LevelDataList;
         /// <summary>The host can launch a game: enough players, nobody joining, nobody playing.</summary>
         public bool CanLaunch => IsHost && IsInRoom && !IsInGame && m_roster.Count >= k_MinPlayers && m_pendingGuests.Count == 0;
 
@@ -203,6 +204,9 @@ namespace Game.Online
         }
 
         public bool HasLostRoomReason => m_lostRoomReason != null;
+
+        /// <summary>The room that was left or lost is still closing its connection.</summary>
+        public bool IsClosing => m_isClosing;
 
         // A room left a moment ago may still be closing its connection, which the next one reuses.
         private UniTask WaitForTheLastRoomToClose()

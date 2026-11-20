@@ -183,7 +183,9 @@ class Model:
             return None
         if guid not in cls._cache:
             full = PROJECT / path
-            cls._cache[guid] = cls(full) if full.suffix in (".prefab", ".unity") and full.is_file() else None
+            # Some packages ship binary-serialized prefabs (GameAnalytics): no YAML to read, an unknown source.
+            is_yaml = full.suffix in (".prefab", ".unity") and full.is_file() and full.read_bytes()[:5] == b"%YAML"
+            cls._cache[guid] = cls(full) if is_yaml else None
         return cls._cache[guid]
 
     def index(self):
@@ -357,7 +359,8 @@ def cmd_tree(args):
     scene_roots = next((d for d in model.docs if d.cls == "1660057539"), None)
     if scene_roots:
         ordered = re.findall(r"- \{fileID: (-?\d+)\}", scene_roots.body)
-        roots = [r for r in ordered if r in model.by_id] + [r for r in roots if r not in ordered]
+        # A prefab instance at the root is listed by its PrefabInstance (1001): printed with root_instances below.
+        roots = [r for r in ordered if r in model.by_id and model.by_id[r].cls != "1001"] + [r for r in roots if r not in ordered]
     root_instances = [d for d in model.instances() if model.instance_parent(d) == "0"]
 
     def walk(transform, depth):

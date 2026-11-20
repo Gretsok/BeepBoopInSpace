@@ -5,6 +5,7 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
@@ -62,7 +63,9 @@ namespace Game.Tests.PlayMode
             LogAssert.ignoreFailingMessages = true;
             m_driver.BeginTest(k_KnownErrors);
             Time.timeScale = k_TimeScale;
+            SetTestsLanguage();
             yield return GoToMainMenuHome();
+            SetTestsLanguage();
         }
 
         [UnityTearDown]
@@ -75,6 +78,8 @@ namespace Game.Tests.PlayMode
             RestoreGuestLoadingTimeout();
             yield return RestoreRunInBackground();
             StopGuestBuild();
+            RemoveOtherGamepad();
+            m_driver.PlugGamepadsBackIn();
             m_driver.RemoveKeyboardAndMouse();
             m_driver.EndTest();
             yield break;
@@ -330,7 +335,8 @@ namespace Game.Tests.PlayMode
             // An online room lost in an earlier scenario would open the menu on the hub, which tells why.
             if (Manager("Game.Online.OnlineManager") is { } onlineManager)
                 onlineManager.GetType().GetMethod("TakeLostRoomReason").Invoke(onlineManager, null);
-            if (!IsOnMainMenuHome && !IsOnCharacterSelection)
+            var hadStrandedPlayers = RemovePlayersStrandedByAFailure();
+            if (hadStrandedPlayers || (!IsOnMainMenuHome && !IsOnCharacterSelection))
             {
                 // A scenario that failed mid-game never reached EndState: release its level like EndState does,
                 // otherwise its Addressables handles stay loaded and the next game on that level fails to load.
@@ -353,6 +359,23 @@ namespace Game.Tests.PlayMode
                 yield return RealSeconds(0.3f);
             }
             yield return m_driver.WaitUntil("the main menu home screen", () => IsOnMainMenuHome && FocusedElement != null);
+        }
+
+        // A scenario can leave a player on a device it removed since (another gamepad, the keyboard: Controls_AnotherGamepad...
+        // does it on purpose), or a failed one a main player other than the main pad: nothing could send them home, and every
+        // following scenario would time out.
+        private bool RemovePlayersStrandedByAFailure()
+        {
+            var players = PlayerInput.all;
+            var isStranded = players.Count > 0
+                && (!players[0].devices.Contains(m_driver.MainPad) || players.Any(player => player.devices.Count == 0 || player.hasMissingRequiredDevices));
+            if (!isStranded)
+                return false;
+
+            Debug.LogWarning($"[Scenario] {players.Count} player(s) left by the previous scenario on a removed device, or by a failed one, can't be sent home: removing them.");
+            var playerManager = Get(Manager("Game.Global.GlobalContext"), "PlayerManager");
+            playerManager.GetType().GetMethod("RemoveAllPlayers").Invoke(playerManager, null);
+            return true;
         }
 
         /// <summary>After a game, the character selection with every player and their character, nobody ready yet.</summary>

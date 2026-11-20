@@ -56,6 +56,16 @@ namespace Game.Tests.PlayMode
             Gamepads.Clear();
         }
 
+        // A scenario that unplugs a pad and fails before plugging it back mustn't cost the next ones that pad.
+        public void PlugGamepadsBackIn()
+        {
+            foreach (var gamepad in Gamepads)
+            {
+                if (!gamepad.added)
+                    InputSystem.AddDevice(gamepad);
+            }
+        }
+
         // Writes into a copy of the device state, so it works whatever the device's memory format is.
         public static void Set(ButtonControl button, float value)
         {
@@ -341,12 +351,23 @@ namespace Game.Tests.PlayMode
         /// camera and the menus' panel render into 1920x1080 textures, so the menus lay out as on a player's screen.
         /// A scene without a main camera (tournament results) gives the panel alone.
         /// </summary>
+        // 1920x1080, or another screen shape to look at the layouts: SCENARIO_RESOLUTION=2560x1080.
+        private static (int width, int height) CaptureResolution
+        {
+            get
+            {
+                var parts = System.Environment.GetEnvironmentVariable("SCENARIO_RESOLUTION")?.Split('x');
+                return parts is { Length: 2 } ? (int.Parse(parts[0]), int.Parse(parts[1])) : (1920, 1080);
+            }
+        }
+
         public static void StartRenderingToTextures()
         {
             s_capturedCamera = Camera.main;
             s_capturedPanel = Object.FindAnyObjectByType<UIDocument>().panelSettings;
-            s_sceneTexture = new RenderTexture(1920, 1080, 24);
-            s_uiTexture = new RenderTexture(1920, 1080, 24);
+            var (width, height) = CaptureResolution;
+            s_sceneTexture = new RenderTexture(width, height, 24);
+            s_uiTexture = new RenderTexture(width, height, 24);
             if (s_capturedCamera)
                 s_capturedCamera.targetTexture = s_sceneTexture;
             s_capturedPanel.targetTexture = s_uiTexture;

@@ -17,12 +17,16 @@ using Game.Global.PlayerManagement;
 using Game.MainMenu;
 using Game.MainMenu.CharacterManagement;
 using Game.MainMenu.Hub;
+using Game.MainMenu.Online;
 using Game.Tournament;
 using Game.Online.Gameplay;
+using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 namespace Game.Online.Testing
 {
@@ -39,12 +43,26 @@ namespace Game.Online.Testing
     /// reaches the disk by blocks.
     /// It also fails (an error) when a game comes back to life while it unloads (a state entered after the end state),
     /// or when the menu doesn't open on the hub saying why after the room was lost.
+    /// "-relay-test-host &lt;file&gt;" and "-relay-test-guest &lt;file&gt;" play a real room, through Unity's services and
+    /// Relay (no -online-direct). The host opens it, writes its code in the file, waits for the guest, launches Points
+    /// Rush, leaves the results, and closes the room once back in it; the guest reads the code in the file and joins.
+    /// More exit codes then: 4 room not opened, 5 a code the online screen can't type, 6 not on Relay, 7 no code or no
+    /// guest in time, 8 no game launched, 9 the host lost the room or the guest left it, 10 the room never finished closing.
     /// </summary>
     public class OnlineGuestBot : MonoBehaviour
     {
         private const string k_Argument = "-online-test-guest";
         private const string k_ScenarioArgument = "-online-test-guest-scenario";
         private const string k_ReportArgument = "-online-test-guest-report";
+        private const string k_RelayHostArgument = "-relay-test-host";
+        private const string k_RelayGuestArgument = "-relay-test-guest";
+        private const string k_RelayLevel = " - Points Rush - ";
+        // How long the host waits for a guest, and the guest for the host's code.
+        private const float k_RelayWaitSeconds = 180f;
+        // A guest that just came needs a moment to be in the room on its side, one just back from a game too.
+        private const float k_RelayLaunchDelay = 3f;
+        private const float k_RelayCloseDelay = 5f;
+        private const float k_RelayClosingTimeout = 20f;
         private const float k_Timeout = 20 * 60f;
         // Seconds into a game before freezing in it.
         private const float k_FreezeDelay = 3f;
@@ -70,6 +88,12 @@ namespace Game.Online.Testing
         private int[] m_moves;
         private readonly System.Random m_random = new(7);
         private static string s_reportPath;
+
+        // A real room: the file that gives its code to the guest, and this machine's part in it.
+        private string m_relayCodeFile;
+        private bool m_isRelayHost;
+        private string m_roomCode;
+        private bool m_hasGuestStayed;
 
         // The scenario.
         private bool m_leavesTheRoomAndComesBack;
@@ -99,7 +123,8 @@ namespace Game.Online.Testing
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void StartIfAsked()
         {
-            if (!Environment.GetCommandLineArgs().Contains(k_Argument))
+            var args = Environment.GetCommandLineArgs();
+            if (!args.Contains(k_Argument) && !args.Contains(k_RelayHostArgument) && !args.Contains(k_RelayGuestArgument))
                 return;
             var bot = new GameObject(nameof(OnlineGuestBot));
             DontDestroyOnLoad(bot);
@@ -111,6 +136,8 @@ namespace Game.Online.Testing
             Application.targetFrameRate = 60;
             Application.logMessageReceived += HandleLogMessage;
             s_reportPath = ArgumentAfter(k_ReportArgument);
+            m_isRelayHost = ArgumentAfter(k_RelayHostArgument) != null;
+            m_relayCodeFile = ArgumentAfter(k_RelayHostArgument) ?? ArgumentAfter(k_RelayGuestArgument);
             ReadScenario();
         }
 
@@ -252,22 +279,46 @@ namespace Game.Online.Testing
             var deadline = Time.realtimeSinceStartup + k_Timeout;
             yield return new WaitUntil(IsMenuReady);
 
-            // One player, with the second robot: the host's first player has the first one.
+            // One player: as a guest, with the second robot, the host's first player having the first one.
             m_gamepad = InputSystem.AddDevice<Gamepad>("Guest Bot Gamepad");
             var playerInput = GlobalContext.Instance.PlayerManager.AddPlayerFromDevice(m_gamepad);
             m_player = playerInput.GetComponent<AbstractPlayer>();
-            m_player.SetCharacterData(CharacterBankManager.Instance.Characters[1]);
+            m_player.SetCharacterData(CharacterBankManager.Instance.Characters[m_isRelayHost ? 0 : 1]);
             Log("one player on a virtual gamepad");
 
             var onlineManager = OnlineManager.Instance;
             onlineManager.OnRoomLost += HandleRoomLost;
-            // The host may not have opened its room yet.
             var joined = false;
-            yield return JoinTheRoom(60, result => joined = result);
-            if (!joined)
+            if (m_isRelayHost)
             {
-                Quit(3, "couldn't join the room");
-                yield break;
+                yield return HostTheRelayRoom(result => joined = result);
+                if (!joined)
+                    yield break;
+            }
+            else
+            {
+                if (m_relayCodeFile != null)
+                {
+                    yield return ReadTheRoomCode();
+                    if (m_roomCode == null)
+                    {
+                        Quit(7, "no room code came");
+                        yield break;
+                    }
+                    Log($"room code {m_roomCode}");
+                }
+                // The host may not have opened its room yet.
+                yield return JoinTheRoom(60, result => joined = result);
+                if (!joined)
+                {
+                    Quit(3, "couldn't join the room");
+                    yield break;
+                }
+                if (m_relayCodeFile != null && !IsOnRelay)
+                {
+                    Quit(6, "the connection doesn't go through Relay");
+                    yield break;
+                }
             }
 
             if (m_leavesTheRoomAndComesBack)
@@ -314,9 +365,33 @@ namespace Game.Online.Testing
                         }
                         continue;
                     }
+                    if (m_relayCodeFile != null)
+                    {
+                        // A session that never finishes closing would hold the next room back, and what it logs counts.
+                        var closingDeadline = Time.realtimeSinceStartup + k_RelayClosingTimeout;
+                        while (onlineManager.IsClosing && Time.realtimeSinceStartup < closingDeadline)
+                            yield return null;
+                        if (onlineManager.IsClosing)
+                        {
+                            Quit(10, "the room never finished closing");
+                            yield break;
+                        }
+                        if (m_isRelayHost && (m_roomsLost > 0 || !m_hasGuestStayed))
+                        {
+                            Quit(9, $"{m_roomsLost} room(s) lost, guest in the room at the end: {m_hasGuestStayed}");
+                            yield break;
+                        }
+                    }
                     var isSuccess = m_errors == 0 && (m_gamesPlayed > 0 || !m_requiresAGame) && (m_roomsLost > 0 || !m_expectsToLoseTheRoom);
                     Quit(isSuccess ? 0 : 1, $"room closed after {m_gamesPlayed} game(s), {m_roomsLost} room(s) lost, {m_errors} error(s)");
                     yield break;
+                }
+
+                // Back in the room after its game, the host of a real room closes it.
+                if (m_isRelayHost && onlineManager.IsInRoom && !onlineManager.IsInGame && m_gamesPlayed > 0 && IsMenuReady())
+                {
+                    yield return CloseTheRelayRoom();
+                    continue;
                 }
 
                 var gameplayContext = GameplayContext.Instance;
@@ -401,6 +476,8 @@ namespace Game.Online.Testing
                     Log($"game {onlineManager.GameNumber}: results, moves {moves}, scores {scores}");
                 }
                 m_isInResults = isInResults;
+                if (m_isRelayHost && isInResults)
+                    yield return LeaveTheResults(gameplayContext);
                 yield return null;
             }
         }
@@ -455,7 +532,7 @@ namespace Game.Online.Testing
             string error = "not tried";
             for (int attempt = 0; attempt < attempts && error != null; attempt++)
             {
-                yield return onlineManager.JoinRoom(null).ToCoroutine(result => error = result);
+                yield return onlineManager.JoinRoom(m_roomCode).ToCoroutine(result => error = result);
                 if (error == null)
                     break;
                 Log($"joining refused: {error}");
@@ -468,6 +545,115 @@ namespace Game.Online.Testing
                 MainMenuContext.Instance.MainMenuOrchestrator.SwitchToOnlineLobbyScreen();
             }
             onDone(error == null);
+        }
+
+        private static bool IsOnRelay => NetworkManager.Singleton
+                                         && NetworkManager.Singleton.NetworkConfig.NetworkTransport is UnityTransport { Protocol: UnityTransport.ProtocolType.RelayUnityTransport };
+
+        // What the boxes of the online screen can type (RoomCodeField).
+        private static bool CanBeTyped(string code)
+        {
+            return code != null && code.Length == RoomCodeField.k_Length
+                                && code.All(character => character is >= 'A' and <= 'Z' or >= '0' and <= '9');
+        }
+
+        // Opens the room, gives its code to the guest, and launches the game once the guest is in. It quits on a failure.
+        private IEnumerator HostTheRelayRoom(Action<bool> onDone)
+        {
+            var onlineManager = OnlineManager.Instance;
+            string error = "not tried";
+            yield return onlineManager.CreateRoom().ToCoroutine(result => error = result);
+            if (error != null || !onlineManager.IsInRoom)
+            {
+                Quit(4, $"couldn't open the room: {error}");
+                yield break;
+            }
+            var code = onlineManager.RoomCode;
+            Log($"room open, code {code}");
+            if (!CanBeTyped(code))
+            {
+                Quit(5, $"the online screen can't type the code {code}");
+                yield break;
+            }
+            if (!IsOnRelay)
+            {
+                Quit(6, "the connection doesn't go through Relay");
+                yield break;
+            }
+            MainMenuContext.Instance.MainMenuOrchestrator.SwitchToOnlineLobbyScreen();
+
+            // Whole or not there: the guest reads the file as soon as it exists.
+            var temporaryFile = m_relayCodeFile + ".tmp";
+            System.IO.File.WriteAllText(temporaryFile, code);
+            System.IO.File.Move(temporaryFile, m_relayCodeFile);
+
+            var deadline = Time.realtimeSinceStartup + k_RelayWaitSeconds;
+            while (onlineManager.IsInRoom && !onlineManager.CanLaunch && Time.realtimeSinceStartup < deadline)
+                yield return null;
+            if (!onlineManager.CanLaunch)
+            {
+                Quit(onlineManager.IsInRoom ? 7 : 9, "no guest joined the room");
+                yield break;
+            }
+            Log($"{onlineManager.Roster.Count} players in the room");
+            yield return new WaitForSecondsRealtime(k_RelayLaunchDelay);
+
+            var level = onlineManager.TrainingLevels.FirstOrDefault(candidate => candidate.name.Contains(k_RelayLevel));
+            if (level)
+            {
+                Log($"launching {level.name}");
+                onlineManager.LaunchTraining(level);
+            }
+            if (!onlineManager.IsInGame)
+            {
+                Quit(8, "the game couldn't be launched");
+                yield break;
+            }
+            onDone(true);
+        }
+
+        private IEnumerator ReadTheRoomCode()
+        {
+            var deadline = Time.realtimeSinceStartup + k_RelayWaitSeconds;
+            while (m_roomCode == null && Time.realtimeSinceStartup < deadline)
+            {
+                yield return new WaitForSecondsRealtime(0.5f);
+                try
+                {
+                    if (System.IO.File.Exists(m_relayCodeFile))
+                        m_roomCode = System.IO.File.ReadAllText(m_relayCodeFile).Trim();
+                }
+                catch (System.IO.IOException e)
+                {
+                    Log($"the room code can't be read yet: {e.Message}");
+                }
+            }
+        }
+
+        // The host leaves the results for everyone once they can be left, as its player's button would.
+        private static IEnumerator LeaveTheResults(GameplayContext gameplayContext)
+        {
+            var resultsPanel = gameplayContext.UIManager.GetPanel<ResultsPanel>();
+            if (!resultsPanel.IsButtonShown)
+                yield break;
+            Log("leaving the results");
+            var button = resultsPanel.GetComponent<UIDocument>().rootVisualElement.Q<Button>("back-to-menu-button");
+            using (var submit = NavigationSubmitEvent.GetPooled())
+            {
+                submit.target = button;
+                button.SendEvent(submit);
+            }
+            yield return new WaitForSecondsRealtime(1f);
+        }
+
+        private IEnumerator CloseTheRelayRoom()
+        {
+            yield return new WaitForSecondsRealtime(k_RelayCloseDelay);
+            var onlineManager = OnlineManager.Instance;
+            m_hasGuestStayed = onlineManager.Roster.Count >= OnlineManager.k_MinPlayers;
+            Log($"closing the room, {onlineManager.Roster.Count} players in it");
+            onlineManager.LeaveRoom();
+            MainMenuContext.Instance.MainMenuOrchestrator.SwitchToHubScreen();
         }
 
         private static bool IsMenuReady()

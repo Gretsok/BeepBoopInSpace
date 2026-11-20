@@ -16,6 +16,9 @@ namespace Game.Tournament.Results
         private readonly Dictionary<AbstractPlayer, int> m_playersScores = new();
         
         private ResultsManager m_resultsManager;
+
+        /// <summary>Instead of the config's: a shorter tournament, for the built game's smoke test.</summary>
+        public int? ScoreToReachOverride { get; set; }
         
         public void InjectDependencies(TournamentConfigDataAsset configDataAsset)
         {
@@ -45,7 +48,8 @@ namespace Game.Tournament.Results
 
         public bool IsGameComplete()
         {
-            return m_playersScores.Values.ToList().Exists(score => score >= m_configDataAsset.ScoreToReach);
+            var scoreToReach = ScoreToReachOverride ?? m_configDataAsset.ScoreToReach;
+            return m_playersScores.Values.ToList().Exists(score => score >= scoreToReach);
         }
 
         public IEnumerable<GameResult.SPlayerResult> GetPlayerResultsOf(AbstractPlayer player)

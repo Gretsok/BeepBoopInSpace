@@ -36,6 +36,9 @@ namespace Game.Gameplay.Flows.Results
             m_backToMenuButton = null;
         }
 
+        /// <summary>The results can be left.</summary>
+        public bool IsButtonShown => m_buttonCallback != null;
+
         public void ShowButton(Action buttonCallback)
         {
             m_buttonCallback = buttonCallback;

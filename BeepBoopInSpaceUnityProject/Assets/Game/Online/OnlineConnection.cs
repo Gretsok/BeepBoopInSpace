@@ -360,6 +360,7 @@ namespace Game.Online
                     cancellationToken: cancellationToken);
                 if (!AuthenticationService.Instance.IsSignedIn)
                     await AuthenticationService.Instance.SignInAnonymouslyAsync().AsUniTask().AttachExternalCancellation(cancellationToken);
+                Debug.Log($"[Online] Signed in as player {AuthenticationService.Instance.PlayerId} ({InstanceProfile}).");
             }
             catch (OperationCanceledException)
             {

@@ -86,8 +86,9 @@ def git(*args, input_bytes=None):
 
 
 def cmd_eol(args):
-    changed = git("diff", "--name-only", "--relative", "HEAD", "--", *args.paths).decode().split()
-    new = git("ls-files", "--others", "--exclude-standard", "--", *args.paths).decode().split()
+    # One path per line: many assets have spaces in their names.
+    changed = git("diff", "--name-only", "--relative", "HEAD", "--", *args.paths).decode().splitlines()
+    new = git("ls-files", "--others", "--exclude-standard", "--", *args.paths).decode().splitlines()
     wrong = []
     for path in changed + new:
         full = PROJECT / path

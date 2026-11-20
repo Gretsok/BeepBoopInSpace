@@ -12,6 +12,7 @@ Run `python unity_cli.py <command> --help` for the options of each command:
   log-flow        FlowMachine transitions and [Scenario] steps of a log, in order
   build           Windows player build via Game.Tools.Build.Editor.CommandLineBuild, optional zip
   run-build       launch a built player for N seconds, then triage its log
+  relay-test      two copies of a build play a real room (Unity services, Relay) by themselves, and quit
   screenshots     run the main menu scenario, which captures every menu screen, and list the PNGs
 
 Runs go to <project>/Logs/claude-runs/<timestamp>-<name>/ (Logs/ is ignored by git).
@@ -558,6 +559,9 @@ def cmd_screenshots(args):
 
 def cmd_run_build(args):
     exe = as_path(args.exe).resolve()
+    if args.seconds is None:
+        # The smoke test stops itself after 20 min (DemoSmokeTest.k_MaxDuration): killing it sooner would fail it.
+        args.seconds = 1200 if args.smoke else 20
     run = new_run_dir("player")
     log = run / "player.log"
     # Default: a small window. Only a windowed player runs its render loop, so only it reports render pipeline
@@ -566,27 +570,152 @@ def cmd_run_build(args):
         player_args = ["-batchmode", "-nographics"]
     else:
         player_args = ["-screen-fullscreen", "0", "-screen-width", "960", "-screen-height", "540"]
+    if args.smoke:
+        # The game plays two tournaments by itself (DemoSmokeTest) and quits, with pictures in the run's folder.
+        player_args = ["-screen-fullscreen", "0", "-screen-width", "1280", "-screen-height", "720", "-demo-smoke",
+                       "-no-analytics", "-demo-smoke-captures", str(run / "captures")]
+    # This machine's save may have said yes to the statistics: a control run sends nothing unless asked.
+    if not args.analytics and "-no-analytics" not in player_args:
+        player_args.append("-no-analytics")
     player_args = ["-logFile", str(log)] + player_args
     prefs = snapshot_player_prefs()
+    smoke_failed = False
     process = subprocess.Popen([str(exe), *player_args], cwd=exe.parent)
     print(f"Running {exe.name} (PID {process.pid}) for {args.seconds}s. Log: {log}")
     try:
         code = process.wait(timeout=args.seconds)
         print(f"The player exited by itself with code {code}.")
+        if args.smoke and code != 0:
+            smoke_failed = True
     except subprocess.TimeoutExpired:
         subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"], capture_output=True)
         print("Stopped the player (forced: its log ends abruptly, that is not a crash).")
+        smoke_failed = args.smoke
     time.sleep(1)
     if restore_player_prefs(prefs):
         print("Restored the game's preferences (registry) to their state before the run.")
     if not log.is_file():
         print("No player log was written.")
         return 1
-    states = re.findall(r"^\[FM\] (\S+) - (\S+) - ENTER", log.read_text(encoding="utf-8", errors="replace"), re.M)
+    text = log.read_text(encoding="utf-8", errors="replace")
+    states = re.findall(r"^\[FM\] (\S+) - (\S+) - ENTER", text, re.M)
     print(f"Last state reached: {states[-1][0]} -> {states[-1][1]}" if states else
           "No FlowMachine state reached: the game did not get to its menu.")
+    for line in re.findall(r"^\[DemoSmoke\] Performance: .*$", text, re.M):
+        print(line)
     has_errors = print_log_analysis(log, args.warnings)
-    return 1 if has_errors or not states else 0
+    return 1 if has_errors or not states or smoke_failed else 0
+
+
+# What OnlineGuestBot's exit codes say.
+RELAY_EXIT_CODES = {
+    0: "ok",
+    1: "an error logged, no game played, or game scenes left in the menu",
+    2: "took too long",
+    3: "couldn't join the room",
+    4: "couldn't open the room (services, Lobby, Relay: see the [Online] warnings)",
+    5: "the online screen can't type the room's code",
+    6: "the connection doesn't go through Relay",
+    7: "no room code, or no guest, in time",
+    8: "the game couldn't be launched",
+    9: "the host lost the room, or the guest left it",
+    10: "the room never finished closing",
+}
+# A copy failed: the other one would wait for it until its own timeouts, or leaves on its own in this time.
+RELAY_GRACE_SECONDS = 30
+
+
+def relay_game_results(text):
+    """The moves and the scores a copy saw at its game's results, from its report."""
+    match = re.search(r"results, moves ([-\d, ]+), scores ([-\d, ]+)$", text, re.M)
+    if not match:
+        return None, None
+    return [int(value) for value in match.group(1).split(",")], [int(value) for value in match.group(2).split(",")]
+
+
+def cmd_relay_test(args):
+    """Two copies play a room with a code, without -online-direct (OnlineGuestBot). No window: what this checks is the
+    network, a window out of focus would pause its copy before it reaches the room, and run-build --smoke checks the rendering."""
+    exe = as_path(args.exe).resolve()
+    if not exe.is_file():
+        print(f"No build at {exe}.")
+        return 1
+    run = new_run_dir("relay")
+    code_file = run / "room-code.txt"
+    # Each copy also signs in with its own profile (a mutex gives it, OnlineConnection.InstanceProfile), whose tokens go
+    # to these preferences: the copies come back as new anonymous players after the restore.
+    prefs = snapshot_player_prefs()
+    copies = {}
+    for role in ("host", "guest"):
+        log, report = run / f"{role}.log", run / f"{role}-report.txt"
+        process = subprocess.Popen([str(exe), "-batchmode", "-nographics", "-no-analytics", f"-relay-test-{role}", str(code_file),
+                                    "-online-test-guest-report", str(report), "-logFile", str(log)], cwd=exe.parent)
+        copies[role] = (process, log, report)
+        print(f"{role}: PID {process.pid}. Log: {log}")
+    start = time.time()
+    deadline = start + args.seconds
+    print(f"Waiting for both to quit, {args.seconds}s at most.")
+    while time.time() < deadline and any(process.poll() is None for process, _, _ in copies.values()):
+        if any(process.poll() not in (None, 0) for process, _, _ in copies.values()):
+            deadline = min(deadline, time.time() + RELAY_GRACE_SECONDS)
+        time.sleep(0.5)
+
+    success = True
+    codes = {}
+    for role, (process, _, _) in copies.items():
+        codes[role] = process.poll()
+        if codes[role] is None:
+            subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"], capture_output=True)
+            success = False
+    time.sleep(1)
+    if restore_player_prefs(prefs):
+        print("Restored the game's preferences (registry) to their state before the run.")
+    print(f"Over after {time.time() - start:.0f}s.")
+
+    player_ids = {}
+    results = {}
+    for role, (_, log, report) in copies.items():
+        code = codes[role]
+        print(f"\n{role}: " + ("stopped (forced: time up, or the other copy failed)" if code is None
+                               else f"exit code {code}, {RELAY_EXIT_CODES.get(code, 'unknown code')}"))
+        success = success and code == 0
+        report_text = report.read_text(encoding="utf-8", errors="replace") if report.is_file() else ""
+        for line in report_text.splitlines():
+            print(f"  {line}")
+        results[role] = relay_game_results(report_text)
+        if not log.is_file():
+            print("  No player log was written.")
+            success = False
+            continue
+        log_text = log.read_text(encoding="utf-8", errors="replace")
+        player_ids[role] = re.findall(r"^\[Online\] Signed in as player (\S+)", log_text, re.M)
+        for line in re.findall(r"^\[Online\] (?:Signed in|Room open|Joined the room).*$", log_text, re.M):
+            print(f"  {line}")
+        if print_log_analysis(log, include_warnings=True):
+            success = False
+
+    print()
+    if set(player_ids.get("host", [])) & set(player_ids.get("guest", [])):
+        print("FAILED: both copies signed in as the same player (authentication profiles).")
+        success = False
+    host_moves, host_scores = results["host"]
+    guest_moves, guest_scores = results["guest"]
+    if host_moves is None or guest_moves is None:
+        print("FAILED: a copy didn't report its game's results.")
+        success = False
+    else:
+        print(f"Host saw moves {host_moves}, scores {host_scores}; guest saw moves {guest_moves}, scores {guest_scores}.")
+        if host_scores != guest_scores:
+            print("FAILED: the scores differ.")
+            success = False
+        if len(host_moves) < 2 or host_moves[1] == 0:
+            print("FAILED: the guest's buttons didn't move its robot on the host.")
+            success = False
+        if not guest_moves or guest_moves[0] == 0:
+            print("FAILED: the host's robot didn't move on the guest.")
+            success = False
+    print(f"Relay test {'passed' if success else 'FAILED'}. Run folder: {run}")
+    return 0 if success else 1
 
 
 def main():
@@ -642,11 +771,20 @@ def main():
 
     p = sub.add_parser("run-build", help="launch a built player, then triage its log")
     p.add_argument("exe")
-    p.add_argument("--seconds", type=int, default=20)
+    p.add_argument("--seconds", type=int, help="default: 20, or 1200 with --smoke (the game gives up after 20 min)")
     p.add_argument("--headless", action="store_true",
                    help="no window (-batchmode -nographics): faster, but rendering is not checked at all")
+    p.add_argument("--analytics", action="store_true",
+                   help="let the player send GameAnalytics events (with a consent saved on this machine)")
+    p.add_argument("--smoke", action="store_true",
+                   help="the game plays two tournaments against bots by itself and quits (20 min at most)")
     p.add_argument("--warnings", action="store_true")
     p.set_defaults(func=cmd_run_build)
+
+    p = sub.add_parser("relay-test", help="two copies of a build play a real room (Unity services, Relay) by themselves")
+    p.add_argument("exe")
+    p.add_argument("--seconds", type=int, default=600, help="stops both copies after this long")
+    p.set_defaults(func=cmd_relay_test)
 
     p = sub.add_parser("screenshots", help="run the main menu scenario, then list its screenshots")
     p.add_argument("--filter", default="MainMenu_EveryScreen", help="scenario that captures (default: the menu test)")
