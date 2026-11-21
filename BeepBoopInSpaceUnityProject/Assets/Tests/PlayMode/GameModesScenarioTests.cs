@@ -100,7 +100,7 @@ namespace Game.Tests.PlayMode
             yield return StartTraining(mode);
 
             var played = new List<string>();
-            yield return PlayOneGame(random, played);
+            yield return PlayOneGame(random, played, roundScreenshot: mode == "Last Man Standing" ? "26-new-round" : null);
             Assert.That(played[0], Does.Contain($" - {mode} - "), "The game loaded another level than the one selected.");
 
             yield return BackToCharacterSelectionWith(characters);
@@ -576,7 +576,9 @@ namespace Game.Tests.PlayMode
         /// <summary>From the game scene loading to the end of its results screen.</summary>
         /// <param name="onResults">Called as the results show, before the close-ups.</param>
         /// <param name="onPlaying">Called once the game is on, before the buttons are pressed.</param>
-        private IEnumerator PlayOneGame(System.Random random, List<string> played, Action onResults = null, Action onPlaying = null)
+        /// <param name="roundScreenshot">Screenshot of the first new round's banner where a robot has won a round (its score board), if any.</param>
+        private IEnumerator PlayOneGame(System.Random random, List<string> played, Action onResults = null, Action onPlaying = null,
+            string roundScreenshot = null)
         {
             m_driver.Step("Game: loading");
             yield return m_driver.WaitUntil("the game to load",
@@ -595,6 +597,19 @@ namespace Game.Tests.PlayMode
 
             m_driver.Step($"{level}: playing");
             onPlaying?.Invoke();
+            if (roundScreenshot != null)
+            {
+                bool IsRoundWon() => GameplayState == "RoundAnnouncementState" && Scores.Split(',').Any(score => score.Trim() != "0");
+                yield return m_driver.MashButtonsUntil(() => IsRoundWon() || GameplayState is "ResultsState" or "EndState" or null, random, 300f);
+                if (IsRoundWon())
+                {
+                    // At the real pace while the banner unrolls and the round won pops on the score board.
+                    Time.timeScale = 1f;
+                    yield return RealSeconds(0.9f);
+                    yield return CaptureGameScreen(roundScreenshot);
+                    Time.timeScale = k_TimeScale;
+                }
+            }
             yield return m_driver.MashButtonsUntil(() => GameplayState is "ResultsState" or "EndState" or null, random, 300f);
             Debug.Log($"[Scenario] {level} finished. Scores: {Scores}");
             // The game's music ends with it: the next clip mustn't start over its end and its results.

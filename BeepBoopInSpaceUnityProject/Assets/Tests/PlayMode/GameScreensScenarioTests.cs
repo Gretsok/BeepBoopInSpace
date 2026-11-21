@@ -93,9 +93,10 @@ namespace Game.Tests.PlayMode
                     continue;
                 var announcement = GameplayState;
                 captured.Add(announcement);
-                // An announcement lasts a second or two of game time: at the real pace while its banner unrolls.
+                // An announcement lasts a second or two of game time: at the real pace while its banner unrolls and
+                // its score board pops the scores that changed.
                 Time.timeScale = 1f;
-                yield return RealSeconds(0.6f);
+                yield return RealSeconds(0.9f);
                 yield return CaptureScreen(s_announcementScreenshots[announcement]);
                 Time.timeScale = k_TimeScale;
             }
