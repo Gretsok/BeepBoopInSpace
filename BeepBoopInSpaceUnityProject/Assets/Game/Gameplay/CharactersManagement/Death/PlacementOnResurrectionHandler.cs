@@ -26,6 +26,9 @@ namespace Game.Gameplay.CharactersManagement.Death
         private GlobalGameplayDataManager m_globalGameplayDataManager;
         private Cell m_respawnCell;
         private Cell m_deathCell;
+        private float m_resurrectionTime;
+        private DeathPlacementFX m_deathPlacementFX;
+        private Vector3? m_shownRespawnPosition;
 
         private void Awake()
         {
@@ -40,10 +43,13 @@ namespace Game.Gameplay.CharactersManagement.Death
 
         private void HandleDeath(DeathController obj)
         {
+            // A new spark for each death, from where the robot died.
+            m_deathPlacementFX = null;
+            m_shownRespawnPosition = null;
+
             // Online guest: the host says where the robot comes back (ReplicateRespawnTarget) and takes it there.
             if (!Netplay.HasAuthority)
                 return;
-            var deathPosition = m_deathController.CharacterReferencesHolder.ModelSource.position;
             // Detaching clears the walker's current cell, so the death cell must be read first.
             m_deathCell = m_deathController.CharacterReferencesHolder.GridWalker.CurrentCell;
             m_deathController.CharacterReferencesHolder.MovementController.DistachFromCurrentCell();
@@ -53,41 +59,53 @@ namespace Game.Gameplay.CharactersManagement.Death
                 m_respawnCell = DecideAndReturnRespawnCell(m_deathCell);
                 if (!m_respawnCell)
                     return;
-                m_respawnCell.OnCellStateUpdated += HandleRespawnCellUpdated;
 
+                m_resurrectionTime = Time.time + m_deathController.WaitDurationToResurrect;
                 GameplaySync.NotifyRespawnTarget(m_deathController, m_respawnCell, m_deathController.WaitDurationToResurrect);
-                PlayDeathPlacementFX(m_respawnCell, m_deathController.WaitDurationToResurrect);
+                ShowRespawnTarget(m_respawnCell, m_deathController.WaitDurationToResurrect);
             }
+        }
+
+        // Another robot can walk onto the respawn cell while the spark travels, a hazard can take it: the robot will
+        // come back on the closest valid cell, where its spark heads to instead of announcing the wrong cell.
+        private void Update()
+        {
+            if (!m_respawnCell || m_deathController.IsAlive || !m_deathController.CanResurrect || !Netplay.HasAuthority
+                || CellIsValid(m_respawnCell))
+                return;
+
+            var newRespawnCell = ReturnClosestCellFrom(m_respawnCell);
+            if (!newRespawnCell || newRespawnCell == m_respawnCell)
+                return;
+            m_respawnCell = newRespawnCell;
+            var travelDuration = Mathf.Max(0f, m_resurrectionTime - Time.time);
+            GameplaySync.NotifyRespawnTarget(m_deathController, m_respawnCell, travelDuration);
+            ShowRespawnTarget(m_respawnCell, travelDuration);
         }
 
         /// <summary>Online guest: the host's robot will come back on the cell.</summary>
         public void ReplicateRespawnTarget(Cell respawnCell, float travelDuration)
         {
-            PlayDeathPlacementFX(respawnCell, travelDuration);
+            ShowRespawnTarget(respawnCell, travelDuration);
         }
 
-        // The robot's spark, from where it died to where it comes back.
-        private void PlayDeathPlacementFX(Cell respawnCell, float travelDuration)
+        // The robot's spark, from where it died to where it comes back. A new respawn cell turns it toward it, or
+        // starts a new one from the previous cell when it had already arrived.
+        private void ShowRespawnTarget(Cell respawnCell, float travelDuration)
         {
-            var deathPosition = m_deathController.CharacterReferencesHolder.ModelSource.position;
-            var deathPlacementFX = Instantiate(m_deathPlacementFXPrefab, deathPosition, Quaternion.identity);
-            deathPlacementFX.SetUp(m_deathController.CharacterReferencesHolder.CharacterDataAsset,
-                deathPosition,
-                respawnCell.transform.position,
-                travelDuration);
-        }
-
-        private void HandleRespawnCellUpdated(Cell cell)
-        {
-            m_respawnCell.OnCellStateUpdated -= HandleRespawnCellUpdated;
-
-            if (!CellIsValid(m_respawnCell))
+            var destination = respawnCell.transform.position;
+            if (m_deathPlacementFX)
+                m_deathPlacementFX.Retarget(destination, travelDuration);
+            else
             {
-                m_respawnCell = ReturnClosestCellFrom(m_deathCell);
+                var source = m_shownRespawnPosition ?? m_deathController.CharacterReferencesHolder.ModelSource.position;
+                m_deathPlacementFX = Instantiate(m_deathPlacementFXPrefab, source, Quaternion.identity);
+                m_deathPlacementFX.SetUp(m_deathController.CharacterReferencesHolder.CharacterDataAsset,
+                    source,
+                    destination,
+                    travelDuration);
             }
-
-            if (m_respawnCell)
-                m_respawnCell.OnCellStateUpdated += HandleRespawnCellUpdated;
+            m_shownRespawnPosition = destination;
         }
 
         private Cell DecideAndReturnRespawnCell(Cell sourceCell)
@@ -133,10 +151,10 @@ namespace Game.Gameplay.CharactersManagement.Death
         {
             if (m_respawnCell && Netplay.HasAuthority)
             {
-                m_respawnCell.OnCellStateUpdated -= HandleRespawnCellUpdated;
-                // The closest valid cell, else a random valid one: no other attempt would find more.
+                // The closest valid cell to the one the spark showed, else a random valid one: no other attempt
+                // would find more.
                 if (!CellIsValid(m_respawnCell))
-                    m_respawnCell = ReturnClosestCellFrom(m_deathCell);
+                    m_respawnCell = ReturnClosestCellFrom(m_respawnCell);
                 if (m_respawnCell)
                     TeleportToRespawnCell();
                 m_respawnCell = null;
