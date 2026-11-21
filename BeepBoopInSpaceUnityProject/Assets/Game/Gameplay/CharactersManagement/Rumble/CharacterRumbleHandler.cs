@@ -97,7 +97,7 @@ namespace Game.Gameplay.CharactersManagement.Rumble
                 if (device == null)
                     continue;
                 
-                device.SetMotorSpeeds(0f, 0f);
+                GamepadRumble.SetMotorSpeeds(device, 0f, 0f);
             }
         }
     }

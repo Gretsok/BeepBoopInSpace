@@ -35,7 +35,7 @@ namespace Game.Gameplay.CharactersManagement.Rumble
                 yield return null;
                 elapsedTime = GetCurrentTime() - startTime;
                 var durationRatio = elapsedTime / duration;
-                gamepad.SetMotorSpeeds(
+                GamepadRumble.SetMotorSpeeds(gamepad,
                     Mathf.Lerp(rumbleData.LowFrequenciesLimits.x, 
                         rumbleData.LowFrequenciesLimits.y, 
                         rumbleData.LowFrequenciesCurve.Evaluate(durationRatio)),
@@ -44,7 +44,7 @@ namespace Game.Gameplay.CharactersManagement.Rumble
                         rumbleData.HighFrequenciesCurve.Evaluate(durationRatio)));
             } while (elapsedTime < duration);
 
-            gamepad.SetMotorSpeeds(0f, 0f);
+            GamepadRumble.SetMotorSpeeds(gamepad, 0f, 0f);
             onComplete?.Invoke();
         }
     }
