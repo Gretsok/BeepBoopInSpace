@@ -18,6 +18,8 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LeastDeathsObjectiveManage
         [SerializeField]
         private PeriodicConfigurationChangesManager m_periodicConfigurationChangesManager;
 
+        public override string ScoreCaption => "Morts";
+
         protected override IEnumerator Initialize()
         {
             CharactersManager.RegisterPostInitializationCallback(manager =>

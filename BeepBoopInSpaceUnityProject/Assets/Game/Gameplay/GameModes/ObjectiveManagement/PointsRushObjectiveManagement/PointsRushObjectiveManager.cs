@@ -29,6 +29,8 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.PointsRushObjectiveManagem
         private PeriodicConfigurationChangesManager m_periodicConfigurationChangesManager;
         
         public Cell CurrentObjectiveCell { get; private set; }
+
+        public override string ScoreCaption => "Points";
         
         private GridBuilder m_gridBuilder;
         private CharactersManager m_charactersManager;

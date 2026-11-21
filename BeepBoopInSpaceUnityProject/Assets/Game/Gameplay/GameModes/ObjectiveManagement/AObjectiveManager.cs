@@ -8,6 +8,13 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement
     {
         [field: SerializeField]
         public string ObjectiveLabelKey { get; private set; }
+
+        /// <summary>What the scores count, over the score board of the announcements (French, translated by Loc).</summary>
+        public virtual string ScoreCaption => "Score";
+
+        /// <summary>The score that wins the game, shown as as many pips on the score board; 0 shows the number instead.</summary>
+        public virtual int ScoreGoal => 0;
+
         private void Awake()
         {
             StartCoroutine(Initialize_Internal());

@@ -5,6 +5,8 @@
             <ui:VisualElement class="banner" picking-mode="Ignore">
                 <ui:Label name="round-label" text="LE TOUR 2 COMMENCE" class="ui-text ui-heading banner__label" picking-mode="Ignore" />
             </ui:VisualElement>
+            <!-- The players' scores, hidden while they play (ScoreBoard). -->
+            <ui:VisualElement name="score-board" class="score-board" picking-mode="Ignore" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

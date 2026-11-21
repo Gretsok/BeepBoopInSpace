@@ -96,6 +96,9 @@ ce que les bugs passés ont appris :
   le chrono l'a déjà fait ;
 - déclarer le calcul du score dans `Initialize` :
   `ResultsManager.RegisterPostInitializationCallback(m => m.SetScoreCalculationMethod(...))` ;
+- dire ce que compte le score, pour le tableau des scores des bandeaux (`ScoreBoard`) : surcharger
+  `ScoreCaption` (texte français, traduit dans `Translations.cs`) et, pour un objectif gagné à un
+  nombre de points, `ScoreGoal` (des pastilles au lieu du nombre) ;
 - **jouable contre les robots** : apprendre à `BotController.Decide` à jouer ce nouvel objectif (`Bots_PlayAGameWithAPlayerAlone` vérifie qu'ils marquent) ;
 - **jouable en ligne** : tout ce qui décide (mort, case au hasard, point marqué, fin de manche, apparition)
   derrière `Netplay.HasAuthority`, l'hôte le dit aux invités par un message de `GameplaySync`

@@ -16,6 +16,8 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.MostKillsObjectiveManageme
         [SerializeField]
         private PeriodicConfigurationChangesManager m_periodicConfigurationChangesManager;
 
+        public override string ScoreCaption => "Victimes";
+
         protected override IEnumerator Initialize()
         {
             CharactersManager.RegisterPostInitializationCallback(manager =>

@@ -1,10 +1,10 @@
-using Game.UITools.Screens;
+using Game.Gameplay.Scores;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Game.Gameplay.RoundsManagement
 {
-    public class NewRoundPanel : BannerScreen
+    public class NewRoundPanel : ScoreBannerScreen
     {
         [SerializeField]
         private string m_roundText;

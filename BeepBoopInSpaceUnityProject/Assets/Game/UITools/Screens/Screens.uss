@@ -40,6 +40,97 @@
     translate: 0 -2px;
 }
 
+/*
+ * Score board under an announcement's banner (ScoreBoard): what the objective counts, then a card per robot with its
+ * score or its pips. The leaders' cards are outlined in their character's color (set by the code).
+ */
+
+.score-board {
+    margin-top: 18px;
+    padding: 12px 24px 22px 24px;
+    border-width: 3px;
+    border-radius: 36px;
+    border-color: var(--ui-outline);
+    background-color: var(--ui-ink);
+    align-items: center;
+}
+
+.ui-screen .score-board__caption {
+    font-size: 30px;
+    margin-bottom: 10px;
+    -unity-text-align: middle-center;
+}
+
+.score-board__cards {
+    flex-direction: row;
+    justify-content: center;
+}
+
+.score-card {
+    flex-direction: row;
+    align-items: center;
+    height: 104px;
+    margin: 0 10px;
+    padding: 0 26px 0 10px;
+    border-width: 4px;
+    border-radius: 30px;
+    border-color: var(--ui-navy);
+    background-color: var(--ui-navy);
+    transition-property: scale;
+    transition-duration: 0.1s;
+    transition-timing-function: ease-in-sine;
+}
+
+.score-card--leader {
+    scale: 1.08 1.08;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-out-back;
+}
+
+.score-card__icon {
+    width: 72px;
+    height: 90px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.score-card__badge {
+    position: absolute;
+    left: 4px;
+    top: -8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+}
+
+.ui-screen .score-card__badge .ui-badge__label {
+    font-size: 22px;
+    translate: 0 -2px;
+}
+
+.ui-screen .score-card__score {
+    min-width: 56px;
+    margin-left: 12px;
+    font-size: 64px;
+    -unity-text-align: middle-center;
+    translate: 0 -5px;
+}
+
+.score-card__pips {
+    flex-direction: row;
+    margin-left: 12px;
+}
+
+/* A round to win: hollow, filled with the character's color once won (set by the code). */
+.score-card__pip {
+    width: 28px;
+    height: 28px;
+    margin: 0 5px;
+    border-width: 3px;
+    border-radius: 14px;
+    border-color: var(--ui-outline);
+    background-color: var(--ui-ink);
+}
+
 /* Timer: a small cartouche hanging from the top of the screen. */
 
 .timer-row {

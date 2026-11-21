@@ -21,6 +21,9 @@ namespace Game.Gameplay.GameModes.ObjectiveManagement.LastManStandingObjectiveMa
         [field: SerializeField]
         public int PointsObjective { get; private set; } = 3;
         private RoundsManager m_roundsManager;
+
+        public override string ScoreCaption => "Manches gagnées";
+        public override int ScoreGoal => PointsObjective;
         
         public float TimePassed { get; private set; } = 0f;
         public bool IsTicking { get; private set; } = false;
