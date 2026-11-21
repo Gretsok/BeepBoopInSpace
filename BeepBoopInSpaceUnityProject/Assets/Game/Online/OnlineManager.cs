@@ -35,7 +35,7 @@ namespace Game.Online
         public const int k_MaxPlayers = 4;
         public const int k_MinPlayers = 2;
         // Machines with another version can't join: their messages wouldn't say the same things.
-        private const int k_ProtocolVersion = 1;
+        private const int k_ProtocolVersion = 2;
         // Netcode's id of the host's machine.
         private const ulong k_HostMachineId = 0;
 

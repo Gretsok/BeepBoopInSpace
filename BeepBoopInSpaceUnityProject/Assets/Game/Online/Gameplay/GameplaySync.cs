@@ -15,6 +15,7 @@ using Game.Gameplay.Flows._0_Load;
 using Game.Gameplay.Flows.End;
 using Game.Gameplay.Flows.Tutorial;
 using Game.Gameplay.GameModes.GameplayModifiers.Meteorites;
+using Game.Gameplay.GameModes.ObjectiveManagement.LastManStandingObjectiveManagement;
 using Game.Gameplay.GameModes.ObjectiveManagement.PointsRushObjectiveManagement;
 using Game.Gameplay.GridSystem;
 using Game.Gameplay.Timer;
@@ -299,6 +300,12 @@ namespace Game.Online.Gameplay
             Send(EOnlineMessage.PointCollected, controller.ReferencesHolder, writer => WriteCell(writer, cell));
         }
 
+        /// <summary>Last Man Standing: the robot won the round.</summary>
+        public static void NotifyRoundWon(CharacterReferencesHolder winner)
+        {
+            Send(EOnlineMessage.RoundWon, winner);
+        }
+
         public static void NotifyRound(int roundIndex)
         {
             SendWithoutRobot(EOnlineMessage.Round, writer => writer.Write(roundIndex));
@@ -544,6 +551,10 @@ namespace Game.Online.Gameplay
                         pointsRush.ReplicatePointCollected(robot.MovementController, cell);
                     break;
                 }
+                case EOnlineMessage.RoundWon:
+                    if (m_gameplayContext.ObjectiveManager is LastManStandingObjectiveManager lastManStanding)
+                        lastManStanding.ReplicateRoundWon(robot);
+                    break;
             }
         }
 

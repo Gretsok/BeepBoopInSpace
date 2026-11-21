@@ -39,6 +39,7 @@ namespace Game.Online
         Round = 36,
         Timer = 37,
         TutorialStatus = 38,
+        RoundWon = 39,
 
         // Game, guest to host: what its players pressed.
         PlayerAction = 60,
