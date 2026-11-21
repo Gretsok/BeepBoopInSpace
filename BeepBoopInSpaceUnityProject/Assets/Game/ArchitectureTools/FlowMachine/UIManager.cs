@@ -19,7 +19,7 @@ namespace Game.ArchitectureTools.FlowMachine
         [Button]
         private void FetchPanelsInCurrentScene()
         {
-            var panels = FindObjectsByType<Panel>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+            var panels = FindObjectsByType<Panel>(FindObjectsInactive.Include)
                 .ToList().FindAll(panel => panel.gameObject.scene == gameObject.scene);
             
             for (int i = 0; i < panels.Count; i++)
