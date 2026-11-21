@@ -89,6 +89,15 @@ les modifications suivantes hors du projet (dossier temporaire) et les appliquer
   (`winreg`, lancé par l'outil Bash), puis vérifier avec `reg query` lancé depuis Bash.
 - `quick-compile` ne voit que ce que Unity a déjà compilé une fois : sans `Library/Bee` (projet
   fraîchement cloné), lancer `compile` d'abord.
+- **Worktree de Claude Code** (`.claude/worktrees/<nom>/BeepBoopInSpaceUnityProject`) : le chemin est trop
+  long pour Unity, qui n'extrait pas une partie de `Library/PackageCache` (chemins de plus de 260 caractères :
+  des centaines de `DirectoryNotFoundException` à l'import, même si la compilation réussit). Créer une
+  jonction courte vers le worktree (PowerShell : `New-Item -ItemType Junction -Path C:\Users\<moi>\bbw
+  -Target <worktree>`), supprimer la `Library` incomplète, puis lancer chaque commande avec
+  `BEEPBOOP_PROJECT=C:/Users/<moi>/bbw/BeepBoopInSpaceUnityProject` : sans cette variable, l'outil résout la
+  jonction et rend à Unity le chemin long. Dans un worktree neuf, premier import ~5 min, premier build
+  ~37 min (toutes les variantes de shaders). Supprimer la jonction à la fin (`Remove-Item` sur la jonction
+  seule, pas sur sa cible).
 - Un projet ouvert pour la première fois dans une nouvelle version de Unity ré-écrit des centaines
   de `.meta` et de `.asset` : ce n'est pas une régression (voir le skill `unity-upgrade`).
 - **Un import headless fait ce que ferait l'éditeur** : il crée le `.meta` d'un fichier déposé par
