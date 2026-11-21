@@ -38,6 +38,10 @@ namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
         private float m_minimalDropTime = 0.1f;
         public float DropTime => Mathf.Max(m_minimalDropTime, m_startDropTime - m_dropTimeReducingSpeed * TimePassedSpawning);
 
+        [SerializeField, Tooltip("No new meteorite for this long each time the game resumes (start, new buttons, new round): the players get to grips with their buttons first. The intensity doesn't grow meanwhile.")]
+        private float m_quietTimeAfterResume = 2f;
+        private float m_quietTimeLeft;
+
         public bool IsSpawning { get; private set; }
         public float TimePassedSpawning { get; private set; }
         
@@ -71,6 +75,7 @@ namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
         private void ActivateMeteoritesSpawning()
         {
             m_lastSpawnTime = float.MinValue;
+            m_quietTimeLeft = m_quietTimeAfterResume;
             IsSpawning = true;
         }
 
@@ -85,6 +90,12 @@ namespace Game.Gameplay.GameModes.GameplayModifiers.Meteorites
             // Online guest: the host drops the meteorites (ReplicateMeteorite).
             if (!IsSpawning || !Netplay.HasAuthority)
                 return;
+
+            if (m_quietTimeLeft > 0f)
+            {
+                m_quietTimeLeft -= Time.deltaTime;
+                return;
+            }
 
             TimePassedSpawning += Time.deltaTime;
             
