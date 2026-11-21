@@ -52,17 +52,30 @@ namespace Game.Gameplay.CharactersManagement.SpecialActionsSystem.SniperRifle
         }
 
         private void FireBullet()
-        {            
-            var model = ReferencesHolder.ModelSource;
-            var bullet = Instantiate(m_bulletPrefab,
-                model.position + Vector3.up * m_bulletHeight + model.forward * m_bulletStartingForwardPosition,
-                Quaternion.identity);
+        {
+            var direction = ReferencesHolder.MovementController.GetWorldDirection();
+            var bullet = Instantiate(m_bulletPrefab, GetMuzzlePosition(direction), Quaternion.identity);
 
-            bullet.SetUp(bullet.transform.position, ReferencesHolder.MovementController.GetWorldDirection(),
-                HandleProjectileTriggerEnter);
+            bullet.SetUp(bullet.transform.position, direction, HandleProjectileTriggerEnter);
             OnShot?.Invoke(this, bullet);
-            
+
             m_lastShotTime = Time.time;
+        }
+
+        // On the robot's row of cells, wherever its model is in a jump or a turn: from the model, a shot right after a
+        // step aside or a turn flew off the row, beside the robots in front of it. Level with the model along the row,
+        // at the height of a robot on the ground (y = 0, where the moves land).
+        private Vector3 GetMuzzlePosition(Vector3 direction)
+        {
+            var model = ReferencesHolder.ModelSource.position;
+            var cell = ReferencesHolder.GridWalker.CurrentCell;
+            if (!cell)
+                return model + Vector3.up * m_bulletHeight + direction * m_bulletStartingForwardPosition;
+
+            var row = cell.transform.position;
+            row.y = 0f;
+            var alongTheRow = Vector3.Dot(model - row, direction);
+            return row + direction * (alongTheRow + m_bulletStartingForwardPosition) + Vector3.up * m_bulletHeight;
         }
 
         private void HandleProjectileTriggerEnter(Collider obj, Projectile projectile)
