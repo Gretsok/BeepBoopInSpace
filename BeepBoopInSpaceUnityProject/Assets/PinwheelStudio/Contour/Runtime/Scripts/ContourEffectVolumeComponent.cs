@@ -5,15 +5,11 @@ using UnityEngine.Rendering.Universal;
 namespace Pinwheel.Contour
 {
     [VolumeComponentMenu("Post-processing Custom/Contour")]
+    [DisplayInfo(name = "Contour")]
     [VolumeRequiresRendererFeatures(typeof(ContourEffectRendererFeature))]
     [SupportedOnRenderPipeline(typeof(UniversalRenderPipelineAsset))]
     public sealed class ContourEffectVolumeComponent : VolumeComponent, IPostProcessComponent
     {
-        public ContourEffectVolumeComponent()
-        {
-            displayName = "Contour";
-        }
-
         public ClampedFloatParameter intensity = new ClampedFloatParameter(0f, 0f, 1f);
 
         [Header("Edge Detection")]

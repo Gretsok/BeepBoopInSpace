@@ -70,6 +70,13 @@ namespace Game.Gameplay.Flows.Results
             Invoke(nameof(ViewingNextCharacter), m_waitTimeOnStart);
         }
 
+        protected override void HandleLeave()
+        {
+            base.HandleLeave();
+            // Pending close-ups would otherwise keep running, and overlap a new sequence if the state is entered again.
+            CancelInvoke();
+        }
+
         private void ViewingNextCharacter()
         {
             if (m_currentPositionner)

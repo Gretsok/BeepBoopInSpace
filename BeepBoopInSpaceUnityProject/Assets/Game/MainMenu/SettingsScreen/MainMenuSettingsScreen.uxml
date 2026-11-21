@@ -1,0 +1,24 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../UI/MainMenu.uss" />
+    <ui:VisualElement name="settings-screen" class="mm-screen" picking-mode="Ignore">
+        <ui:Label text="Paramètres" class="mm-title settings__title" />
+        <ui:VisualElement class="settings__volumes" picking-mode="Ignore">
+            <ui:VisualElement name="master-volume" class="settings-row">
+                <ui:Label text="Volume général" class="settings-row__label" />
+                <ui:SliderInt low-value="0" high-value="100" page-size="5" fill="true" class="settings-row__slider" />
+                <ui:Label class="settings-row__value" />
+            </ui:VisualElement>
+            <ui:VisualElement name="music-volume" class="settings-row">
+                <ui:Label text="Musique" class="settings-row__label" />
+                <ui:SliderInt low-value="0" high-value="100" page-size="5" fill="true" class="settings-row__slider" />
+                <ui:Label class="settings-row__value" />
+            </ui:VisualElement>
+            <ui:VisualElement name="sfx-volume" class="settings-row">
+                <ui:Label text="Effets sonores" class="settings-row__label" />
+                <ui:SliderInt low-value="0" high-value="100" page-size="5" fill="true" class="settings-row__slider" />
+                <ui:Label class="settings-row__value" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Button name="back-button" text="Retour" class="mm-button mm-corner--bottom-left" />
+    </ui:VisualElement>
+</ui:UXML>

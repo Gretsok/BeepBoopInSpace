@@ -1,0 +1,27 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../UI/MainMenu.uss" />
+    <ui:VisualElement name="credits-screen" class="mm-screen credits">
+        <ui:Label text="Crédits" class="mm-title credits__title" />
+        <ui:VisualElement class="credits__column credits__column--left" picking-mode="Ignore">
+            <ui:Label text="Art" class="credits__section" />
+            <ui:Label text="Alexandre gaule" class="credits__name" />
+            <ui:Label text="Chloé BAVEYE" class="credits__name" />
+            <ui:Label text="Victoire cellier" class="credits__name" />
+            <ui:Label text="Fanny SERRÉ" class="credits__name" />
+        </ui:VisualElement>
+        <ui:VisualElement class="credits__column credits__column--right" picking-mode="Ignore">
+            <ui:Label text="Programmation" class="credits__section" />
+            <ui:Label text="Fergal mechin" class="credits__name" />
+            <ui:Label text="Idéation" class="credits__section credits__section--spaced" />
+            <ui:Label text="Jonas TEN CATE" class="credits__name" />
+        </ui:VisualElement>
+        <ui:VisualElement class="credits__extra" picking-mode="Ignore">
+            <ui:Label text="Aides supplémentaires" class="credits__section" />
+            <ui:Label text="Jérémy HOARAU" class="credits__name" />
+            <ui:Label text="Pierre Vue" class="credits__name" />
+        </ui:VisualElement>
+        <ui:VisualElement name="logo" class="credits__logo" picking-mode="Ignore" />
+        <ui:Label text="Police : Magnetar sur dafont" class="credits__font" />
+        <ui:Button name="back-button" text="Retour" class="mm-button mm-corner--bottom-left" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -13,7 +13,8 @@ namespace Game.Global.SFXManagement
         public float Volume { get; private set; } = 1f;
 
         private AudioManager m_audioManager;
-        private void Start()
+        // Awake rather than Start: a player can be played in the frame its GameObject gets enabled.
+        private void Awake()
         {
             GlobalContext.RegisterPostInitializationCallback(context =>
             {

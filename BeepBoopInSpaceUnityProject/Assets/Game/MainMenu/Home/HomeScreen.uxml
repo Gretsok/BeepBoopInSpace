@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../UI/MainMenu.uss" />
+    <ui:VisualElement name="home-screen" class="mm-screen" picking-mode="Ignore">
+        <ui:VisualElement class="home-title" picking-mode="Ignore">
+            <ui:Label text="Beep Boop" class="mm-title home-title__main" />
+            <ui:Label text="dans l&apos;espace" class="mm-title home-title__sub" />
+        </ui:VisualElement>
+        <ui:Button name="play-button" text="JOUER" class="mm-play-button home-play" />
+        <ui:VisualElement class="mm-centered-row home-credits-row" picking-mode="Ignore">
+            <ui:Button name="credits-button" text="Crédits" class="mm-button" />
+        </ui:VisualElement>
+        <ui:Button name="settings-button" text="Paramètres" class="mm-button mm-corner--bottom-left" />
+        <ui:Button name="quit-button" text="Quitter" class="mm-button mm-corner--bottom-right" />
+    </ui:VisualElement>
+</ui:UXML>

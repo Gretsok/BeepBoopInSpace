@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:VisualElement class="player-slot" picking-mode="Ignore">
+        <ui:VisualElement class="player-slot__banner" picking-mode="Ignore">
+            <ui:Label name="character-name" class="player-slot__name" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement name="pop-indication" class="player-slot__indication" picking-mode="Ignore" />
+        <ui:VisualElement name="already-selected" class="player-slot__lock" picking-mode="Ignore">
+            <ui:VisualElement class="player-slot__lock-icon" picking-mode="Ignore">
+                <ui:VisualElement class="player-slot__lock-icon-overlay" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:Label text="Choisi par un autre joueur" class="player-slot__lock-label" picking-mode="Ignore" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

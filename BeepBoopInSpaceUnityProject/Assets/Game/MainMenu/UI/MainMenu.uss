@@ -1,0 +1,515 @@
+/*
+ * Main menu styles, shared by every screen. Sizes are in the 1920x1080 reference resolution of
+ * MainMenuPanelSettings, which scales the UI to the screen width.
+ * Focus is the selection state for every device: gamepad and keyboard move it, the mouse focuses what it hovers.
+ */
+
+.mm-screen {
+    --mm-pink: rgb(255, 179, 234);
+    --mm-pink-strong: rgb(253, 68, 232);
+    --mm-purple: rgb(190, 108, 170);
+    --mm-purple-dark: rgba(110, 52, 100, 0.9);
+    --mm-purple-light: rgb(245, 190, 236);
+    --mm-white: rgb(245, 245, 245);
+
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    color: rgb(255, 255, 255);
+}
+
+.mm-screen,
+.mm-screen .unity-text-element {
+    -unity-font-definition: url("/Assets/RawAssets/Fonts/magnetar_2/Magnetar.otf");
+}
+
+.mm-title {
+    font-size: 72px;
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* Buttons. The code removes Unity's button class from them, so these rules are their whole style. */
+
+.mm-button {
+    margin: 0;
+    padding: 12px 32px;
+    border-width: 4px;
+    border-radius: 10px;
+    border-color: var(--mm-purple-light);
+    background-color: var(--mm-purple-dark);
+    color: rgb(255, 255, 255);
+    font-size: 36px;
+    -unity-text-align: middle-center;
+    transition-property: scale, background-color, border-color, color;
+    transition-duration: 0.1s, 0.1s, 0.1s, 0.1s;
+    transition-timing-function: ease-out-sine, ease-out-sine, ease-out-sine, ease-out-sine;
+}
+
+.mm-button:focus {
+    scale: 1.1 1.1;
+    border-color: rgb(255, 255, 255);
+    background-color: var(--mm-white);
+    color: var(--mm-purple);
+    transition-duration: 0.3s, 0.1s, 0.1s, 0.1s;
+    transition-timing-function: ease-out-back, ease-out-sine, ease-out-sine, ease-out-sine;
+}
+
+.mm-button:active {
+    background-color: rgb(200, 200, 200);
+}
+
+.mm-button:disabled {
+    opacity: 0.5;
+}
+
+.mm-button--primary {
+    padding: 10px 40px;
+    border-color: rgb(255, 214, 247);
+    background-color: rgb(255, 160, 238);
+    font-size: 48px;
+    text-shadow: 2px 2px 3px rgba(120, 30, 100, 0.6);
+}
+
+.mm-button--primary:focus {
+    color: rgb(220, 60, 190);
+    text-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+/* The big pink button of the Play and Start game actions. */
+.mm-play-button {
+    margin: 0;
+    padding: 0 0 12px 0;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    background-image: url("/Assets/RawAssets/UI/UI_ButtonPlayE.png");
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgb(204, 179, 255);
+    color: var(--mm-pink);
+    font-size: 108px;
+    -unity-text-align: middle-center;
+    text-shadow: 3px 3px 4px rgba(90, 20, 80, 0.6);
+    transition-property: scale, -unity-background-image-tint-color, color;
+    transition-duration: 0.1s, 0.1s, 0.1s;
+    transition-timing-function: ease-out-sine, ease-out-sine, ease-out-sine;
+}
+
+.mm-play-button:focus {
+    scale: 1.1 1.1;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    color: rgb(255, 255, 255);
+    transition-duration: 0.3s, 0.1s, 0.1s;
+    transition-timing-function: ease-out-back, ease-out-sine, ease-out-sine;
+}
+
+.mm-play-button:disabled {
+    opacity: 0.4;
+}
+
+/* Rows that center a button horizontally, and corner placements. */
+
+.mm-centered-row {
+    position: absolute;
+    left: 0;
+    right: 0;
+    align-items: center;
+}
+
+.mm-corner--top-left {
+    position: absolute;
+    left: 60px;
+    top: 40px;
+}
+
+.mm-corner--bottom-left {
+    position: absolute;
+    left: 60px;
+    bottom: 30px;
+}
+
+.mm-corner--bottom-right {
+    position: absolute;
+    right: 60px;
+    bottom: 30px;
+}
+
+/* Home */
+
+.home-title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 105px;
+    align-items: center;
+}
+
+.home-title__main {
+    font-size: 108px;
+}
+
+.home-title__sub {
+    margin-top: -30px;
+    font-size: 72px;
+}
+
+.home-play {
+    position: absolute;
+    left: 560px;
+    top: 390px;
+    width: 800px;
+    height: 300px;
+}
+
+.home-credits-row {
+    top: 720px;
+}
+
+/* Hub */
+
+.hub-tournament-row {
+    top: 215px;
+}
+
+.hub-quit-row {
+    bottom: 44px;
+}
+
+.hub-side-button {
+    position: absolute;
+    top: 50%;
+    translate: 0 -50%;
+}
+
+.hub-training {
+    right: 83px;
+}
+
+.hub-character-selection {
+    left: 91px;
+}
+
+.hub-settings {
+    position: absolute;
+    left: 44px;
+    top: 47px;
+}
+
+/* Credits */
+
+.credits {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.credits__title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50px;
+    font-size: 108px;
+}
+
+.credits__column {
+    position: absolute;
+    top: 262px;
+    width: 50%;
+    align-items: center;
+}
+
+.credits__column--left {
+    left: 0;
+}
+
+.credits__column--right {
+    right: 0;
+}
+
+.credits__extra {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 662px;
+    align-items: center;
+}
+
+.credits__section {
+    height: 76px;
+    margin-bottom: 37px;
+    font-size: 72px;
+    -unity-text-align: middle-center;
+}
+
+.credits__section--spaced {
+    margin-top: 50px;
+}
+
+.credits__name {
+    height: 50px;
+    font-size: 36px;
+    -unity-text-align: middle-center;
+}
+
+.credits__logo {
+    position: absolute;
+    left: 340px;
+    bottom: -6px;
+    width: 300px;
+    height: 300px;
+    background-image: url("/Assets/RawAssets/UI/LogoVBleu.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.credits__font {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    font-size: 36px;
+}
+
+/* Character selection: four columns, each centered on a character model of the 3D scene behind. */
+
+.player-slots {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    flex-direction: row;
+}
+
+.player-slots__column {
+    flex-grow: 1;
+    flex-basis: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-slot {
+    width: 300px;
+    height: 800px;
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 0.15s;
+}
+
+.player-slot--active .player-slot {
+    opacity: 1;
+}
+
+.player-slot__banner {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -33px;
+    height: 80px;
+    border-width: 5px;
+    border-color: rgb(234, 191, 255);
+    background-color: rgb(193, 130, 221);
+    justify-content: center;
+}
+
+.player-slot__name {
+    font-size: 36px;
+    -unity-text-align: middle-center;
+}
+
+.player-slot__indication {
+    position: absolute;
+    left: 100px;
+    top: 143px;
+    width: 100px;
+    height: 100px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.player-slot__lock {
+    position: absolute;
+    left: -50px;
+    right: -50px;
+    top: 225px;
+    align-items: center;
+}
+
+.player-slot__lock-icon {
+    width: 400px;
+    height: 350px;
+    background-image: url("/Assets/RawAssets/UI/Menus/UI_LockA.png");
+    -unity-background-image-tint-color: rgb(255, 0, 7);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.player-slot__lock-icon-overlay {
+    flex-grow: 1;
+    background-image: url("/Assets/RawAssets/UI/Menus/UI_LockB.png");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.player-slot__lock-label {
+    width: 260px;
+    height: 60px;
+    margin-top: -18px;
+    padding: 10px;
+    background-color: rgb(236, 210, 228);
+    color: rgb(0, 0, 0);
+    font-size: 18px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+.character-selection__start {
+    position: absolute;
+    right: 30px;
+    bottom: 20px;
+    width: 900px;
+    height: 270px;
+    font-size: 72px;
+}
+
+/* Level selection */
+
+.level-selection {
+    background-color: rgba(25, 20, 30, 0.85);
+}
+
+.level-selection__title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 45px;
+    font-size: 48px;
+}
+
+.level-selection__levels {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 15%;
+    bottom: 0;
+    background-color: rgba(75, 68, 74, 0.6);
+}
+
+.mm-screen .level-selection__levels .unity-scroll-view__content-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 30px 20px;
+}
+
+.level-card {
+    width: 500px;
+    height: 300px;
+    margin: 40px;
+    padding: 0;
+    border-width: 8px;
+    border-radius: 6px;
+    border-color: rgba(0, 0, 0, 0);
+    background-color: rgba(0, 0, 0, 0);
+    transition-property: scale, border-color;
+    transition-duration: 0.1s, 0.1s;
+    transition-timing-function: ease-out-sine, ease-out-sine;
+}
+
+.level-card:focus {
+    scale: 1.1 1.1;
+    border-color: var(--mm-pink-strong);
+    transition-duration: 0.3s, 0.1s;
+    transition-timing-function: ease-out-back, ease-out-sine;
+}
+
+.level-card__thumbnail {
+    height: 192px;
+    background-color: rgb(255, 255, 255);
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.level-card__name {
+    flex-grow: 1;
+    font-size: 36px;
+    color: rgb(255, 255, 255);
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+/* Settings */
+
+.settings__title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50px;
+}
+
+.settings__volumes {
+    position: absolute;
+    left: 310px;
+    right: 310px;
+    top: 260px;
+}
+
+.settings-row {
+    flex-direction: row;
+    align-items: center;
+    height: 110px;
+    margin-bottom: 60px;
+    padding: 0 30px;
+    border-width: 4px;
+    border-radius: 12px;
+    border-color: rgba(0, 0, 0, 0);
+    background-color: var(--mm-purple-dark);
+    transition-property: scale, border-color, background-color;
+    transition-duration: 0.1s, 0.1s, 0.1s;
+}
+
+.settings-row--focused {
+    scale: 1.05 1.05;
+    border-color: rgb(255, 255, 255);
+    background-color: var(--mm-purple);
+}
+
+.settings-row__label {
+    width: 420px;
+    font-size: 40px;
+}
+
+.settings-row__value {
+    width: 100px;
+    font-size: 40px;
+    -unity-text-align: middle-right;
+}
+
+.mm-screen .settings-row .settings-row__slider {
+    flex-grow: 1;
+    margin: 0 30px;
+}
+
+.mm-screen .settings-row .settings-row__slider .unity-base-slider__drag-container {
+    height: 50px;
+}
+
+.mm-screen .settings-row .settings-row__slider .unity-base-slider__tracker {
+    height: 16px;
+    margin-top: -8px;
+    border-width: 0;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.mm-screen .settings-row .settings-row__slider .unity-base-slider__fill {
+    border-radius: 8px;
+    background-color: var(--mm-pink);
+}
+
+.mm-screen .settings-row .settings-row__slider .unity-base-slider__dragger {
+    width: 36px;
+    height: 36px;
+    margin-top: -18px;
+    border-width: 0;
+    border-radius: 18px;
+    background-color: rgb(255, 255, 255);
+}
+
+.mm-screen .settings-row .settings-row__slider .unity-base-slider__dragger-border {
+    display: none;
+}

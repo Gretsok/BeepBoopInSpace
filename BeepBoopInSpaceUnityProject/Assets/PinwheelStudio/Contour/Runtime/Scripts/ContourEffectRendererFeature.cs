@@ -167,7 +167,9 @@ namespace Pinwheel.Contour
             private static readonly int kNonEdgeColorPropertyId = Shader.PropertyToID("_NonEdgeColor");
             private static readonly int kThicknessPropertyId = Shader.PropertyToID("_Thickness");
 
+#if !UNITY_6000_6_OR_NEWER
             private RTHandle m_CopiedColor;
+#endif
 
             public EdgeDetectionPass(string passName, Material material)
             {
@@ -216,6 +218,8 @@ namespace Pinwheel.Contour
             #endregion
 #endif
 
+            // Compatibility mode (non Render Graph) was removed from URP in Unity 6.6
+#if !UNITY_6000_6_OR_NEWER
             #region PASS_NON_RENDER_GRAPH_PATH
             [System.Obsolete("This rendering path is for compatibility mode only (when Render Graph is disabled). Use Render Graph API instead.", false)]
             public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
@@ -261,6 +265,7 @@ namespace Pinwheel.Contour
                 Blitter.BlitTexture(cmd, sourceTexture, new Vector4(1, 1, 0, 0), 0.0f, false);
             }
             #endregion
+#endif
 
             #region PASS_SHARED_RENDERING_CODE
             private static void ExecuteMainPass(RasterCommandBuffer cmd, RTHandle sourceTexture, Material material)

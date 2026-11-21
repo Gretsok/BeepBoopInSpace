@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../UI/MainMenu.uss" />
+    <ui:VisualElement name="level-selection-screen" class="mm-screen level-selection">
+        <ui:Label text="Choix du niveau" class="mm-title level-selection__title" />
+        <ui:Button name="back-button" text="Retour" class="mm-button mm-corner--top-left" />
+        <ui:ScrollView name="levels" mode="Vertical" horizontal-scroller-visibility="Hidden" class="level-selection__levels" />
+    </ui:VisualElement>
+</ui:UXML>

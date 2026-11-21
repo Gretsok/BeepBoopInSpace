@@ -40,6 +40,10 @@ namespace Game.MainMenu
             m_hubState.Initialize(globalContext, mainMenuContext);
             m_levelSelectionState.Initialize(globalContext, mainMenuContext);
 
+            // Games hide and lock the cursor: the menus are also played with the mouse.
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+
             LoadingScreenManager.Instance.HideLoadingScreen();
         }
 

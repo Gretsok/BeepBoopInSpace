@@ -1,51 +1,27 @@
 using System;
 using Game.Gameplay.Levels._0_Core;
-using TMPro;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace Game.MainMenu.LevelSelection
 {
-    public class LevelWidget : Selectable,
-        ISubmitHandler
+    /// <summary>A level card of the level selection, cloned from the LevelWidget UXML. Clicking or submitting it selects the level.</summary>
+    public class LevelWidget
     {
-        [SerializeField]
-        private Transform m_thumbnailContainer;
-        [SerializeField]
-        private Image m_thumbnailImage;
-        [SerializeField]
-        private TMP_Text m_levelNameText;
+        public Button Element { get; }
+        public LevelDataAsset LevelDataAsset { get; }
 
-        [SerializeField]
-        private GameObject m_selectedGO;
-        public Action<LevelDataAsset> OnLevelSelected;
-        public LevelDataAsset LevelDataAsset { get; private set; }
+        public event Action<LevelDataAsset> OnLevelSelected;
 
-        public void Initialize(LevelDataAsset levelDataAsset)
+        public LevelWidget(VisualTreeAsset template, LevelDataAsset levelDataAsset)
         {
-            m_selectedGO.SetActive(false);
-            
             LevelDataAsset = levelDataAsset;
-            m_thumbnailImage.sprite = LevelDataAsset.Thumbnail;
-            m_levelNameText.text = LevelDataAsset.NameKey;
-        }
 
-        public override void OnSelect(BaseEventData eventData)
-        {
-            base.OnSelect(eventData);
-            m_selectedGO.SetActive(true);
-        }
-
-        public override void OnDeselect(BaseEventData eventData)
-        {
-            base.OnDeselect(eventData);
-            m_selectedGO.SetActive(false);
-        }
-
-        public void OnSubmit(BaseEventData eventData)
-        {
-            OnLevelSelected?.Invoke(LevelDataAsset);
+            Element = template.Instantiate().Q<Button>("level-card");
+            // Styled by MainMenu.uss alone, without the default theme's button style.
+            Element.RemoveFromClassList(Button.ussClassName);
+            Element.Q("thumbnail").style.backgroundImage = new StyleBackground(LevelDataAsset.Thumbnail);
+            Element.Q<Label>("level-name").text = LevelDataAsset.NameKey;
+            Element.clicked += () => OnLevelSelected?.Invoke(LevelDataAsset);
         }
     }
 }

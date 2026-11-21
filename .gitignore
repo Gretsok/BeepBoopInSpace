@@ -72,3 +72,6 @@ BeepBoopInSpaceUnityProject/crashlytics-build.properties
 /BeepBoopInSpaceUnityProject/[Aa]ssets/[Ss]treamingAssets/aa.meta
 /BeepBoopInSpaceUnityProject/[Aa]ssets/[Ss]treamingAssets/aa/*
 BeepBoopInSpaceUnityProject/.idea
+
+# Python bytecode from the Claude Code skills scripts
+__pycache__/
