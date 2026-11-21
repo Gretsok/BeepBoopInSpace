@@ -24,6 +24,7 @@ namespace Game.Tests.PlayMode
         private const float k_TimeScale = 4f;
         private const int k_MaxTournamentGames = 12;
         private const string k_MusicsManager = "Game.Gameplay.MusicsManagement.MusicsManager";
+        private const string k_CharacterBankManager = "Game.MainMenu.CharacterManagement.CharacterBankManager";
 
         // Training level names are "SwampArena - <mode> - LevelDataAsset".
         public static readonly string[] TrainingModes =
@@ -102,6 +103,56 @@ namespace Game.Tests.PlayMode
             Assert.That(played[0], Does.Contain($" - {mode} - "), "The game loaded another level than the one selected.");
 
             yield return BackToCharacterSelectionWith(characters);
+
+            m_driver.AssertNoErrors();
+        }
+
+        /// <summary>
+        /// Back from a game, each player has their circle and number and picks another robot with the d-pad: the robot
+        /// nobody had goes to player 1, player 1's to player 2, and so on. The next game gives each player that robot,
+        /// and they come back with it.
+        /// </summary>
+        [UnityTest, Order(1), Timeout(15 * 60 * 1000)]
+        public IEnumerator CharacterSelection_PlayersPickOtherRobotsForTheNextGame()
+        {
+            LogAssert.ignoreFailingMessages = true;
+            const string mode = "Points Rush";
+            var random = new System.Random(5);
+            var played = new List<string>();
+
+            yield return JoinFourPlayersAndOpenHub();
+            var characters = PlayerCharacters;
+            yield return StartTraining(mode);
+            yield return PlayOneGame(random, played);
+            yield return BackToCharacterSelectionWith(characters);
+            yield return CaptureGameScreen("60-character-selection-after-a-game");
+
+            m_driver.Step("Character selection: each player takes the robot the previous one leaves");
+            var roster = ((IEnumerable)Get(Manager(k_CharacterBankManager), "Characters")).Cast<UnityEngine.Object>().ToList();
+            var picks = new List<UnityEngine.Object> { roster.First(character => !characters.Contains(character)) };
+            picks.AddRange(characters.Take(characters.Count - 1));
+            for (int i = 0; i < picks.Count; i++)
+            {
+                for (int push = 0; push < roster.Count && !ReferenceEquals(CharacterOf(i), picks[i]); push++)
+                    yield return PushStickRight(m_driver.Gamepads[i]);
+                Assert.AreEqual(picks[i], CharacterOf(i), $"Player {i + 1}'s stick never reached {picks[i].name}.");
+            }
+            yield return CaptureGameScreen("61-character-selection-other-robots");
+            StopRenderingToTextures();
+            for (int i = 0; i < picks.Count; i++)
+            {
+                var slot = i;
+                yield return m_driver.Press(m_driver.Gamepads[slot].buttonNorth);
+                yield return m_driver.WaitUntil($"player {slot + 1} to be ready with {picks[slot].name}", () => IsReady(slot), 5f);
+            }
+            yield return m_driver.WaitUntil("the hub once everybody is ready", () => MenuState == "HubState", 10f);
+
+            yield return StartTraining(mode);
+            yield return PlayOneGame(random, played, onPlaying: () =>
+                CollectionAssert.AreEquivalent(picks.Select(character => character.name),
+                    Robots().Select(robot => ((UnityEngine.Object)Get(robot, "CharacterDataAsset")).name),
+                    "The second game didn't give the players the robots they picked."));
+            yield return BackToCharacterSelectionWith(picks);
 
             m_driver.AssertNoErrors();
         }
@@ -388,6 +439,39 @@ namespace Game.Tests.PlayMode
             {
                 Assert.AreEqual(characters[i], CharacterOf(i), $"Player {i + 1} came back with another character.");
                 Assert.IsFalse(IsReady(i), $"Player {i + 1} came back ready.");
+            }
+
+            // Each player's circle, with their number, once it has popped in.
+            yield return RealSeconds(0.5f);
+            var playerBadge = GameType("Game.Global.Localization.Loc").GetMethod("PlayerBadge");
+            for (int i = 0; i < characters.Count; i++)
+            {
+                var view = Get(CharacterWidgets[i], "m_view") as VisualElement;
+                var slot = Get(CharacterWidgets[i], "m_slot") as VisualElement;
+                Assert.IsNotNull(view, $"Player {i + 1}'s circle has no element on the screen.");
+                Assert.AreEqual(DisplayStyle.Flex, view.resolvedStyle.display, $"Player {i + 1}'s circle is hidden.");
+                Assert.Greater(slot.resolvedStyle.opacity, 0.9f, $"Player {i + 1}'s circle is transparent.");
+                Assert.Greater(slot.worldBound.width, 0f, $"Player {i + 1}'s circle has no size.");
+                Assert.AreEqual(playerBadge.Invoke(null, new object[] { i + 1 }), ((Label)Get(CharacterWidgets[i], "m_badgeLabel")).text,
+                    $"Player {i + 1}'s circle doesn't show their number.");
+            }
+        }
+
+        // The left stick, like the d-pad: a DualShock 4's d-pad is a hat switch, whose directions can't be written one by one.
+        private static IEnumerator PushStickRight(Gamepad pad)
+        {
+            SetLeftStick(pad, Vector2.right);
+            yield return Frames(2);
+            SetLeftStick(pad, Vector2.zero);
+            yield return Frames(2);
+        }
+
+        private static void SetLeftStick(Gamepad pad, Vector2 value)
+        {
+            using (UnityEngine.InputSystem.LowLevel.StateEvent.From(pad, out var eventPtr))
+            {
+                pad.leftStick.WriteValueIntoEvent(value, eventPtr);
+                InputSystem.QueueEvent(eventPtr);
             }
         }
 

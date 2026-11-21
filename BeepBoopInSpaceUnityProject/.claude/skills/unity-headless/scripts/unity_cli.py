@@ -379,6 +379,12 @@ def cmd_quick_compile(args):
         for path in removed:
             print(f"  - {path}")
 
+    unsafe_assemblies = set()
+    for asmdef in (PROJECT / "Assets").rglob("*.asmdef"):
+        definition = json.loads(asmdef.read_text(encoding="utf-8-sig"))
+        if definition.get("allowUnsafeCode"):
+            unsafe_assemblies.add(definition["name"])
+
     out_dir = Path(tempfile.mkdtemp(prefix="quick-compile-"))
     compiled, failed, pending = {}, [], dict(rsps)
     # Compile dependencies first and point dependents at the fresh reference assemblies.
@@ -395,6 +401,9 @@ def cmd_quick_compile(args):
             text = re.sub(rf'^-r:".*?/{re.escape(dep)}\.ref\.dll"$', lambda _, ref=ref: f'-r:"{ref}"', text, flags=re.M)
         text = "\n".join(l for l in text.splitlines() if l.strip().strip('"') not in removed_set)
         text += "".join(f'\n"{path}"' for path in extra_sources.get(name, []))
+        # An asmdef that has just allowed unsafe code: the editor's arguments don't say so yet.
+        if name in unsafe_assemblies and not re.search(r'^[-/]unsafe\b', text, flags=re.M):
+            text += "\n-unsafe"
         local_rsp = out_dir / f"{name}.rsp"
         local_rsp.write_text(text, encoding="utf-8")
         result = subprocess.run([str(dotnet), "exec", str(csc), "-nostdlib", "-noconfig", f"@{local_rsp}"],
