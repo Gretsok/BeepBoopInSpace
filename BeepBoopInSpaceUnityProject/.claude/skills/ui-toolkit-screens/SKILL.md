@@ -150,7 +150,7 @@ réutilisée par un autre écran ; une classe d'un écran hors du menu, de `Scre
 4. Étendre le test des menus (`Select` / `Submit` / `WaitUntil` / `CaptureScreen`), regarder les captures.
 
 Composants déjà faits à réutiliser : `ConfirmationDialog` en **message** (Retour caché,
-`ConfirmButton.text = "OK"`, notice du hub) ou en **attente** (un seul bouton « Annuler », écran En
+`ConfirmButton.text = "OK"`, notice de l'écran En ligne) ou en **attente** (un seul bouton « Annuler », écran En
 ligne) ; saisie d'un code à la manette et au clavier (`MainMenu/Online/RoomCodeField` : haut/bas
 interceptés en TrickleDown comme `VolumeRow`, lettres par `Keyboard.onTextInput`, Retour arrière et
 Ctrl+V lus dans `HandleUpdate`) ; cartes de joueurs (`OnlineLobby/LobbyPlayerCard.uxml`, gabarit

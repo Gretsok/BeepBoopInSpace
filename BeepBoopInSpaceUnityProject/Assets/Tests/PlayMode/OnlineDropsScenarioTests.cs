@@ -35,13 +35,10 @@ namespace Game.Tests.PlayMode
         {
             LogAssert.ignoreFailingMessages = true;
             SetDirectAddress("127.0.0.1:7794");
-            yield return JoinAloneAndOpenHub();
+            yield return JoinAloneAndOpenOnline();
             var onlineManager = Manager(k_OnlineManager);
 
             m_driver.Step("Online: open a room");
-            yield return m_driver.Select(HubButton("m_onlineButton"));
-            yield return m_driver.Submit();
-            yield return m_driver.WaitUntil("the online screen", () => MenuState == "OnlineState");
             yield return m_driver.Select(ScreenElement(k_OnlineScreen, "create-button"));
             yield return m_driver.Submit();
             yield return m_driver.WaitUntil("the room", () => MenuState == "OnlineLobbyState", 15f);

@@ -58,7 +58,38 @@
     -unity-text-outline-color: rgb(2, 26, 38);
 }
 
-/* Hub */
+/* Local or online: the two ways to play, chosen before the character selection. */
+
+.local-or-online__choices {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 300px;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.local-or-online__choice {
+    width: 640px;
+    height: 400px;
+    margin: 0 45px;
+}
+
+/* Under each way to play: who plays, where. */
+.ui-screen .local-or-online__note {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 44px;
+    font-size: 36px;
+    -unity-text-align: middle-center;
+}
+
+.ui-tile:focus .local-or-online__note {
+    color: rgb(255, 255, 255);
+}
+
+/* Hub: the local modes. */
 
 .hub-modes {
     position: absolute;
@@ -69,25 +100,11 @@
     justify-content: center;
 }
 
-/* Tournoi and Entraînement, for this machine's players, then En ligne. */
+/* Tournoi and Entraînement, for this machine's players. */
 .hub-mode {
     width: 520px;
     height: 330px;
     margin: 0 35px;
-}
-
-/* Under a mode's name: what it takes (Tournoi and Entraînement, alone on this machine), what it is (En ligne). */
-.ui-screen .hub-mode__note {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 34px;
-    font-size: 34px;
-    -unity-text-align: middle-center;
-}
-
-.ui-tile:focus .hub-mode__note {
-    color: rgb(255, 255, 255);
 }
 
 .hub-character-selection-row {

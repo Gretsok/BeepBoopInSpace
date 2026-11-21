@@ -17,10 +17,10 @@ namespace Game.MainMenu.OnlineLobby
         protected override void HandleEnter()
         {
             base.HandleEnter();
-            // Lost between joining it and this screen: the hub says why.
+            // Lost between joining it and this screen: the online screen says why.
             if (!GlobalContext.OnlineManager.IsInRoom)
             {
-                MainMenuContext.MainMenuOrchestrator.SwitchToHubScreen();
+                MainMenuContext.MainMenuOrchestrator.BackToOnlineScreen();
                 return;
             }
             m_onlineLobbyScreen.Activate();

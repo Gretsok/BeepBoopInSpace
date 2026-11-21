@@ -533,6 +533,7 @@ namespace Game.Tests.PlayMode
         public static string GameplayState => CurrentStateOf(k_GameplayContext);
         public static bool IsOnMainMenuHome => SceneManager.GetActiveScene().name == "MainMenu" && MenuState == "HomeState";
         public static bool IsOnCharacterSelection => SceneManager.GetActiveScene().name == "MainMenu" && MenuState == "CharacterSelectionState";
+        public static bool IsOnLocalOrOnline => SceneManager.GetActiveScene().name == "MainMenu" && MenuState == "LocalOrOnlineState";
 
         /// <summary>Each player's character, in the order they joined.</summary>
         public static List<Object> PlayerCharacters

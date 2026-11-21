@@ -16,7 +16,6 @@ using Game.Global;
 using Game.Global.PlayerManagement;
 using Game.MainMenu;
 using Game.MainMenu.CharacterManagement;
-using Game.MainMenu.Hub;
 using Game.MainMenu.Online;
 using Game.Tournament;
 using Game.Online.Gameplay;
@@ -42,7 +41,7 @@ namespace Game.Online.Testing
     /// "-online-test-guest-report &lt;file&gt;" also writes the bot's lines there as they happen: the player's log only
     /// reaches the disk by blocks.
     /// It also fails (an error) when a game comes back to life while it unloads (a state entered after the end state),
-    /// or when the menu doesn't open on the hub saying why after the room was lost.
+    /// or when the menu doesn't open on the online screen saying why after the room was lost.
     /// "-relay-test-host &lt;file&gt;" and "-relay-test-guest &lt;file&gt;" play a real room, through Unity's services and
     /// Relay (no -online-direct). The host opens it, writes its code in the file, waits for the guest, launches Points
     /// Rush, leaves the results, and closes the room once back in it; the guest reads the code in the file and joins.
@@ -114,7 +113,7 @@ namespace Game.Online.Testing
         private float m_finishStartTime = -1f;
         private float m_resultsStartTime = -1f;
         private bool m_isGameEnding;
-        private bool m_expectsTheHub;
+        private bool m_expectsTheOnlineScreen;
         private bool m_hasLeftAGame;
         private bool m_comesBackAfterLeaving;
         private float m_gameplayStartTime = -1f;
@@ -236,7 +235,7 @@ namespace Game.Online.Testing
         private void HandleRoomLost(string reason)
         {
             m_roomsLost++;
-            m_expectsTheHub = true;
+            m_expectsTheOnlineScreen = true;
             Log($"room lost: {reason}");
             Log($"room lost while {WhereItIs()}");
         }
@@ -254,10 +253,10 @@ namespace Game.Online.Testing
             return TournamentContext.Instance ? "between tournament games" : "elsewhere";
         }
 
-        // Back in the menu after the room was lost: the hub, which has said why (the reason taken).
-        private IEnumerator CheckTheHubSaysWhy()
+        // Back in the menu after the room was lost: the online screen, which has said why (the reason taken).
+        private IEnumerator CheckTheOnlineScreenSaysWhy()
         {
-            if (!m_expectsTheHub)
+            if (!m_expectsTheOnlineScreen)
                 yield break;
             var flowMachine = MainMenuContext.Instance.FlowMachine;
             var timeout = Time.realtimeSinceStartup + 10f;
@@ -268,10 +267,10 @@ namespace Game.Online.Testing
             yield return null;
             var screen = flowMachine.CurrentState ? flowMachine.CurrentState.GetType().Name : "none";
             Log($"back in the menu on {screen}");
-            if (flowMachine.CurrentState is not HubState)
-                Debug.LogError($"[GuestBot] The room was lost, but the menu opened on {screen} instead of the hub.");
+            if (flowMachine.CurrentState is not OnlineState)
+                Debug.LogError($"[GuestBot] The room was lost, but the menu opened on {screen} instead of the online screen.");
             else if (OnlineManager.Instance.HasLostRoomReason)
-                Debug.LogError("[GuestBot] The room was lost, but the hub didn't say why.");
+                Debug.LogError("[GuestBot] The room was lost, but the online screen didn't say why.");
         }
 
         private IEnumerator Start()
@@ -325,7 +324,7 @@ namespace Game.Online.Testing
             {
                 yield return new WaitForSecondsRealtime(6f);
                 Log("leaving the room");
-                MainMenuContext.Instance.MainMenuOrchestrator.SwitchToHubScreen();
+                MainMenuContext.Instance.MainMenuOrchestrator.BackToOnlineScreen();
                 onlineManager.LeaveRoom();
                 yield return new WaitForSecondsRealtime(3f);
                 yield return JoinTheRoom(30, result => joined = result);
@@ -351,8 +350,8 @@ namespace Game.Online.Testing
                         Quit(1, "game scenes left in the menu");
                         yield break;
                     }
-                    yield return CheckTheHubSaysWhy();
-                    m_expectsTheHub = false;
+                    yield return CheckTheOnlineScreenSaysWhy();
+                    m_expectsTheOnlineScreen = false;
                     if (m_comesBackAfterLeaving)
                     {
                         // Refused while the host plays the game this machine left: until the host is back in the room.
@@ -504,7 +503,7 @@ namespace Game.Online.Testing
         private void LeaveTheGame(GameplayContext gameplayContext)
         {
             m_hasLeftAGame = true;
-            m_expectsTheHub = false;
+            m_expectsTheOnlineScreen = false;
             m_comesBackAfterLeaving = true;
             gameplayContext.PauseMenuManager.QuitToMainMenu();
         }
@@ -540,7 +539,7 @@ namespace Game.Online.Testing
             }
             if (error == null)
             {
-                m_expectsTheHub = false;
+                m_expectsTheOnlineScreen = false;
                 Log($"in the room as machine {onlineManager.LocalMachineId}, {onlineManager.Roster.Count} players");
                 MainMenuContext.Instance.MainMenuOrchestrator.SwitchToOnlineLobbyScreen();
             }
@@ -653,7 +652,7 @@ namespace Game.Online.Testing
             m_hasGuestStayed = onlineManager.Roster.Count >= OnlineManager.k_MinPlayers;
             Log($"closing the room, {onlineManager.Roster.Count} players in it");
             onlineManager.LeaveRoom();
-            MainMenuContext.Instance.MainMenuOrchestrator.SwitchToHubScreen();
+            MainMenuContext.Instance.MainMenuOrchestrator.BackToOnlineScreen();
         }
 
         private static bool IsMenuReady()

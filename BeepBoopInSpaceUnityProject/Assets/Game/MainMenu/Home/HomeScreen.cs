@@ -49,7 +49,7 @@ namespace Game.MainMenu.Home
 
         private void HandlePlayButtonClicked()
         {
-            m_mainMenuOrchestrator.SwitchToCharacterSelectionScreen();
+            m_mainMenuOrchestrator.SwitchToLocalOrOnlineScreen();
         }
 
         private void HandleCreditsButtonClicked()

@@ -17,8 +17,9 @@ using Debug = UnityEngine.Debug;
 namespace Game.Tests.PlayMode
 {
     /// <summary>
-    /// Online rooms, on a direct connection (no Unity services): one player alone reaches the online modes and opens
-    /// a room; then a training game against a guest played by a build of the game (OnlineGuestBot).
+    /// Online rooms, on a direct connection (no Unity services): one player alone chooses En ligne before the character
+    /// selection, reaches the online modes and opens a room; then a training game against a guest played by a build of
+    /// the game (OnlineGuestBot).
     /// </summary>
     public partial class GameModesScenarioTests
     {
@@ -36,20 +37,13 @@ namespace Game.Tests.PlayMode
             const string address = "127.0.0.1:7791";
             SetDirectAddress(address);
 
-            yield return JoinAloneAndOpenHub();
-
-            m_driver.Step("Hub alone: the local modes wait with bots, En ligne is one choice among them");
-            Assert.IsTrue(HubButton("m_tournamentButton").enabledSelf, "Tournoi isn't open to a player alone.");
-            Assert.IsTrue(HubButton("m_trainingButton").enabledSelf, "Entraînement isn't open to a player alone.");
+            // The online screen listens to the keyboard there when it opens: plugged before.
+            m_driver.AddKeyboardAndMouse();
+            yield return JoinAloneAndOpenOnline();
             yield return RealSeconds(0.3f);
-            yield return CaptureScreen("16-hub-alone");
-            var online = HubButton("m_onlineButton");
-            yield return m_driver.Select(online);
+            yield return CaptureScreen("16-online-alone");
 
             m_driver.Step("Online: the d-pad and the keyboard type the code");
-            m_driver.AddKeyboardAndMouse();
-            yield return m_driver.Submit();
-            yield return m_driver.WaitUntil("the online screen", () => MenuState == "OnlineState");
             var firstSlot = (Button)ScreenElement(k_OnlineScreen, "code-slot-1");
             yield return m_driver.Select(firstSlot);
             yield return m_driver.Press(m_driver.DpadButton(MoveDirection.Down));
@@ -81,6 +75,15 @@ namespace Game.Tests.PlayMode
 
             yield return LeaveRoom();
             yield return m_driver.WaitUntil("the game to pause out of focus again after the room", () => !Application.runInBackground, 10f);
+
+            m_driver.Step("Online: Retour goes back the way the player came, to the character selection, then to the choice");
+            yield return m_driver.Press(m_driver.MainPad.buttonEast);
+            yield return m_driver.WaitUntil("the character selection after the online screen", () => IsOnCharacterSelection && FocusedElement != null, 10f);
+            Assert.AreEqual(1, PlayerCount, "The player was lost on the way back to the character selection.");
+            Assert.IsFalse(IsReady(0), "The player came back ready to the character selection.");
+            yield return m_driver.Press(m_driver.MainPad.buttonEast);
+            yield return m_driver.WaitUntil("the choice between local and online", () => IsOnLocalOrOnline && FocusedElement != null, 10f);
+            Assert.AreEqual("online-button", NameOf(FocusedElement), "Back on the choice, En ligne isn't the one chosen.");
             m_driver.AssertNoErrors();
         }
 
@@ -161,8 +164,8 @@ namespace Game.Tests.PlayMode
         // The guest bot's lines, written as they happen (its log reaches the disk by blocks).
         private static string GuestReport => Path.GetFullPath("Logs/online-guest-report.txt");
 
-        // The hub alone, then a room on a direct connection, which a build of the game joins (OnlineGuestBot), with
-        // what goes wrong on its side (OnlineGuestBot.ReadScenario).
+        // A player alone online, then a room on a direct connection, which a build of the game joins (OnlineGuestBot),
+        // with what goes wrong on its side (OnlineGuestBot.ReadScenario).
         private IEnumerator OpenARoomWithAGuestBuild(string address, string guestScenario = null)
         {
             var guestExecutable = Path.GetFullPath(Path.Combine(k_GuestBuildFolder, k_GuestExecutable));
@@ -170,11 +173,8 @@ namespace Game.Tests.PlayMode
                 Assert.Ignore($"No guest build at {guestExecutable}: build it first (unity_cli.py build --output {k_GuestBuildFolder}).");
             SetDirectAddress(address);
 
-            yield return JoinAloneAndOpenHub();
+            yield return JoinAloneAndOpenOnline();
             m_driver.Step("Online: create a room");
-            yield return m_driver.Select(HubButton("m_onlineButton"));
-            yield return m_driver.Submit();
-            yield return m_driver.WaitUntil("the online screen", () => MenuState == "OnlineState");
             yield return m_driver.Select(ScreenElement(k_OnlineScreen, "create-button"));
             yield return m_driver.Submit();
             yield return m_driver.WaitUntil("the room", () => MenuState == "OnlineLobbyState", 15f);
@@ -256,21 +256,32 @@ namespace Game.Tests.PlayMode
             }
         }
 
+        // En local, then one player alone: the hub, with robots of the computer.
         private IEnumerator JoinAloneAndOpenHub()
+        {
+            yield return JoinAlone(online: false);
+            yield return m_driver.WaitUntil("the hub", () => MenuState == "HubState", 10f);
+        }
+
+        // En ligne, then one player alone: the online screen, no hub on the way.
+        private IEnumerator JoinAloneAndOpenOnline()
+        {
+            yield return JoinAlone(online: true);
+            yield return m_driver.WaitUntil("the online screen", () => MenuState == "OnlineState" && FocusedElement != null, 10f);
+        }
+
+        private IEnumerator JoinAlone(bool online)
         {
             StartRenderingToTextures();
             // A Submit right after the rendering starts can get lost.
             yield return RealSeconds(1f);
-            m_driver.Step("Home: press Play");
-            yield return m_driver.Submit();
-            yield return m_driver.WaitUntil("the character selection screen", () => MenuState == "CharacterSelectionState");
+            yield return ChooseFromHome(online);
             m_driver.Step("Character selection: one player alone gets ready");
             yield return Join(0);
             yield return GetReady(0);
-            yield return m_driver.WaitUntil("the hub", () => MenuState == "HubState", 10f);
         }
 
-        // Retour, then the confirmation's Quitter: back on the hub, out of the room.
+        // Retour, then the confirmation's Quitter: back on the online screen, out of the room.
         private IEnumerator LeaveRoom()
         {
             m_driver.Step("Online: leave the room");
@@ -280,7 +291,7 @@ namespace Game.Tests.PlayMode
             yield return WaitForConfirmation();
             yield return RealSeconds(0.5f);
             yield return m_driver.Submit();
-            yield return m_driver.WaitUntil("the hub after leaving the room", () => MenuState == "HubState", 10f);
+            yield return m_driver.WaitUntil("the online screen after leaving the room", () => MenuState == "OnlineState", 10f);
             Assert.IsFalse((bool)Get(Manager(k_OnlineManager), "IsInRoom"), "Still in the room after leaving it.");
         }
 

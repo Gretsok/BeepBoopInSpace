@@ -78,6 +78,17 @@ namespace Game.Tests.PlayMode
             Assert.AreEqual("Play", ((Button)ScreenElement(k_HomeScreen, "play-button")).text, "The home screen stayed in French.");
             yield return CaptureScreen("35-home-english");
 
+            m_driver.Step("Play, in English: local or online");
+            yield return m_driver.Select(ScreenElement(k_HomeScreen, "play-button"));
+            yield return m_driver.Submit();
+            yield return m_driver.WaitUntil("the choice between local and online", () => IsOnLocalOrOnline && FocusedElement != null);
+            Assert.AreEqual("Local", ScreenElement(k_LocalOrOnlineScreen, "local-button").Q<Label>(className: "ui-tile__label").text,
+                "The choice between local and online stayed in French.");
+            yield return RealSeconds(0.3f);
+            yield return CaptureScreen("35b-local-or-online-english");
+            yield return m_driver.Press(m_driver.MainPad.buttonEast);
+            yield return m_driver.WaitUntil("the home screen", () => MenuState == "HomeState");
+
             m_driver.Step("Back to French, saved as such");
             yield return m_driver.Select(ScreenElement(k_HomeScreen, "settings-button"));
             yield return m_driver.Submit();
@@ -167,9 +178,7 @@ namespace Game.Tests.PlayMode
             LogAssert.ignoreFailingMessages = true;
             m_otherGamepad = InputSystem.AddDevice<Gamepad>("Scenario Other");
 
-            m_driver.Step("Home: press Play");
-            yield return m_driver.Submit();
-            yield return m_driver.WaitUntil("the character selection screen", () => MenuState == "CharacterSelectionState");
+            yield return ChooseFromHome(online: false);
 
             m_driver.Step("The gamepad joins and gets ready");
             yield return m_driver.Press(m_otherGamepad.buttonSouth);

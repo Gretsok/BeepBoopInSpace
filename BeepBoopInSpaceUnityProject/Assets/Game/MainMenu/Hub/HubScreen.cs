@@ -1,6 +1,5 @@
 using Game.Global;
 using Game.Global.SFXManagement;
-using Game.Online;
 using Game.UITools.Screens;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -9,8 +8,8 @@ using Direction = UnityEngine.UIElements.NavigationMoveEvent.Direction;
 namespace Game.MainMenu.Hub
 {
     /// <summary>
-    /// The game modes: Tournoi and Entraînement for the players of this machine (two at least), En ligne for a room with
-    /// players of other machines. A room lost while playing (the host left...) comes back here, with a word on why.
+    /// The local game modes, for the players of this machine who chose to play locally: Tournoi and Entraînement, with
+    /// robots of the computer if need be (their number is chosen here). The online room has its own screens.
     /// </summary>
     public class HubScreen : AMainMenuScreen
     {
@@ -21,10 +20,8 @@ namespace Game.MainMenu.Hub
 
         private Button m_tournamentButton;
         private Button m_trainingButton;
-        private Button m_onlineButton;
         private Button m_botsButton;
         private ConfirmationDialog m_tournamentConfirmation;
-        private ConfirmationDialog m_notice;
 
         private GameModesLauncher m_gameModesLauncher;
         private MainMenuOrchestrator m_orchestrator;
@@ -39,31 +36,26 @@ namespace Game.MainMenu.Hub
         {
             m_tournamentButton = BindButton("tournament-button", HandleTournamentButtonClicked, m_confirmAudioPlayer);
             m_trainingButton = BindButton("training-button", HandleTrainingButtonClicked, m_confirmAudioPlayer);
-            m_onlineButton = BindButton("online-button", HandleOnlineButtonClicked, m_confirmAudioPlayer);
             var settingsButton = BindButton("settings-button", HandleSettingsButtonClicked, m_confirmAudioPlayer);
             var characterSelectionButton = BindButton("character-selection-button", HandleCharacterSelectionButtonClicked, m_confirmAudioPlayer);
             var quitButton = BindButton("quit-button", HandleQuitGameButtonClicked);
             m_botsButton = BindButton("bots-button", HandleBotsButtonClicked, m_confirmAudioPlayer);
             m_tournamentConfirmation = new ConfirmationDialog(Query<VisualElement>("tournament-confirmation"),
                 HandleTournamentConfirmed, HandleTournamentCancelled);
-            m_notice = new ConfirmationDialog(Query<VisualElement>("notice"), HideNotice, HideNotice);
-            m_notice.CancelButton.style.display = DisplayStyle.None;
-            m_notice.ConfirmButton.text = "OK";
 
             var firstMode = m_tournamentButton;
             RefreshBotsButton();
 
             // Four rows: the corner buttons, the modes, the character selection, the bots. The closest element ahead would
-            // otherwise jump from a mode to a corner button, Quitter on the right of En ligne.
+            // otherwise jump from a mode to a corner button, Quitter on the right of Entraînement.
             SetNavigation(settingsButton, Direction.Right, quitButton);
             SetNavigation(settingsButton, Direction.Down, firstMode);
             SetNavigation(quitButton, Direction.Left, settingsButton);
-            SetNavigation(quitButton, Direction.Down, m_onlineButton);
+            SetNavigation(quitButton, Direction.Down, m_trainingButton);
             SetNavigation(m_tournamentButton, Direction.Left, null);
             SetNavigation(m_tournamentButton, Direction.Up, settingsButton);
-            SetNavigation(m_trainingButton, Direction.Up, settingsButton);
-            SetNavigation(m_onlineButton, Direction.Right, null);
-            SetNavigation(m_onlineButton, Direction.Up, quitButton);
+            SetNavigation(m_trainingButton, Direction.Right, null);
+            SetNavigation(m_trainingButton, Direction.Up, quitButton);
             SetNavigation(characterSelectionButton, Direction.Left, null);
             SetNavigation(characterSelectionButton, Direction.Right, null);
             SetNavigation(characterSelectionButton, Direction.Down, m_botsButton);
@@ -73,18 +65,10 @@ namespace Game.MainMenu.Hub
             SetNavigation(m_botsButton, Direction.Down, null);
             // Up goes back to the mode the player came from.
             SetNavigation(characterSelectionButton, Direction.Up, firstMode);
-            foreach (var modeButton in new[] { m_tournamentButton, m_trainingButton, m_onlineButton })
+            foreach (var modeButton in new[] { m_tournamentButton, m_trainingButton })
                 modeButton.RegisterCallback<FocusInEvent>(_ => SetNavigation(characterSelectionButton, Direction.Up, modeButton));
 
             DefaultFocus = firstMode;
-
-            var lostRoomReason = OnlineManager.Instance ? OnlineManager.Instance.TakeLostRoomReason() : null;
-            if (lostRoomReason != null)
-            {
-                m_notice.SetContent(Game.Global.Localization.Loc.T("Partie en ligne terminée"), null);
-                Query<VisualElement>("notice").Q<Label>("message").text = Game.Global.Localization.Loc.T(lostRoomReason);
-                ShowDialog(m_notice);
-            }
         }
 
         private void HandleBotsButtonClicked()
@@ -119,20 +103,9 @@ namespace Game.MainMenu.Hub
             HideDialog();
         }
 
-        private void HideNotice()
-        {
-            m_confirmAudioPlayer.Play();
-            HideDialog();
-        }
-
         private void HandleTrainingButtonClicked()
         {
             m_orchestrator.SwitchToLevelSelectionScreen();
-        }
-
-        private void HandleOnlineButtonClicked()
-        {
-            m_orchestrator.SwitchToOnlineScreen();
         }
 
         private void HandleSettingsButtonClicked()

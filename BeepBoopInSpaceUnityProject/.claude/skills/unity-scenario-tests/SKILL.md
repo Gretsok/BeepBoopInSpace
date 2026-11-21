@@ -17,14 +17,15 @@ Fichiers (dans `Assets/Tests/PlayMode/`, assembly `BeepBoop.Tests.PlayMode`) :
 | `ControlModesScenarioTests.cs` | Même classe : `ControlModes_SimplifiedButtonsGoWhereTheySay("<mode>: <contrôles>")` × 3 (`SimplifiedControlsCases` : Points Rush en `Simplified` et en `SimplifiedWithSpecialAction`, Shooters en `SimplifiedWithSpecialAction`), le niveau passé dans ce mode de contrôle le temps du test (champ remis dans le `TearDown`), joué par 3 manettes et un clavier (`JoinPadsAndAKeyboardAndOpenHub` : Espace pour rejoindre et être prêt, R pour Aléatoire) : image des contrôles du tutoriel (capture `40-tutorial-<mode>-<contrôles>`), actions sur les seuls boutons du mode, chaque direction (manette 1 puis clavier) tourne le robot, mène vers ce côté de l'écran vu par la caméra de jeu, déplace le robot et tourne son modèle ; les autres boutons ne font rien ; l'action spéciale fait exploser le robot (bombe) ou tire là où il regarde (fusil, via l'événement `OnShot`) ; une nouvelle configuration change les actions des boutons ; puis la partie jusqu'au bout et le retour à l'accueil (les joueurs partent avant qu'on retire le clavier). Corps commun `PlaySimplifiedControls(mode, controlMode, switchLevel)` (`switchLevel: false` pour un niveau déjà enregistré dans le mode). Aides `RobotOf(device)`, `ButtonActions(robot)` (nom de la méthode de chaque bouton, dans l'ordre `Action_1` à `Action_6` : A/S, Y/W, B/D, X/A, RB/E, LB/Q) |
 | `BotsScenarioTests.cs` | Même classe : `Bots_PlayAGameWithAPlayerAlone("<mode>")` × 7 (le joueur ne touche à rien : les robots doivent marquer, captures `50-game-<mode>`), `Bots_PlayATournamentWithAPlayerAlone` (nombre de robots au hub, tournoi entier) |
 | `DemoScenarioTests.cs` | Même classe : `Language_SettingsSwitchTheScreensToEnglish`, `Statistics_AskedOnceThenChangedInTheSettings`, `Controls_AnotherGamepadJoinsAndGetsReady` |
-| `OnlineScenarioTests.cs` | Même classe : `OnlineMenu_OnePlayerOpensARoom` (un joueur seul : hub avec robots, code à la croix et au clavier, salle seule ; captures `16` à `18`) `Online_PlaysATrainingWithAGuestBuild` et `Online_PlaysATournamentWithAGuestBuild` (l'éditeur héberge une salle en connexion directe, un build `Builds/OnlineGuest` joue l'invité avec `-online-test-guest` ; ignorés sans build). Détails, build de l'invité et pièges : skill `online-multiplayer` |
+| `OnlineScenarioTests.cs` | Même classe : `OnlineMenu_OnePlayerOpensARoom` (un joueur seul choisit En ligne : écran En ligne sans passer par le hub, code à la croix et au clavier, salle seule, Retour jusqu'au choix ; captures `16` à `18`) `Online_PlaysATrainingWithAGuestBuild` et `Online_PlaysATournamentWithAGuestBuild` (l'éditeur héberge une salle en connexion directe, un build `Builds/OnlineGuest` joue l'invité avec `-online-test-guest` ; ignorés sans build). Détails, build de l'invité et pièges : skill `online-multiplayer` |
 | `OnlineDropsScenarioTests.cs` | Même classe : `OnlineMenu_LeavesAndReopensRightAway` (une machine) et `OnlineDrops_*` × 8 : départs, coupures (gel du fil principal), retours, chargement bloqué, tournoi qui perd l'hôte, contre le build invité et son `-online-test-guest-scenario`. Liste des cas : `online-multiplayer/references/disconnections.md` |
 | `OnlineTransitionsScenarioTests.cs` | Même classe : `OnlineTransitions_*` × 8 : salle perdue ou invité à la traîne pendant un lancement, une fin de partie, entre deux parties du tournoi, pause ouverte quand la partie finit. Liste des cas : `online-multiplayer/references/transitions.md`. `ScenarioDriver` échoue sur tout état entré après `EndState`, dans tous les tests |
 | `ScenarioDriver.cs` | Manettes, clavier et souris virtuels, navigation dans les menus UI Toolkit, captures d'écran, attente avec délai, lecture de l'état du jeu par réflexion, collecte des erreurs |
 
 `MainMenu_EveryScreenWorksWithGamepadKeyboardAndMouse` (~13 s, à lancer après toute modification des menus) :
 clavier et souris sur l'accueil (personne n'y a rejoint : l'accueil retire les joueurs), puis à la
-manette Crédits et Annuler, volume au d-pad, sélection des personnages (rejoindre, se déclarer prêt,
+manette Crédits et Annuler, volume au d-pad, choix En local / En ligne (Annuler ramène à l'accueil ;
+capture `03b`), sélection des personnages (rejoindre, se déclarer prêt,
 un personnage déjà choisi refusé, Annuler qui retire d'abord le « prêt », départ vers le hub quand
 tous sont prêts), hub (la croix reste sur la rangée des modes, Tournoi demande confirmation, Annuler
 la ferme), défilement du choix du niveau, double appui qui n'ouvre que la confirmation ; il
@@ -38,7 +39,7 @@ du joueur principal (un volume au d-pad, B pour reprendre), chaque annonce, bout
 par « Menu principal » de la pause, en Training et en tournoi (abandonné : ni résultats, ni partie
 suivante).
 
-Chaque scénario de partie : Home → Play → les 4 manettes rejoignent (A/Croix) puis se déclarent prêtes
+Chaque scénario de partie : Home → Play → En local (`ChooseFromHome`) → les 4 manettes rejoignent (A/Croix) puis se déclarent prêtes
 (Y/Triangle, Aléatoire avec X si le personnage est déjà pris) → Hub → Training (ou Tournoi) → map
 choisie à la croix → confirmation (`ConfirmLaunch` : attendre le focus sur `confirm-button`, 0,5 s,
 Submit) → les 4 joueurs font Ready → appuis aléatoires sur les 6 boutons d'action jusqu'aux

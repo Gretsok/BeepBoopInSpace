@@ -24,6 +24,7 @@ namespace Game.Tests.PlayMode
         private const float k_TimeScale = 4f;
         private const int k_MaxTournamentGames = 12;
         private const string k_MusicsManager = "Game.Gameplay.MusicsManagement.MusicsManager";
+        private const string k_LocalOrOnlineScreen = "Game.MainMenu.LocalOrOnline.LocalOrOnlineScreen";
 
         // Training level names are "SwampArena - <mode> - LevelDataAsset".
         public static readonly string[] TrainingModes =
@@ -200,10 +201,23 @@ namespace Game.Tests.PlayMode
             yield return m_driver.Press(cancel);
             yield return m_driver.WaitUntil("the home screen after Cancel", () => MenuState == "HomeState");
 
-            m_driver.Step("Character selection: join, get ready");
+            m_driver.Step("Local or online: Play opens the choice, Cancel goes back home");
             yield return m_driver.WaitUntil("the play button to be focused", () => NameOf(FocusedElement) == "play-button");
             yield return m_driver.Submit();
-            yield return m_driver.WaitUntil("the character selection screen", () => MenuState == "CharacterSelectionState");
+            yield return m_driver.WaitUntil("the choice between local and online", () => IsOnLocalOrOnline && FocusedElement != null);
+            Assert.AreEqual("local-button", NameOf(FocusedElement), "The choice doesn't start on En local.");
+            yield return m_driver.Press(m_driver.DpadButton(MoveDirection.Right));
+            yield return m_driver.WaitUntil("En ligne to be focused", () => NameOf(FocusedElement) == "online-button", 5f);
+            yield return WaitForCameraBlend();
+            // The selected tile's pop.
+            yield return RealSeconds(0.5f);
+            yield return CaptureScreen("03b-local-or-online");
+            yield return m_driver.Press(cancel);
+            yield return m_driver.WaitUntil("the home screen after Cancel", () => MenuState == "HomeState");
+
+            m_driver.Step("Character selection: En local, join, get ready");
+            yield return m_driver.WaitUntil("the play button to be focused", () => NameOf(FocusedElement) == "play-button");
+            yield return ChooseFromHome(online: false);
             yield return WaitForCameraBlend();
             yield return CaptureScreen("04-character-selection");
             var pads = m_driver.Gamepads;
@@ -247,11 +261,12 @@ namespace Game.Tests.PlayMode
             m_driver.Step("Hub: the d-pad stays in the row of the modes, Tournoi asks for a confirmation, Cancel closes it");
             var tournament = HubButton("m_tournamentButton");
             var training = HubButton("m_trainingButton");
-            var online = HubButton("m_onlineButton");
-            yield return m_driver.Select(online);
+            var hub = FindActive("Game.MainMenu.Hub.HubScreen").GetComponent<UIDocument>().rootVisualElement;
+            Assert.IsNull(hub.Q("online-button"), "En ligne is still a mode of the hub, after choosing En local.");
+            yield return m_driver.Select(training);
             yield return m_driver.Press(m_driver.DpadButton(MoveDirection.Right));
             yield return RealSeconds(0.3f);
-            Assert.AreEqual(online, FocusedElement, "Right from En ligne left the row of the modes.");
+            Assert.AreEqual(training, FocusedElement, "Right from Entraînement left the row of the modes.");
             yield return m_driver.Select(tournament);
             yield return m_driver.Press(m_driver.DpadButton(MoveDirection.Left));
             yield return RealSeconds(0.3f);
@@ -332,11 +347,11 @@ namespace Game.Tests.PlayMode
         private IEnumerator GoToMainMenuHome()
         {
             m_driver.Step("Boot to the main menu");
-            // An online room lost in an earlier scenario would open the menu on the hub, which tells why.
+            // An online room lost in an earlier scenario would open the menu on the online screen, which tells why.
             if (Manager("Game.Online.OnlineManager") is { } onlineManager)
                 onlineManager.GetType().GetMethod("TakeLostRoomReason").Invoke(onlineManager, null);
             var hadStrandedPlayers = RemovePlayersStrandedByAFailure();
-            if (hadStrandedPlayers || (!IsOnMainMenuHome && !IsOnCharacterSelection))
+            if (hadStrandedPlayers || (!IsOnMainMenuHome && !IsOnCharacterSelection && !IsOnLocalOrOnline))
             {
                 // A scenario that failed mid-game never reached EndState: release its level like EndState does,
                 // otherwise its Addressables handles stay loaded and the next game on that level fails to load.
@@ -351,9 +366,9 @@ namespace Game.Tests.PlayMode
                 SceneManager.LoadScene(0);
             }
             // With players left from an earlier scenario, the menu opens on the character selection: the main player's
-            // Cancel goes back home, after cancelling being ready.
-            yield return m_driver.WaitUntil("the main menu", () => (IsOnMainMenuHome || IsOnCharacterSelection) && FocusedElement != null);
-            for (int presses = 0; IsOnCharacterSelection && presses < 3; presses++)
+            // Cancel goes back to the choice between local and online, after cancelling being ready, then home.
+            yield return m_driver.WaitUntil("the main menu", () => (IsOnMainMenuHome || IsOnCharacterSelection || IsOnLocalOrOnline) && FocusedElement != null);
+            for (int presses = 0; (IsOnCharacterSelection || IsOnLocalOrOnline) && presses < 4; presses++)
             {
                 yield return m_driver.Press(m_driver.MainPad.buttonEast);
                 yield return RealSeconds(0.3f);
@@ -427,11 +442,20 @@ namespace Game.Tests.PlayMode
                 Debug.LogWarning($"[Scenario] The double press took {duration:0.00}s: slower than a player's, it proves little.");
         }
 
-        private IEnumerator JoinFourPlayersAndOpenHub()
+        /// <summary>Home: Play, then En local or En ligne, which opens the character selection.</summary>
+        private IEnumerator ChooseFromHome(bool online)
         {
-            m_driver.Step("Home: press Play");
+            m_driver.Step($"Home: press Play, then {(online ? "En ligne" : "En local")}");
+            yield return m_driver.Submit();
+            yield return m_driver.WaitUntil("the choice between local and online", () => IsOnLocalOrOnline && FocusedElement != null);
+            yield return m_driver.Select(ScreenElement(k_LocalOrOnlineScreen, online ? "online-button" : "local-button"));
             yield return m_driver.Submit();
             yield return m_driver.WaitUntil("the character selection screen", () => MenuState == "CharacterSelectionState");
+        }
+
+        private IEnumerator JoinFourPlayersAndOpenHub()
+        {
+            yield return ChooseFromHome(online: false);
 
             m_driver.Step("Character selection: 4 players join and get ready");
             for (int i = 0; i < m_driver.Gamepads.Count; i++)

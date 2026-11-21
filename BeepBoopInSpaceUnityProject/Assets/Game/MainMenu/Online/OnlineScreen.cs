@@ -10,8 +10,10 @@ using Direction = UnityEngine.UIElements.NavigationMoveEvent.Direction;
 namespace Game.MainMenu.Online
 {
     /// <summary>
-    /// The online modes, reached from the hub with the robots the local players chose: create a room, which gives a
-    /// code to share, or join one with its code. A dialog waits for the connection, which Retour cancels.
+    /// The online modes, reached from the character selection by the players who chose to play online, with their
+    /// robots: create a room, which gives a code to share, or join one with its code. A dialog waits for the connection,
+    /// which Retour cancels. Out of a room (left, or lost while playing: the host left...), the players come back here;
+    /// a lost room comes with a word on why.
     /// </summary>
     public class OnlineScreen : AMainMenuScreen
     {
@@ -28,6 +30,7 @@ namespace Game.MainMenu.Online
         private Label m_status;
         private RoomCodeField m_codeField;
         private ConfirmationDialog m_connectingDialog;
+        private ConfirmationDialog m_notice;
         private bool m_isConnecting;
 
         public void Initialize(MainMenuOrchestrator orchestrator, OnlineManager onlineManager)
@@ -49,6 +52,9 @@ namespace Game.MainMenu.Online
             m_connectingDialog = new ConfirmationDialog(Query<VisualElement>("connecting-dialog"), CancelConnecting, CancelConnecting);
             m_connectingDialog.CancelButton.style.display = DisplayStyle.None;
             m_connectingDialog.ConfirmButton.text = Game.Global.Localization.Loc.T("Annuler");
+            m_notice = new ConfirmationDialog(Query<VisualElement>("notice"), HideNotice, HideNotice);
+            m_notice.CancelButton.style.display = DisplayStyle.None;
+            m_notice.ConfirmButton.text = "OK";
 
             // Left, the room to create; right, the code then Rejoindre.
             SetNavigation(m_createButton, Direction.Right, m_codeField.FirstSlot);
@@ -66,6 +72,20 @@ namespace Game.MainMenu.Online
                 SetStatus(null, false);
             RefreshJoinButton();
             DefaultFocus = m_createButton;
+
+            var lostRoomReason = m_onlineManager.TakeLostRoomReason();
+            if (lostRoomReason != null)
+            {
+                m_notice.SetContent(Game.Global.Localization.Loc.T("Partie en ligne terminée"), null);
+                Query<VisualElement>("notice").Q<Label>("message").text = Game.Global.Localization.Loc.T(lostRoomReason);
+                ShowDialog(m_notice);
+            }
+        }
+
+        private void HideNotice()
+        {
+            m_confirmAudioPlayer.Play();
+            HideDialog();
         }
 
         protected override void HandleDeactivation()
@@ -76,9 +96,12 @@ namespace Game.MainMenu.Online
             m_codeField = null;
         }
 
+        // Connecting, or telling why the last room was lost: the code waits.
+        private bool CanTypeTheCode => !m_isConnecting && !IsShowingDialog(m_notice);
+
         protected override void HandleUpdate()
         {
-            if (!m_isConnecting)
+            if (CanTypeTheCode)
                 m_codeField?.Update();
         }
 
@@ -96,7 +119,7 @@ namespace Game.MainMenu.Online
 
         private void HandleTextInput(char character)
         {
-            if (!m_isConnecting)
+            if (CanTypeTheCode)
                 m_codeField?.Type(character);
         }
 

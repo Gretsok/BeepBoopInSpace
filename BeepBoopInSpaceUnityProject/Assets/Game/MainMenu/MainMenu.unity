@@ -3267,6 +3267,7 @@ Transform:
   - {fileID: 4088469945641401360}
   - {fileID: 3992434695676267991}
   - {fileID: 1707716349}
+  - {fileID: 4215007795730494787}
   m_Father: {fileID: 1637540963869130622}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &2218620088169822441
@@ -4130,6 +4131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d12b2c49a353854eb1065cf377cf4a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_localOrOnlineState: {fileID: 456494820365817036}
   m_homeState: {fileID: 2141374543}
   m_characterSelectionState: {fileID: 1835104888}
   m_creditsState: {fileID: 1165460076}
@@ -4479,3 +4481,97 @@ SceneRoots:
   - {fileID: 971818824}
   - {fileID: 1993308021}
   - {fileID: 386703245}
+--- !u!1 &3963174682577924022
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4215007795730494787}
+  - component: {fileID: 456494820365817036}
+  m_Layer: 0
+  m_Name: LocalOrOnlineState
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4215007795730494787
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3963174682577924022}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2569604926851395980}
+  m_Father: {fileID: 1785788796754994808}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &456494820365817036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3963174682577924022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6bd7a5f4128408b85847bbfe5b673cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_localOrOnlineScreen: {fileID: 8562088943350532495}
+--- !u!1001 &3656379998777385894
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4215007795730494787}
+    m_Modifications:
+    - target: {fileID: 7594675326985704961, guid: 4058ee5a0cdd4c1a9052a70b5e177b8d, type: 3}
+      propertyPath: m_Name
+      value: LocalOrOnlineScreen
+      objectReference: {fileID: 0}
+    - target: {fileID: 7594675326985704961, guid: 4058ee5a0cdd4c1a9052a70b5e177b8d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4058ee5a0cdd4c1a9052a70b5e177b8d, type: 3}
+--- !u!224 &2569604926851395980 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1231453218545472042, guid: 4058ee5a0cdd4c1a9052a70b5e177b8d, type: 3}
+  m_PrefabInstance: {fileID: 3656379998777385894}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8562088943350532495 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4930514408344218153, guid: 4058ee5a0cdd4c1a9052a70b5e177b8d, type: 3}
+  m_PrefabInstance: {fileID: 3656379998777385894}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4de1c2210dd45c88a4cea22c8f73e44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8857249251721489474 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5212168320031920100, guid: 4058ee5a0cdd4c1a9052a70b5e177b8d, type: 3}
+  m_PrefabInstance: {fileID: 3656379998777385894}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 

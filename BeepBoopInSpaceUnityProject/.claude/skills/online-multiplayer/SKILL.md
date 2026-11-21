@@ -10,13 +10,17 @@ salle privée qu'on rejoint avec un code. Pas de matchmaking public pour l'insta
 
 ## Parcours dans le menu
 
-Accueil → sélection des personnages (les joueurs **locaux** choisissent leur robot ; un joueur seul
-peut continuer, le hub s'ouvre 3 s après son « prêt ») → Hub : Tournoi et Entraînement (en local, avec
-des robots de l'ordinateur si besoin ; les salles n'en ont pas) ou **En ligne** → écran En ligne : Créer une salle, ou Rejoindre avec
-le code (6 cases : croix haut/bas, clavier, Ctrl+V) → **Salle** : code, 4 places, l'hôte lance
-Tournoi ou Entraînement (même choix du niveau qu'en local), les invités attendent. Après chaque partie,
-tout le monde revient dans la salle. Retour dans la salle = la quitter (confirmation) ; l'hôte qui part
-la ferme. Salle perdue (hôte parti, connexion) : retour au hub, qui dit pourquoi.
+Accueil → Jouer : **En local** ou **En ligne** (écran `LocalOrOnline`, choix gardé dans
+`PlayerManager.PlaysOnline` jusqu'au retour à l'accueil) → sélection des personnages (les joueurs **locaux**
+choisissent leur robot ; un joueur seul peut continuer, l'écran suivant s'ouvre 3 s après son « prêt ») →
+en local, Hub : Tournoi et Entraînement (avec des robots de l'ordinateur si besoin ; les salles n'en ont
+pas) ; en ligne, **écran En ligne** : Créer une salle, ou Rejoindre avec le code (6 cases : croix
+haut/bas, clavier, Ctrl+V) → **Salle** : code, 4 places, l'hôte lance Tournoi ou Entraînement (même
+choix du niveau qu'en local), les invités attendent. Après chaque partie, tout le monde revient dans la
+salle. Retour dans la salle = la quitter (confirmation), retour à l'écran En ligne
+(`MainMenuOrchestrator.BackToOnlineScreen`, qui dépile jusqu'à lui) ; l'hôte qui part la ferme. Salle
+perdue (hôte parti, connexion) : retour à l'écran En ligne, qui dit pourquoi. Retour de l'écran En ligne
+→ sélection des personnages → choix En local / En ligne → accueil.
 
 ## Architecture
 
@@ -54,8 +58,9 @@ python $CLI test --filter "OnlineTransitions" --detach   # pertes et lag pendant
 python $CLI relay-test "Builds/<dossier>/Beep Boop dans l'espace.exe"   # salle réelle (services, Relay), deux copies du build, sans action humaine (~4 min)
 ```
 
-- `OnlineMenu_OnePlayerOpensARoom` : joueur seul → hub → En ligne (code à la
-  croix et au clavier) → salle seule → la quitter. Captures `16` à `18`.
+- `OnlineMenu_OnePlayerOpensARoom` : En ligne → joueur seul → écran En ligne (code à la
+  croix et au clavier) → salle seule → la quitter → Retour jusqu'au choix En local / En ligne.
+  Captures `16` à `18`.
 - `Online_PlaysATrainingWithAGuestBuild` : l'éditeur ouvre une salle en direct sur 127.0.0.1:7792,
   lance `Builds/OnlineGuest/Beep Boop dans l'espace.exe -batchmode -nographics -no-analytics
   -online-direct 127.0.0.1:7792 -online-test-guest`, joue Points Rush avec lui, revient dans la salle,
@@ -84,7 +89,7 @@ python $CLI relay-test "Builds/<dossier>/Beep Boop dans l'espace.exe"   # salle 
   sur le disque que par blocs**, un test qui y cherche une ligne récente la rate. Après chaque test,
   le log et le rapport sont gardés en `Logs/online-guest-<test>.log` / `-report.txt`. Il échoue aussi
   si un état de sa partie entre après `EndState`, ou si, la salle perdue, son menu ne s'ouvre pas sur
-  le hub qui a dit pourquoi (`HasLostRoomReason` consommée).
+  l'écran En ligne qui a dit pourquoi (`HasLostRoomReason` consommée).
 - **Départs, coupures, retours** : la liste des cas et leur test est dans
   [references/disconnections.md](references/disconnections.md) (à lire avant de toucher aux
   départs, au chargement ou à la fin d'une partie en ligne). Tests `OnlineDrops_*`

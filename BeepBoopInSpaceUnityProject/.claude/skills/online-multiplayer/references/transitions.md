@@ -16,7 +16,7 @@ La perte de la salle côté hôte (transport, Relay) se simule par `OnlineManage
 Deux contrôles valent pour **tous** les tests de scénario :
 - l'éditeur (`ScenarioDriver`) et l'invité (`OnlineGuestBot`) échouent si un état de la partie entre
   après `EndState` (une partie qui revit pendant son déchargement) ;
-- l'invité échoue si, après avoir perdu la salle, son menu ne s'ouvre pas sur le hub qui dit pourquoi.
+- l'invité échoue si, après avoir perdu la salle, son menu ne s'ouvre pas sur l'écran En ligne qui dit pourquoi.
 
 Vérifié le 04/11/2026. Avant les correctifs, 6 des 9 tests échouaient, chacun sur son bug. Les 3
 autres passaient (E5, chargement interrompu, minuteries d'états quittés) et restent comme garde-fous.
@@ -31,7 +31,7 @@ Après : 9/9, et la suite complète 35/35 (05/11/2026).
 | Rafale après un gel | Plusieurs changements d'état dans la même image | `GameplaySync.Update` (rejoue tout) |
 | Demandes tardives | Un minuteur, un objectif, une manche demande un état pendant le déchargement | `FlowMachine.Lock` |
 | Objet du jeu qui manque à l'appel | La partie se charge sans sa synchronisation (salle perdue entre-temps) | `GameplaySync.AttachTo` |
-| Interface qui survit à sa raison d'être | Pause, dialogue, écran qui consomme un message sous l'écran de chargement | `PauseMenuManager`, `HubScreen.TakeLostRoomReason` |
+| Interface qui survit à sa raison d'être | Pause, dialogue, écran qui consomme un message sous l'écran de chargement | `PauseMenuManager`, `OnlineScreen.TakeLostRoomReason` |
 | Objets persistants | Contexte de tournoi, d'entraînement, compteurs restés d'une partie quittée | `TournamentContext.Abandon`, `TournamentCloser` |
 | Textes techniques | La couche réseau donne sa propre raison | `OnlineConnection.RefusalReason` |
 | Double fermeture | Deux causes ferment la même chose (perte + appui) | gardes `m_isEnding`, `m_isClosing` |
@@ -41,8 +41,8 @@ Après : 9/9, et la suite complète 35/35 (05/11/2026).
 | # | Cas | Attendu | Trouvé | Test |
 | --- | --- | --- | --- | --- |
 | L1 | Salle perdue entre l'ordre de lancer et le menu de l'invité (encore dans la partie d'avant) | Pas de partie | OK (`LaunchInMenu` vérifie la salle) | `OnlineMenu_LeavesAndReopensRightAway` |
-| L2 | Salle perdue pendant le lancement de l'invité (menu encore là, chargement commencé) | Hub qui dit pourquoi, une fois | **Bug** : le menu passait au hub sous l'écran de chargement, qui prenait la raison ; la partie se chargeait, repartait, et le menu rouvrait sur la sélection des personnages sans rien dire. Corrigé : le menu ne réagit plus pendant un lancement (`IsInGame`), la partie part une fois chargée, le menu s'ouvre sur le hub | `HostLosesTheRoomAsTheGuestLaunches` (gel de l'invité au lancement ; bug reproduit aussi avec une fermeture de salle, même chemin chez l'invité) |
-| L3 | L'hôte perd sa salle pendant le chargement de sa partie | Hub qui dit pourquoi | **Bug** : la partie démarrait sans synchronisation (« pas en salle »), hors ligne, et attendait au tutoriel le joueur de l'invité parti, sans pause possible : hôte bloqué. Corrigé : toute partie lancée d'une salle s'attache (`IsInGame`) et repart si la salle est perdue | `HostLosesTheRoomAsTheGameLaunches` (perte au `sceneLoaded`) |
+| L2 | Salle perdue pendant le lancement de l'invité (menu encore là, chargement commencé) | Écran En ligne qui dit pourquoi, une fois | **Bug** : le menu passait au hub sous l'écran de chargement, qui prenait la raison ; la partie se chargeait, repartait, et le menu rouvrait sur la sélection des personnages sans rien dire. Corrigé : le menu ne réagit plus pendant un lancement (`IsInGame`), la partie part une fois chargée, le menu s'ouvre sur le hub | `HostLosesTheRoomAsTheGuestLaunches` (gel de l'invité au lancement ; bug reproduit aussi avec une fermeture de salle, même chemin chez l'invité) |
+| L3 | L'hôte perd sa salle pendant le chargement de sa partie | Écran En ligne qui dit pourquoi | **Bug** : la partie démarrait sans synchronisation (« pas en salle »), hors ligne, et attendait au tutoriel le joueur de l'invité parti, sans pause possible : hôte bloqué. Corrigé : toute partie lancée d'une salle s'attache (`IsInGame`) et repart si la salle est perdue | `HostLosesTheRoomAsTheGameLaunches` (perte au `sceneLoaded`) |
 | L4 | Lancement reçu pendant un gel de l'invité | La partie se lance au réveil | OK | `GuestLagsAsTheHostRelaunches` |
 | L5 | L'invité arrive pendant le lancement | Refus « partie en cours » | OK (`ApproveGuest`) | — |
 | L6 | Lancement reçu à l'image où l'invité passe de « connexion » à « en salle » | Lancé | Non atteignable (l'hôte confirme bien après la liste des joueurs) | — |
@@ -71,8 +71,8 @@ Après : 9/9, et la suite complète 35/35 (05/11/2026).
 
 | # | Cas | Attendu | Trouvé | Test |
 | --- | --- | --- | --- | --- |
-| F1 | Salle perdue pendant End | Hub qui dit pourquoi | OK (pas de second End) | `HostLosesTheRoomAsATournamentGameEnds` (côté invité) |
-| F2 | Salle perdue pendant le chargement du menu | Hub qui dit pourquoi | OK (`Run` : `HasLostRoomReason`) | — |
+| F1 | Salle perdue pendant End | Écran En ligne qui dit pourquoi | OK (pas de second End) | `HostLosesTheRoomAsATournamentGameEnds` (côté invité) |
+| F2 | Salle perdue pendant le chargement du menu | Écran En ligne qui dit pourquoi | OK (`Run` : `HasLostRoomReason`) | — |
 | F3 | L'hôte relance avant que l'invité soit revenu au menu | L'invité rejoint la partie | OK (corrigé avant, E5) | `GuestLagsAsTheHostRelaunches` (gel de l'invité couvrant la relance) |
 | F4 | Pic de lag de l'invité au moment de quitter les résultats | Les résultats se ferment au réveil | OK | `GuestLagsAs*` |
 
@@ -81,8 +81,8 @@ Après : 9/9, et la suite complète 35/35 (05/11/2026).
 | # | Cas | Attendu | Trouvé | Test |
 | --- | --- | --- | --- | --- |
 | T1 | Pic de lag de l'invité pendant que l'hôte quitte les résultats puis choisit la partie suivante | L'invité finit la partie et joue la suivante | **Bug** : le choix de l'hôte démarrait la partie suivante à l'arrivée et vidait la file, avec le End de la partie en cours : l'invité restait dans ses résultats, l'hôte le renvoyait au bout de 60 s. Corrigé : la partie suivante ne commence chez l'invité qu'au moment où il la charge (`StartTheNextTournamentGame`) | `GuestLagsAsATournamentGameEnds` |
-| T2 | L'hôte perd sa salle pendant la fin d'une partie du tournoi | Tournoi fermé, hub qui dit pourquoi | **Bug** : l'hôte enchaînait sur les résultats puis les parties suivantes hors ligne, contre des robots fantômes immobiles. Corrigé : un tournoi lancé en ligne se ferme dès que la salle n'est plus là (`HasLostTheRoom`), sur l'hôte aussi | `HostLosesTheRoomAsATournamentGameEnds` (perte à l'entrée de End) |
-| T3 | Salle perdue pendant le chargement du niveau suivant | Retour au hub | OK après L3 (la partie s'attache et repart) | — |
+| T2 | L'hôte perd sa salle pendant la fin d'une partie du tournoi | Tournoi fermé, écran En ligne qui dit pourquoi | **Bug** : l'hôte enchaînait sur les résultats puis les parties suivantes hors ligne, contre des robots fantômes immobiles. Corrigé : un tournoi lancé en ligne se ferme dès que la salle n'est plus là (`HasLostTheRoom`), sur l'hôte aussi | `HostLosesTheRoomAsATournamentGameEnds` (perte à l'entrée de End) |
+| T3 | Salle perdue pendant le chargement du niveau suivant | Retour à l'écran En ligne | OK après L3 (la partie s'attache et repart) | — |
 | T4 | Salle perdue sur l'écran des résultats du tournoi, puis appui sur Continuer | Une seule fermeture | Corrigé par précaution (`m_isClosing`) | — |
 | T5 | Choix de l'hôte reçu avant que l'invité ait affiché ses résultats | Gardé, appliqué ensuite | OK | `Online_PlaysATournamentWithAGuestBuild` |
 
@@ -91,7 +91,7 @@ Après : 9/9, et la suite complète 35/35 (05/11/2026).
 | # | Cas | Attendu | Trouvé | Test |
 | --- | --- | --- | --- | --- |
 | E1 | L'hôte arrête son jeu (fenêtre fermée, transport perdu) : Netcode dit à l'invité « Disconnected due to host shutting down. » | Une raison en français | **Bug** : ce texte anglais de Netcode passait pour une raison de l'hôte (le filtre ne connaissait que « [Disconnect Event] »). Corrigé : « La connexion avec l'hôte a été perdue. » | `HostLosesTheRoom*` |
-| E2 | Raison de la perte lue sous l'écran de chargement | Lue au hub, visible | Corrigé avec L2 | `HostLosesTheRoomAsTheGuestLaunches` |
+| E2 | Raison de la perte lue sous l'écran de chargement | Lue à l'écran En ligne, visible | Corrigé avec L2 | `HostLosesTheRoomAsTheGuestLaunches` |
 | E3 | Écran de chargement après une sortie en plein chargement | Caché au menu | OK (`MainMenuOrchestrator`) | — |
 
 ## Hors périmètre

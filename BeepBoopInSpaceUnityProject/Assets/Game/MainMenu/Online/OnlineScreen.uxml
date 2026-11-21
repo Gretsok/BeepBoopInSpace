@@ -39,5 +39,8 @@
         <ui:Instance template="ConfirmationDialog" name="connecting-dialog" class="ui-dialog">
             <ui:AttributeOverrides element-name="message" text="Un instant…" />
         </ui:Instance>
+        <ui:Instance template="ConfirmationDialog" name="notice" class="ui-dialog">
+            <ui:AttributeOverrides element-name="title" text="Partie en ligne terminée" />
+        </ui:Instance>
     </ui:VisualElement>
 </ui:UXML>

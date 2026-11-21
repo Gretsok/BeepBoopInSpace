@@ -189,7 +189,7 @@ namespace Game.MainMenu.OnlineLobby
         {
             m_backAudioPlayer.Play();
             m_onlineManager.LeaveRoom();
-            m_orchestrator.SwitchToHubScreen();
+            m_orchestrator.BackToOnlineScreen();
         }
 
         private void HandleDialogCancelled()

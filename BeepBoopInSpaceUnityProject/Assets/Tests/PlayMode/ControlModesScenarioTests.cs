@@ -164,9 +164,7 @@ namespace Game.Tests.PlayMode
 
         private IEnumerator JoinPadsAndAKeyboardAndOpenHub()
         {
-            m_driver.Step("Home: press Play");
-            yield return m_driver.Submit();
-            yield return m_driver.WaitUntil("the character selection screen", () => MenuState == "CharacterSelectionState");
+            yield return ChooseFromHome(online: false);
 
             m_driver.Step($"Character selection: {k_PadPlayersWithAKeyboard} pads and a keyboard join and get ready");
             for (int i = 0; i < k_PadPlayersWithAKeyboard; i++)

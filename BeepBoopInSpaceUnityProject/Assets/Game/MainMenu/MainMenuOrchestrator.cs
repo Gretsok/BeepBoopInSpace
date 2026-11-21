@@ -7,6 +7,7 @@ using Game.MainMenu.Credits;
 using Game.MainMenu.Home;
 using Game.MainMenu.Hub;
 using Game.MainMenu.LevelSelection;
+using Game.MainMenu.LocalOrOnline;
 using Game.MainMenu.Online;
 using Game.MainMenu.OnlineLobby;
 using Game.MainMenu.SettingsScreen;
@@ -24,6 +25,8 @@ namespace Game.MainMenu
         [Header("States")]
         [SerializeField]
         private HomeState m_homeState;
+        [SerializeField]
+        private LocalOrOnlineState m_localOrOnlineState;
         [SerializeField]
         private CharacterSelectionState m_characterSelectionState;
         [SerializeField]
@@ -44,6 +47,7 @@ namespace Game.MainMenu
             m_flowMachine = mainMenuContext.FlowMachine;
             m_globalContext = globalContext;
             m_homeState.Initialize(globalContext, mainMenuContext);
+            m_localOrOnlineState.Initialize(globalContext, mainMenuContext);
             m_characterSelectionState.Initialize(globalContext, mainMenuContext);
             m_creditsState.Initialize(globalContext, mainMenuContext);
             m_settingsState.Initialize(globalContext, mainMenuContext);
@@ -79,32 +83,41 @@ namespace Game.MainMenu
 
         /// <summary>
         /// Opens the home screen, or the character selection when players come back from a game: they find their
-        /// characters there, and Retour leads to the home screen. Back from an online game, the room; from a game
-        /// whose room was lost, the hub, which says why.
+        /// characters there, and Retour leads to the choice between local and online. Back from an online game, the
+        /// room; from a game whose room was lost, the online screen, which says why. Retour goes back the way the
+        /// players came.
         /// </summary>
         public void Run()
         {
             var onlineManager = m_globalContext.OnlineManager;
+            var playerManager = m_globalContext.PlayerManager;
             if (onlineManager.IsInRoom)
-                m_flowMachine.Run(m_onlineLobbyState);
-            else if (onlineManager.HasLostRoomReason && m_globalContext.PlayerManager.Players.Count > 0)
-                m_flowMachine.Run(m_hubState);
-            else if (m_globalContext.PlayerManager.Players.Count > 0)
-                m_flowMachine.Run(m_characterSelectionState);
+            {
+                playerManager.PlaysOnline = true;
+                m_flowMachine.Run(m_onlineLobbyState, m_localOrOnlineState, m_characterSelectionState, m_onlineState);
+            }
+            else if (onlineManager.HasLostRoomReason && playerManager.Players.Count > 0)
+            {
+                playerManager.PlaysOnline = true;
+                m_flowMachine.Run(m_onlineState, m_localOrOnlineState, m_characterSelectionState);
+            }
+            else if (playerManager.Players.Count > 0)
+                m_flowMachine.Run(m_characterSelectionState, m_localOrOnlineState);
             else
                 m_flowMachine.Run();
         }
 
-        // The room is over (the host left, the connection failed...): its screens give way to the hub, which says why.
+        // The room is over (the host left, the connection failed...): its screens give way to the online screen, which
+        // says why.
         private void HandleRoomLost(string reason)
         {
-            // A game launches: the hub would take the reason under the loading screen. The game goes back to the menu
-            // once loaded, which opens on the hub.
+            // A game launches: the online screen would take the reason under the loading screen. The game goes back to
+            // the menu once loaded, which opens on the online screen.
             if (m_globalContext.OnlineManager.IsInGame)
                 return;
             var currentState = m_flowMachine.CurrentState;
             if (currentState == m_onlineLobbyState || currentState == m_levelSelectionState)
-                SwitchToHubScreen();
+                BackToOnlineScreen();
         }
 
         // The host was choosing a level, or confirming it, for players who left: back to the room, which says it needs
@@ -132,9 +145,44 @@ namespace Game.MainMenu
         }
 
         [Button]
+        public void SwitchToLocalOrOnlineScreen()
+        {
+            m_flowMachine.RequestState(m_localOrOnlineState);
+        }
+
+        /// <summary>The players chose the local games: the character selection, then the hub.</summary>
+        public void PlayLocally()
+        {
+            m_globalContext.PlayerManager.PlaysOnline = false;
+            SwitchToCharacterSelectionScreen();
+        }
+
+        /// <summary>The players chose an online room: the character selection, then the online screen.</summary>
+        public void PlayOnline()
+        {
+            m_globalContext.PlayerManager.PlaysOnline = true;
+            SwitchToCharacterSelectionScreen();
+        }
+
+        [Button]
         public void SwitchToCharacterSelectionScreen()
         {
             m_flowMachine.RequestState(m_characterSelectionState);
+        }
+
+        /// <summary>Everybody is ready in the character selection: the modes the players chose, local or online.</summary>
+        public void SwitchToModesScreen()
+        {
+            if (m_globalContext.PlayerManager.PlaysOnline)
+                SwitchToOnlineScreen();
+            else
+                SwitchToHubScreen();
+        }
+
+        /// <summary>Out of the room (left or lost): back to the online screen, whose Retour leads to the character selection.</summary>
+        public void BackToOnlineScreen()
+        {
+            m_flowMachine.RequestBackTo(m_onlineState);
         }
 
         [Button]

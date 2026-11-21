@@ -15,7 +15,8 @@ namespace Game.ArchitectureTools.FlowMachine
             {
                 AddingToBackStack = 0,
                 Back = 1,
-                IgnoreBackStack = 2
+                IgnoreBackStack = 2,
+                BackTo = 3
             }
             public AFlowState State;
             public ERequestType RequestType;
@@ -33,14 +34,19 @@ namespace Game.ArchitectureTools.FlowMachine
             Run(m_defaultState);
         }
 
-        /// <summary>Starts in <paramref name="firstState"/>, as if reached from the default state: going back leads there.</summary>
-        public void Run(AFlowState firstState)
+        /// <summary>
+        /// Starts in <paramref name="firstState"/>, as if reached from the default state, then from
+        /// <paramref name="backStates"/> in their order: going back leads through them.
+        /// </summary>
+        public void Run(AFlowState firstState, params AFlowState[] backStates)
         {
             if (RunningState != ERunningState.Inactive)
                 return;
 
             if (firstState != m_defaultState)
                 m_backStack.Push(m_defaultState);
+            foreach (var backState in backStates)
+                m_backStack.Push(backState);
             RequestState(firstState);
             RunningState = ERunningState.Running;
             Debug.Log($"[FM] {gameObject.name} - started running.");
@@ -132,6 +138,23 @@ namespace Game.ArchitectureTools.FlowMachine
             Debug.Log($"[FM] {gameObject.name} - Request back.");
         }
 
+        /// <summary>
+        /// Goes back to <paramref name="state"/>, however many states were reached since: going back from it leads
+        /// where it did before. A state that isn't in the back stack is reached like a new one.
+        /// </summary>
+        public void RequestBackTo(AFlowState state)
+        {
+            if (IsRemotelyDriven || IsLocked)
+                return;
+            SStateRequest request = new SStateRequest()
+            {
+                State = state,
+                RequestType = SStateRequest.ERequestType.BackTo
+            };
+            m_requestedStates.Enqueue(request);
+            Debug.Log($"[FM] {gameObject.name} - Request back to : {state.gameObject}.");
+        }
+
         public void ClearBackStack()
         {
             m_backStack.Clear();
@@ -166,6 +189,18 @@ namespace Game.ArchitectureTools.FlowMachine
                     }
                     Debug.Log($"[FM] {gameObject.name} - {backState.name} - About to switch state by going back.");
                     SwitchToState(backState);
+                }
+                else if (request.RequestType == SStateRequest.ERequestType.BackTo)
+                {
+                    if (m_backStack.Contains(request.State))
+                    {
+                        while (m_backStack.Peek() != request.State)
+                            m_backStack.Pop();
+                    }
+                    else
+                        m_backStack.Push(request.State);
+                    Debug.Log($"[FM] {gameObject.name} - {request.State.name} - About to switch state by going back to it.");
+                    SwitchToState(request.State);
                 }
             }
             

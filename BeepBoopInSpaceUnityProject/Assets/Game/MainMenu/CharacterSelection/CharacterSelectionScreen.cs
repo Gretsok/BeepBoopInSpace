@@ -13,12 +13,13 @@ using UnityEngine.UIElements;
 namespace Game.MainMenu.CharacterSelection
 {
     /// <summary>
-    /// Players join, each picks a character in the grid and gets ready; once every player (1 at least, alone for the online modes) is ready, the
-    /// game moves on to the hub. Each player's circle is a <see cref="CharacterWidget"/>, the grid a <see cref="CharacterRoster"/>.
+    /// Players join, each picks a character in the grid and gets ready; once every player (1 at least) is ready, the
+    /// game moves on to the modes the players chose before: the hub's local ones, or the online screen. Each player's
+    /// circle is a <see cref="CharacterWidget"/>, the grid a <see cref="CharacterRoster"/>.
     /// </summary>
     public class CharacterSelectionScreen : AMainMenuScreen
     {
-        // One player alone goes on to the hub for the online modes; the local modes ask for two.
+        // One player alone may go on: the computer's robots complete the local games, players of other machines the room.
         private const int k_MinPlayers = 1;
         private const string k_LaunchingClass = "cs-screen--launching";
 
@@ -176,7 +177,7 @@ namespace Game.MainMenu.CharacterSelection
                 return;
             m_startGameAudioPlayer.Play();
             m_playerManager.StopListeningForNewPlayers();
-            m_orchestrator.SwitchToHubScreen();
+            m_orchestrator.SwitchToModesScreen();
         }
 
         public Action OnBack;

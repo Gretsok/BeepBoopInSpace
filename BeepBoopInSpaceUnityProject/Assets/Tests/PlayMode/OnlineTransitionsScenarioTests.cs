@@ -17,7 +17,7 @@ namespace Game.Tests.PlayMode
     /// Online rooms lost or lagging during a transition: a game launching, ending, unloading, the tournament between
     /// two games, the pause open as the game ends (the cases of the online-multiplayer skill's references/transitions.md).
     /// The editor hosts, a build of the game plays the guest (OnlineGuestBot), which fails when one of its games comes
-    /// back to life while it unloads, or when its menu doesn't open on the hub saying why after losing the room.
+    /// back to life while it unloads, or when its menu doesn't open on the online screen saying why after losing the room.
     /// </summary>
     public partial class GameModesScenarioTests
     {
@@ -104,9 +104,9 @@ namespace Game.Tests.PlayMode
             Assert.That(ReadShared(GuestReport), Does.Contain("room lost while launching a game from the menu"),
                 $"The room wasn't lost while the guest was launching the game: the case wasn't reproduced.\n{GuestLogTail()}");
 
-            m_driver.Step("Game: the host's game gives way to the hub, which says why");
-            yield return m_driver.WaitUntil("the host's hub", () => MenuState == "HubState" && Manager(k_GameplayContext) == null, 90f);
-            yield return CheckTheHubSaysWhy(k_HostConnectionCut);
+            m_driver.Step("Game: the host's game gives way to the online screen, which says why");
+            yield return m_driver.WaitUntil("the host's online screen", () => MenuState == "OnlineState" && Manager(k_GameplayContext) == null, 90f);
+            yield return CheckTheOnlineScreenSaysWhy(k_HostConnectionCut);
             m_driver.AssertNoErrors();
         }
 
@@ -120,9 +120,9 @@ namespace Game.Tests.PlayMode
             m_driver.Step("Online: the host's connection fails as the game's scene loads");
             DoWhenASceneLoads(LoseTheHostsConnection);
             yield return LaunchPointsRushForTheRoom();
-            m_driver.Step("Game: once loaded, the host's game gives way to the hub, which says why");
-            yield return WaitForTheHostsGameToComeAndGo("the host's hub", () => MenuState == "HubState");
-            yield return CheckTheHubSaysWhy(k_HostConnectionCut);
+            m_driver.Step("Game: once loaded, the host's game gives way to the online screen, which says why");
+            yield return WaitForTheHostsGameToComeAndGo("the host's online screen", () => MenuState == "OnlineState");
+            yield return CheckTheOnlineScreenSaysWhy(k_HostConnectionCut);
             yield return WaitForTheGuestToQuit(k_ConnectionLost, 90f);
             m_driver.AssertNoErrors();
         }
@@ -203,12 +203,12 @@ namespace Game.Tests.PlayMode
             yield return LeaveTheResults();
             Assert.IsTrue(hasFailed, "The host's connection didn't fail as the game ended.");
 
-            m_driver.Step("Tournament: the host's tournament ends, the hub says why");
+            m_driver.Step("Tournament: the host's tournament ends, the online screen says why");
             // Going on, it would stay on the tournament's results, or play the next game.
-            yield return WaitForRealSeconds(() => MenuState == "HubState" || GameplayState != null, 60f);
-            Assert.AreEqual("HubState", MenuState, "Its room lost, the host went on with the tournament.");
+            yield return WaitForRealSeconds(() => MenuState == "OnlineState" || GameplayState != null, 60f);
+            Assert.AreEqual("OnlineState", MenuState, "Its room lost, the host went on with the tournament.");
             Assert.IsNull(Manager(k_TournamentContext), "The tournament context is still there in the menu.");
-            yield return CheckTheHubSaysWhy(k_HostConnectionCut);
+            yield return CheckTheOnlineScreenSaysWhy(k_HostConnectionCut);
             yield return WaitForTheGuestToQuit(k_ConnectionLost, 90f);
             m_driver.AssertNoErrors();
         }
@@ -229,8 +229,8 @@ namespace Game.Tests.PlayMode
             var configurations = Manager("Game.Gameplay.ConfigurationsManagement.ConfigurationsManager");
             configurations.GetType().GetMethod("PerformChange").Invoke(configurations, new object[] { false });
 
-            yield return m_driver.WaitUntil("the host's hub", () => MenuState == "HubState" && Manager(k_GameplayContext) == null, 90f);
-            yield return CheckTheHubSaysWhy(k_HostConnectionCut);
+            yield return m_driver.WaitUntil("the host's online screen", () => MenuState == "OnlineState" && Manager(k_GameplayContext) == null, 90f);
+            yield return CheckTheOnlineScreenSaysWhy(k_HostConnectionCut);
             yield return WaitForTheGuestToQuit(k_ConnectionLost, 90f);
             m_driver.AssertNoErrors();
         }
@@ -316,20 +316,20 @@ namespace Game.Tests.PlayMode
                 .Invoke(onlineManager, new object[] { k_HostConnectionCut });
         }
 
-        // The hub's notice, with the reason the room ended, taken from the online manager.
-        private IEnumerator CheckTheHubSaysWhy(string reason)
+        // The online screen's notice, with the reason the room ended, taken from the online manager.
+        private IEnumerator CheckTheOnlineScreenSaysWhy(string reason)
         {
-            yield return m_driver.WaitUntil("the hub's notice", () => HubNotice == reason, 10f);
+            yield return m_driver.WaitUntil("the online screen's notice", () => OnlineNotice == reason, 10f);
             Assert.IsFalse((bool)Get(Manager(k_OnlineManager), "HasLostRoomReason"), "The reason the room ended is still to be told.");
         }
 
-        private static string HubNotice
+        private static string OnlineNotice
         {
             get
             {
                 try
                 {
-                    return ScreenElement("Game.MainMenu.Hub.HubScreen", "notice")?.Q<Label>("message")?.text;
+                    return ScreenElement(k_OnlineScreen, "notice")?.Q<Label>("message")?.text;
                 }
                 catch (InvalidOperationException)
                 {

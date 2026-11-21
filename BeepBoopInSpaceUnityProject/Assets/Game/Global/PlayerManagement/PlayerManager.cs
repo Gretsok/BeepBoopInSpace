@@ -26,6 +26,12 @@ namespace Game.Global.PlayerManagement
         // What the players chose in the hub, none yet at first.
         private int m_chosenBotsCount = -1;
 
+        /// <summary>
+        /// What the players chose before the character selection: an online room (the character selection leads to the
+        /// online screen) or the local games (to the hub). Kept until they go back to the home screen.
+        /// </summary>
+        public bool PlaysOnline { get; set; }
+
         public int MinBotsCount => m_players.Count >= 2 ? 0 : 1;
         public int MaxBotsCount => Mathf.Max(0, k_MaxGamePlayers - m_players.Count);
 
@@ -159,6 +165,7 @@ namespace Game.Global.PlayerManagement
             m_bots.Clear();
             m_playersAndBots.Clear();
             m_chosenBotsCount = -1;
+            PlaysOnline = false;
         }
     }
 }
