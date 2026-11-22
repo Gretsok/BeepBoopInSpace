@@ -2,7 +2,6 @@ using System.Collections;
 using DG.Tweening;
 using Game.Gameplay.Cells.Default;
 using Game.Gameplay.CharactersManagement.Movement;
-using Game.Gameplay.GridSystem;
 using Game.Gameplay.GridSystem.GenericComponents;
 using Game.Online;
 using Game.Online.Gameplay;
@@ -10,14 +9,33 @@ using UnityEngine;
 
 namespace Game.Gameplay.Cells.FrozenCell
 {
+    /// <summary>
+    /// Ice: a robot stepping onto it slides on to the next cell in its direction when that cell is free, and stops on
+    /// the ice otherwise. It can't move during its slide, and holds the ice on the grid until it reaches the next cell.
+    /// </summary>
     public class FrozenCellEffectHandler : MonoBehaviour, ICharacterMovementControllerBlocker
     {
+        private const float k_SlideDuration = 0.2f;
+
         private CanBeWalkedOnCellComponent m_component;
-        
+        private Cell m_cell;
+
+        // The robot sliding off this cell, and its slide. Each slide keeps its own robot: a robot that leaves the ice
+        // during its slide (dead) must not hand its end over to the next robot stepping onto the ice.
+        private CharacterMovementController m_slidingController;
+        private Coroutine m_slide;
+        private Tween m_slideTween;
+
         private void Start()
         {
             m_component = GetComponent<CanBeWalkedOnCellComponent>();
+            m_cell = GetComponent<Cell>();
             m_component.OnMovementControllerOnCellChanged += HandleMovementControllerOnCellChanged;
+        }
+
+        private void OnDestroy()
+        {
+            StopSlide();
         }
 
         private void HandleMovementControllerOnCellChanged(CanBeWalkedOnCellComponent obj)
@@ -25,100 +43,96 @@ namespace Game.Gameplay.Cells.FrozenCell
             // Online guest: the host makes the robots slide (GameplaySync.NotifySlide, then a teleport).
             if (!Netplay.HasAuthority)
                 return;
-            if (!obj.MovementControllerOnCell)
-                return;
-
-            var previousCell = obj.MovementControllerOnCell.ReferencesHolder.GridWalker.PreviousCell;
-            if (!previousCell)
-                return;
-            
-            var currentCell = obj.MovementControllerOnCell.ReferencesHolder.GridWalker.CurrentCell;
-            if (!currentCell)
-                return;
-
             var controller = obj.MovementControllerOnCell;
-            
-            BlockController(controller);
-            
-            
-            if (previousCell == currentCell.ForwardCell)
-                SlideTowardCell(currentCell.BackwardCell);
-            if (previousCell == currentCell.BackwardCell)
-                SlideTowardCell(currentCell.ForwardCell);
-            if (previousCell == currentCell.RightCell)
-                SlideTowardCell(currentCell.LeftCell);
-            if (previousCell == currentCell.LeftCell)
-                SlideTowardCell(currentCell.RightCell);
-        }
-
-        private CharacterMovementController m_blockedController;
-        private void BlockController(CharacterMovementController movementController)
-        {
-            if (m_blockedController)
-                UnblockController();
-            movementController.RegisterBlocker(this);
-            m_blockedController = movementController;
-        }
-
-        private void UnblockController()
-        {
-            if (!m_blockedController)
+            if (controller == m_slidingController)
                 return;
-            
-            m_blockedController.UnregisterBlocker(this);
-            m_blockedController = null;
-        }
-
-        private void SlideTowardCell(Cell cell)
-        {
-            if (!cell.TryGetComponent(out CanBeWalkedOnCellComponent comp) || comp.MovementControllerOnCell)
-            {
-                UnblockController();
+            // Off the ice before the end of its slide (dead, or placed for a new round): its slide stops there.
+            StopSlide();
+            if (!controller)
                 return;
-            }
-            
-            StartCoroutine(SlidingTowardCellRoutine(cell));
+
+            // Only a step from a neighbor slides on, in the same direction (not a teleport or a respawn), and only
+            // onto a free cell: otherwise the robot stops on the ice.
+            var next = NextCellAfter(controller.ReferencesHolder.GridWalker.PreviousCell);
+            if (!IsFree(next, null))
+                return;
+
+            m_slidingController = controller;
+            controller.RegisterBlocker(this);
+            m_slide = StartCoroutine(Slide(controller, next));
         }
 
-        private IEnumerator SlidingTowardCellRoutine(Cell cell)
+        private Cell NextCellAfter(Cell previousCell)
         {
-            var targetDestination = cell.transform.position;
-            bool isTargetCellAFrozenCell = cell.GetComponent<FrozenCellEffectHandler>();
-            var characterRoot = m_blockedController.ReferencesHolder.Root;
-            bool isComplete = false;
+            if (!previousCell)
+                return null;
+            if (previousCell == m_cell.ForwardCell)
+                return m_cell.BackwardCell;
+            if (previousCell == m_cell.BackwardCell)
+                return m_cell.ForwardCell;
+            if (previousCell == m_cell.RightCell)
+                return m_cell.LeftCell;
+            if (previousCell == m_cell.LeftCell)
+                return m_cell.RightCell;
+            return null;
+        }
 
-            if (!m_blockedController.ReferencesHolder.GridWalker.PreviousCell.GetComponent<FrozenCellEffectHandler>())
+        // Walkable and without another robot.
+        private static bool IsFree(Cell cell, CharacterMovementController controller)
+        {
+            return cell && cell.TryGetComponent(out CanBeWalkedOnCellComponent walkable)
+                        && (!walkable.MovementControllerOnCell || walkable.MovementControllerOnCell == controller);
+        }
+
+        private IEnumerator Slide(CharacterMovementController controller, Cell next)
+        {
+            var root = controller.ReferencesHolder.Root;
+
+            // From a cell that isn't ice, the robot first lands on the ice.
+            var previousCell = controller.ReferencesHolder.GridWalker.PreviousCell;
+            if (!previousCell.GetComponent<FrozenCellEffectHandler>())
             {
-                characterRoot.DOKill(false);
-                characterRoot.transform.DOJump(transform.position, 0.5f, 1, 0.2f).onComplete += () =>
-                {
-                    isComplete = true;
-                };
-                yield return new WaitUntil(() => isComplete);
+                root.DOKill(false);
+                m_slideTween = root.DOJump(transform.position, 0.5f, 1, k_SlideDuration);
+                yield return m_slideTween.WaitForCompletion();
             }
 
+            GameplaySync.NotifySlide(controller, next);
+            m_slideTween = root.DOMove(next.transform.position, k_SlideDuration)
+                .SetEase(next.GetComponent<FrozenCellEffectHandler>() ? Ease.Linear : Ease.OutCubic);
+            yield return m_slideTween.WaitForCompletion();
 
-            isComplete = false;
-            GameplaySync.NotifySlide(m_blockedController, cell);
-            characterRoot.DOMove(targetDestination, 0.2f).SetEase(isTargetCellAFrozenCell ? Ease.Linear : Ease.OutCubic).onComplete += () => isComplete = true;
-            yield return new WaitUntil(() => isComplete);
-            var controller = m_blockedController;
-
-            // Another character may have stepped onto the target cell during the slide: bounce back onto this cell,
-            // which the sliding character still occupies on the grid.
-            if (cell.TryGetComponent(out CanBeWalkedOnCellComponent targetComp) &&
-                targetComp.MovementControllerOnCell && targetComp.MovementControllerOnCell != controller)
+            // Another robot stepped onto the next cell during the slide: back onto the ice, which the robot still holds.
+            if (!IsFree(next, controller))
             {
-                isComplete = false;
-                GameplaySync.NotifySlide(controller, GetComponent<Cell>());
-                characterRoot.DOMove(transform.position, 0.2f).SetEase(Ease.OutCubic).onComplete += () => isComplete = true;
-                yield return new WaitUntil(() => isComplete);
-                UnblockController();
+                GameplaySync.NotifySlide(controller, m_cell);
+                m_slideTween = root.DOMove(transform.position, k_SlideDuration).SetEase(Ease.OutCubic);
+                yield return m_slideTween.WaitForCompletion();
+                EndSlide();
                 yield break;
             }
 
-            UnblockController();
-            controller.TeleportToCell(cell);
+            // Over before the teleport: leaving the ice must not stop the slide, and the next ice starts its own.
+            EndSlide();
+            controller.TeleportToCell(next);
+        }
+
+        private void StopSlide()
+        {
+            if (m_slide != null)
+                StopCoroutine(m_slide);
+            if (m_slideTween != null && m_slideTween.IsActive())
+                m_slideTween.Kill();
+            EndSlide();
+        }
+
+        private void EndSlide()
+        {
+            m_slide = null;
+            m_slideTween = null;
+            if (m_slidingController)
+                m_slidingController.UnregisterBlocker(this);
+            m_slidingController = null;
         }
     }
 }
