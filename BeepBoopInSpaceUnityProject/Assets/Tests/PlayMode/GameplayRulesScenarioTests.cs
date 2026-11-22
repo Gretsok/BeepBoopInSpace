@@ -105,6 +105,167 @@ namespace Game.Tests.PlayMode
             yield return FinishTheGame(characters);
         }
 
+        /// <summary>
+        /// A robot stepping onto ice slides on to the next cell when it is free, and otherwise stops on the ice: the
+        /// next cell taken before the step, taken during the slide, or past two ice cells in a row. Each time the robot
+        /// ends on that cell on the grid and on the screen, and can move again.
+        /// </summary>
+        [UnityTest, Order(1), Timeout(10 * 60 * 1000)]
+        public IEnumerator Ice_SlidesOnToAFreeCellElseStopsOnTheIce()
+        {
+            LogAssert.ignoreFailingMessages = true;
+            yield return JoinFourPlayersAndOpenHub();
+            var characters = PlayerCharacters;
+            yield return StartTraining(k_ShootingMode);
+            yield return UntilTheGameIsOn();
+            Time.timeScale = 1f;
+
+            var robots = Robots().ToList();
+            var (slider, blocker) = (robots[0], robots[1]);
+            var (before, ice, after) = FindIceCrossing(slider, blocker, secondIce: false);
+            var (rowStart, firstIce, secondIce) = FindIceCrossing(slider, blocker, secondIce: true);
+            var beyond = Get(secondIce, NeighborTowards(firstIce, secondIce)) as Component;
+            var parking = Cells().First(cell => IsFreeAndSafe(cell, slider, blocker)
+                                                && !new[] { before, after, rowStart, beyond }.Contains(cell));
+
+            m_driver.Step("Game: a robot steps onto ice, the next cell free: it slides on to it");
+            yield return StepOntoIce(slider, before, ice, blocker, parking, null, 0f);
+            AssertStandsOn(slider, after, "Onto ice, the next cell free");
+
+            m_driver.Step("Game: a robot steps onto ice, the next cell taken: it stops on the ice");
+            yield return StepOntoIce(slider, before, ice, blocker, parking, after, 0f);
+            AssertStandsOn(slider, ice, "Onto ice, the next cell taken");
+
+            m_driver.Step("Game: a robot steps onto ice, the next cell taken during the slide: it comes back onto the ice");
+            yield return StepOntoIce(slider, before, ice, blocker, parking, after, 0.3f);
+            AssertStandsOn(slider, ice, "Onto ice, the next cell taken during the slide");
+
+            m_driver.Step("Game: a robot steps onto two ice cells in a row, the next cell taken: it stops on the second");
+            yield return StepOntoIce(slider, rowStart, firstIce, blocker, parking, beyond, 0f);
+            AssertStandsOn(slider, secondIce, "Onto two ice cells, the next cell taken");
+
+            m_driver.Step("Game: a robot steps onto two ice cells in a row, the second one taken: it stops on the first");
+            yield return StepOntoIce(slider, rowStart, firstIce, blocker, parking, secondIce, 0f);
+            AssertStandsOn(slider, firstIce, "Onto two ice cells, the second taken");
+
+            m_driver.Step("Game: a robot dies during its slide, another steps onto the ice from the side: it slides its own way");
+            var across = s_gridDirections.First(direction => direction.Axis != AxisOf(ice, after) && IsFreeAndSafe(Get(ice, direction.Behind) as Component, slider, blocker));
+            var side = (Component)Get(ice, across.Behind);
+            yield return StepOntoIce(slider, before, ice, blocker, side, null, 0f);
+            // StepOntoIce waited for the end of the slide: start this one again, and kill the robot mid-slide.
+            CallWith(Get(slider, "MovementController"), "DistachFromCurrentCell");
+            CallWith(Get(slider, "MovementController"), "TeleportToCell", before);
+            yield return RealSeconds(0.3f);
+            CallWith(Get(slider, "MovementController"), "MoveToCell", ice);
+            yield return RealSeconds(0.3f);
+            var sliderDeath = Get(slider, "DeathController");
+            CallWith(sliderDeath, "Kill", 30f, true);
+            Assert.IsFalse(IsAliveRobot(slider), "The robot didn't die.");
+            var end = SlideEnd(ice, across.Ahead, blocker);
+            CallWith(Get(blocker, "MovementController"), "MoveToCell", ice);
+            yield return RealSeconds(2f);
+            AssertStandsOn(blocker, end, "Onto ice from the side, as a robot dies sliding off it");
+            Assert.IsFalse(IsAlive(Get(Get(slider, "GridWalker"), "CurrentCell")), "The dead robot's slide put it back on the grid.");
+            CallWith(sliderDeath, "Resurrect");
+            yield return RealSeconds(0.5f);
+            var respawnCell = Get(Get(slider, "GridWalker"), "CurrentCell") as Component;
+            Assert.IsTrue(respawnCell != null, "The robot came back off the grid.");
+            AssertStandsOn(slider, respawnCell, "Back after dying on the ice");
+
+            yield return FinishTheGame(characters);
+        }
+
+        // 0 along z (forward, backward), 1 along x (right, left).
+        private static int AxisOf(Component from, Component to) =>
+            s_gridDirections.First(direction => ReferenceEquals(Get(from, direction.Ahead), to)).Axis;
+
+        /// <summary>Where a robot stepping onto <paramref name="ice"/> towards <paramref name="ahead"/> stops: the first free cell past the ice, else the last ice.</summary>
+        private static Component SlideEnd(Component ice, string ahead, object robot)
+        {
+            var frozen = GameType("Game.Gameplay.Cells.FrozenCell.FrozenCellEffectHandler");
+            var cell = ice;
+            while (true)
+            {
+                var next = Get(cell, ahead) as Component;
+                if (next == null || !IsFree(next, robot))
+                    return cell;
+                if (next.GetComponent(frozen) == null)
+                    return next;
+                cell = next;
+            }
+        }
+
+        /// <summary>
+        /// The slider steps from <paramref name="start"/> onto <paramref name="ice"/>, with the blocker on
+        /// <paramref name="taken"/> (else on <paramref name="parking"/>), from the start or <paramref name="takenAfter"/>
+        /// seconds later; then the moves and slides end.
+        /// </summary>
+        private IEnumerator StepOntoIce(object slider, Component start, Component ice, object blocker, Component parking, Component taken, float takenAfter)
+        {
+            yield return m_driver.WaitUntil("both robots to be alive and free to move",
+                () => IsAliveRobot(slider) && IsAliveRobot(blocker) && !IsBlockedRobot(slider) && !IsBlockedRobot(blocker), 20f);
+            var sliderMovement = Get(slider, "MovementController");
+            var blockerMovement = Get(blocker, "MovementController");
+            CallWith(sliderMovement, "DistachFromCurrentCell");
+            CallWith(blockerMovement, "DistachFromCurrentCell");
+            CallWith(sliderMovement, "TeleportToCell", start);
+            CallWith(blockerMovement, "TeleportToCell", taken != null && takenAfter <= 0f ? taken : parking);
+            yield return RealSeconds(0.3f);
+
+            CallWith(sliderMovement, "MoveToCell", ice);
+            if (taken != null && takenAfter > 0f)
+            {
+                // Mid-slide: the jump onto the ice is over, the slide on to the next cell isn't.
+                yield return RealSeconds(takenAfter);
+                CallWith(blockerMovement, "DistachFromCurrentCell");
+                CallWith(blockerMovement, "TeleportToCell", taken);
+            }
+            yield return RealSeconds(1.5f);
+        }
+
+        private static void AssertStandsOn(object robot, Component cell, string situation)
+        {
+            var current = Get(Get(robot, "GridWalker"), "CurrentCell") as Component;
+            Assert.IsTrue(ReferenceEquals(cell, current),
+                $"{situation}: the robot is on the cell at {(current ? current.transform.position : Vector3.zero)} instead of the one at {cell.transform.position}.");
+            var drawn = ((Transform)Get(robot, "Root")).position;
+            var gap = Vector2.Distance(new Vector2(drawn.x, drawn.z), new Vector2(cell.transform.position.x, cell.transform.position.z));
+            Assert.Less(gap, 0.05f, $"{situation}: the robot is drawn at {drawn}, {gap:0.00} away from its cell at {cell.transform.position}.");
+            Assert.IsFalse(IsBlockedRobot(robot), $"{situation}: the robot can't move any more.");
+        }
+
+        /// <summary>
+        /// Ice between two free cells without an effect, in a line (<paramref name="secondIce"/>: false); or a free
+        /// cell, then two ice cells in a line followed by a free cell (true): the start, the first ice, the second.
+        /// </summary>
+        private static (Component Start, Component Ice, Component Next) FindIceCrossing(object slider, object blocker, bool secondIce)
+        {
+            var frozen = GameType("Game.Gameplay.Cells.FrozenCell.FrozenCellEffectHandler");
+            bool IsIce(Component cell) => cell != null && cell.GetComponent(frozen) != null && IsFree(cell, slider, blocker);
+            foreach (var ice in Cells().Where(IsIce))
+            {
+                foreach (var direction in s_gridDirections)
+                {
+                    var start = Get(ice, direction.Behind) as Component;
+                    var next = Get(ice, direction.Ahead) as Component;
+                    if (!IsFreeAndSafe(start, slider, blocker))
+                        continue;
+                    if (!secondIce && IsFreeAndSafe(next, slider, blocker))
+                        return (start, ice, next);
+                    if (secondIce && IsIce(next) && IsFreeAndSafe(Get(next, direction.Ahead) as Component, slider, blocker))
+                        return (start, ice, next);
+                }
+            }
+            Assert.Fail(secondIce ? "No two ice cells in a row between free cells in the arena." : "No ice between two free cells in the arena.");
+            return default;
+        }
+
+        // The neighbor property of `to` that continues the line from `from` to `to`.
+        private static string NeighborTowards(Component from, Component to) =>
+            s_gridDirections.First(direction => ReferenceEquals(Get(from, direction.Ahead), to)).Ahead;
+
+        private static bool IsBlockedRobot(object robot) => (bool)Get(Get(robot, "MovementController"), "IsBlocked");
+
         /// <summary>Through the tutorial, until the game is on.</summary>
         private IEnumerator UntilTheGameIsOn()
         {
