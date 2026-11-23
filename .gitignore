@@ -79,3 +79,6 @@ BeepBoopInSpaceUnityProject/.idea
 
 # Python bytecode from the Claude Code skills scripts
 __pycache__/
+
+# Git worktrees of the Claude Code sessions (each on its own branch)
+BeepBoopInSpaceUnityProject/.claude/worktrees/
